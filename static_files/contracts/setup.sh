@@ -74,7 +74,7 @@ if [[ -z "${VALIDATOR_TOP_UP_FEE_AMOUNT}" ]]; then
 fi
 echo "VALIDATOR_ACCOUNTS: ${VALIDATOR_ACCOUNTS}"
 # Note: VALIDATOR_ACCOUNTS is expected to follow this exact pattern:
-# "<address1>,<full_public_key1>;<address2>,<full_public_key2>;..."
+# "<address_1>,<full_public_key_1>;<address_2>,<full_public_key_2>;..."
 echo "VALIDATOR_BALANCE: ${VALIDATOR_BALANCE}"
 echo "VALIDATOR_STAKE_AMOUNT: ${VALIDATOR_STAKE_AMOUNT}"
 echo "VALIDATOR_TOP_UP_FEE_AMOUNT: ${VALIDATOR_TOP_UP_FEE_AMOUNT}"
@@ -84,9 +84,9 @@ validator_config_file="validators.js"
 jq -n '[]' > "${validator_config_file}"
 
 echo "Staking for each validator node..."
-IFS=';' read -ra validator_accounts <<< "$VALIDATOR_ACCOUNTS"
+IFS=';' read -ra validator_accounts <<< "${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
-  IFS=',' read -r address full_public_key <<< "$account"
+  IFS=',' read -r address full_public_key <<< "${account}"
   npm run truffle exec scripts/stake.js -- --network development "${address}" "${full_public_key}" "${VALIDATOR_STAKE_AMOUNT}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}"
   
   # Update the validator config file.

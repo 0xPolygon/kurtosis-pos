@@ -38,10 +38,18 @@ def launch(
     }
 
     prefunded_accounts = genesis_constants.PRE_FUNDED_ACCOUNTS
-
-    heimdall_config_generator_artifact = _generate_heimdall_config(
+    heimdall_config_generator_artifacts = _generate_heimdall_config(
         plan, participants, prefunded_accounts, polygon_pos_args
     )
+    persistent_peers_artifact = heimdall_config_generator_artifacts.persistent_peers
+    plan.print(persistent_peers_artifact)
+
+    cl_node_ids = _read_heimdall_persistent_peers(plan, persistent_peers_artifact)
+    plan.print(cl_node_ids)
+
+    # TODO: Transform node ids into persistent peers.
+
+    "node_id@node_address,"
 
     for i, participant in enumerate(participants):
         plan.print(
@@ -69,39 +77,50 @@ def launch(
 
         el_node_name = "{}-{}".format(el_type, i)
         cl_node_name = "{}-{}".format(cl_type, i)
-        prefunded_account = prefunded_accounts[i]
-        # cl_context = cl_launch_method(
-        #     plan,
-        #     i,
-        #     cl_node_name,
-        #     el_node_name,
-        #     participant,
-        #     prefunded_account.private_key,
-        #     network_params,
-        #     cl_genesis_artifact,
-        #     l1_rpc_url,
-        # )
+        cl_validator_config_artifact = heimdall_config_generator_artifacts.configs[i]
+        cl_context = cl_launch_method(
+            plan,
+            i,
+            cl_node_name,
+            el_node_name,
+            participant,
+            network_params,
+            cl_genesis_artifact,
+            cl_validator_config_artifact,
+            cl_node_ids,
+            l1_rpc_url,
+        )
 
 
 def _generate_heimdall_config(plan, participants, prefunded_accounts, polygon_pos_args):
     # Get Heimdall validator node and private keys.
     # Also generate the store spec that will be used to save such keys later.
-    heimdall_validator_private_keys = []
+    heimdall_validator_configs = []
     heimdall_validator_keys_store = []
     for i, participant in enumerate(participants):
-        if participant["cl_type"] == constants.CL_TYPE.heimdall:
-            heimdall_validator_private_keys.append(prefunded_accounts[i].private_key)
+        cl_type = participant["cl_type"]
+        if cl_type == constants.CL_TYPE.heimdall:
+            private_key = prefunded_accounts[i].private_key
+            p2p_url = "{}-{}:{}".format(
+                cl_type, i, 26656
+            )  # TODO: Don't hardcode this port!
+            heimdall_validator_configs.append("{},{}".format(private_key, p2p_url))
 
             validator_id = i + 1
             heimdall_validator_keys_store.append(
                 StoreSpec(
-                    src="{}/{}/config/".format(
+                    src="{}/{}/config".format(
                         constants.HEIMDALL_CONFIG_PATH, validator_id
                     ),
                     name="heimdall-validator-{}-config".format(validator_id),
                 )
             )
-    heimdall_validator_private_keys = ";".join(heimdall_validator_private_keys)
+    heimdall_validator_configs_str = ";".join(heimdall_validator_configs)
+    plan.print(
+        "DEBUG: heimdall_validator_configs_str {}".format(
+            heimdall_validator_configs_str
+        )
+    )
 
     # Generate Heimdall validators configuration such as the public/private keys and node identifiers.
     heimdall_config_generator_artifact = plan.upload_files(
@@ -116,26 +135,43 @@ def _generate_heimdall_config(plan, participants, prefunded_accounts, polygon_po
 
     network_params = polygon_pos_args["network_params"]
     heimdall_id = network_params["heimdall_id"]
-
-    heimdall_config_generator_store = heimdall_validator_keys_store + [
-        StoreSpec(
-            src="{}/node_ids.txt".format(constants.HEIMDALL_CONFIG_PATH),
-            name="heimdall-validators-node-ids",
-        )
-    ]
     result = plan.run_sh(
         name="heimdall-validators-config-generator",
         image=heimdall_config_generator_image,
         env_vars={
             "HEIMDALL_ID": heimdall_id,
             "HEIMDALL_CONFIG_PATH": constants.HEIMDALL_CONFIG_PATH,
-            "VALIDATOR_PRIVATE_KEYS": heimdall_validator_private_keys,
+            "HEIMDALL_VALIDATOR_CONFIGS": heimdall_validator_configs_str,
         },
         files={
             "/opt/data": heimdall_config_generator_artifact,
         },
-        store=heimdall_config_generator_store,
+        store=heimdall_validator_keys_store
+        + [
+            StoreSpec(
+                src="{}/persistent_peers.txt".format(constants.HEIMDALL_CONFIG_PATH),
+                name="heimdall-persistent-peers",
+            )
+        ],
         run="bash /opt/data/validator_setup.sh",
     )
-    heimdall_config_generator_artifact = result.files_artifacts[0]
-    return heimdall_config_generator_artifact
+    # Artifacts are ordered to match the `StoreSpec` definitions.
+    heimdall_validator_config_artifacts = result.files_artifacts[:-1]
+    heimdall_persistent_peers_artifact = result.files_artifacts[-1]
+    return struct(
+        configs=heimdall_validator_config_artifacts,
+        persistent_peers=heimdall_persistent_peers_artifact,
+    )
+
+
+def _read_heimdall_persistent_peers(plan, heimdall_persistent_peers):
+    result = plan.run_sh(
+        description="Read heimdall validator node ids",
+        image="leovct/toolbox:0.0.7",
+        files={
+            "/opt/data": heimdall_persistent_peers,
+        },
+        run="cat /opt/data/persistent_peers.txt | tr -d '\n'",
+    )
+    # Return the result as a list instead of a string.
+    return result.output

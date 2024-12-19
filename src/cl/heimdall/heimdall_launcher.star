@@ -24,9 +24,9 @@ HEIMDALL_PROXY_LISTEN_PORT_NUMBER = 26658
 HEIMDALL_TEMPLATES_FOLDER_PATH = "../../../static_files/heimdall"
 
 # The folder where the heimdall config is stored inside the service.
-CONFIG_FOLDER_PATH = "/etc/heimdall"
+HEIMDALL_CONFIG_FOLDER_PATH = "/etc/heimdall"
 # The folder where the heimdall app stores data inside the service.
-APP_DATA_FOLDER_PATH = "/var/lib/heimdall"
+HEIMDALL_APP_DATA_FOLDER_PATH = "/var/lib/heimdall"
 
 
 def launch(
@@ -35,9 +35,10 @@ def launch(
     cl_node_name,
     el_node_name,
     participant,
-    private_key,
     network_params,
     cl_genesis_artifact,
+    cl_validator_config_artifact,
+    cl_node_ids,
     l1_rpc_url,
 ):
     rabbitmq_service = plan.add_service(
@@ -53,9 +54,9 @@ def launch(
         ),
     )
     rabbitmq_amqp_port = rabbitmq_service.ports[RABBITMQ_AMQP_PORT_ID]
-    rabbitmq_url = "amqp://{}:{}".format(
+    rabbitmq_url = "amqp://guest:guest{}:{}".format(
         rabbitmq_service.ip_address, rabbitmq_amqp_port.number
-    )
+    )  # TODO: Remove hardcoded username and password!
 
     heimdall_config = plan.render_templates(
         config={
@@ -70,13 +71,10 @@ def launch(
                     "{}/config.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH)
                 ),
                 data={
-                    # Heimdall network params.
+                    # Node params.
                     "moniker": cl_node_name,
                     "log_level": participant["cl_log_level"],
-                    "span_poll_interval": network_params["heimdall_span_poll_interval"],
-                    "checkpoint_poll_interval": network_params[
-                        "heimdall_checkpoint_poll_interval"
-                    ],
+                    "persistent_peers": cl_node_ids,
                     # Port numbers.
                     "proxy_app_port_number": HEIMDALL_PROXY_LISTEN_PORT_NUMBER,
                     "tendermint_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
@@ -88,6 +86,11 @@ def launch(
                     "{}/heimdall-config.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH)
                 ),
                 data={
+                    # Network params.
+                    "span_poll_interval": network_params["heimdall_span_poll_interval"],
+                    "checkpoint_poll_interval": network_params[
+                        "heimdall_checkpoint_poll_interval"
+                    ],
                     # URLs.
                     "amqp_url": rabbitmq_url,
                     "bor_rpc_url": "http://{}:8545".format(el_node_name),
@@ -123,17 +126,24 @@ def launch(
                 ),
             },
             files={
-                "{}/config".format(CONFIG_FOLDER_PATH): heimdall_config,
-                "/opt/data": cl_genesis_artifact,
+                "{}/config".format(HEIMDALL_CONFIG_FOLDER_PATH): heimdall_config,
+                "/opt/data/genesis": cl_genesis_artifact,
+                "/opt/data/config": cl_validator_config_artifact,
             },
             entrypoint=["sh", "-c"],
             cmd=[
                 "&".join(
                     [
-                        "cp /opt/data/genesis.json {}/config".format(
-                            CONFIG_FOLDER_PATH
+                        "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
+                            HEIMDALL_CONFIG_FOLDER_PATH
                         ),
-                        "heimdalld start --all --bridge --rest-server",
+                        "mkdir {}/data".format(HEIMDALL_CONFIG_FOLDER_PATH),
+                        "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
+                            HEIMDALL_CONFIG_FOLDER_PATH
+                        ),
+                        "heimdalld start --all --bridge --rest-server --home {}".format(
+                            HEIMDALL_CONFIG_FOLDER_PATH
+                        ),
                     ]
                 )
             ],

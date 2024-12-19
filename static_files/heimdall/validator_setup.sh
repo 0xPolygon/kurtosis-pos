@@ -15,19 +15,20 @@ if [[ -z "${HEIMDALL_CONFIG_PATH}" ]]; then
   echo "Error: HEIMDALL_CONFIG_PATH environment variable is not set"
   exit 1
 fi
-if [[ -z "${VALIDATOR_PRIVATE_KEYS}" ]]; then
-  echo "Error: VALIDATOR_PRIVATE_KEYS environment variable is not set"
+if [[ -z "${HEIMDALL_VALIDATOR_CONFIGS}" ]]; then
+  echo "Error: HEIMDALL_VALIDATOR_CONFIGS environment variable is not set"
   exit 1
 fi
-# Note: VALIDATOR_PRIVATE_KEYS is expected to follow this exact pattern:
-# "<private_key1>;<private_key2>;..."
+# Note: HEIMDALL_VALIDATOR_CONFIGS is expected to follow this exact pattern:
+# "<private_key_1>,<p2p_url_1>;<private_key_2>,<p2p_url_2>;..."
 echo "HEIMDALL_ID: ${HEIMDALL_ID}"
 echo "HEIMDALL_CONFIG_PATH: ${HEIMDALL_CONFIG_PATH}"
-echo "VALIDATOR_PRIVATE_KEYS: ${VALIDATOR_PRIVATE_KEYS}"
+echo "HEIMDALL_VALIDATOR_CONFIGS: ${HEIMDALL_VALIDATOR_CONFIGS}"
 
 setup_validator() {
   local validator_id="${1}"
   local validator_private_key="${2}"
+  local validator_p2p_url="${3}"
 
   local validator_config_path="${HEIMDALL_CONFIG_PATH}/${validator_id}"
   echo "Generating config for heimdall validator ${validator_id}..."
@@ -49,25 +50,33 @@ setup_validator() {
   # Retrive and store the node identifier.
   heimdalld init --home "${validator_config_path}" --chain-id "${HEIMDALL_ID}" --id "${validator_id}" 2> "${validator_config_path}/init.out"
   local node_id="$(jq -r '.node_id' ${validator_config_path}/init.out)"
-  if [ -z "${node_ids}" ]; then
-    node_ids="${node_id}"
+  local node_full_address="${node_id}@${validator_p2p_url}"
+  if [ -z "${persistent_peers}" ]; then
+    persistent_peers="${node_full_address}"
   else
-    node_ids+=",${node_id}"
+    persistent_peers+=",${node_full_address}"
   fi
 
   # Drop the unnecessary files.
-  rm -rf "${validator_config_path}"/config/{app.toml,config.toml,heimdall-config.toml,genesis.json}
+  rm -rf "${validator_config_path}/config/app.toml"
+  rm -rf "${validator_config_path}/config/config.toml"
+  rm -rf "${validator_config_path}/config/heimdall-config.toml"
+  rm -rf "${validator_config_path}/config/genesis.json"
+
+  # Copy the validator state.
+  cp "${validator_config_path}/data/priv_validator_state.json" "${validator_config_path}/config"
 }
 
 # Loop through validators and set them up.
-node_ids=""
+persistent_peers=""
 id=1
-IFS=';' read -ra private_keys <<< "$VALIDATOR_PRIVATE_KEYS"
-for private_key in "${private_keys[@]}"; do
-  setup_validator "${id}" "${private_key}"
+IFS=';' read -ra validator_configs <<< "${HEIMDALL_VALIDATOR_CONFIGS}"
+for config in "${validator_configs[@]}"; do
+  IFS=',' read -r private_key p2p_url <<< "${config}"
+  setup_validator "${id}" "${private_key}" "${p2p_url}"
   ((id++))
 done
 
 # Store node identifiers.
-echo "${node_ids}" > "${HEIMDALL_CONFIG_PATH}/node_ids.txt"
-echo "Aggregated node_ids: ${node_ids}"
+echo "${persistent_peers}" > "${HEIMDALL_CONFIG_PATH}/persistent_peers.txt"
+echo "Persistent peers: ${persistent_peers}"
