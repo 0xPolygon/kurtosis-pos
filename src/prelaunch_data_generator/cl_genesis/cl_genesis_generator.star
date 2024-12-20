@@ -61,7 +61,7 @@ def generate_cl_genesis_data(plan, polygon_pos_args, validator_accounts):
                 name="l2-cl-genesis",
             ),
         ],
-        run="jq . /opt/data/genesis/genesis-tmp.json > /opt/data/genesis/genesis.json",
+        run="jq . /opt/data/genesis/genesis-tmp.json > /opt/data/genesis/genesis.json && cat /opt/data/genesis/genesis.json",
     )
 
 
