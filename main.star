@@ -72,10 +72,10 @@ def run(plan, args):
         )
         l2_el_genesis_artifact = result.files_artifacts[0]
 
-        l2_cl_genesis_artifact = cl_genesis_generator.generate_cl_genesis_data(
+        result = cl_genesis_generator.generate_cl_genesis_data(
             plan, polygon_pos_args, validator_accounts
         )
-        plan.print(l2_cl_genesis_artifact)  # TODO: remove (debug)
+        l2_cl_genesis_artifact = result.files_artifacts[0]
     else:
         plan.print("Using L2 EL/CL genesis provided")
         l2_el_genesis_file_content = read_file(src=dev_args["l2_el_genesis_filepath"])

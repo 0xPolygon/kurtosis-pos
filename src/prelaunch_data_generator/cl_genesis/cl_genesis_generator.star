@@ -5,7 +5,7 @@ CL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/cl/genesis.json"
 
 
 def generate_cl_genesis_data(plan, polygon_pos_args, validator_accounts):
-    l2_network_params = polygon_pos_args["network_params"]
+    network_params = polygon_pos_args["network_params"]
     validators_number = len(validator_accounts)
 
     validator_data = _get_validator_data(validator_accounts)
@@ -17,16 +17,17 @@ def generate_cl_genesis_data(plan, polygon_pos_args, validator_accounts):
     if validators_number > 0:
         proposer = validator_set[0]
 
-    return plan.render_templates(
+    cl_genesis_temporary_artifact = plan.render_templates(
+        name="l2-cl-genesis-tmp",
         config={
-            "genesis.json": struct(
+            "genesis-tmp.json": struct(
                 template=read_file(CL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
-                    "heimdall_id": l2_network_params["heimdall_id"],
-                    "bor_id": l2_network_params["bor_id"],
-                    "bor_sprint_duration": l2_network_params["bor_sprint_duration"],
-                    "bor_span_duration": l2_network_params["bor_span_duration"],
+                    "heimdall_id": network_params["heimdall_id"],
+                    "bor_id": network_params["bor_id"],
+                    "bor_sprint_duration": network_params["bor_sprint_duration"],
+                    "bor_span_duration": network_params["bor_span_duration"],
                     # # validator set, proposer, etc.
                     "accounts": json.indent(json.encode(accounts)),
                     "dividend_accounts": json.indent(json.encode(dividends)),
@@ -41,9 +42,26 @@ def generate_cl_genesis_data(plan, polygon_pos_args, validator_accounts):
                     "staking_info_address": "0x0000000000000000000000000000000000000000",
                     "state_sender_address": "0x0000000000000000000000000000000000000000",
                 },
-            )
+            ),
         },
-        name="l2-cl-genesis",
+    )
+
+    # The template that Kurtosis generates is not a valid json thus if you want to check the content
+    # of the file artifact, Kurtosis will render an empty file... This is a hack to format the file
+    # with jq and get a working artifact.
+    return plan.run_sh(
+        name="cl-genesis-generator",
+        description="Generating L2 CL genesis",
+        files={
+            "/opt/data/genesis": cl_genesis_temporary_artifact,
+        },
+        store=[
+            StoreSpec(
+                src="/opt/data/genesis/genesis.json",
+                name="l2-cl-genesis",
+            ),
+        ],
+        run="jq . /opt/data/genesis/genesis-tmp.json > /opt/data/genesis/genesis.json",
     )
 
 
