@@ -1,7 +1,7 @@
 constants = import_module("../../package_io/constants.star")
 
 
-EL_GENESIS_CONFIG_FOLDER_PATH = "../../../static_files/genesis"
+EL_GENESIS_CONFIG_FOLDER_PATH = "../../../static_files/genesis/el"
 
 
 def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
