@@ -198,10 +198,15 @@ jobs:
       - name: Deploy L1, MATIC contracts and network participants
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
       
-      - name: Save L2 EL and CL genesis
+      - name: Save L2 EL EL genesis
         run: |
           kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json > l2-el-genesis.json
+          cat l2-el-genesis.json
+      
+      - name: Save L2 CL genesis
+        run: |
           kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json > l2-cl-genesis.json
+          cat l2-cl-genesis.json
 
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/external-l1/polygon-pos-with-l1-and-matic-contracts-pre-deployed.yml --show-enclave-inspect=false .
