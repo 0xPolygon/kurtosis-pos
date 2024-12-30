@@ -54,11 +54,12 @@ def launch(
         ),
     )
     rabbitmq_amqp_port = rabbitmq_service.ports[RABBITMQ_AMQP_PORT_ID]
-    rabbitmq_url = "amqp://guest:guest{}:{}".format(
+    rabbitmq_url = "amqp://guest:guest@{}:{}".format(
         rabbitmq_service.ip_address, rabbitmq_amqp_port.number
     )  # TODO: Remove hardcoded username and password!
 
     heimdall_config = plan.render_templates(
+        name="{}-config".format(cl_node_name),
         config={
             "app.toml": struct(
                 template=read_file(
@@ -101,7 +102,6 @@ def launch(
                 },
             ),
         },
-        name="{}-config".format(cl_node_name),
     )
 
     plan.add_service(
@@ -132,7 +132,7 @@ def launch(
             },
             entrypoint=["sh", "-c"],
             cmd=[
-                "&".join(
+                "&& ".join(
                     [
                         "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
                             HEIMDALL_CONFIG_FOLDER_PATH

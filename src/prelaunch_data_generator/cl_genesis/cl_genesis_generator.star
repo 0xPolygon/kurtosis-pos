@@ -1,10 +1,13 @@
 constants = import_module("../../package_io/constants.star")
+contract_util = import_module("../../contracts/util.star")
 
 
 CL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/cl/genesis.json"
 
 
-def generate_cl_genesis_data(plan, polygon_pos_args, validator_accounts):
+def generate_cl_genesis_data(
+    plan, polygon_pos_args, validator_accounts, contract_addresses_artifact
+):
     network_params = polygon_pos_args["network_params"]
     validators_number = len(validator_accounts)
 
@@ -17,6 +20,10 @@ def generate_cl_genesis_data(plan, polygon_pos_args, validator_accounts):
     if validators_number > 0:
         proposer = validator_set[0]
 
+    bor_span_duration = network_params["bor_span_duration"]
+    contract_addresses = contract_util.read_contract_addresses(
+        plan, contract_addresses_artifact
+    )
     cl_genesis_temporary_artifact = plan.render_templates(
         name="l2-cl-genesis-tmp",
         config={
@@ -27,7 +34,8 @@ def generate_cl_genesis_data(plan, polygon_pos_args, validator_accounts):
                     "heimdall_id": network_params["heimdall_id"],
                     "bor_id": network_params["bor_id"],
                     "bor_sprint_duration": network_params["bor_sprint_duration"],
-                    "bor_span_duration": network_params["bor_span_duration"],
+                    "bor_span_duration": bor_span_duration,
+                    "bor_span_0_end_block": bor_span_duration - 1,
                     # # validator set, proposer, etc.
                     "accounts": json.indent(json.encode(accounts)),
                     "dividend_accounts": json.indent(json.encode(dividends)),
@@ -35,12 +43,12 @@ def generate_cl_genesis_data(plan, polygon_pos_args, validator_accounts):
                     "validators": json.indent(json.encode(validator_set)),
                     "proposer": json.indent(json.encode(proposer)),
                     # contract addresses
-                    "matic_token_address": "0x0000000000000000000000000000000000000000",
-                    "staking_manager_address": "0x0000000000000000000000000000000000000000",
-                    "slash_manager_address": "0x0000000000000000000000000000000000000000",
-                    "root_chain_address": "0x0000000000000000000000000000000000000000",
-                    "staking_info_address": "0x0000000000000000000000000000000000000000",
-                    "state_sender_address": "0x0000000000000000000000000000000000000000",
+                    "matic_token_address": contract_addresses["matic_token"],
+                    "staking_manager_address": contract_addresses["staking_manager"],
+                    "slash_manager_address": contract_addresses["slashing_manager"],
+                    "root_chain_address": contract_addresses["root_chain"],
+                    "staking_info_address": contract_addresses["staking_info"],
+                    "state_sender_address": contract_addresses["state_sender"],
                 },
             ),
         },
@@ -103,7 +111,7 @@ def _get_validator_data(validator_accounts):
 
         # Signing infos.
         signing_infos[validator_id] = {
-            "valId": validator_id,
+            "valID": validator_id,
             "startHeight": "0",
             "indexOffset": "0",
         }

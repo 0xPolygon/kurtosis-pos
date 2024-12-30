@@ -65,6 +65,7 @@ def run(plan, args):
         result = contract_deployer.deploy_contracts(
             plan, l1_context, polygon_pos_args, validator_accounts
         )
+        contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
 
         result = el_genesis_generator.generate_el_genesis_data(
@@ -73,7 +74,10 @@ def run(plan, args):
         l2_el_genesis_artifact = result.files_artifacts[0]
 
         result = cl_genesis_generator.generate_cl_genesis_data(
-            plan, polygon_pos_args, validator_accounts
+            plan,
+            polygon_pos_args,
+            validator_accounts,
+            contract_addresses_artifact,
         )
         l2_cl_genesis_artifact = result.files_artifacts[0]
     else:

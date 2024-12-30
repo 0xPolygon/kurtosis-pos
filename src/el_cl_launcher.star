@@ -42,14 +42,7 @@ def launch(
         plan, participants, prefunded_accounts, polygon_pos_args
     )
     persistent_peers_artifact = heimdall_config_generator_artifacts.persistent_peers
-    plan.print(persistent_peers_artifact)
-
     cl_node_ids = _read_heimdall_persistent_peers(plan, persistent_peers_artifact)
-    plan.print(cl_node_ids)
-
-    # TODO: Transform node ids into persistent peers.
-
-    "node_id@node_address,"
 
     for i, participant in enumerate(participants):
         plan.print(
@@ -109,18 +102,13 @@ def _generate_heimdall_config(plan, participants, prefunded_accounts, polygon_po
             validator_id = i + 1
             heimdall_validator_keys_store.append(
                 StoreSpec(
-                    src="{}/{}/config".format(
+                    src="{}/{}/config/".format(
                         constants.HEIMDALL_CONFIG_PATH, validator_id
                     ),
                     name="heimdall-validator-{}-config".format(validator_id),
                 )
             )
     heimdall_validator_configs_str = ";".join(heimdall_validator_configs)
-    plan.print(
-        "DEBUG: heimdall_validator_configs_str {}".format(
-            heimdall_validator_configs_str
-        )
-    )
 
     # Generate Heimdall validators configuration such as the public/private keys and node identifiers.
     heimdall_config_generator_artifact = plan.upload_files(
@@ -167,7 +155,6 @@ def _generate_heimdall_config(plan, participants, prefunded_accounts, polygon_po
 def _read_heimdall_persistent_peers(plan, heimdall_persistent_peers):
     result = plan.run_sh(
         description="Read heimdall validator node ids",
-        image="leovct/toolbox:0.0.7",
         files={
             "/opt/data": heimdall_persistent_peers,
         },

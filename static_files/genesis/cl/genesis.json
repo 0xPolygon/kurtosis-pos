@@ -43,7 +43,7 @@
         {
           "span_id": "0",
           "start_block": "0",
-          "end_block": "255",
+          "end_block": "{{.bor_span_0_end_block}}",
           "validator_set": {
             "validators": {{.validators}},
             "proposer": {{.proposer}}
