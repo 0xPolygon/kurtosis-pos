@@ -17,7 +17,7 @@ HEIMDALL_PROXY_LISTEN_PORT_NUMBER = 26658
 # The folder where the heimdall templates are stored in the repository.
 HEIMDALL_TEMPLATES_FOLDER_PATH = "../../../static_files/heimdall"
 
-# The folder where the heimdall config is stored inside the service.
+# The folder where the heimdall configs are stored inside the service.
 HEIMDALL_CONFIG_FOLDER_PATH = "/etc/heimdall"
 # The folder where the heimdall app stores data inside the service.
 HEIMDALL_APP_DATA_FOLDER_PATH = "/var/lib/heimdall"
@@ -52,7 +52,7 @@ def launch(
         rabbitmq_service.ip_address, rabbitmq_amqp_port.number
     )  # TODO: Remove hardcoded username and password!
 
-    heimdall_config = plan.render_templates(
+    heimdall_config_artifacts = plan.render_templates(
         name="{}-config".format(cl_node_name),
         config={
             "app.toml": struct(
@@ -98,7 +98,7 @@ def launch(
         },
     )
 
-    plan.add_service(
+    return plan.add_service(
         name=cl_node_name,
         config=ServiceConfig(
             image=participant["cl_image"],
@@ -106,21 +106,20 @@ def launch(
                 HEIMDALL_REST_API_PORT_ID: PortSpec(
                     number=HEIMDALL_REST_API_PORT_NUMBER,
                     application_protocol="http",
-                    wait="10s",
                 ),
                 HEIMDALL_GRPC_PORT_ID: PortSpec(
                     number=HEIMDALL_GRPC_PORT_NUMBER,
                     application_protocol="grpc",
-                    wait="10s",
                 ),
                 HEIMDALL_NODE_LISTEN_PORT_ID: PortSpec(
                     number=HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                     application_protocol="http",
-                    wait="10s",
                 ),
             },
             files={
-                "{}/config".format(HEIMDALL_CONFIG_FOLDER_PATH): heimdall_config,
+                "{}/config".format(
+                    HEIMDALL_CONFIG_FOLDER_PATH
+                ): heimdall_config_artifacts,
                 "/opt/data/genesis": cl_genesis_artifact,
                 "/opt/data/config": cl_validator_config_artifact,
             },
