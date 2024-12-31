@@ -1,4 +1,4 @@
-FROM maticnetwork/heimdall:v1.0.3 AS heimdall
+FROM 0xpolygon/heimdall:1.0.10 AS heimdall
 LABEL description="Heimdall genesis builder image"
 LABEL author="devtools@polygon.technology"
 

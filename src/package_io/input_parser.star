@@ -7,12 +7,12 @@ DEFAULT_HEIMDALL_CONFIG_GENERATOR = "leovct/heimdall-config-generator:v1.0.3"
 # DEFAULT_HEIMDALL_CONFIG_GENERATOR = "maticnetwork/heimdall:v1.0.3"
 
 DEFAULT_EL_IMAGES = {
-    constants.EL_TYPE.bor: "maticnetwork/bor:v0.2.17",
+    constants.EL_TYPE.bor: "0xpolygon/bor:1.5.3",
     constants.EL_TYPE.erigon: "erigontech/erigon:v2.60.10",
 }
 
 DEFAULT_CL_IMAGES = {
-    constants.CL_TYPE.heimdall: "maticnetwork/heimdall:v1.0.3",
+    constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.0.10",
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.4"
