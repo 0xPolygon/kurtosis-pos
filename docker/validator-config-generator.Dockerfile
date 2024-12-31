@@ -12,7 +12,7 @@ LABEL author="devtools@polygon.technology"
 ENV DEFAULT_HEIMDALL_ID="heimdall-P5rXwg"
 ENV HEIMDALL_CONFIG_PATH="/etc/heimdall"
 
-COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/bin/polycli
+COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/local/bin/polycli
 COPY --from=polycli-builder /opt/polygon-cli/bindings /opt/bindings
 COPY --from=heimdall /usr/bin/heimdallcli /usr/bin/heimdalld /usr/local/bin/
 
