@@ -21,3 +21,4 @@ DEFAULT_HEIMDALL_ID = "heimdall-P5rXwg"
 VALIDATORS_BALANCE_ETH = 1000000000  # 10^9 ether
 
 HEIMDALL_CONFIG_PATH = "/etc/heimdall"
+BOR_CONFIG_PATH = "/etc/bor"

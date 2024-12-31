@@ -3,8 +3,8 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_CONTRACTS_DEPLOYER = "leovct/matic-contracts-deployer:node-16"
 DEFAULT_GENESIS_BUILDER = "leovct/matic-genesis-builder:node-16"
-DEFAULT_HEIMDALL_CONFIG_GENERATOR = (
-    "leovct/heimdall-config-generator:1.0.10"  # based on maticnetwork/heimdall:1.0.10
+DEFAULT_VALIDATOR_CONFIG_GENERATOR = (
+    "leovct/validator-config-generator:1.0.10"  # based on maticnetwork/heimdall:1.0.10
 )
 
 DEFAULT_EL_IMAGES = {
@@ -54,7 +54,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "matic_contracts_params": {
         "contracts_deployer_image": DEFAULT_CONTRACTS_DEPLOYER,
         "genesis_builder_image": DEFAULT_GENESIS_BUILDER,
-        "heimdall_config_generator_image": DEFAULT_HEIMDALL_CONFIG_GENERATOR,
+        "validator_config_generator_image": DEFAULT_VALIDATOR_CONFIG_GENERATOR,
     },
     "network_params": {
         # TODO: Find out if this `network` parameter is really needed.

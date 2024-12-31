@@ -46,6 +46,26 @@ kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq
 kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
 ```
 
+5. Check that CL nodes are connected.
+
+```bash
+# Attach a container, with network debugging tools, to one of the CL nodes.
+# Find the docker identifier using `docker ps`.
+# For example: `docker ps --filter "name=heimdall-0" --format "{{.ID}}"`.
+docker run -it --rm --net=container:b74e52a9d03a nicolaka/netshoot:latest /bin/bash
+curl --silent localhost:26657/net_info | jq '.result.peers | length'
+```
+
+6. Check that EL nodes are connected.
+
+```bash
+# Attach a container, with network debugging tools, to one of the CL nodes.
+# Find the docker identifier using `docker ps`.
+# For example: `docker ps --filter "name=bor-0" --format "{{.ID}}"`.
+docker run -it --rm --net=container:81912a13a45e nicolaka/netshoot:latest /bin/bash
+curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545
+```
+
 ## Configuration
 
 TODO

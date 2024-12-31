@@ -127,6 +127,7 @@ def launch(
             cmd=[
                 "&& ".join(
                     [
+                        # Copy CL validator config inside heimdall config folder.
                         "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
                             HEIMDALL_CONFIG_FOLDER_PATH
                         ),
@@ -134,6 +135,7 @@ def launch(
                         "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
                             HEIMDALL_CONFIG_FOLDER_PATH
                         ),
+                        # Start heimdall.
                         "heimdalld start --all --bridge --rest-server --home {}".format(
                             HEIMDALL_CONFIG_FOLDER_PATH
                         ),

@@ -7,7 +7,7 @@ genesis_constants = import_module(
 heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
 
 
-HEIMDALL_VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/heimdall"
+VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/validator"
 
 
 def launch(
@@ -19,6 +19,7 @@ def launch(
     cl_genesis_artifact,
     l1_rpc_url,
 ):
+    prefunded_accounts = genesis_constants.PRE_FUNDED_ACCOUNTS
     network_params = polygon_pos_args["network_params"]
     matic_contracts_params = polygon_pos_args["matic_contracts_params"]
 
@@ -37,12 +38,20 @@ def launch(
         }
     }
 
-    prefunded_accounts = genesis_constants.PRE_FUNDED_ACCOUNTS
-    heimdall_config_generator_artifacts = _generate_heimdall_config(
+    # Generate CL node artifacts.
+    validator_config_artifacts = _generate_validator_config(
         plan, participants, prefunded_accounts, polygon_pos_args
     )
-    persistent_peers_artifact = heimdall_config_generator_artifacts.persistent_peers
-    cl_node_ids = _read_heimdall_persistent_peers(plan, persistent_peers_artifact)
+
+    # Aggregate CL node identifiers.
+    persistent_peers_artifact = validator_config_artifacts.persistent_peers
+    cl_node_ids = _read_cl_persistent_peers(plan, persistent_peers_artifact)
+
+    # Aggregate EL node enodes.
+    # Format: static-nodes = [ "enode://<full_public_key>@<hostname>:<discovery_port_number>", "enode://<full_public_key>@<hostname>:<discovery_port_number>" ]
+    # Example: static-nodes = [ "enode://ad9180a1468702c7c6a7210544593b4bd444768ca754382d1da92fe9abaf408e58160dc72505936df63ca6afc3052e993cade199fe3ff067a5f11b0ee3c6e378@13.209.168.182:30303", "enode://7cf051238a3f92bbee811472a84592ab547ab2692ec09bd2104182551ca6de55f5a7cea48a3d36b411deccb4df976f27076d32019d9ccc4486a916c0e30f3a74@43.201.242.62:30303" ]
+    bor_static_nodes = _aggregate_el_enodes(participants, prefunded_accounts)
+    plan.print("DEBUG: bor_static_nodes: " + str(bor_static_nodes))
 
     for i, participant in enumerate(participants):
         plan.print(
@@ -70,7 +79,8 @@ def launch(
 
         el_node_name = "{}-{}".format(el_type, i)
         cl_node_name = "{}-{}".format(cl_type, i)
-        cl_validator_config_artifact = heimdall_config_generator_artifacts.configs[i]
+        cl_validator_config_artifact = validator_config_artifacts.cl_configs[i]
+        el_validator_config_artifact = validator_config_artifacts.el_configs[i]
         cl_context = cl_launch_method(
             plan,
             i,
@@ -83,82 +93,123 @@ def launch(
             cl_node_ids,
             l1_rpc_url,
         )
+        cl_node_url = cl_context.ports[
+            "http"
+        ].url  # TODO: Do not hardcode the port name!
+        plan.print("DEBUG: cl_node_url: {}".format(cl_node_url))
+
+        el_context = el_launch_method(
+            plan,
+            el_node_name,
+            participant,
+            el_genesis_artifact,
+            el_validator_config_artifact,
+            cl_node_url,
+            prefunded_accounts[i],
+            bor_static_nodes,
+        )
 
 
-def _generate_heimdall_config(plan, participants, prefunded_accounts, polygon_pos_args):
-    # Get Heimdall validator node and private keys.
+def _generate_validator_config(
+    plan, participants, prefunded_accounts, polygon_pos_args
+):
+    # Get CL validator node and private keys.
     # Also generate the store spec that will be used to save such keys later.
-    heimdall_validator_configs = []
-    heimdall_validator_keys_store = []
+    cl_validator_configs = []
+    cl_validator_keys_store = []
+    el_validator_keys_store = []
     for i, participant in enumerate(participants):
         cl_type = participant["cl_type"]
-        if cl_type == constants.CL_TYPE.heimdall:
-            private_key = prefunded_accounts[i].private_key
-            p2p_url = "{}-{}:{}".format(
-                cl_type, i, 26656
-            )  # TODO: Don't hardcode this port!
-            heimdall_validator_configs.append("{},{}".format(private_key, p2p_url))
+        private_key = prefunded_accounts[i].private_key
+        p2p_url = "{}-{}:{}".format(
+            cl_type, i, 26656
+        )  # TODO: Don't hardcode this port!
+        cl_validator_configs.append("{},{}".format(private_key, p2p_url))
 
-            validator_id = i + 1
-            heimdall_validator_keys_store.append(
-                StoreSpec(
-                    src="{}/{}/config/".format(
-                        constants.HEIMDALL_CONFIG_PATH, validator_id
-                    ),
-                    name="heimdall-validator-{}-config".format(validator_id),
-                )
+        validator_id = i + 1
+        cl_validator_keys_store.append(
+            StoreSpec(
+                src="{}/{}/config/".format(
+                    constants.HEIMDALL_CONFIG_PATH, validator_id
+                ),
+                name="cl-validator-{}-config".format(validator_id),
             )
-    heimdall_validator_configs_str = ";".join(heimdall_validator_configs)
+        )
+        el_validator_keys_store.append(
+            StoreSpec(
+                src="{}/{}".format(constants.BOR_CONFIG_PATH, validator_id),
+                name="el-validator-{}-config".format(validator_id),
+            ),
+        )
+    cl_validator_configs_str = ";".join(cl_validator_configs)
 
-    # Generate Heimdall validators configuration such as the public/private keys and node identifiers.
-    heimdall_config_generator_artifact = plan.upload_files(
-        src=HEIMDALL_VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH,
-        name="heimdall-config-generator-config",
+    # Generate CL validators configuration such as the public/private keys and node identifiers.
+    validator_config_generator_artifact = plan.upload_files(
+        src=VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH,
+        name="validator-config-generator-config",
     )
 
     matic_contracts_params = polygon_pos_args["matic_contracts_params"]
-    heimdall_config_generator_image = matic_contracts_params[
-        "heimdall_config_generator_image"
+    validator_config_generator_image = matic_contracts_params[
+        "validator_config_generator_image"
     ]
 
     network_params = polygon_pos_args["network_params"]
     heimdall_id = network_params["heimdall_id"]
     result = plan.run_sh(
-        name="heimdall-validators-config-generator",
-        image=heimdall_config_generator_image,
+        name="validators-config-generator",
+        image=validator_config_generator_image,
         env_vars={
             "HEIMDALL_ID": heimdall_id,
             "HEIMDALL_CONFIG_PATH": constants.HEIMDALL_CONFIG_PATH,
-            "HEIMDALL_VALIDATOR_CONFIGS": heimdall_validator_configs_str,
+            "BOR_CONFIG_PATH": constants.BOR_CONFIG_PATH,
+            "HEIMDALL_VALIDATOR_CONFIGS": cl_validator_configs_str,
         },
         files={
-            "/opt/data": heimdall_config_generator_artifact,
+            "/opt/data": validator_config_generator_artifact,
         },
-        store=heimdall_validator_keys_store
+        store=cl_validator_keys_store
+        + el_validator_keys_store
         + [
             StoreSpec(
                 src="{}/persistent_peers.txt".format(constants.HEIMDALL_CONFIG_PATH),
-                name="heimdall-persistent-peers",
+                name="cl-persistent-peers",
             )
         ],
         run="bash /opt/data/validator_setup.sh",
     )
     # Artifacts are ordered to match the `StoreSpec` definitions.
-    heimdall_validator_config_artifacts = result.files_artifacts[:-1]
-    heimdall_persistent_peers_artifact = result.files_artifacts[-1]
+    n = len(result.files_artifacts) // 2  # Assuming equal number of cl and el configs.
+    cl_validator_config_artifacts = result.files_artifacts[:n]
+    el_validator_config_artifacts = result.files_artifacts[n:-1]
+    cl_persistent_peers_artifact = result.files_artifacts[-1]
+
     return struct(
-        configs=heimdall_validator_config_artifacts,
-        persistent_peers=heimdall_persistent_peers_artifact,
+        cl_configs=cl_validator_config_artifacts,
+        el_configs=el_validator_config_artifacts,
+        persistent_peers=cl_persistent_peers_artifact,
     )
 
 
-def _read_heimdall_persistent_peers(plan, heimdall_persistent_peers):
+def _read_cl_persistent_peers(plan, cl_persistent_peers):
     result = plan.run_sh(
-        description="Read heimdall validator node ids",
+        description="Read CL validator node ids",
         files={
-            "/opt/data": heimdall_persistent_peers,
+            "/opt/data": cl_persistent_peers,
         },
         run="cat /opt/data/persistent_peers.txt | tr -d '\n'",
     )
     # Return the result as a list instead of a string.
     return result.output
+
+
+def _aggregate_el_enodes(participants, prefunded_accounts):
+    return [
+        "enode://{}@{}-{}:{}?discport=0".format(
+            prefunded_accounts[i].full_public_key[2:],  # Remove the 0x prefix.
+            participant["el_type"],
+            i,
+            30303,  # TODO: Do not hardcode the port number!
+        )
+        for i, participant in enumerate(participants)
+    ]
