@@ -3,8 +3,9 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_CONTRACTS_DEPLOYER = "leovct/matic-contracts-deployer:node-16"
 DEFAULT_GENESIS_BUILDER = "leovct/matic-genesis-builder:node-16"
-DEFAULT_HEIMDALL_CONFIG_GENERATOR = "leovct/heimdall-config-generator:v1.0.3"
-# DEFAULT_HEIMDALL_CONFIG_GENERATOR = "maticnetwork/heimdall:v1.0.3"
+DEFAULT_HEIMDALL_CONFIG_GENERATOR = (
+    "leovct/heimdall-config-generator:1.0.10"  # based on maticnetwork/heimdall:1.0.10
+)
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:1.5.3",

@@ -23,6 +23,6 @@ docker push leovct/matic-genesis-builder:node-16
 - [Docker Hub](https://hub.docker.com/r/leovct/heimdall-config-generator)
 
 ```bash
-docker build --tag leovct/heimdall-config-generator:v1.0.3 --file heimdall-config-generator.Dockerfile .
-docker push leovct/heimdall-config-generator:v1.0.3
+docker build --tag leovct/heimdall-config-generator:1.0.10 --file heimdall-config-generator.Dockerfile .
+docker push leovct/heimdall-config-generator:1.0.10
 ```
