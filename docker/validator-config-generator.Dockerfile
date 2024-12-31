@@ -5,7 +5,7 @@ WORKDIR /opt/polygon-cli
 RUN git clone --branch "v0.1.65" https://github.com/maticnetwork/polygon-cli.git . \
   && make build
 
-FROM alpine:latest
+  FROM debian:bullseye-slim
 LABEL description="Heimdall genesis builder image"
 LABEL author="devtools@polygon.technology"
 
@@ -16,5 +16,8 @@ COPY --from=heimdall /usr/bin/heimdallcli /usr/bin/heimdalld /usr/local/bin/
 COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/local/bin/polycli
 COPY --from=polycli-builder /opt/polygon-cli/bindings /opt/bindings
 
-RUN apk add --no-cache bash jq \
+RUN apt-get update \
+  && apt-get install --yes --no-install-recommends jq \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
   && heimdalld init --home "${HEIMDALL_CONFIG_PATH}" --chain-id "${DEFAULT_HEIMDALL_ID}"
