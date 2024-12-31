@@ -1,11 +1,15 @@
 FROM 0xpolygon/heimdall:1.0.10 AS heimdall
 
+
 FROM golang:1.22 AS polycli-builder
+LABEL description="Polycli builder image"
+LABEL author="devtools@polygon.technology"
 WORKDIR /opt/polygon-cli
 RUN git clone --branch "v0.1.65" https://github.com/maticnetwork/polygon-cli.git . \
   && make build
 
-  FROM debian:bullseye-slim
+
+FROM debian:bookworm-slim
 LABEL description="Heimdall genesis builder image"
 LABEL author="devtools@polygon.technology"
 
