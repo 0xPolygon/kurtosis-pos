@@ -16,7 +16,7 @@ DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.0.10",
 }
 
-DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.4"
+DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.5"
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
