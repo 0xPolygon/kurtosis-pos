@@ -1,6 +1,6 @@
 identity = "{{.node_name}}"
 chain = "{{.config_folder_path}}/genesis.json"
-verbosity = 4
+verbosity = 3
 datadir = "{{.data_folder_path}}"
 syncmode = "full"
 
