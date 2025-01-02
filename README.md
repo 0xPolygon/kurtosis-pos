@@ -52,7 +52,7 @@ kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
 # Attach a container, with network debugging tools, to one of the CL nodes.
 # Find the docker identifier using `docker ps`.
 # For example: `docker ps --filter "name=heimdall-0" --format "{{.ID}}"`.
-docker run -it --rm --net=container:b74e52a9d03a nicolaka/netshoot:latest /bin/bash
+docker run -it --rm --net=container:58b7944c59ba nicolaka/netshoot:latest /bin/bash
 curl --silent localhost:26657/net_info | jq '.result.peers | length'
 ```
 
@@ -62,8 +62,8 @@ curl --silent localhost:26657/net_info | jq '.result.peers | length'
 # Attach a container, with network debugging tools, to one of the CL nodes.
 # Find the docker identifier using `docker ps`.
 # For example: `docker ps --filter "name=bor-0" --format "{{.ID}}"`.
-docker run -it --rm --net=container:81912a13a45e nicolaka/netshoot:latest /bin/bash
-curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545
+docker run -it --rm --net=container:1db0b171c5c8 nicolaka/netshoot:latest /bin/bash
+echo $(($(curl -s -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545 | jq --raw-output '.result')))
 ```
 
 ## Configuration
