@@ -49,21 +49,49 @@ kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
 5. Check that CL nodes are connected.
 
 ```bash
-# Attach a container, with network debugging tools, to one of the CL nodes.
-# Find the docker identifier using `docker ps`.
-# For example: `docker ps --filter "name=heimdall-0" --format "{{.ID}}" | head -n 1`.
-docker run -it --rm --net=container:58b7944c59ba nicolaka/netshoot:latest /bin/bash
-curl --silent localhost:26657/net_info | jq '.result.peers | length'
+cl_rpc_url=$(kurtosis port print polygon-pos heimdall-0 rpc)
+curl --silent "${cl_rpc_url}/net_info" | jq '.result.peers | length'
 ```
 
 6. Check that EL nodes are connected.
 
 ```bash
-# Attach a container, with network debugging tools, to one of the CL nodes.
-# Find the docker identifier using `docker ps`.
-# For example: `docker ps --filter "name=bor-0" --format "{{.ID}}"`.
-docker run -it --rm --net=container:1db0b171c5c8 nicolaka/netshoot:latest /bin/bash
-echo $(($(curl -s -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545 | jq --raw-output '.result')))
+el_rpc_url=$(kurtosis port print polygon-pos bor-0 rpc)
+echo $(( $(curl --silent -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${el_rpc_url}" | jq --raw-output '.result') ))
+```
+
+7. Check the state of the L1 chain
+
+```bash
+polycli monitor --rpc-url "http://$(kurtosis port print polygon-pos el-1-geth-lighthouse rpc)"
+```
+
+8. Check the state of the L2 CL chain.
+
+```bash
+cl_rpc_url=$(kurtosis port print polygon-pos heimdall-0 rpc)
+curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height'
+```
+
+9. Check the state of the L2 EL chai
+
+```bash
+polycli monitor --rpc-url "$(kurtosis port print polygon-pos bor-0 rpc)"
+```
+
+10. Send some load to the network
+
+```bash
+export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
+cast balance 0x97538585a02A3f1B1297EB9979cE1b34ff953f1E # the first pre-funded account
+
+private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+cast send --legacy --private-key "$private_key" --value 0.01ether $(cast address-zero)
+# todo: find out why it doesn't work?
+# Error: server returned an error response: error code -32000: pending state is not available
+
+polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500 --rate-limit 10 --mode t
+polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500 --rate-limit 10 --mode 2
 ```
 
 ## Configuration
