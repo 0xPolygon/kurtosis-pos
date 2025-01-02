@@ -44,9 +44,6 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
-      - name: Debug (to remove)
-        run: docker ps
 
       - name: Check CL nodes have peers
         run: |
@@ -54,7 +51,7 @@ jobs:
           expected_peers_number=2
 
           # Get the docker identifier of the first CL node.
-          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}" | head -n 1)
           if [ -z "$node_docker_id" ]; then
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
@@ -183,7 +180,7 @@ jobs:
           expected_peers_number=2
 
           # Get the docker identifier of the first CL node.
-          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}" | head -n 1)
           if [ -z "$node_docker_id" ]; then
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
@@ -304,7 +301,7 @@ jobs:
           expected_peers_number=2
 
           # Get the docker identifier of the first CL node.
-          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}" | head -n 1)
           if [ -z "$node_docker_id" ]; then
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
@@ -427,7 +424,7 @@ jobs:
           expected_peers_number=2
 
           # Get the docker identifier of the first CL node.
-          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}" | head -n 1)
           if [ -z "$node_docker_id" ]; then
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
