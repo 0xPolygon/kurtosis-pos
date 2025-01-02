@@ -58,7 +58,7 @@ jobs:
           fi
 
           # Start the helper container.
-          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
           if [ -z "$helper_container_docker_id" ]; then
             echo "❌ Failed to start helper container."
             exit 1
@@ -92,7 +92,7 @@ jobs:
           fi
 
           # Start the helper container.
-          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
           if [ -z "$helper_container_docker_id" ]; then
             echo "❌ Failed to start helper container."
             exit 1
@@ -187,7 +187,7 @@ jobs:
           fi
 
           # Start the helper container.
-          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
           if [ -z "$helper_container_docker_id" ]; then
             echo "❌ Failed to start helper container."
             exit 1
@@ -221,7 +221,7 @@ jobs:
           fi
 
           # Start the helper container.
-          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
           if [ -z "$helper_container_docker_id" ]; then
             echo "❌ Failed to start helper container."
             exit 1
@@ -308,7 +308,7 @@ jobs:
           fi
 
           # Start the helper container.
-          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
           if [ -z "$helper_container_docker_id" ]; then
             echo "❌ Failed to start helper container."
             exit 1
@@ -342,7 +342,7 @@ jobs:
           fi
 
           # Start the helper container.
-          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
           if [ -z "$helper_container_docker_id" ]; then
             echo "❌ Failed to start helper container."
             exit 1
@@ -431,7 +431,7 @@ jobs:
           fi
 
           # Start the helper container.
-          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
           if [ -z "$helper_container_docker_id" ]; then
             echo "❌ Failed to start helper container."
             exit 1
@@ -465,7 +465,7 @@ jobs:
           fi
 
           # Start the helper container.
-          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
           if [ -z "$helper_container_docker_id" ]; then
             echo "❌ Failed to start helper container."
             exit 1
