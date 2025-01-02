@@ -59,17 +59,17 @@ def launch(
                 BOR_RPC_PORT_ID: PortSpec(
                     number=BOR_RPC_PORT_NUMBER,
                     application_protocol="http",
-                    wait="10s",
+                    wait=None,
                 ),
                 BOR_WS_PORT_ID: PortSpec(
                     number=BOR_WS_PORT_NUMBER,
                     application_protocol="ws",
-                    wait="10s",
+                    wait=None,
                 ),
                 BOR_DISCOVERY_PORT_ID: PortSpec(
                     number=BOR_DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
-                    wait="10s",
+                    wait=None,
                 ),
             },
             files={
@@ -94,7 +94,12 @@ def launch(
                             BOR_APP_DATA_FOLDER_PATH
                         ),
                         # Start bor.
-                        "bor server --config {}/config.toml".format(
+                        # Note: this command attempts to start Bor and retries if it fails.
+                        # The retry mechanism addresses a race condition where Bor initially fails to
+                        # resolve hostnames of other nodes, as services are created sequentially;
+                        # after a 5-second delay, all services should be up, allowing Bor to start
+                        # successfully. This is also why the port checks are disabled.
+                        "while ! bor server --config {}/config.toml; do echo -e '\n❌ Bor failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
                             BOR_CONFIG_FOLDER_PATH
                         ),
                     ]
