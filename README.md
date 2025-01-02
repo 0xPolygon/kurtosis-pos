@@ -51,7 +51,7 @@ kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
 ```bash
 # Attach a container, with network debugging tools, to one of the CL nodes.
 # Find the docker identifier using `docker ps`.
-# For example: `docker ps --filter "name=heimdall-0" --format "{{.ID}}"`.
+# For example: `docker ps --filter "name=heimdall-0" --format "{{.ID}}" | head -n 1`.
 docker run -it --rm --net=container:58b7944c59ba nicolaka/netshoot:latest /bin/bash
 curl --silent localhost:26657/net_info | jq '.result.peers | length'
 ```
