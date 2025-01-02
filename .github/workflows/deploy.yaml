@@ -56,7 +56,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
-          echo "node_docker_id: ${node_docker_id}
+          echo "node_docker_id: ${node_docker_id}"
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -193,7 +193,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
-          echo "node_docker_id: ${node_docker_id}
+          echo "node_docker_id: ${node_docker_id}"
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -230,7 +230,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
-          echo "node_docker_id: ${node_docker_id}
+          echo "node_docker_id: ${node_docker_id}"
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -322,7 +322,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
-          echo "node_docker_id: ${node_docker_id}
+          echo "node_docker_id: ${node_docker_id}"
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -453,7 +453,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
-          echo "node_docker_id: ${node_docker_id}
+          echo "node_docker_id: ${node_docker_id}"
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
