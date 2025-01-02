@@ -209,7 +209,7 @@ def _aggregate_el_enodes(participants, prefunded_accounts):
             prefunded_accounts[i].full_public_key[2:],  # Remove the 0x prefix.
             participant["el_type"],
             i,
-            30303,  # TODO: Do not hardcode the port number!
+            bor.BOR_DISCOVERY_PORT_NUMBER,
         )
         for i, participant in enumerate(participants)
     ]
