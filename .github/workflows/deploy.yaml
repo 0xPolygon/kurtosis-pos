@@ -56,6 +56,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
+          echo "node_docker_id: ${node_docker_id}
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -63,6 +64,7 @@ jobs:
             echo "❌ Failed to start helper container."
             exit 1
           fi
+          echo "helper_container_docker_id: ${helper_container_docker_id}"
 
           # Check the number of peers.
           peers_number=$(docker exec "${helper_container_docker_id}" curl --silent localhost:26657/net_info | jq '.result.peers | length')
@@ -70,6 +72,7 @@ jobs:
             echo "❌ Failed to get peer information."
             exit 1
           fi
+          echo "peers_number: ${peers_number}"
           
           # Check if the number of peers matches the expected number.
           if ((peers_number == expected_peers_number)); then
@@ -90,6 +93,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
+          echo "node_docker_id: ${node_docker_id}"
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -97,6 +101,7 @@ jobs:
             echo "❌ Failed to start helper container."
             exit 1
           fi
+          echo "helper_container_docker_id: ${helper_container_docker_id}"
 
           # Check the number of peers.
           peers_number=$(docker exec "${helper_container_docker_id}" echo $(($(curl -s -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545 | jq --raw-output '.result'))))
@@ -104,6 +109,7 @@ jobs:
             echo "❌ Failed to get peer information."
             exit 1
           fi
+          echo "peers_number: ${peers_number}"
           
           # Check if the number of peers matches the expected number.
           if ((peers_number == expected_peers_number)); then
@@ -185,6 +191,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
+          echo "node_docker_id: ${node_docker_id}
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -192,6 +199,7 @@ jobs:
             echo "❌ Failed to start helper container."
             exit 1
           fi
+          echo "helper_container_docker_id: ${helper_container_docker_id}"
 
           # Check the number of peers.
           peers_number=$(docker exec "${helper_container_docker_id}" curl --silent localhost:26657/net_info | jq '.result.peers | length')
@@ -199,6 +207,7 @@ jobs:
             echo "❌ Failed to get peer information."
             exit 1
           fi
+          echo "peers_number: ${peers_number}"
           
           # Check if the number of peers matches the expected number.
           if ((peers_number == expected_peers_number)); then
@@ -219,6 +228,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
+          echo "node_docker_id: ${node_docker_id}
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -226,6 +236,7 @@ jobs:
             echo "❌ Failed to start helper container."
             exit 1
           fi
+          echo "helper_container_docker_id: ${helper_container_docker_id}"
 
           # Check the number of peers.
           peers_number=$(docker exec "${helper_container_docker_id}" echo $(($(curl -s -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545 | jq --raw-output '.result'))))
@@ -233,6 +244,7 @@ jobs:
             echo "❌ Failed to get peer information."
             exit 1
           fi
+          echo "peers_number: ${peers_number}"
           
           # Check if the number of peers matches the expected number.
           if ((peers_number == expected_peers_number)); then
@@ -306,6 +318,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
+          echo "node_docker_id: ${node_docker_id}
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -313,6 +326,7 @@ jobs:
             echo "❌ Failed to start helper container."
             exit 1
           fi
+          echo "helper_container_docker_id: ${helper_container_docker_id}"
 
           # Check the number of peers.
           peers_number=$(docker exec "${helper_container_docker_id}" curl --silent localhost:26657/net_info | jq '.result.peers | length')
@@ -320,6 +334,7 @@ jobs:
             echo "❌ Failed to get peer information."
             exit 1
           fi
+          echo "peers_number: ${peers_number}"
           
           # Check if the number of peers matches the expected number.
           if ((peers_number == expected_peers_number)); then
@@ -340,6 +355,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
+          echo "node_docker_id: ${node_docker_id}"
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -347,6 +363,7 @@ jobs:
             echo "❌ Failed to start helper container."
             exit 1
           fi
+          echo "helper_container_docker_id: ${helper_container_docker_id}"
 
           # Check the number of peers.
           peers_number=$(docker exec "${helper_container_docker_id}" echo $(($(curl -s -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545 | jq --raw-output '.result'))))
@@ -354,6 +371,7 @@ jobs:
             echo "❌ Failed to get peer information."
             exit 1
           fi
+          echo "peers_number: ${peers_number}"
           
           # Check if the number of peers matches the expected number.
           if ((peers_number == expected_peers_number)); then
@@ -429,6 +447,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
+          echo "node_docker_id: ${node_docker_id}
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -436,6 +455,7 @@ jobs:
             echo "❌ Failed to start helper container."
             exit 1
           fi
+          echo "helper_container_docker_id: ${helper_container_docker_id}"
 
           # Check the number of peers.
           peers_number=$(docker exec "${helper_container_docker_id}" curl --silent localhost:26657/net_info | jq '.result.peers | length')
@@ -443,6 +463,7 @@ jobs:
             echo "❌ Failed to get peer information."
             exit 1
           fi
+          echo "peers_number: ${peers_number}"
           
           # Check if the number of peers matches the expected number.
           if ((peers_number == expected_peers_number)); then
@@ -463,6 +484,7 @@ jobs:
             echo "❌ Failed to find docker container for ${node_name}."
             exit 1
           fi
+          echo "node_docker_id: ${node_docker_id}"
 
           # Start the helper container.
           helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest tail -f /dev/null)
@@ -470,6 +492,7 @@ jobs:
             echo "❌ Failed to start helper container."
             exit 1
           fi
+          echo "helper_container_docker_id: ${helper_container_docker_id}"
 
           # Check the number of peers.
           peers_number=$(docker exec "${helper_container_docker_id}" echo $(($(curl -s -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545 | jq --raw-output '.result'))))
@@ -477,6 +500,7 @@ jobs:
             echo "❌ Failed to get peer information."
             exit 1
           fi
+          echo "peers_number: ${peers_number}"
           
           # Check if the number of peers matches the expected number.
           if ((peers_number == expected_peers_number)); then
