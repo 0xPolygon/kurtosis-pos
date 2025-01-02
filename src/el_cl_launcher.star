@@ -122,8 +122,8 @@ def _generate_validator_config(
         cl_type = participant["cl_type"]
         private_key = prefunded_accounts[i].private_key
         p2p_url = "{}-{}:{}".format(
-            cl_type, i, 26656
-        )  # TODO: Don't hardcode this port!
+            cl_type, i, heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER
+        )
         cl_validator_configs.append("{},{}".format(private_key, p2p_url))
 
         validator_id = i + 1
