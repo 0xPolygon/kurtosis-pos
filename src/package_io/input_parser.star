@@ -48,7 +48,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
             "cl_log_level": "info",
             "cl_db_image": DEFAULT_CL_DB_IMAGE,
             "is_validator": True,
-            "count": 1,
+            "count": 2,
         }
     ],
     "matic_contracts_params": {

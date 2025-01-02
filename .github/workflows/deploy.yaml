@@ -44,6 +44,74 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Check CL nodes have peers
+        run: |
+          node_name="heimdall-0"
+          expected_peers_number=2
+
+          # Get the docker identifier of the first CL node.
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          if [ -z "$node_docker_id" ]; then
+            echo "❌ Failed to find docker container for ${node_name}."
+            exit 1
+          fi
+
+          # Start the helper container.
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          if [ -z "$helper_container_docker_id" ]; then
+            echo "❌ Failed to start helper container."
+            exit 1
+          fi
+
+          # Check the number of peers.
+          peers_number=$(docker exec "${helper_container_docker_id}" curl --silent localhost:26657/net_info | jq '.result.peers | length')
+          if [ -z "$peers_number" ]; then
+            echo "❌ Failed to get peer information."
+            exit 1
+          fi
+          
+          # Check if the number of peers matches the expected number.
+          if ((peers_number == expected_peers_number)); then
+            echo "✅ Right number of peers (${peers_number}) found! The CL nodes are connected."
+          else
+            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The CL nodes are not connected."
+            exit 1
+          fi
+      
+      - name: Check EL nodes have peers
+        run: |
+          node_name="bor-0"
+          expected_peers_number=2
+
+          # Get the docker identifier of the first EL node.
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          if [ -z "$node_docker_id" ]; then
+            echo "❌ Failed to find docker container for ${node_name}."
+            exit 1
+          fi
+
+          # Start the helper container.
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          if [ -z "$helper_container_docker_id" ]; then
+            echo "❌ Failed to start helper container."
+            exit 1
+          fi
+
+          # Check the number of peers.
+          peers_number=$(docker exec "${helper_container_docker_id}" curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545)
+          if [ -z "$peers_number" ]; then
+            echo "❌ Failed to get peer information."
+            exit 1
+          fi
+          
+          # Check if the number of peers matches the expected number.
+          if ((peers_number == expected_peers_number)); then
+            echo "✅ Right number of peers (${peers_number}) found! The EL nodes are connected."
+          else
+            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
+            exit 1
+          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -105,6 +173,74 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Check CL nodes have peers
+        run: |
+          node_name="$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})-0"
+          expected_peers_number=2
+
+          # Get the docker identifier of the first CL node.
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          if [ -z "$node_docker_id" ]; then
+            echo "❌ Failed to find docker container for ${node_name}."
+            exit 1
+          fi
+
+          # Start the helper container.
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          if [ -z "$helper_container_docker_id" ]; then
+            echo "❌ Failed to start helper container."
+            exit 1
+          fi
+
+          # Check the number of peers.
+          peers_number=$(docker exec "${helper_container_docker_id}" curl --silent localhost:26657/net_info | jq '.result.peers | length')
+          if [ -z "$peers_number" ]; then
+            echo "❌ Failed to get peer information."
+            exit 1
+          fi
+          
+          # Check if the number of peers matches the expected number.
+          if ((peers_number == expected_peers_number)); then
+            echo "✅ Right number of peers (${peers_number}) found! The CL nodes are connected."
+          else
+            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The CL nodes are not connected."
+            exit 1
+          fi
+      
+      - name: Check EL nodes have peers
+        run: |
+          node_name="$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})-0"
+          expected_peers_number=2
+
+          # Get the docker identifier of the first EL node.
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          if [ -z "$node_docker_id" ]; then
+            echo "❌ Failed to find docker container for ${node_name}."
+            exit 1
+          fi
+
+          # Start the helper container.
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          if [ -z "$helper_container_docker_id" ]; then
+            echo "❌ Failed to start helper container."
+            exit 1
+          fi
+
+          # Check the number of peers.
+          peers_number=$(docker exec "${helper_container_docker_id}" curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545)
+          if [ -z "$peers_number" ]; then
+            echo "❌ Failed to get peer information."
+            exit 1
+          fi
+          
+          # Check if the number of peers matches the expected number.
+          if ((peers_number == expected_peers_number)); then
+            echo "✅ Right number of peers (${peers_number}) found! The EL nodes are connected."
+          else
+            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
+            exit 1
+          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -158,6 +294,74 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Check CL nodes have peers
+        run: |
+          node_name="heimdall-0"
+          expected_peers_number=2
+
+          # Get the docker identifier of the first CL node.
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          if [ -z "$node_docker_id" ]; then
+            echo "❌ Failed to find docker container for ${node_name}."
+            exit 1
+          fi
+
+          # Start the helper container.
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          if [ -z "$helper_container_docker_id" ]; then
+            echo "❌ Failed to start helper container."
+            exit 1
+          fi
+
+          # Check the number of peers.
+          peers_number=$(docker exec "${helper_container_docker_id}" curl --silent localhost:26657/net_info | jq '.result.peers | length')
+          if [ -z "$peers_number" ]; then
+            echo "❌ Failed to get peer information."
+            exit 1
+          fi
+          
+          # Check if the number of peers matches the expected number.
+          if ((peers_number == expected_peers_number)); then
+            echo "✅ Right number of peers (${peers_number}) found! The CL nodes are connected."
+          else
+            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The CL nodes are not connected."
+            exit 1
+          fi
+      
+      - name: Check EL nodes have peers
+        run: |
+          node_name="bor-0"
+          expected_peers_number=2
+
+          # Get the docker identifier of the first EL node.
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          if [ -z "$node_docker_id" ]; then
+            echo "❌ Failed to find docker container for ${node_name}."
+            exit 1
+          fi
+
+          # Start the helper container.
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          if [ -z "$helper_container_docker_id" ]; then
+            echo "❌ Failed to start helper container."
+            exit 1
+          fi
+
+          # Check the number of peers.
+          peers_number=$(docker exec "${helper_container_docker_id}" curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545)
+          if [ -z "$peers_number" ]; then
+            echo "❌ Failed to get peer information."
+            exit 1
+          fi
+          
+          # Check if the number of peers matches the expected number.
+          if ((peers_number == expected_peers_number)); then
+            echo "✅ Right number of peers (${peers_number}) found! The EL nodes are connected."
+          else
+            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
+            exit 1
+          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -213,6 +417,74 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Check CL nodes have peers
+        run: |
+          node_name="heimdall-0"
+          expected_peers_number=2
+
+          # Get the docker identifier of the first CL node.
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          if [ -z "$node_docker_id" ]; then
+            echo "❌ Failed to find docker container for ${node_name}."
+            exit 1
+          fi
+
+          # Start the helper container.
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          if [ -z "$helper_container_docker_id" ]; then
+            echo "❌ Failed to start helper container."
+            exit 1
+          fi
+
+          # Check the number of peers.
+          peers_number=$(docker exec "${helper_container_docker_id}" curl --silent localhost:26657/net_info | jq '.result.peers | length')
+          if [ -z "$peers_number" ]; then
+            echo "❌ Failed to get peer information."
+            exit 1
+          fi
+          
+          # Check if the number of peers matches the expected number.
+          if ((peers_number == expected_peers_number)); then
+            echo "✅ Right number of peers (${peers_number}) found! The CL nodes are connected."
+          else
+            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The CL nodes are not connected."
+            exit 1
+          fi
+      
+      - name: Check EL nodes have peers
+        run: |
+          node_name="bor-0"
+          expected_peers_number=2
+
+          # Get the docker identifier of the first EL node.
+          node_docker_id=$(docker ps --filter "name=${node_name}" --format "{{.ID}}")
+          if [ -z "$node_docker_id" ]; then
+            echo "❌ Failed to find docker container for ${node_name}."
+            exit 1
+          fi
+
+          # Start the helper container.
+          helper_container_docker_id=$(docker run --detach --net="container:${node_docker_id}" nicolaka/netshoot:latest /bin/bash)
+          if [ -z "$helper_container_docker_id" ]; then
+            echo "❌ Failed to start helper container."
+            exit 1
+          fi
+
+          # Check the number of peers.
+          peers_number=$(docker exec "${helper_container_docker_id}" curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' localhost:8545)
+          if [ -z "$peers_number" ]; then
+            echo "❌ Failed to get peer information."
+            exit 1
+          fi
+          
+          # Check if the number of peers matches the expected number.
+          if ((peers_number == expected_peers_number)); then
+            echo "✅ Right number of peers (${peers_number}) found! The EL nodes are connected."
+          else
+            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
+            exit 1
+          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
