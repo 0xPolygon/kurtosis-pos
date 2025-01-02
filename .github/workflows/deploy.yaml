@@ -45,6 +45,9 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
+      - name: Debug (to remove)
+        run: docker ps
+
       - name: Check CL nodes have peers
         run: |
           node_name="heimdall-0"
