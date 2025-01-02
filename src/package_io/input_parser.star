@@ -48,8 +48,32 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
             "cl_log_level": "info",
             "cl_db_image": DEFAULT_CL_DB_IMAGE,
             "is_validator": True,
-            "count": 2,
-        }
+            "count": 3,
+        },
+        # TODO: Remove this once count works properly.
+        {
+            "el_type": constants.EL_TYPE.bor,
+            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
+            "el_log_level": "info",
+            "cl_type": constants.CL_TYPE.heimdall,
+            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
+            "cl_log_level": "info",
+            "cl_db_image": DEFAULT_CL_DB_IMAGE,
+            "is_validator": True,
+            "count": 1,
+        },
+        # TODO: Remove this once count works properly.
+        {
+            "el_type": constants.EL_TYPE.bor,
+            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
+            "el_log_level": "info",
+            "cl_type": constants.CL_TYPE.heimdall,
+            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
+            "cl_log_level": "info",
+            "cl_db_image": DEFAULT_CL_DB_IMAGE,
+            "is_validator": True,
+            "count": 1,
+        },
     ],
     "matic_contracts_params": {
         "contracts_deployer_image": DEFAULT_CONTRACTS_DEPLOYER,
