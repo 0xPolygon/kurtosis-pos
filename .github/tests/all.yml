@@ -24,6 +24,7 @@ polygon_pos_package:
   matic_contracts_params:
     contracts_deployer_image: leovct/matic-contracts-deployer:node-16
     genesis_builder_image: leovct/matic-genesis-builder:node-16
+    validator_config_generator_image: leovct/validator-config-generator:1.0.10
 
   network_params:
     network: kurtosis
@@ -32,6 +33,10 @@ polygon_pos_package:
     preregistered_validator_keys_mnemonic: sibling lend brave explain wait orbit mom alcohol disorder message grace sun
     validator_stake_amount: "10000"
     validator_top_up_fee_amount: "2000"
+    bor_sprint_duration: 32
+    bor_span_duration: 256
+    heimdall_span_poll_interval: 0m30s
+    heimdall_checkpoint_poll_interval: 1m30s
 
   additional_services:
     - tx_spammer
