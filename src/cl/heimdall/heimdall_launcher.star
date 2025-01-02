@@ -11,7 +11,9 @@ HEIMDALL_GRPC_PORT_NUMBER = 3132
 HEIMDALL_NODE_LISTEN_PORT_ID = "node-listen"
 HEIMDALL_NODE_LISTEN_PORT_NUMBER = 26656
 
+HEIMDALL_RPC_PORT_ID = "rpc"
 HEIMDALL_RPC_PORT_NUMBER = 26657
+
 HEIMDALL_PROXY_LISTEN_PORT_NUMBER = 26658
 
 # The folder where the heimdall templates are stored in the repository.
@@ -114,6 +116,11 @@ def launch(
                 HEIMDALL_NODE_LISTEN_PORT_ID: PortSpec(
                     number=HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                     application_protocol="http",
+                ),
+                HEIMDALL_RPC_PORT_ID: PortSpec(
+                    number=HEIMDALL_RPC_PORT_NUMBER,
+                    application_protocol="http",
+                    wait=None,  # Disable the check for this port.
                 ),
             },
             files={
