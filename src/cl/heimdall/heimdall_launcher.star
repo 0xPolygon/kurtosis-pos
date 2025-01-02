@@ -51,7 +51,7 @@ def launch(
     )
     rabbitmq_amqp_port = rabbitmq_service.ports[RABBITMQ_AMQP_PORT_ID]
     rabbitmq_url = "amqp://guest:guest@{}:{}".format(
-        rabbitmq_service.ip_address, rabbitmq_amqp_port.number
+        rabbitmq_service.name, rabbitmq_amqp_port.number
     )  # TODO: Remove hardcoded username and password!
 
     heimdall_config_artifacts = plan.render_templates(
