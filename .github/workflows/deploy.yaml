@@ -192,6 +192,7 @@ jobs:
       - name: Check CL nodes have peers
         run: |
           node_name="$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})-0"
+          echo "node_name: ${node_name}"
           expected_peers_number=2
 
           # Get the docker identifier of the first CL node.
@@ -229,6 +230,7 @@ jobs:
       - name: Check EL nodes have peers
         run: |
           node_name="$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})-0"
+          echo "node_name: ${node_name}"
           expected_peers_number=2
 
           # Get the docker identifier of the first EL node.
