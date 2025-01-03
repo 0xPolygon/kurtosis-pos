@@ -51,7 +51,6 @@ def launch(
     # Format: static-nodes = [ "enode://<full_public_key>@<hostname>:<discovery_port_number>", "enode://<full_public_key>@<hostname>:<discovery_port_number>" ]
     # Example: static-nodes = [ "enode://ad9180a1468702c7c6a7210544593b4bd444768ca754382d1da92fe9abaf408e58160dc72505936df63ca6afc3052e993cade199fe3ff067a5f11b0ee3c6e378@13.209.168.182:30303", "enode://7cf051238a3f92bbee811472a84592ab547ab2692ec09bd2104182551ca6de55f5a7cea48a3d36b411deccb4df976f27076d32019d9ccc4486a916c0e30f3a74@43.201.242.62:30303" ]
     bor_static_nodes = _aggregate_el_enodes(participants, prefunded_accounts)
-    plan.print("DEBUG: bor_static_nodes: " + str(bor_static_nodes))
 
     for i, participant in enumerate(participants):
         plan.print(
@@ -96,7 +95,6 @@ def launch(
         cl_node_url = cl_context.ports[
             "http"
         ].url  # TODO: Do not hardcode the port name!
-        plan.print("DEBUG: cl_node_url: {}".format(cl_node_url))
 
         el_context = el_launch_method(
             plan,
