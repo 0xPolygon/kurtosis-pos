@@ -39,7 +39,7 @@ def launch(
                     "config_folder_path": BOR_CONFIG_FOLDER_PATH,
                     "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
                     "is_miner": participant["is_validator"],
-                    "address": el_account.address,
+                    "address": el_account.eth_address,
                     "static_nodes": str(bor_static_nodes),
                     "cl_node_url": cl_node_url,
                     # ports

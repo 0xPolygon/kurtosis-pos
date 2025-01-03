@@ -1,7 +1,4 @@
 constants = import_module("../package_io/constants.star")
-genesis_constants = import_module(
-    "../prelaunch_data_generator/genesis_constants/genesis_constants.star"
-)
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
@@ -59,7 +56,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
 def _format_validator_accounts(accounts):
     return ";".join(
         [
-            "{},{}".format(account.address, account.full_public_key)
+            "{},{}".format(account.eth_address, account.eth_public_key)
             for account in accounts
         ]
     )

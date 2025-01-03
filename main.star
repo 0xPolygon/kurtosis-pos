@@ -14,6 +14,9 @@ genesis_constants = import_module(
     "./src/prelaunch_data_generator/genesis_constants/genesis_constants.star"
 )
 input_parser = import_module("./src/package_io/input_parser.star")
+pre_funded_accounts = import_module(
+    "./src/prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
+)
 wait = import_module("./src/wait/wait.star")
 
 
@@ -116,8 +119,8 @@ def run(plan, args):
 
 
 def get_validator_accounts(participants):
-    prefunded_accounts = genesis_constants.PRE_FUNDED_ACCOUNTS
-    max_number_validators = len(prefunded_accounts)
+    prefunded_eth_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
+    max_number_validators = len(prefunded_eth_accounts)
 
     validator_accounts = []
     index = 0
@@ -125,7 +128,7 @@ def get_validator_accounts(participants):
         if participant["is_validator"]:
             count = participant.get("count", 1)
             for _ in range(count):
-                account = prefunded_accounts[index]
+                account = prefunded_eth_accounts[index]
                 validator_accounts.append(account)
                 index += 1
                 if index >= max_number_validators:
@@ -149,7 +152,7 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
 
     # Merge the user-specified prefunded accounts and the validator prefunded accounts.
     prefunded_accounts = genesis_constants.to_ethereum_pkg_pre_funded_accounts(
-        genesis_constants.PRE_FUNDED_ACCOUNTS
+        pre_funded_accounts.PRE_FUNDED_ACCOUNTS
     )
     l1_network_params = ethereum_args.get("network_params", {})
     user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts", "")

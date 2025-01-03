@@ -1,8 +1,8 @@
 bor = import_module("./el/bor/bor_launcher.star")
 constants = import_module("./package_io/constants.star")
 erigon = import_module("./el/erigon/erigon_launcher.star")
-genesis_constants = import_module(
-    "./prelaunch_data_generator/genesis_constants/genesis_constants.star"
+pre_funded_accounts = import_module(
+    "./prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
 )
 heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
 
@@ -19,7 +19,7 @@ def launch(
     cl_genesis_artifact,
     l1_rpc_url,
 ):
-    prefunded_accounts = genesis_constants.PRE_FUNDED_ACCOUNTS
+    prefunded_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
     network_params = polygon_pos_args["network_params"]
     matic_contracts_params = polygon_pos_args["matic_contracts_params"]
 
@@ -206,7 +206,7 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers):
 def _aggregate_el_enodes(participants, prefunded_accounts):
     return [
         "enode://{}@{}-{}:{}?discport=0".format(
-            prefunded_accounts[i].full_public_key[2:],  # Remove the 0x prefix.
+            prefunded_accounts[i].eth_public_key[2:],  # Remove the 0x prefix.
             participant["el_type"],
             i,
             bor.BOR_DISCOVERY_PORT_NUMBER,

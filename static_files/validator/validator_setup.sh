@@ -48,14 +48,13 @@ setup_validator() {
   heimdallcli generate-validatorkey --home "${heimdall_validator_config_path}" "${validator_private_key}"
   mv priv_validator_key.json "${heimdall_validator_config_path}/config/"
   popd
-  rm -rf "${tmp_dir}"
 
   # Drop the temporary genesis.
   rm "${heimdall_validator_config_path}/config/genesis.json"
 
   # Retrive and store the node identifier.
   heimdalld init --home "${heimdall_validator_config_path}" --chain-id "${HEIMDALL_ID}" --id "${validator_id}" 2> "${heimdall_validator_config_path}/init.out"
-  local node_id="$(jq -r '.node_id' ${heimdall_validator_config_path}/init.out)"
+  local node_id="$(jq --raw-output '.node_id' ${heimdall_validator_config_path}/init.out)"
   local node_full_address="${node_id}@${validator_p2p_url}"
   if [ -z "${persistent_peers}" ]; then
     persistent_peers="${node_full_address}"

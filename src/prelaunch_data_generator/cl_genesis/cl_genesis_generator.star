@@ -85,7 +85,7 @@ def _get_validator_data(validator_accounts):
         # Accounts.
         accounts.append(
             {
-                "address": account.address,
+                "address": account.eth_address,
                 "coins": [
                     {
                         "denom": "matic",
@@ -104,7 +104,7 @@ def _get_validator_data(validator_accounts):
         # Dividends.
         dividends.append(
             {
-                "user": account.address,
+                "user": account.eth_address,
                 "feeAmount": "0",
             }
         )
@@ -126,8 +126,8 @@ def _get_validator_data(validator_accounts):
                 "last_updated": "",
                 "nonce": "1",
                 "power": str(constants.VALIDATORS_BALANCE_ETH),
-                "pubKey": account.full_public_key,
-                "signer": account.address,
+                "pubKey": account.tendermint_public_key,
+                "signer": account.eth_address,
                 "startEpoch": "0",
             }
         )
