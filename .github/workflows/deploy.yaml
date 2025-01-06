@@ -49,9 +49,26 @@ jobs:
       - name: Check devnet status
         run: |
           echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
-          polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+
+          echo "Checking the status of the devnet..."
+          export ENCLAVE=${{ env.ENCLAVE_NAME }}
           bash scripts/check_status.sh --monitor
+      
+      - name: Look for stopped services
+        run: |
+          stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
+          if [[ -n "${stopped_services}" ]]; then
+            echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
+            echo "${stopped_services}"
+            echo
+
+            kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' \
+              | while read -r container; do echo "Printing logs for $container"; docker logs --tail 50 "$container"; done
+            exit 1
+          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -123,9 +140,26 @@ jobs:
       - name: Check devnet status
         run: |
           echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
-          polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+
+          echo "Checking the status of the devnet..."
+          export ENCLAVE=${{ env.ENCLAVE_NAME }}
           bash scripts/check_status.sh --monitor
+      
+      - name: Look for stopped services
+        run: |
+          stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
+          if [[ -n "${stopped_services}" ]]; then
+            echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
+            echo "${stopped_services}"
+            echo
+
+            kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' \
+              | while read -r container; do echo "Printing logs for $container"; docker logs --tail 50 "$container"; done
+            exit 1
+          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -184,9 +218,26 @@ jobs:
       - name: Check devnet status
         run: |
           echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
-          polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+
+          echo "Checking the status of the devnet..."
+          export ENCLAVE=${{ env.ENCLAVE_NAME }}
           bash scripts/check_status.sh --monitor
+      
+      - name: Look for stopped services
+        run: |
+          stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
+          if [[ -n "${stopped_services}" ]]; then
+            echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
+            echo "${stopped_services}"
+            echo
+
+            kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' \
+              | while read -r container; do echo "Printing logs for $container"; docker logs --tail 50 "$container"; done
+            exit 1
+          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -247,9 +298,26 @@ jobs:
       - name: Check devnet status
         run: |
           echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
-          polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+
+          echo "Checking the status of the devnet..."
+          export ENCLAVE=${{ env.ENCLAVE_NAME }}
           bash scripts/check_status.sh --monitor
+      
+      - name: Look for stopped services
+        run: |
+          stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
+          if [[ -n "${stopped_services}" ]]; then
+            echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
+            echo "${stopped_services}"
+            echo
+
+            kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' \
+              | while read -r container; do echo "Printing logs for $container"; docker logs --tail 50 "$container"; done
+            exit 1
+          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
