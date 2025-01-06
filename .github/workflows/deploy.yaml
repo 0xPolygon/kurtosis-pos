@@ -65,9 +65,23 @@ jobs:
       
       - name: Check devnet status
         run: |
-          echo "Sending some load to the network..."
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
           private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+
+          echo "Waiting for L2 RPC to be available..."          
+          counter=0
+          until cast send --private-key "${private_key}" --value 0 &> /dev/null; do
+            ((counter++))
+            echo "Can't send transfers yet... Retrying ($counter)..."
+            if [[ "${counter}" -ge 20 ]]; then
+              echo "Exceeded maximum retry attempts. Exiting."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "✅ L2 RPC is available!"
+
+          echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
 
           echo "Checking the status of the devnet..."
@@ -171,9 +185,23 @@ jobs:
 
       - name: Check devnet status
         run: |
-          echo "Sending some load to the network..."
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
           private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+
+          echo "Waiting for L2 RPC to be available..."          
+          counter=0
+          until cast send --private-key "${private_key}" --value 0 &> /dev/null; do
+            ((counter++))
+            echo "Can't send transfers yet... Retrying ($counter)..."
+            if [[ "${counter}" -ge 20 ]]; then
+              echo "Exceeded maximum retry attempts. Exiting."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "✅ L2 RPC is available!"
+
+          echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
 
           echo "Checking the status of the devnet..."
@@ -264,9 +292,23 @@ jobs:
 
       - name: Check devnet status
         run: |
-          echo "Sending some load to the network..."
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
           private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+
+          echo "Waiting for L2 RPC to be available..."          
+          counter=0
+          until cast send --private-key "${private_key}" --value 0 &> /dev/null; do
+            ((counter++))
+            echo "Can't send transfers yet... Retrying ($counter)..."
+            if [[ "${counter}" -ge 20 ]]; then
+              echo "Exceeded maximum retry attempts. Exiting."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "✅ L2 RPC is available!"
+
+          echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
 
           echo "Checking the status of the devnet..."
@@ -359,9 +401,23 @@ jobs:
 
       - name: Check devnet status
         run: |
-          echo "Sending some load to the network..."
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
           private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+
+          echo "Waiting for L2 RPC to be available..."          
+          counter=0
+          until cast send --private-key "${private_key}" --value 0 &> /dev/null; do
+            ((counter++))
+            echo "Can't send transfers yet... Retrying ($counter)..."
+            if [[ "${counter}" -ge 20 ]]; then
+              echo "Exceeded maximum retry attempts. Exiting."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "✅ L2 RPC is available!"
+
+          echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
 
           echo "Checking the status of the devnet..."
