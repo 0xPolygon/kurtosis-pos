@@ -385,6 +385,8 @@ jobs:
       
       - name: Look for stopped services
         run: |
+          set -euxo pipefail
+          
           stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
           if [[ -n "${stopped_services}" ]]; then
             echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
