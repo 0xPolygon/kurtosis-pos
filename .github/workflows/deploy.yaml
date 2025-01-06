@@ -70,10 +70,11 @@ jobs:
 
           echo "Waiting for L2 RPC to be available..."          
           counter=0
-          until cast send --private-key "${private_key}" --value 0 &> /dev/null; do
+          max_retries=20
+          until cast send --private-key "${private_key}" --value 0; do
             ((counter++))
             echo "Can't send transfers yet... Retrying ($counter)..."
-            if [[ "${counter}" -ge 20 ]]; then
+            if [[ "${counter}" -ge "${max_retries}" ]]; then
               echo "Exceeded maximum retry attempts. Exiting."
               exit 1
             fi
@@ -190,10 +191,11 @@ jobs:
 
           echo "Waiting for L2 RPC to be available..."          
           counter=0
-          until cast send --private-key "${private_key}" --value 0 &> /dev/null; do
+          max_retries=20
+          until cast send --private-key "${private_key}" --value 0; do
             ((counter++))
             echo "Can't send transfers yet... Retrying ($counter)..."
-            if [[ "${counter}" -ge 20 ]]; then
+            if [[ "${counter}" -ge "${max_retries}" ]]; then
               echo "Exceeded maximum retry attempts. Exiting."
               exit 1
             fi
@@ -297,10 +299,11 @@ jobs:
 
           echo "Waiting for L2 RPC to be available..."          
           counter=0
-          until cast send --private-key "${private_key}" --value 0 &> /dev/null; do
+          max_retries=20
+          until cast send --private-key "${private_key}" --value 0; do
             ((counter++))
             echo "Can't send transfers yet... Retrying ($counter)..."
-            if [[ "${counter}" -ge 20 ]]; then
+            if [[ "${counter}" -ge "${max_retries}" ]]; then
               echo "Exceeded maximum retry attempts. Exiting."
               exit 1
             fi
@@ -406,10 +409,11 @@ jobs:
 
           echo "Waiting for L2 RPC to be available..."          
           counter=0
-          until cast send --private-key "${private_key}" --value 0 &> /dev/null; do
+          max_retries=20
+          until cast send --private-key "${private_key}" --value 0; do
             ((counter++))
             echo "Can't send transfers yet... Retrying ($counter)..."
-            if [[ "${counter}" -ge 20 ]]; then
+            if [[ "${counter}" -ge "${max_retries}" ]]; then
               echo "Exceeded maximum retry attempts. Exiting."
               exit 1
             fi
