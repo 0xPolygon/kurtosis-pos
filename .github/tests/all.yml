@@ -14,12 +14,12 @@ polygon_pos_package:
       cl_db_image: rabbitmq:4.0.4
       is_validator: true
       count: 2
-    - el_type: erigon
-      is_validator: true
-      count: 1
-    - el_type: erigon
-      is_validator: false
-      count: 1
+    # - el_type: erigon
+    #   is_validator: true
+    #   count: 1
+    # - el_type: erigon
+    #   is_validator: false
+    #   count: 1
 
   matic_contracts_params:
     contracts_deployer_image: leovct/matic-contracts-deployer:node-16
