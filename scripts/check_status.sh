@@ -185,7 +185,7 @@ fi
 # Main execution based on mode
 case "$mode" in
   monitor)
-    echo "Starting continuous chain height monitoring..."
+    echo "Starting continuous monitoring..."
     monitor
     ;;
   status)
