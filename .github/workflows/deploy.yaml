@@ -97,6 +97,9 @@ jobs:
             echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
             exit 1
           fi
+      
+      - name: Check devnet status
+        run: bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -217,6 +220,9 @@ jobs:
             exit 1
           fi
 
+      - name: Check devnet status
+        run: bash scripts/check_status.sh --monitor
+
       - name: Dump enclave
         if: ${{ !cancelled() }}
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
@@ -322,6 +328,9 @@ jobs:
             echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
             exit 1
           fi
+
+      - name: Check devnet status
+        run: bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -430,6 +439,9 @@ jobs:
             echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
             exit 1
           fi
+
+      - name: Check devnet status
+        run: bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
