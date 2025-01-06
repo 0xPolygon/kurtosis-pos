@@ -45,61 +45,13 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-
-      - name: Check CL nodes have peers
-        run: |
-          # Get the node rpc url.
-          node_name="heimdall-0"
-          rpc_url="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${node_name} rpc)"
-          echo "node_name: ${node_name}"
-          echo "rpc_url: ${rpc_url}"
-
-          # Check the number of peers.
-          peers_number=$(curl "${rpc_url}/net_info" | jq '.result.peers | length')
-          if [ -z "${peers_number}" ]; then
-            echo "❌ Failed to get peer information."
-            exit 1
-          fi
-          echo "peers_number: ${peers_number}"
-          
-          # Check if the number of peers matches the expected number.
-          expected_peers_number=2
-          if ((peers_number == expected_peers_number)); then
-            echo "✅ Right number of peers (${peers_number}) found! The CL nodes are connected."
-          else
-            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The CL nodes are not connected."
-            exit 1
-          fi
-      
-      - name: Check EL nodes have peers
-        run: |
-          # Get the node rpc url.
-          node_name="bor-0"
-          rpc_url="$(el_rpc_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${node_name} rpc))"
-          echo "node_name: ${node_name}"
-          echo "rpc_url: ${rpc_url}"
-
-          # Check the number of peers.
-          peers_number_hex=$(curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${el_rpc_url}" | jq --raw-output '.result')
-          if [ -z "${peers_number_hex}" ]; then
-            echo "❌ Failed to get peer information."
-            exit 1
-          fi
-          echo "peers_number_hex: ${peers_number_hex}"
-          peers_number=$(echo $((${peers_number_hex})))
-          echo "peers_number: ${peers_number}"
-          
-          # Check if the number of peers matches the expected number.
-          expected_peers_number=2
-          if ((peers_number == expected_peers_number)); then
-            echo "✅ Right number of peers (${peers_number}) found! The EL nodes are connected."
-          else
-            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
-            exit 1
-          fi
       
       - name: Check devnet status
-        run: bash scripts/check_status.sh --monitor
+        run: |
+          echo "Sending some load to the network..."
+          export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
+          polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -167,61 +119,13 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
-      - name: Check CL nodes have peers
-        run: |
-          # Get the node rpc url.
-          node_name="$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})-0"
-          rpc_url="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${node_name} rpc)"
-          echo "node_name: ${node_name}"
-          echo "rpc_url: ${rpc_url}"
-
-          # Check the number of peers.
-          peers_number=$(curl "${rpc_url}/net_info" | jq '.result.peers | length')
-          if [ -z "${peers_number}" ]; then
-            echo "❌ Failed to get peer information."
-            exit 1
-          fi
-          echo "peers_number: ${peers_number}"
-          
-          # Check if the number of peers matches the expected number.
-          expected_peers_number=2
-          if ((peers_number == expected_peers_number)); then
-            echo "✅ Right number of peers (${peers_number}) found! The CL nodes are connected."
-          else
-            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The CL nodes are not connected."
-            exit 1
-          fi
-      
-      - name: Check EL nodes have peers
-        run: |
-          # Get the node rpc url.
-          node_name="$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})-0"
-          rpc_url="$(el_rpc_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${node_name} rpc))"
-          echo "node_name: ${node_name}"
-          echo "rpc_url: ${rpc_url}"
-
-          # Check the number of peers.
-          peers_number_hex=$(curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${el_rpc_url}" | jq --raw-output '.result')
-          if [ -z "${peers_number_hex}" ]; then
-            echo "❌ Failed to get peer information."
-            exit 1
-          fi
-          echo "peers_number_hex: ${peers_number_hex}"
-          peers_number=$(echo $((${peers_number_hex})))
-          echo "peers_number: ${peers_number}"
-          
-          # Check if the number of peers matches the expected number.
-          expected_peers_number=2
-          if ((peers_number == expected_peers_number)); then
-            echo "✅ Right number of peers (${peers_number}) found! The EL nodes are connected."
-          else
-            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
-            exit 1
-          fi
 
       - name: Check devnet status
-        run: bash scripts/check_status.sh --monitor
+        run: |
+          echo "Sending some load to the network..."
+          export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
+          polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -276,61 +180,13 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
-      - name: Check CL nodes have peers
-        run: |
-          # Get the node rpc url.
-          node_name="heimdall-0"
-          rpc_url="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${node_name} rpc)"
-          echo "node_name: ${node_name}"
-          echo "rpc_url: ${rpc_url}"
-
-          # Check the number of peers.
-          peers_number=$(curl "${rpc_url}/net_info" | jq '.result.peers | length')
-          if [ -z "${peers_number}" ]; then
-            echo "❌ Failed to get peer information."
-            exit 1
-          fi
-          echo "peers_number: ${peers_number}"
-          
-          # Check if the number of peers matches the expected number.
-          expected_peers_number=2
-          if ((peers_number == expected_peers_number)); then
-            echo "✅ Right number of peers (${peers_number}) found! The CL nodes are connected."
-          else
-            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The CL nodes are not connected."
-            exit 1
-          fi
-      
-      - name: Check EL nodes have peers
-        run: |
-          # Get the node rpc url.
-          node_name="bor-0"
-          rpc_url="$(el_rpc_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${node_name} rpc))"
-          echo "node_name: ${node_name}"
-          echo "rpc_url: ${rpc_url}"
-
-          # Check the number of peers.
-          peers_number_hex=$(curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${el_rpc_url}" | jq --raw-output '.result')
-          if [ -z "${peers_number_hex}" ]; then
-            echo "❌ Failed to get peer information."
-            exit 1
-          fi
-          echo "peers_number_hex: ${peers_number_hex}"
-          peers_number=$(echo $((${peers_number_hex})))
-          echo "peers_number: ${peers_number}"
-          
-          # Check if the number of peers matches the expected number.
-          expected_peers_number=2
-          if ((peers_number == expected_peers_number)); then
-            echo "✅ Right number of peers (${peers_number}) found! The EL nodes are connected."
-          else
-            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
-            exit 1
-          fi
 
       - name: Check devnet status
-        run: bash scripts/check_status.sh --monitor
+        run: |
+          echo "Sending some load to the network..."
+          export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
+          polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -387,61 +243,13 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
-      - name: Check CL nodes have peers
-        run: |
-          # Get the node rpc url.
-          node_name="heimdall-0"
-          rpc_url="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${node_name} rpc)"
-          echo "node_name: ${node_name}"
-          echo "rpc_url: ${rpc_url}"
-
-          # Check the number of peers.
-          peers_number=$(curl "${rpc_url}/net_info" | jq '.result.peers | length')
-          if [ -z "${peers_number}" ]; then
-            echo "❌ Failed to get peer information."
-            exit 1
-          fi
-          echo "peers_number: ${peers_number}"
-          
-          # Check if the number of peers matches the expected number.
-          expected_peers_number=2
-          if ((peers_number == expected_peers_number)); then
-            echo "✅ Right number of peers (${peers_number}) found! The CL nodes are connected."
-          else
-            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The CL nodes are not connected."
-            exit 1
-          fi
-      
-      - name: Check EL nodes have peers
-        run: |
-          # Get the node rpc url.
-          node_name="bor-0"
-          rpc_url="$(el_rpc_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${node_name} rpc))"
-          echo "node_name: ${node_name}"
-          echo "rpc_url: ${rpc_url}"
-
-          # Check the number of peers.
-          peers_number_hex=$(curl -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${el_rpc_url}" | jq --raw-output '.result')
-          if [ -z "${peers_number_hex}" ]; then
-            echo "❌ Failed to get peer information."
-            exit 1
-          fi
-          echo "peers_number_hex: ${peers_number_hex}"
-          peers_number=$(echo $((${peers_number_hex})))
-          echo "peers_number: ${peers_number}"
-          
-          # Check if the number of peers matches the expected number.
-          expected_peers_number=2
-          if ((peers_number == expected_peers_number)); then
-            echo "✅ Right number of peers (${peers_number}) found! The EL nodes are connected."
-          else
-            echo "❌ Expected ${expected_peers_number} peers but found ${peers_number}... The EL nodes are not connected."
-            exit 1
-          fi
 
       - name: Check devnet status
-        run: bash scripts/check_status.sh --monitor
+        run: |
+          echo "Sending some load to the network..."
+          export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
+          polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}

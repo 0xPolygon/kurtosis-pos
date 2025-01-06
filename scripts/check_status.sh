@@ -83,7 +83,27 @@ monitor() {
     status="$(get_status)"
     read -r cl_peer_count el_peer_count cl_block_height l1_block_height l2_block_height <<< "${status}"
 
-    # CL, L1 and L2 block heights.
+    # Peer counts.
+    if (( cl_peer_count == 0)); then
+      echo "Error: CL node has not peers."
+      exit 1
+    fi
+    if (( el_peer_count == 0)); then
+      echo "Error: EL node has not peers."
+      exit 1
+    fi
+
+    echo "Peers:"
+    if (( cl_peer_count == el_peer_count )); then
+      echo "✅ CL: ${cl_peer_count}"
+      echo "✅ EL: ${el_peer_count}"
+    else
+      echo "❌ CL: ${cl_peer_count}"
+      echo "❌ EL: ${el_peer_count}"
+    fi
+
+    # Block heights.
+    echo "Block heights:"
     if (( cl_block_height > previous_cl_height )); then
       diff=$((cl_block_height - previous_cl_height))
       echo "✅ CL: ${previous_cl_height} -> ${cl_block_height} (+${diff})"

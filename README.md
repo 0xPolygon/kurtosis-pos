@@ -46,46 +46,14 @@ kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq
 kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
 ```
 
-5. Check that CL nodes are connected.
+5. Check the status of the devnet.
 
 ```bash
-cl_rpc_url=$(kurtosis port print polygon-pos heimdall-0 rpc)
-curl --silent "${cl_rpc_url}/net_info" | jq '.result.peers | length'
+export ENCLAVE="polygon-pos"
+bash scripts/check_status.sh
 ```
 
-6. Check that EL nodes are connected.
-
-```bash
-el_rpc_url=$(kurtosis port print polygon-pos bor-0 rpc)
-echo $(( $(curl --silent -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${el_rpc_url}" | jq --raw-output '.result') ))
-```
-
-7. Check the state of the CL chain.
-
-```bash
-cl_rpc_url=$(kurtosis port print polygon-pos heimdall-0 rpc)
-curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height'
-```
-
-8. Check the state of the L1 chain.
-
-```bash
-l1_rpc_url=http://$(kurtosis port print polygon-pos el-1-geth-lighthouse rpc)
-cast bn --rpc-url "${l1_rpc_url}"
-# or you can use:
-polycli monitor --rpc-url "${l1_rpc_url}"
-```
-
-9. Check the state of the L2 chain.
-
-```bash
-l2_rpc_url=$(kurtosis port print polygon-pos bor-0 rpc)
-cast bn --rpc-url "${l2_rpc_url}"
-# or you can use:
-polycli monitor --rpc-url "${l2_rpc_url}"
-```
-
-10. Send some load to the network.
+6. Send some load to the network.
 
 ```bash
 export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
