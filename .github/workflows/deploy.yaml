@@ -80,7 +80,7 @@ jobs:
             fi
             sleep 5
           done
-          echo "✅ L2 RPC is available!"
+          echo "✅ L2 RPC is available."
 
           echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
@@ -201,7 +201,7 @@ jobs:
             fi
             sleep 5
           done
-          echo "✅ L2 RPC is available!"
+          echo "✅ L2 RPC is available;"
 
           echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
@@ -309,7 +309,7 @@ jobs:
             fi
             sleep 5
           done
-          echo "✅ L2 RPC is available!"
+          echo "✅ L2 RPC is available;"
 
           echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
@@ -419,7 +419,7 @@ jobs:
             fi
             sleep 5
           done
-          echo "✅ L2 RPC is available!"
+          echo "✅ L2 RPC is available;"
 
           echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
