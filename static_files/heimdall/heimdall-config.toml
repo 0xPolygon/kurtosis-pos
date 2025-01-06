@@ -1,7 +1,7 @@
 ##### RPC and REST configs #####
 
 # AMQP endpoint.
-amqp_url = "{{.amqp_url}}" # "amqp://guest:guest@localhost:5672/"
+amqp_url = "{{.amqp_url}}"
 
 # RPC endpoint for the Bor chain.
 bor_rpc_url = "{{.bor_rpc_url}}"
@@ -9,10 +9,10 @@ bor_rpc_url = "{{.bor_rpc_url}}"
 # RPC endpoint for the Ethereum chain.
 eth_rpc_url = "{{.l1_rpc_url}}"
 
-# Polygon Sub Graph URL for self-heal mechanism (optional)
+# Polygon Sub Graph URL for self-heal mechanism (optional).
 sub_graph_url = ""
 
-# RPC endpoint for tendermint.
+# RPC endpoint for Tendermint.
 tendermint_rpc_url = "http://0.0.0.0:{{.tendermint_rpc_port_number}}"
 
 #### Bridge configs ####
@@ -20,7 +20,7 @@ tendermint_rpc_url = "http://0.0.0.0:{{.tendermint_rpc_port_number}}"
 # Heimdall REST server endpoint, which is used by the bridge.
 heimdall_rest_server = "http://0.0.0.0:{{.rest_api_port_number}}"
 
-## Poll intervals
+## Poll intervals.
 checkpoint_poll_interval = "{{.checkpoint_poll_interval}}"
 clerk_poll_interval = "10s"
 enable_self_heal = "false"
@@ -42,4 +42,4 @@ bor_rpc_timeout = "5m0s"
 no_ack_wait_time = "30m0s"
 
 ##### chain - newSelectionAlgoHeight depends on this #####
-chain = "mainnet" # `newSelectionAlgoHeight` depends on this.
+chain = "mainnet"
