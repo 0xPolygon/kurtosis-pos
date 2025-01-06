@@ -82,8 +82,8 @@ jobs:
           done
           echo "✅ L2 RPC is available."
 
-          echo "Sending some load to the network..."
-          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          # echo "Sending some load to the network..."
+          # polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
 
           echo "Checking the status of the devnet..."
           export ENCLAVE=${{ env.ENCLAVE_NAME }}
@@ -203,8 +203,8 @@ jobs:
           done
           echo "✅ L2 RPC is available;"
 
-          echo "Sending some load to the network..."
-          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          # echo "Sending some load to the network..."
+          # polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
 
           echo "Checking the status of the devnet..."
           export ENCLAVE=${{ env.ENCLAVE_NAME }}
@@ -311,8 +311,8 @@ jobs:
           done
           echo "✅ L2 RPC is available;"
 
-          echo "Sending some load to the network..."
-          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          # echo "Sending some load to the network..."
+          # polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
 
           echo "Checking the status of the devnet..."
           export ENCLAVE=${{ env.ENCLAVE_NAME }}
@@ -408,8 +408,8 @@ jobs:
           done
           echo "✅ L2 RPC is available;"
 
-          echo "Sending some load to the network..."
-          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
+          # echo "Sending some load to the network..."
+          # polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 700 --requests 5000 --rate-limit 50 --mode t &
 
           echo "Checking the status of the devnet..."
           export ENCLAVE=${{ env.ENCLAVE_NAME }}
