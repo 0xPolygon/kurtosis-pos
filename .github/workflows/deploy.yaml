@@ -64,7 +64,10 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
       - name: Wait for devnet to be ready
-        run: sleep 240
+        run: |
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} heimdall-0 --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} bor-0 --follow &
+          sleep 240
       
       - name: Check devnet status
         run: |
@@ -188,7 +191,10 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
       - name: Wait for devnet to be ready
-        run: sleep 240
+        run: |
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} heimdall-0 --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} bor-0 --follow &
+          sleep 240
 
       - name: Check devnet status
         run: |
@@ -299,7 +305,10 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
       - name: Wait for devnet to be ready
-        run: sleep 240
+        run: |
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} heimdall-0 --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} bor-0 --follow &
+          sleep 240
 
       - name: Check devnet status
         run: |
@@ -399,7 +408,10 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
       - name: Wait for devnet to be ready
-        run: sleep 240
+        run: |
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} heimdall-0 --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} bor-0 --follow &
+          sleep 240
 
       - name: Check devnet status
         run: |
