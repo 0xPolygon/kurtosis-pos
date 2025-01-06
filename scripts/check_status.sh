@@ -78,6 +78,7 @@ monitor() {
       if "${error}"; then
         exit 1
       fi
+      exit 0
     fi
 
     status="$(get_status)"
