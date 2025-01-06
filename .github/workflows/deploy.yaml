@@ -10,7 +10,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KURTOSIS_VERSION: 1.4.3
+  KURTOSIS_VERSION: "1.4.3"
+  FOUNDRY_VERSION: "v0.3.0"
+  POLYCLI_VERSION: "v0.1.65"
   ENCLAVE_NAME: pos
 
 jobs:
@@ -39,6 +41,21 @@ jobs:
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
+      
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+      
+      - name: Install polycli
+        run: |
+          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
+          tmp_dir=$(mktemp -d) 
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
+          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          rm -rf "$tmp_dir"
+          sudo chmod +x /usr/local/bin/polycli
+          /usr/local/bin/polycli version
 
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false .
@@ -130,6 +147,21 @@ jobs:
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
+      
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+      
+      - name: Install polycli
+        run: |
+          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
+          tmp_dir=$(mktemp -d) 
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
+          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          rm -rf "$tmp_dir"
+          sudo chmod +x /usr/local/bin/polycli
+          /usr/local/bin/polycli version
 
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false .
@@ -206,6 +238,21 @@ jobs:
           kurtosis analytics disable
           kurtosis version
       
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+      
+      - name: Install polycli
+        run: |
+          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
+          tmp_dir=$(mktemp -d) 
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
+          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          rm -rf "$tmp_dir"
+          sudo chmod +x /usr/local/bin/polycli
+          /usr/local/bin/polycli version
+      
       - name: Deploy L1
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/tests/external-l1/ethereum.yml github.com/ethpandaops/ethereum-package@4.4.0
 
@@ -275,6 +322,21 @@ jobs:
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
+      
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+      
+      - name: Install polycli
+        run: |
+          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
+          tmp_dir=$(mktemp -d) 
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
+          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          rm -rf "$tmp_dir"
+          sudo chmod +x /usr/local/bin/polycli
+          /usr/local/bin/polycli version
       
       - name: Deploy L1, MATIC contracts and network participants
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
