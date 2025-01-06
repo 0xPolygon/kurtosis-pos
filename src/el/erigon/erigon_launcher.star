@@ -8,4 +8,6 @@ def launch(
     el_node_address,
     bor_static_nodes,
 ):
+    # TODO
+    fail("Erigon launcher has not yet been developed!")
     return
