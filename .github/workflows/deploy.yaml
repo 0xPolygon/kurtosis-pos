@@ -63,8 +63,8 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
-      - name: Wait one minute for setup to be ready
-        run: sleep 60
+      - name: Wait for devnet to be ready
+        run: sleep 120
       
       - name: Check devnet status
         run: |
@@ -187,8 +187,8 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
-      - name: Wait one minute for setup to be ready
-        run: sleep 60
+      - name: Wait for devnet to be ready
+        run: sleep 120
 
       - name: Check devnet status
         run: |
@@ -298,8 +298,8 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
-      - name: Wait one minute for setup to be ready
-        run: sleep 60
+      - name: Wait for devnet to be ready
+        run: sleep 120
 
       - name: Check devnet status
         run: |
@@ -398,8 +398,8 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
-      - name: Wait one minute for setup to be ready
-        run: sleep 60
+      - name: Wait for devnet to be ready
+        run: sleep 120
 
       - name: Check devnet status
         run: |
