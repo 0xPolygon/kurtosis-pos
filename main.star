@@ -119,8 +119,8 @@ def run(plan, args):
 
 
 def get_validator_accounts(participants):
-    prefunded_eth_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
-    max_number_validators = len(prefunded_eth_accounts)
+    prefunded_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
+    max_number_validators = len(prefunded_accounts)
 
     validator_accounts = []
     index = 0
@@ -128,7 +128,7 @@ def get_validator_accounts(participants):
         if participant["is_validator"]:
             count = participant.get("count", 1)
             for _ in range(count):
-                account = prefunded_eth_accounts[index]
+                account = prefunded_accounts[index]
                 validator_accounts.append(account)
                 index += 1
                 if index >= max_number_validators:
