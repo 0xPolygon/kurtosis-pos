@@ -191,7 +191,7 @@ def _generate_validator_config(
 
 def _read_cl_persistent_peers(plan, cl_persistent_peers):
     result = plan.run_sh(
-        description="Read CL validator node ids",
+        description="Reading CL validator node ids",
         files={
             "/opt/data": cl_persistent_peers,
         },

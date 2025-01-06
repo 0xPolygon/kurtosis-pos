@@ -16,7 +16,7 @@ def read_contract_addresses(plan, contract_addresses_artifact):
 
 def _read_contract_address(plan, contract_addresses_artifact, key, path):
     result = plan.run_sh(
-        description="Read {} contract address".format(key),
+        description="Reading {} contract address".format(key),
         files={
             "/opt/contracts": contract_addresses_artifact,
         },
