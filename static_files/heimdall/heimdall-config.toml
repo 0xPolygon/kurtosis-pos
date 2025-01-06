@@ -37,6 +37,8 @@ main_chain_gas_limit = "5000000"
 main_chain_max_gas_price = "400000000000"
 
 ##### Timeout Config #####
+eth_rpc_timeout = "5m0s"
+bor_rpc_timeout = "5m0s"
 no_ack_wait_time = "30m0s"
 
 ##### chain - newSelectionAlgoHeight depends on this #####
