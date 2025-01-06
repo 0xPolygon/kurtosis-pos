@@ -59,10 +59,9 @@ bash scripts/check_status.sh
 export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
 cast balance 0x97538585a02A3f1B1297EB9979cE1b34ff953f1E # the first pre-funded account
 
+private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
 polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500 --rate-limit 10 --mode t
 polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500 --rate-limit 10 --mode 2
-
-private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
 cast send --legacy --private-key "$private_key" --value 0.01ether $(cast address-zero)
 ```
 
