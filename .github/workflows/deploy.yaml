@@ -63,6 +63,9 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
       
+      - name: Wait one minute for setup to be ready
+        run: sleep 60
+      
       - name: Check devnet status
         run: |
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
@@ -183,6 +186,9 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Wait one minute for setup to be ready
+        run: sleep 60
 
       - name: Check devnet status
         run: |
@@ -291,6 +297,9 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Wait one minute for setup to be ready
+        run: sleep 60
 
       - name: Check devnet status
         run: |
@@ -388,6 +397,9 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Wait one minute for setup to be ready
+        run: sleep 60
 
       - name: Check devnet status
         run: |
