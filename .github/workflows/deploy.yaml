@@ -71,7 +71,7 @@ jobs:
           echo "Waiting for L2 RPC to be available..."          
           counter=0
           max_retries=20
-          until cast send --private-key "${private_key}" --value 0; do
+          until cast send --private-key "${private_key}" --value 0 2>/dev/null; do
             ((counter++))
             echo "Can't send transfers yet... Retrying ($counter)..."
             if [[ "${counter}" -ge "${max_retries}" ]]; then
@@ -192,7 +192,7 @@ jobs:
           echo "Waiting for L2 RPC to be available..."          
           counter=0
           max_retries=20
-          until cast send --private-key "${private_key}" --value 0; do
+          until cast send --private-key "${private_key}" --value 0 2>/dev/null; do
             ((counter++))
             echo "Can't send transfers yet... Retrying ($counter)..."
             if [[ "${counter}" -ge "${max_retries}" ]]; then
@@ -300,7 +300,7 @@ jobs:
           echo "Waiting for L2 RPC to be available..."          
           counter=0
           max_retries=20
-          until cast send --private-key "${private_key}" --value 0; do
+          until cast send --private-key "${private_key}" --value 0 2>/dev/null; do
             ((counter++))
             echo "Can't send transfers yet... Retrying ($counter)..."
             if [[ "${counter}" -ge "${max_retries}" ]]; then
@@ -410,7 +410,7 @@ jobs:
           echo "Waiting for L2 RPC to be available..."          
           counter=0
           max_retries=20
-          until cast send --private-key "${private_key}" --value 0; do
+          until cast send --private-key "${private_key}" --value 0 2>/dev/null; do
             ((counter++))
             echo "Can't send transfers yet... Retrying ($counter)..."
             if [[ "${counter}" -ge "${max_retries}" ]]; then
