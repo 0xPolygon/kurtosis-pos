@@ -1,0 +1,4 @@
+dev:
+  should_deploy_matic_contracts: False
+  l2_el_genesis_filepath: .github/tests/cl-el-genesis/l2-el-genesis.json
+  l2_cl_genesis_filepath: .github/tests/cl-el-genesis/l2-cl-genesis.json

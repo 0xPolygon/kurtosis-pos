@@ -10,7 +10,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KURTOSIS_VERSION: 1.4.3
+  KURTOSIS_VERSION: "1.4.3"
+  FOUNDRY_VERSION: "v0.3.0"
+  POLYCLI_VERSION: "v0.1.65"
   ENCLAVE_NAME: pos
 
 jobs:
@@ -38,12 +40,46 @@ jobs:
           sudo apt update
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
+          kurtosis version
+      
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+      
+      - name: Install polycli
+        run: |
+          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
+          tmp_dir=$(mktemp -d) 
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
+          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          rm -rf "$tmp_dir"
+          sudo chmod +x /usr/local/bin/polycli
+          /usr/local/bin/polycli version
 
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Wait for devnet to be ready
+        run: |
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} heimdall-0 --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} bor-0 --follow &
+          sleep 240
+      
+      - name: Check devnet status
+        run: |
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+
+          echo "Sending some load to the network..."
+          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
+
+          echo "Checking the status of the devnet..."
+          export ENCLAVE=${{ env.ENCLAVE_NAME }}
+          bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -92,6 +128,11 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Install yq
+        run: |
+          pip3 install yq
+          yq --version
 
       - name: Install kurtosis
         run: |
@@ -99,12 +140,46 @@ jobs:
           sudo apt update
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
+          kurtosis version
+      
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+      
+      - name: Install polycli
+        run: |
+          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
+          tmp_dir=$(mktemp -d) 
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
+          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          rm -rf "$tmp_dir"
+          sudo chmod +x /usr/local/bin/polycli
+          /usr/local/bin/polycli version
 
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Wait for devnet to be ready
+        run: |
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} heimdall-0 --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} bor-0 --follow &
+          sleep 240
+
+      - name: Check devnet status
+        run: |
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+
+          echo "Sending some load to the network..."
+          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
+
+          echo "Checking the status of the devnet..."
+          export ENCLAVE=${{ env.ENCLAVE_NAME }}
+          bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -149,15 +224,49 @@ jobs:
           sudo apt update
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
+          kurtosis version
+      
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+      
+      - name: Install polycli
+        run: |
+          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
+          tmp_dir=$(mktemp -d) 
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
+          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          rm -rf "$tmp_dir"
+          sudo chmod +x /usr/local/bin/polycli
+          /usr/local/bin/polycli version
       
       - name: Deploy L1
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/tests/external-l1/ethereum.yml github.com/ethpandaops/ethereum-package@4.4.0
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/external-l1/polygon-pos-with-l1-pre-deployed.yml --show-enclave-inspect=false .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/external-l1/polygon-pos-with-external-l1.yml --show-enclave-inspect=false .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Wait for devnet to be ready
+        run: |
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} heimdall-0 --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} bor-0 --follow &
+          sleep 240
+
+      - name: Check devnet status
+        run: |
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+
+          echo "Sending some load to the network..."
+          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
+
+          echo "Checking the status of the devnet..."
+          export ENCLAVE=${{ env.ENCLAVE_NAME }}
+          bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -170,7 +279,7 @@ jobs:
           name: dump_run_with_external_l1_${{ github.run_id }}
           path: ./dump
   
-  run-with-external-l1-and-pre-deployed-matic-contracts:
+  run-with-cl-el-genesis:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -194,18 +303,46 @@ jobs:
           sudo apt update
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
+          kurtosis version
       
-      - name: Deploy L1, MATIC contracts and network participants
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
       
-      - name: Save L2 genesis
-        run: kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-genesis genesis.json > l2-genesis.json
+      - name: Install polycli
+        run: |
+          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
+          tmp_dir=$(mktemp -d) 
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
+          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          rm -rf "$tmp_dir"
+          sudo chmod +x /usr/local/bin/polycli
+          /usr/local/bin/polycli version
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/external-l1/polygon-pos-with-l1-and-matic-contracts-pre-deployed.yml --show-enclave-inspect=false .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      
+      - name: Wait for devnet to be ready
+        run: |
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} heimdall-0 --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} bor-0 --follow &
+          sleep 240
+
+      - name: Check devnet status
+        run: |
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} bor-0 rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+
+          echo "Sending some load to the network..."
+          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
+
+          echo "Checking the status of the devnet..."
+          export ENCLAVE=${{ env.ENCLAVE_NAME }}
+          bash scripts/check_status.sh --monitor
 
       - name: Dump enclave
         if: ${{ !cancelled() }}

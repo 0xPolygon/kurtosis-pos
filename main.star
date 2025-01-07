@@ -2,7 +2,11 @@ ethereum_package = import_module(
     "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 )
 
+cl_genesis_generator = import_module(
+    "./src/prelaunch_data_generator/cl_genesis/cl_genesis_generator.star"
+)
 contract_deployer = import_module("./src/contracts/contract_deployer.star")
+el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis_generator = import_module(
     "./src/prelaunch_data_generator/el_genesis/el_genesis_generator.star"
 )
@@ -10,6 +14,9 @@ genesis_constants = import_module(
     "./src/prelaunch_data_generator/genesis_constants/genesis_constants.star"
 )
 input_parser = import_module("./src/package_io/input_parser.star")
+pre_funded_accounts = import_module(
+    "./src/prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
+)
 wait = import_module("./src/wait/wait.star")
 
 
@@ -19,7 +26,10 @@ def run(plan, args):
     ethereum_args = args.get("ethereum_package", {})
     polygon_pos_args = args.get("polygon_pos_package", {})
     participants = polygon_pos_args["participants"]
+    l2_network_params = polygon_pos_args["network_params"]
     dev_args = args.get("dev", {})
+
+    validator_accounts = get_validator_accounts(participants)
 
     # Deploy local L1 if needed.
     should_deploy_l1 = dev_args["should_deploy_l1"]
@@ -30,7 +40,6 @@ def run(plan, args):
             )
         )
 
-        l2_network_params = polygon_pos_args["network_params"]
         preregistered_validator_keys_mnemonic = l2_network_params[
             "preregistered_validator_keys_mnemonic"
         ]
@@ -51,27 +60,44 @@ def run(plan, args):
     # Deploy MATIC contracts if needed.
     should_deploy_matic_contracts = dev_args["should_deploy_matic_contracts"]
     if should_deploy_matic_contracts == True:
-        validator_accounts = get_validator_accounts(participants)
-        plan.print("Number of validators: " + str(len(validator_accounts)))
+        validators_number = len(validator_accounts)
+        plan.print("Number of validators: {}".format(validators_number))
         plan.print(validator_accounts)
 
         plan.print("Deploying MATIC contracts to L1 and staking for each validator")
         result = contract_deployer.deploy_contracts(
             plan, l1_context, polygon_pos_args, validator_accounts
         )
+        contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
 
         result = el_genesis_generator.generate_el_genesis_data(
             plan, polygon_pos_args, validator_config_artifact
         )
         l2_el_genesis_artifact = result.files_artifacts[0]
+
+        result = cl_genesis_generator.generate_cl_genesis_data(
+            plan,
+            polygon_pos_args,
+            validator_accounts,
+            contract_addresses_artifact,
+        )
+        l2_cl_genesis_artifact = result.files_artifacts[0]
     else:
-        plan.print("Using L2 genesis provided")
-        l2_el_genesis_file_content = read_file(src=dev_args["l2_genesis_filepath"])
+        plan.print("Using L2 EL/CL genesis provided")
+        l2_el_genesis_file_content = read_file(src=dev_args["l2_el_genesis_filepath"])
         l2_el_genesis_artifact = plan.render_templates(
-            name="l2-genesis",
+            name="l2-el-genesis",
             config={
                 "genesis.json": struct(template=l2_el_genesis_file_content, data={})
+            },
+        )
+
+        l2_cl_genesis_file_content = read_file(src=dev_args["l2_cl_genesis_filepath"])
+        l2_cl_genesis_artifact = plan.render_templates(
+            name="l2-cl-genesis",
+            config={
+                "genesis.json": struct(template=l2_cl_genesis_file_content, data={})
             },
         )
 
@@ -81,10 +107,19 @@ def run(plan, args):
             len(participants), participants
         )
     )
+    el_cl_launcher.launch(
+        plan,
+        participants,
+        validator_accounts,
+        polygon_pos_args,
+        l2_el_genesis_artifact,
+        l2_cl_genesis_artifact,
+        l1_context.rpc_url,
+    )
 
 
 def get_validator_accounts(participants):
-    prefunded_accounts = genesis_constants.PRE_FUNDED_ACCOUNTS
+    prefunded_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
     max_number_validators = len(prefunded_accounts)
 
     validator_accounts = []
@@ -117,7 +152,7 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
 
     # Merge the user-specified prefunded accounts and the validator prefunded accounts.
     prefunded_accounts = genesis_constants.to_ethereum_pkg_pre_funded_accounts(
-        genesis_constants.PRE_FUNDED_ACCOUNTS
+        pre_funded_accounts.PRE_FUNDED_ACCOUNTS
     )
     l1_network_params = ethereum_args.get("network_params", {})
     user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts", "")

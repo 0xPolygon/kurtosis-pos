@@ -10,82 +10,60 @@ TODO
 
 TODO
 
+```bash
+# Create a params file and deploy the devnet.
+kurtosis run --enclave polygon-pos --args-file params.yml .
+
+# Save the devnet parameters (genesis, contract addresses, etc.).
+mkdir -p ./tmp
+kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-el-genesis.json
+kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-cl-genesis.json
+kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.json | tail -n +2 | jq > ./tmp/contract-addresses.json
+kurtosis files inspect polygon-pos validators-config validators.js | tail -n +2 > ./tmp/validators.js
+```
+
 1. Get MATIC contract addresses.
 
 ```bash
-kurtosis files inspect test matic-contract-addresses contractAddresses.json | tail -n +2 | jq
+kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.json | tail -n +2 | jq
 ```
-
-<details>
-<summary>Output example</summary>
-
-```json
-{
-  "root": {
-    "Registry": "0xc69c1e66f9EaD5836D96bD1128569eb2a0058579",
-    "RootChain": "0x329cF899464ba580Bf047F4B886dB342c602f579",
-    "GovernanceProxy": "0x7fC26B95dED0f51D4Efd4Bd7ee44260a941faaab",
-    "RootChainProxy": "0xEd2Be21C3A66c11FefB10C6b07271C450Bd09Ae5",
-    "DepositManager": "0x4F60Bb906ee2188a14915c6b9D45381e2e04BA4c",
-    "DepositManagerProxy": "0x5d58414E85FC12d343Eb3445dD7417c483d939A9",
-    "WithdrawManager": "0x5A0242103310c7992773430E790C142B7E94Ef3a",
-    "WithdrawManagerProxy": "0x8eB57E8Ca6e1E3216b4293Cc37d621A43c17Ec40",
-    "StakeManager": "0x31502454e4b07Ab6f35216fD734AAfd816a06110",
-    "StakeManagerProxy": "0xB5322Da185AF39b53f8d3CBF40636eb3f1B527f2",
-    "SlashingManager": "0x892bb1f48977B66A0620F5c10909b8cAfbb800be",
-    "StakingInfo": "0xCf99c17529CC22C39551547E323ED9Dda6841734",
-    "ExitNFT": "0xE70dAe11D895C2E508e7d1C0C91dD0F3e4e971C3",
-    "StateSender": "0xF2749e312B43529cb35A91e355919A376Bd22ce3",
-    "predicates": {
-      "ERC20Predicate": "0x67382E0700054fa319fa040fC06313ECC65fdAE4",
-      "ERC721Predicate": "0x3ABef506f9A595BF085F7Ca1b51150a8057ACcBA",
-      "MarketplacePredicate": "0x69e31d96Db8C3067491ED68980c88669c7A25aAe",
-      "TransferWithSigPredicate": "0x49Ee8a9900D1a673588F95f32721BE38EE696265"
-    },
-    "tokens": {
-      "MaticToken": "0xA8CF7E31740f127cEdF36EEEDDA228565C0C781F",
-      "MaticWeth": "0x090Ff2fCE9A4344CC8C011e40553AA8D1427D233",
-      "TestToken": "0x0828Ad9C51E6c10038daeC6A63Fe110AB2E9F3f8",
-      "RootERC721": "0xED3B4bf7e17E47DAC37D7bB913196E192DCaf748"
-    }
-  }
-}
-```
-
-</details>
-<br/>
 
 2. Get the validators configuration.
 
 ```bash
-kurtosis files inspect test validators-config validators.js | tail -n +2
+kurtosis files inspect polygon-pos validators-config validators.js | tail -n +2
 ```
 
-<details>
-<summary>Output example</summary>
+3. Get the EL genesis.
 
-```js
-exports = module.exports = [
-  {
-    "address": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
-    "stake": 10000,
-    "balance": 1000000000
-  },
-  {
-    "address": "0xeeE6f79486542f85290920073947bc9672C6ACE5",
-    "stake": 10000,
-    "balance": 1000000000
-  },
-  {
-    "address": "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc",
-    "stake": 10000,
-    "balance": 1000000000
-  }
-]
+```bash
+kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq
 ```
 
-</details>
-<br/>
+4. Get the CL genesis.
+
+```bash
+kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
+```
+
+5. Check the status of the devnet.
+
+```bash
+export ENCLAVE="polygon-pos"
+bash scripts/check_status.sh
+```
+
+6. Send some load to the network.
+
+```bash
+export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
+cast balance 0x97538585a02A3f1B1297EB9979cE1b34ff953f1E # the first pre-funded account
+
+private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500 --rate-limit 10 --mode t
+polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500 --rate-limit 10 --mode 2
+cast send --legacy --private-key "$private_key" --value 0.01ether $(cast address-zero)
+```
 
 ## Configuration
 

@@ -2,3 +2,7 @@ polygon_pos_package:
   participants:
     - el_type: bor
       cl_type: heimdall
+    - el_type: bor
+      cl_type: heimdall
+    - el_type: bor
+      cl_type: heimdall

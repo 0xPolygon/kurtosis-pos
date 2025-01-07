@@ -1,7 +1,4 @@
 constants = import_module("../package_io/constants.star")
-genesis_constants = import_module(
-    "../prelaunch_data_generator/genesis_constants/genesis_constants.star"
-)
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
@@ -34,7 +31,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
             "DEFAULT_BOR_ID": constants.DEFAULT_BOR_ID,
             "HEIMDALL_ID": heimdall_id,
             "VALIDATOR_ACCOUNTS": validator_accounts_formatted,
-            "VALIDATOR_BALANCE": constants.VALIDATORS_BALANCE_ETH,
+            "VALIDATOR_BALANCE": str(constants.VALIDATORS_BALANCE_ETH),
             "VALIDATOR_STAKE_AMOUNT": validator_stake_amount,
             "VALIDATOR_TOP_UP_FEE_AMOUNT": validator_top_up_fee_amount,
         },
@@ -59,7 +56,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
 def _format_validator_accounts(accounts):
     return ";".join(
         [
-            "{},{}".format(account.address, account.full_public_key)
+            "{},{}".format(account.eth_address, account.eth_public_key)
             for account in accounts
         ]
     )

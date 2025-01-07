@@ -3,17 +3,20 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_CONTRACTS_DEPLOYER = "leovct/matic-contracts-deployer:node-16"
 DEFAULT_GENESIS_BUILDER = "leovct/matic-genesis-builder:node-16"
+DEFAULT_VALIDATOR_CONFIG_GENERATOR = (
+    "leovct/validator-config-generator:1.0.10"  # based on 0xpolygon/heimdall:1.0.10
+)
 
 DEFAULT_EL_IMAGES = {
-    constants.EL_TYPE.bor: "maticnetwork/bor:v0.2.17",
+    constants.EL_TYPE.bor: "0xpolygon/bor:1.5.3",
     constants.EL_TYPE.erigon: "erigontech/erigon:v2.60.10",
 }
 
 DEFAULT_CL_IMAGES = {
-    constants.CL_TYPE.heimdall: "maticnetwork/heimdall:v1.0.3",
+    constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.0.10",
 }
 
-DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.4"
+DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.5"
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
@@ -46,11 +49,34 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
             "cl_db_image": DEFAULT_CL_DB_IMAGE,
             "is_validator": True,
             "count": 1,
-        }
+        },
+        {
+            "el_type": constants.EL_TYPE.bor,
+            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
+            "el_log_level": "info",
+            "cl_type": constants.CL_TYPE.heimdall,
+            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
+            "cl_log_level": "info",
+            "cl_db_image": DEFAULT_CL_DB_IMAGE,
+            "is_validator": True,
+            "count": 1,
+        },
+        {
+            "el_type": constants.EL_TYPE.bor,
+            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
+            "el_log_level": "info",
+            "cl_type": constants.CL_TYPE.heimdall,
+            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
+            "cl_log_level": "info",
+            "cl_db_image": DEFAULT_CL_DB_IMAGE,
+            "is_validator": True,
+            "count": 1,
+        },
     ],
     "matic_contracts_params": {
         "contracts_deployer_image": DEFAULT_CONTRACTS_DEPLOYER,
         "genesis_builder_image": DEFAULT_GENESIS_BUILDER,
+        "validator_config_generator_image": DEFAULT_VALIDATOR_CONFIG_GENERATOR,
     },
     "network_params": {
         # TODO: Find out if this `network` parameter is really needed.
@@ -61,6 +87,12 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount": "10000",  # in ether
         "validator_top_up_fee_amount": "2000",  # in ether
+        "bor_block_interval_seconds": 2,
+        "bor_sprint_duration": 16,
+        "bor_span_duration": 128,
+        "bor_gas_limit": 10000000,
+        "heimdall_span_poll_interval": "0m15s",
+        "heimdall_checkpoint_poll_interval": "1m0s",
     },
     "additional_services": [],
 }
