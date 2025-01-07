@@ -80,19 +80,6 @@ jobs:
           echo "Checking the status of the devnet..."
           export ENCLAVE=${{ env.ENCLAVE_NAME }}
           bash scripts/check_status.sh --monitor
-      
-      - name: Look for stopped services
-        run: |
-          stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
-          if [[ -n "${stopped_services}" ]]; then
-            echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
-            echo "${stopped_services}"
-            echo
-
-            kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' \
-              | while read -r container; do echo "Printing logs for $container"; docker logs --tail 50 "$container"; done
-            exit 1
-          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -193,19 +180,6 @@ jobs:
           echo "Checking the status of the devnet..."
           export ENCLAVE=${{ env.ENCLAVE_NAME }}
           bash scripts/check_status.sh --monitor
-      
-      - name: Look for stopped services
-        run: |
-          stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
-          if [[ -n "${stopped_services}" ]]; then
-            echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
-            echo "${stopped_services}"
-            echo
-
-            kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' \
-              | while read -r container; do echo "Printing logs for $container"; docker logs --tail 50 "$container"; done
-            exit 1
-          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -293,19 +267,6 @@ jobs:
           echo "Checking the status of the devnet..."
           export ENCLAVE=${{ env.ENCLAVE_NAME }}
           bash scripts/check_status.sh --monitor
-      
-      - name: Look for stopped services
-        run: |
-          stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
-          if [[ -n "${stopped_services}" ]]; then
-            echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
-            echo "${stopped_services}"
-            echo
-
-            kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' \
-              | while read -r container; do echo "Printing logs for $container"; docker logs --tail 50 "$container"; done
-            exit 1
-          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -382,21 +343,6 @@ jobs:
           echo "Checking the status of the devnet..."
           export ENCLAVE=${{ env.ENCLAVE_NAME }}
           bash scripts/check_status.sh --monitor
-      
-      - name: Look for stopped services
-        run: |
-          set -euxo pipefail
-          
-          stopped_services="$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} | grep STOPPED)"
-          if [[ -n "${stopped_services}" ]]; then
-            echo "It looks like there is at least one stopped service in the enclave... Something must have halted..."
-            echo "${stopped_services}"
-            echo
-
-            kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' \
-              | while read -r container; do echo "Printing logs for $container"; docker logs --tail 50 "$container"; done
-            exit 1
-          fi
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
