@@ -100,6 +100,28 @@ def launch(
         },
     )
 
+    files = {
+        "{}/config".format(HEIMDALL_CONFIG_FOLDER_PATH): heimdall_config_artifacts,
+        "/opt/data/genesis": cl_genesis_artifact,
+    }
+    is_validator = participant["is_validator"]
+    if is_validator:
+        files["/opt/data/config"] = cl_validator_config_artifact
+
+    validator_cmds = [
+        # Copy CL validator config inside heimdall config folder.
+        "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
+            HEIMDALL_CONFIG_FOLDER_PATH
+        ),
+        "mkdir {}/data".format(HEIMDALL_CONFIG_FOLDER_PATH),
+        "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
+            HEIMDALL_CONFIG_FOLDER_PATH
+        ),
+    ]
+    heimdall_cmd = "heimdalld start --all --bridge --rest-server --home {}".format(
+        HEIMDALL_CONFIG_FOLDER_PATH
+    )
+
     return plan.add_service(
         name=cl_node_name,
         config=ServiceConfig(
@@ -123,31 +145,12 @@ def launch(
                     wait=None,  # Disable the check for this port.
                 ),
             },
-            files={
-                "{}/config".format(
-                    HEIMDALL_CONFIG_FOLDER_PATH
-                ): heimdall_config_artifacts,
-                "/opt/data/genesis": cl_genesis_artifact,
-                "/opt/data/config": cl_validator_config_artifact,
-            },
+            files=files,
             entrypoint=["sh", "-c"],
             cmd=[
-                "&& ".join(
-                    [
-                        # Copy CL validator config inside heimdall config folder.
-                        "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
-                            HEIMDALL_CONFIG_FOLDER_PATH
-                        ),
-                        "mkdir {}/data".format(HEIMDALL_CONFIG_FOLDER_PATH),
-                        "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
-                            HEIMDALL_CONFIG_FOLDER_PATH
-                        ),
-                        # Start heimdall.
-                        "heimdalld start --all --bridge --rest-server --home {}".format(
-                            HEIMDALL_CONFIG_FOLDER_PATH
-                        ),
-                    ]
-                )
+                "&& ".join(validator_cmds + [heimdall_cmd])
+                if is_validator
+                else heimdall_cmd
             ],
         ),
     )

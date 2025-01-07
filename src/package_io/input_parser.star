@@ -69,7 +69,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
             "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
             "cl_log_level": "info",
             "cl_db_image": DEFAULT_CL_DB_IMAGE,
-            "is_validator": True,
+            "is_validator": False,
             "count": 1,
         },
     ],

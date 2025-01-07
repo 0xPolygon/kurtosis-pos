@@ -53,10 +53,6 @@ def launch(
     bor_static_nodes = _aggregate_el_enodes(participants, prefunded_accounts)
 
     for i, participant in enumerate(participants):
-        plan.print(
-            "Launching participant {} with config {}".format(i, str(participant))
-        )
-
         el_type = participant["el_type"]
         if el_type not in el_launchers:
             fail(
@@ -64,6 +60,7 @@ def launch(
                     el_type, ",".join(el_launchers.keys())
                 )
             )
+        el_launch_method = el_launchers[el_type]["launch_method"]
 
         cl_type = participant["cl_type"]
         if cl_type not in cl_launchers:
@@ -72,14 +69,32 @@ def launch(
                     cl_type, ",".join(cl_launchers.keys())
                 )
             )
-
-        el_launch_method = el_launchers[el_type]["launch_method"]
         cl_launch_method = cl_launchers[cl_type]["launch_method"]
 
-        el_node_name = "{}-{}".format(el_type, i)
-        cl_node_name = "{}-{}".format(cl_type, i)
-        cl_validator_config_artifact = validator_config_artifacts.cl_configs[i]
-        el_validator_config_artifact = validator_config_artifacts.el_configs[i]
+        is_validator = participant["is_validator"]
+        plan.print(
+            "Launching {} {} ({}/{} validator) with config: {}".format(
+                "validator" if is_validator else "rpc",
+                i,
+                cl_type,
+                el_type,
+                str(participant),
+            )
+        )
+
+        el_node_name = "l2-el-{}-{}-{}-{}".format(
+            i, el_type, cl_type, "validator" if is_validator else "rpc"
+        )
+        cl_node_name = "l2-cl-{}-{}-{}-{}".format(
+            i, cl_type, el_type, "validator" if is_validator else "rpc"
+        )
+
+        cl_validator_config_artifact = None
+        el_validator_config_artifact = None
+        if is_validator:
+            cl_validator_config_artifact = validator_config_artifacts.cl_configs[i]
+            el_validator_config_artifact = validator_config_artifacts.el_configs[i]
+
         cl_context = cl_launch_method(
             plan,
             i,
