@@ -50,7 +50,8 @@ kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
 
 ```bash
 export ENCLAVE="polygon-pos"
-bash scripts/check_status.sh
+bash scripts/discover.sh # Run this script only once.
+bash scripts/status.sh
 ```
 
 6. Send some load to the network.

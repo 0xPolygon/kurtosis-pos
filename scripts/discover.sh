@@ -85,3 +85,4 @@ echo "Found ${#el_services[@]}."
   done
 } > "${TMP_FOLDER}/${EL_SERVICES_FILE}"
 echo "Saved at ${TMP_FOLDER}/${EL_SERVICES_FILE}"
+echo
