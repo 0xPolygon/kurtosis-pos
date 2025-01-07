@@ -6,6 +6,9 @@ TMP_FOLDER="tmp"
 CL_SERVICES_FILE="cl_services.txt"
 EL_SERVICES_FILE="el_services.txt"
 
+TIMEOUT_SECONDS=60
+CHECK_RATE_SECONDS=10
+
 get_status() {
   cl_rpc_url="$1"
   el_rpc_url="$2"
@@ -35,12 +38,10 @@ while IFS='=' read -r service url; do
 done < "${TMP_FOLDER}/${EL_SERVICES_FILE}"
 
 # Monitor the status of the devnet.
-timeout_seconds=2
-check_rate_seconds=2
 echo "Monitoring the status of the devnet..."
 echo "- Enclave: ${ENCLAVE}"
-echo "- Timeout: ${timeout_seconds}"
-echo "- Check rate: ${check_rate_seconds}"
+echo "- Timeout: ${TIMEOUT_SECONDS}"
+echo "- Check rate: ${CHECK_RATE_SECONDS}"
 
 declare -a previous_cl_heights previous_el_heights
 for (( i=0; i<"${#cl_services[@]}"; i++ )); do
@@ -52,7 +53,7 @@ start_time="$(date +%s)"
 while true; do
   # Check for timeout.
   current_time="$(date +%s)"
-  if (( current_time - start_time >= timeout_seconds )); then
+  if (( current_time - start_time >= TIMEOUT_SECONDS )); then
     echo
     echo "Timeout reached. Exiting monitor."
 
@@ -125,5 +126,5 @@ while true; do
     previous_el_heights[i]="${el_block_height}"
   done
   
-  sleep "${check_rate_seconds}"
+  sleep "${CHECK_RATE_SECONDS}"
 done
