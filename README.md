@@ -56,7 +56,7 @@ bash scripts/check_status.sh
 6. Send some load to the network.
 
 ```bash
-export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
+export ETH_RPC_URL="$(kurtosis port print polygon-pos l2-el-1-bor-heimdall-validator rpc)"
 cast balance 0x97538585a02A3f1B1297EB9979cE1b34ff953f1E # the first pre-funded account
 
 private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"

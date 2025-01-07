@@ -45,7 +45,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
             ),
             StoreSpec(
                 src="/opt/contracts/validators.js",
-                name="validators-config",
+                name="l2-validators-config",
             ),
         ],
         run="bash /opt/data/setup.sh",

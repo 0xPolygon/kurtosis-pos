@@ -54,8 +54,8 @@ def launch(
         rabbitmq_service.name, rabbitmq_amqp_port.number
     )  # TODO: Remove hardcoded username and password!
 
-    heimdall_config_artifacts = plan.render_templates(
-        name="{}-config".format(cl_node_name),
+    heimdall_node_config_artifacts = plan.render_templates(
+        name="{}-node-config".format(cl_node_name),
         config={
             "app.toml": struct(
                 template=read_file(
@@ -101,7 +101,7 @@ def launch(
     )
 
     files = {
-        "{}/config".format(HEIMDALL_CONFIG_FOLDER_PATH): heimdall_config_artifacts,
+        "{}/config".format(HEIMDALL_CONFIG_FOLDER_PATH): heimdall_node_config_artifacts,
         "/opt/data/genesis": cl_genesis_artifact,
     }
     is_validator = participant["is_validator"]
@@ -123,7 +123,7 @@ def launch(
     )
 
     return plan.add_service(
-        name=cl_node_name,
+        name="{}-{}".format(cl_node_name, "validator" if is_validator else "rpc"),
         config=ServiceConfig(
             image=participant["cl_image"],
             ports={

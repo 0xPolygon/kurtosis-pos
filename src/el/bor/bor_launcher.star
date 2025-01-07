@@ -29,8 +29,8 @@ def launch(
     bor_static_nodes,
 ):
     is_validator = participant["is_validator"]
-    bor_config_artifact = plan.render_templates(
-        name="{}-config".format(el_node_name),
+    bor_node_config_artifactconfig_artifacts = plan.render_templates(
+        name="{}-node-config".format(el_node_name),
         config={
             "config.toml": struct(
                 template=read_file(BOR_TEMPLATE_CONFIG_FILE_PATH),
@@ -53,7 +53,7 @@ def launch(
     )
 
     files = {
-        BOR_CONFIG_FOLDER_PATH: bor_config_artifact,
+        BOR_CONFIG_FOLDER_PATH: bor_node_config_artifactconfig_artifacts,
         "/opt/data/genesis": el_genesis_artifact,
     }
     if is_validator:
@@ -81,7 +81,7 @@ def launch(
     ]
 
     return plan.add_service(
-        name=el_node_name,
+        name="{}-{}".format(el_node_name, "validator" if is_validator else "rpc"),
         config=ServiceConfig(
             image=participant["el_image"],
             ports={

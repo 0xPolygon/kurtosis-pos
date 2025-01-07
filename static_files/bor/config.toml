@@ -12,6 +12,9 @@ syncmode = "full"
     [p2p.discovery]
         static-nodes = {{.static_nodes}}
 
+[heimdall]
+    url = "{{.cl_node_url}}"
+
 [miner]
     mine = {{.is_validator}}
     gaslimit = 30000000
