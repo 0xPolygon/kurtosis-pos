@@ -103,20 +103,31 @@ while true; do
     read -r cl_peer_count el_peer_count cl_block_height cl_latest_block_hash el_block_height el_latest_block_hash <<< "${status}"
 
     echo "Participant #$(( i + 1))"
-    
-    if (( cl_block_height > previous_cl_heights[i] )); then
-      diff=$((cl_block_height - previous_cl_heights[i]))
-      echo "✅ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} (+${diff}) | block hash: ${cl_latest_block_hash}"
-    else
-      echo "❌ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} (+0) | block hash: ${cl_latest_block_hash}"
+
+    cl_peer_status=""
+    if (( cl_peer_count == 0 )); then
+      cl_peer_status=" 🚨"
     fi
 
-    if (( el_block_height > previous_el_heights[i] )); then
-      diff=$((el_block_height - previous_el_heights[i]))
-      echo "✅ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} (+${diff}) | block hash: ${el_latest_block_hash}"
-    else
-      echo "❌ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} (+0) | block hash: ${el_latest_block_hash}"
+    el_peer_status=""
+    if (( el_peer_count == 0 )); then
+      el_peer_status=" 🚨"
     fi
+
+    cl_height_diff=$((cl_block_height - previous_cl_heights[i]))
+    cl_height_status=""
+    if (( cl_height_diff == 0)); then
+      cl_height_status=" 🚨"
+    fi
+
+    el_height_diff=$((el_block_height - previous_el_heights[i]))
+    el_height_status=""
+    if (( el_height_diff == 0)); then
+      el_height_status=" 🚨"
+    fi
+
+    echo "CL | name: ${cl_service_name} | peers: ${cl_peer_count}${cl_peer_status} | height: ${cl_block_height} (+${cl_height_diff})${cl_height_status} | block hash: ${cl_latest_block_hash}"
+    echo "EL | name: ${el_service_name} | peers: ${el_peer_count}${el_peer_status} | height: ${el_block_height} (+${el_height_diff})${el_height_status} | block hash: ${el_latest_block_hash}"
 
     # Only print a new line after each participant block except for the last one.
     if [[ "${i}" -lt $((${#cl_services[@]} - 1)) ]]; then
