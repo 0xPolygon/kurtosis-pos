@@ -18,8 +18,10 @@ get_status() {
   # shellcheck disable=SC2116
   el_peer_count="$(echo $(( $(curl --silent -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${el_rpc_url}" | jq --raw-output '.result') )))"
   cl_block_height="$(curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')"
+  cl_latest_block_hash="$(curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_hash')"
   el_block_height="$(cast bn --rpc-url "${el_rpc_url}")"
-  echo "${cl_peer_count} ${el_peer_count} ${cl_block_height} ${el_block_height}"
+  el_latest_block_hash="$(curl --silent "${el_rpc_url}" | jq --raw-output '.hash')"
+  echo "${cl_peer_count} ${el_peer_count} ${cl_block_height} ${cl_latest_block_hash} ${el_block_height} ${el_latest_block_hash}"
 }
 
 # Load services and rpc urls from files.
@@ -66,7 +68,7 @@ while true; do
       el_rpc_url="${el_rpc_urls[${i}]}"
 
       status="$(get_status "${cl_rpc_url}" "${el_rpc_url}")"
-      read -r cl_peer_count el_peer_count cl_block_height el_block_height <<< "${status}"
+      read -r cl_peer_count el_peer_count cl_block_height cl_latest_block_hash el_block_height el_latest_block_hash <<< "${status}"
 
       if (( previous_cl_heights[i] < 10 )); then
         echo "💥 ${cl_service_name} is stuck..."
@@ -98,22 +100,22 @@ while true; do
     el_rpc_url="${el_rpc_urls[${i}]}"
 
     status="$(get_status "${cl_rpc_url}" "${el_rpc_url}")"
-    read -r cl_peer_count el_peer_count cl_block_height el_block_height <<< "${status}"
+    read -r cl_peer_count el_peer_count cl_block_height cl_latest_block_hash el_block_height el_latest_block_hash <<< "${status}"
 
     echo "Participant #$(( i + 1))"
     
     if (( cl_block_height > previous_cl_heights[i] )); then
       diff=$((cl_block_height - previous_cl_heights[i]))
-      echo "✅ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} (+${diff})"
+      echo "✅ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} +${diff} (${cl_latest_block_hash})"
     else
-      echo "❌ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} (+0)"
+      echo "❌ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} +0 (${cl_latest_block_hash})"
     fi
 
     if (( el_block_height > previous_el_heights[i] )); then
       diff=$((el_block_height - previous_el_heights[i]))
-      echo "✅ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} (+${diff})"
+      echo "✅ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} +${diff} (${el_latest_block_hash})"
     else
-      echo "❌ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} (+0)"
+      echo "❌ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} +0 (${el_latest_block_hash})"
     fi
 
     # Only print a new line after each participant block except for the last one.
