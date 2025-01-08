@@ -38,8 +38,10 @@ while IFS='=' read -r service url; do
 done < "${TMP_FOLDER}/${EL_SERVICES_FILE}"
 
 # Print status.
-echo "Devnet Status (${ENCLAVE})"
-echo
+echo "{"
+echo '  "enclave": "'"${ENCLAVE}"'",'
+echo '  "timestamp": "'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'",'
+echo '  "participants": ['
 
 for (( i=0; i<"${#cl_services[@]}"; i++ )); do
   cl_service_name="${cl_services[${i}]}"
@@ -51,12 +53,21 @@ for (( i=0; i<"${#cl_services[@]}"; i++ )); do
   status=$(get_status "${cl_rpc_url}" "${el_rpc_url}")
   read -r cl_peer_count el_peer_count cl_block_height cl_latest_block_hash el_block_height el_latest_block_hash <<< "${status}"
 
-  echo "Participant #$(( i + 1))"
-  echo "- CL | name: ${cl_service_name} | peers: ${cl_peer_count} | height: ${cl_block_height} | block hash: ${cl_latest_block_hash}"
-  echo "- EL | name: ${el_service_name} | peers: ${el_peer_count} | height: ${el_block_height} | block hash: ${el_latest_block_hash}"
-
-  # Only print a new line after each participant block except for the last one.
-  if [[ "${i}" -lt $((${#cl_services[@]} - 1)) ]]; then
-    echo
-  fi
+  echo '    {'
+  echo '      "id": '"$(( i + 1))"','
+  echo '      "cl": {"name": "'"${cl_service_name}"'",'
+  echo '        "peers": '"${cl_peer_count}"','
+  echo '        "blockHeight": '"${cl_block_height}"','
+  echo '        "blockHash": "'"${cl_latest_block_hash}"'"'
+  echo '      },'
+  echo '      "el": {'
+  echo '        "name": "'"${el_service_name}"'",'
+  echo '        "peers": '"${el_peer_count}"','
+  echo '        "blockHeight": '"${el_block_height}"','
+  echo '        "blockHash": "'"${el_latest_block_hash}"'"'
+  echo '      }'
+  echo '    }'"$([ $i -lt $((${#cl_services[@]} - 1)) ] && echo ',')"
 done
+
+echo '  ]'
+echo '}'

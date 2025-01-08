@@ -48,10 +48,23 @@ kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
 
 5. Check the status of the devnet.
 
+First, retrieve the different participants and their rpc urls.
+
 ```bash
 export ENCLAVE="polygon-pos"
 bash scripts/discover.sh # Run this script only once.
+```
+
+Second, show the status of the devnet.
+
+```bash
 bash scripts/status.sh
+```
+
+If you want to format the result in a more readable way, you can use the following command.
+
+```bash
+bash scripts/status.sh | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Height", "CL Hash", "EL Name", "EL Peers", "EL Height", "EL Hash"] | (., map(length*"-"))), (.participants[] | [.id, .cl.name, .cl.peers, .cl.blockHeight, .cl.blockHash[:10], .el.name, .el.peers, .el.blockHeight, .el.blockHash[:10]]) | @tsv' | column -ts $'\t'
 ```
 
 6. Send some load to the network.
