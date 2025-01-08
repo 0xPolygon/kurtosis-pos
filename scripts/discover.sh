@@ -25,7 +25,7 @@ while IFS= read -r cl_service; do
   url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${cl_service}" rpc)
   cl_rpc_urls+=("${url}")
 done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING \
-  | grep -E "l2-cl-[0-9]+-.*-(validator|rpc)" \
+  | grep -E "l2-cl-[0-9]+-.*" \
   | grep -v "config" \
   | awk '{print $2}')
 
@@ -51,8 +51,8 @@ echo "Saved at ${TMP_FOLDER}/${CL_SERVICES_FILE}"
 
 # Get EL rpc urls.
 echo -n "Getting EL rpc urls... "
-declare -a el_services
-declare -a el_rpc_urls
+declare -a el_services=
+declare -a el_rpc_urls=
 while IFS= read -r el_service; do
   el_services+=("${el_service}")
   url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${el_service}" rpc)
