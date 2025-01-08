@@ -101,7 +101,7 @@ def launch(
     )
 
     return plan.add_service(
-        name="{}-validator".format(cl_node_name),
+        name="{}".format(cl_node_name),
         config=ServiceConfig(
             image=participant["cl_image"],
             ports={

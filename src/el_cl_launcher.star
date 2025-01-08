@@ -145,7 +145,7 @@ def _generate_validator_config(
             cl_type = participant["cl_type"]
             el_type = participant["el_type"]
             private_key = prefunded_accounts[i].private_key
-            p2p_url = "l2-cl-{}-{}-{}-validator:{}".format(
+            p2p_url = "l2-cl-{}-{}-{}:{}".format(
                 validator_id,
                 cl_type,
                 el_type,
@@ -158,9 +158,7 @@ def _generate_validator_config(
                     src="{}/{}/config/".format(
                         constants.HEIMDALL_CONFIG_PATH, validator_id
                     ),
-                    name="l2-cl-{}-{}-{}-validator-config".format(
-                        validator_id, cl_type, el_type
-                    ),
+                    name="l2-cl-{}-{}-{}-config".format(validator_id, cl_type, el_type),
                 )
             )
             el_validator_keys_store.append(
@@ -236,7 +234,7 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers):
 def _get_cl_rpc_urls(plan, participants):
     return [
         {
-            "name": "l2-cl-{}-{}-{}-validator".format(
+            "name": "l2-cl-{}-{}-{}".format(
                 i + 1,
                 participant["cl_type"],
                 participant["el_type"],
