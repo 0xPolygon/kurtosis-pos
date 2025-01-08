@@ -90,7 +90,7 @@ def launch(
                     ],
                     # URLs.
                     "amqp_url": rabbitmq_url,
-                    "bor_rpc_url": "http://{}:8545".format(el_node_name),
+                    "bor_rpc_url": "http://{}-validator:8545".format(el_node_name),
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
                     "rest_api_port_number": HEIMDALL_REST_API_PORT_NUMBER,
