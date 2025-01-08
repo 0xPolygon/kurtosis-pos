@@ -26,7 +26,7 @@ while IFS= read -r cl_service; do
   cl_rpc_urls+=("${url}")
 done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING \
   | grep -E "l2-cl-[0-9]+-.*" \
-  | grep -v "config" \
+  | grep -v "rabbitmq" \
   | awk '{print $2}')
 
 # Sanity check.
