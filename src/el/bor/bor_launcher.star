@@ -28,8 +28,9 @@ def launch(
     el_account,
     bor_static_nodes,
 ):
-    bor_config_artifact = plan.render_templates(
-        name="{}-config".format(el_node_name),
+    is_validator = participant["is_validator"]
+    bor_node_config_artifactconfig_artifacts = plan.render_templates(
+        name="{}-node-config".format(el_node_name),
         config={
             "config.toml": struct(
                 template=read_file(BOR_TEMPLATE_CONFIG_FILE_PATH),
@@ -38,7 +39,7 @@ def launch(
                     "node_name": el_node_name,
                     "config_folder_path": BOR_CONFIG_FOLDER_PATH,
                     "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
-                    "is_miner": participant["is_validator"],
+                    "is_validator": is_validator,
                     "address": el_account.eth_address,
                     "static_nodes": str(bor_static_nodes),
                     "cl_node_url": cl_node_url,
@@ -51,8 +52,36 @@ def launch(
         },
     )
 
+    files = {
+        BOR_CONFIG_FOLDER_PATH: bor_node_config_artifactconfig_artifacts,
+        "/opt/data/genesis": el_genesis_artifact,
+    }
+    if is_validator:
+        files["/opt/data/config"] = el_validator_config_artifact
+
+    validator_cmds = [
+        # Copy EL validator config inside bor data and config folders.
+        "cp /opt/data/config/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
+        "mkdir -p {}/bor".format(BOR_APP_DATA_FOLDER_PATH),
+        "cp /opt/data/config/nodekey {}/bor/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
+        "cp -r /opt/data/config/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
+    ]
+    bor_cmds = [
+        # Copy EL genesis file inside bor config folder.
+        "cp /opt/data/genesis/genesis.json {}".format(BOR_CONFIG_FOLDER_PATH),
+        # Start bor.
+        # Note: this command attempts to start Bor and retries if it fails.
+        # The retry mechanism addresses a race condition where Bor initially fails to
+        # resolve hostnames of other nodes, as services are created sequentially;
+        # after a 5-second delay, all services should be up, allowing Bor to start
+        # successfully. This is also why the port checks are disabled.
+        "while ! bor server --config {}/config.toml; do echo -e '\n❌ Bor failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
+            BOR_CONFIG_FOLDER_PATH
+        ),
+    ]
+
     return plan.add_service(
-        name=el_node_name,
+        name="{}-{}".format(el_node_name, "validator" if is_validator else "rpc"),
         config=ServiceConfig(
             image=participant["el_image"],
             ports={
@@ -72,38 +101,8 @@ def launch(
                     wait=None,
                 ),
             },
-            files={
-                BOR_CONFIG_FOLDER_PATH: bor_config_artifact,
-                "/opt/data/genesis": el_genesis_artifact,
-                "/opt/data/config": el_validator_config_artifact,
-            },
+            files=files,
             entrypoint=["sh", "-c"],
-            cmd=[
-                "&&".join(
-                    [
-                        # Copy EL genesis file inside bor config folder.
-                        "cp /opt/data/genesis/genesis.json /opt/data/config/password.txt {}".format(
-                            BOR_CONFIG_FOLDER_PATH
-                        ),
-                        # Copy EL validator config inside bor data folder.
-                        "mkdir -p {}/bor".format(BOR_APP_DATA_FOLDER_PATH),
-                        "cp /opt/data/config/nodekey {}/bor/nodekey".format(
-                            BOR_APP_DATA_FOLDER_PATH
-                        ),
-                        "cp -r /opt/data/config/keystore {}".format(
-                            BOR_APP_DATA_FOLDER_PATH
-                        ),
-                        # Start bor.
-                        # Note: this command attempts to start Bor and retries if it fails.
-                        # The retry mechanism addresses a race condition where Bor initially fails to
-                        # resolve hostnames of other nodes, as services are created sequentially;
-                        # after a 5-second delay, all services should be up, allowing Bor to start
-                        # successfully. This is also why the port checks are disabled.
-                        "while ! bor server --config {}/config.toml; do echo -e '\n❌ Bor failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
-                            BOR_CONFIG_FOLDER_PATH
-                        ),
-                    ]
-                )
-            ],
+            cmd=["&&".join(validator_cmds + bor_cmds if is_validator else bor_cmds)],
         ),
     )

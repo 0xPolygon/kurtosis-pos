@@ -58,7 +58,7 @@ def generate_cl_genesis_data(
     # of the file artifact, Kurtosis will render an empty file... This is a hack to format the file
     # with jq and get a working artifact.
     return plan.run_sh(
-        name="cl-genesis-generator",
+        name="l2-cl-genesis-generator",
         description="Generating L2 CL genesis",
         files={
             "/opt/data/genesis": cl_genesis_temporary_artifact,

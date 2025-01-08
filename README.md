@@ -19,7 +19,7 @@ mkdir -p ./tmp
 kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-el-genesis.json
 kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-cl-genesis.json
 kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.json | tail -n +2 | jq > ./tmp/contract-addresses.json
-kurtosis files inspect polygon-pos validators-config validators.js | tail -n +2 > ./tmp/validators.js
+kurtosis files inspect polygon-pos l2-validators-config validators.js | tail -n +2 > ./tmp/validators.js
 ```
 
 1. Get MATIC contract addresses.
@@ -31,7 +31,7 @@ kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.js
 2. Get the validators configuration.
 
 ```bash
-kurtosis files inspect polygon-pos validators-config validators.js | tail -n +2
+kurtosis files inspect polygon-pos l2-validators-config validators.js | tail -n +2
 ```
 
 3. Get the EL genesis.
@@ -48,15 +48,35 @@ kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
 
 5. Check the status of the devnet.
 
+First, retrieve the different participants and their rpc urls. You only need to run this script once.
+
 ```bash
 export ENCLAVE="polygon-pos"
-bash scripts/check_status.sh
+bash scripts/discover.sh
+```
+
+Second, show the status of the devnet.
+
+```bash
+bash scripts/status.sh
+```
+
+If you want to format the result in a more readable way, you can use the following command.
+
+```bash
+result=$(bash scripts/status.sh)
+
+# CL participants.
+echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .height, .latestBlockHash[:10]]) | @tsv' | column -ts $'\t'
+
+# EL participants.
+echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .height, .latestBlockHash[:10]]) | @tsv' | column -ts $'\t'
 ```
 
 6. Send some load to the network.
 
 ```bash
-export ETH_RPC_URL="$(kurtosis port print polygon-pos bor-0 rpc)"
+export ETH_RPC_URL="$(kurtosis port print polygon-pos l2-el-1-bor-heimdall-validator rpc)"
 cast balance 0x97538585a02A3f1B1297EB9979cE1b34ff953f1E # the first pre-funded account
 
 private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"

@@ -16,11 +16,18 @@ syncmode = "full"
     url = "{{.cl_node_url}}"
 
 [miner]
-    mine = {{.is_miner}}
+    mine = {{.is_validator}}
     gaslimit = 30000000
     gasprice = "25000000000"
     etherbase = "{{.address}}"
     extradata = "{{.node_name}}"
+
+{{if .is_validator}}
+[accounts]
+    allow-insecure-unlock = true
+    password = "{{.config_folder_path}}/password.txt"
+    unlock = ["{{.address}}"]
+{{end}}
 
 [jsonrpc]
     ipcpath = "{{.data_folder_path}}/bor.ipc"
@@ -38,10 +45,6 @@ syncmode = "full"
         api = ["eth", "net", "web3", "txpool", "bor"]
         origins = ["*"]
 
-[accounts]
-    allow-insecure-unlock = true
-    password = "{{.config_folder_path}}/password.txt"
-    unlock = ["{{.address}}"]
-
 [telemetry]
     metrics = true
+

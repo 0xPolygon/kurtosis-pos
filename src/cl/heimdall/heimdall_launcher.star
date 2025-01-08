@@ -54,8 +54,8 @@ def launch(
         rabbitmq_service.name, rabbitmq_amqp_port.number
     )  # TODO: Remove hardcoded username and password!
 
-    heimdall_config_artifacts = plan.render_templates(
-        name="{}-config".format(cl_node_name),
+    heimdall_node_config_artifacts = plan.render_templates(
+        name="{}-node-config".format(cl_node_name),
         config={
             "app.toml": struct(
                 template=read_file(
@@ -90,7 +90,7 @@ def launch(
                     ],
                     # URLs.
                     "amqp_url": rabbitmq_url,
-                    "bor_rpc_url": "http://{}:8545".format(el_node_name),
+                    "bor_rpc_url": "http://{}-validator:8545".format(el_node_name),
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
                     "rest_api_port_number": HEIMDALL_REST_API_PORT_NUMBER,
@@ -101,7 +101,7 @@ def launch(
     )
 
     return plan.add_service(
-        name=cl_node_name,
+        name="{}".format(cl_node_name),
         config=ServiceConfig(
             image=participant["cl_image"],
             ports={
@@ -126,7 +126,7 @@ def launch(
             files={
                 "{}/config".format(
                     HEIMDALL_CONFIG_FOLDER_PATH
-                ): heimdall_config_artifacts,
+                ): heimdall_node_config_artifacts,
                 "/opt/data/genesis": cl_genesis_artifact,
                 "/opt/data/config": cl_validator_config_artifact,
             },

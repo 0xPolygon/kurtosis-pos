@@ -11,11 +11,11 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
 
     el_genesis_config_artifact = plan.upload_files(
         src=EL_GENESIS_CONFIG_FOLDER_PATH,
-        name="matic-genesis-builder-config",
+        name="l2-genesis-builder-config",
     )
 
     return plan.run_sh(
-        name="el-genesis-generator",
+        name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
         image=genesis_builder_image,
         env_vars={
