@@ -71,10 +71,6 @@ if [ "${#el_services[@]}" -eq 0 ]; then
   echo "Error: Unable to get any L2 EL rpc service or rpc url... Are there any EL nodes deployed?"
   exit 1
 fi
-if [ "${#cl_services[@]}" -ne "${#el_services[@]}" ]; then
-  echo "The numbers of EL services is not the same as the number of CL services."
-  exit 1
-fi
 
 echo "Found ${#el_services[@]}."
 
