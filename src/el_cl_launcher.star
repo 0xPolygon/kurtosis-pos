@@ -47,6 +47,10 @@ def launch(
     persistent_peers_artifact = validator_config_artifacts.persistent_peers
     cl_node_ids = _read_cl_persistent_peers(plan, persistent_peers_artifact)
 
+    # Get CL node rpc urls.
+    cl_node_rpc_urls = _get_cl_rpc_urls(plan, participants)
+    cl_node_url = cl_node_rpc_urls[0]
+
     # Aggregate EL node enodes.
     # Format: static-nodes = [ "enode://<eth_public_key>@<hostname>:<discovery_port_number>", "enode://<eth_public_key>@<hostname>:<discovery_port_number>" ]
     # Example: static-nodes = [ "enode://ad9180a1468702c7c6a7210544593b4bd444768ca754382d1da92fe9abaf408e58160dc72505936df63ca6afc3052e993cade199fe3ff067a5f11b0ee3c6e378@13.209.168.182:30303", "enode://7cf051238a3f92bbee811472a84592ab547ab2692ec09bd2104182551ca6de55f5a7cea48a3d36b411deccb4df976f27076d32019d9ccc4486a916c0e30f3a74@43.201.242.62:30303" ]
@@ -93,7 +97,6 @@ def launch(
             el_type,
         )
 
-        cl_node_url = ""
         if is_validator:
             cl_validator_config_artifact = validator_config_artifacts.cl_configs[i]
             cl_context = cl_launch_method(
@@ -228,6 +231,26 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers):
     )
     # Return the result as a list instead of a string.
     return result.output
+
+
+def _get_cl_rpc_urls(plan, participants):
+    return [
+        {
+            "name": "l2-cl-{}-{}-{}-validator".format(
+                i + 1,
+                participant["cl_type"],
+                participant["el_type"],
+            ),
+            "rpc_url": "http://l2-cl-{}-{}-{}:{}".format(
+                i + 1,
+                participant["cl_type"],
+                participant["el_type"],
+                heimdall.HEIMDALL_RPC_PORT_NUMBER,
+            ),
+        }
+        for i, participant in enumerate(participants)
+        if participant["is_validator"]
+    ]
 
 
 def _aggregate_el_enodes(participants, prefunded_accounts):
