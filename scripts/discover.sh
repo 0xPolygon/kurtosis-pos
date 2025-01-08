@@ -30,12 +30,12 @@ done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids
   | awk '{print $2}')
 
 # Sanity check.
-if [ "${#cl_services[@]}" -ne "${#cl_rpc_urls[@]}" ]; then
-  echo "Error: The numbers of CL services is not the same as the number of CL RPC URLs."
-  exit 1
-fi
 if [ "${#cl_services[@]}" -eq 0 ]; then
   echo "Error: Unable to get any l2 CL rpc service or rpc url... Are there any CL nodes deployed?"
+  exit 1
+fi
+if [ "${#cl_services[@]}" -ne "${#cl_rpc_urls[@]}" ]; then
+  echo "Error: The numbers of CL services is not the same as the number of CL RPC URLs."
   exit 1
 fi
 
@@ -63,12 +63,12 @@ done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids
   | awk '{print $2}')
 
 # Sanity checks.
-if [ "${#el_services[@]}" -ne "${#el_rpc_urls[@]}" ]; then
-  echo "The numbers of EL services is not the same as the number of EL RPC URLs."
-  exit 1
-fi
 if [ "${#el_services[@]}" -eq 0 ]; then
   echo "Error: Unable to get any L2 EL rpc service or rpc url... Are there any EL nodes deployed?"
+  exit 1
+fi
+if [ "${#el_services[@]}" -ne "${#el_rpc_urls[@]}" ]; then
+  echo "The numbers of EL services is not the same as the number of EL RPC URLs."
   exit 1
 fi
 
