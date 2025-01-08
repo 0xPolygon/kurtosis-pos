@@ -19,7 +19,7 @@ mkdir -p ./tmp
 kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-el-genesis.json
 kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-cl-genesis.json
 kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.json | tail -n +2 | jq > ./tmp/contract-addresses.json
-kurtosis files inspect polygon-pos validators-config validators.js | tail -n +2 > ./tmp/validators.js
+kurtosis files inspect polygon-pos l2-validators-config validators.js | tail -n +2 > ./tmp/validators.js
 ```
 
 1. Get MATIC contract addresses.
@@ -31,7 +31,7 @@ kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.js
 2. Get the validators configuration.
 
 ```bash
-kurtosis files inspect polygon-pos validators-config validators.js | tail -n +2
+kurtosis files inspect polygon-pos l2-validators-config validators.js | tail -n +2
 ```
 
 3. Get the EL genesis.
