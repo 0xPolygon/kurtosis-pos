@@ -93,27 +93,28 @@ def launch(
             el_type,
         )
 
-        cl_validator_config_artifact = None
-        el_validator_config_artifact = None
+        cl_node_url = ""
         if is_validator:
             cl_validator_config_artifact = validator_config_artifacts.cl_configs[i]
-            el_validator_config_artifact = validator_config_artifacts.el_configs[i]
+            cl_context = cl_launch_method(
+                plan,
+                i,
+                cl_node_name,
+                el_node_name,
+                participant,
+                network_params,
+                cl_genesis_artifact,
+                cl_validator_config_artifact,
+                cl_node_ids,
+                l1_rpc_url,
+            )
+            cl_node_url = cl_context.ports[
+                "http"
+            ].url  # TODO: Do not hardcode the port name!
 
-        cl_context = cl_launch_method(
-            plan,
-            i,
-            cl_node_name,
-            el_node_name,
-            participant,
-            network_params,
-            cl_genesis_artifact,
-            cl_validator_config_artifact,
-            cl_node_ids,
-            l1_rpc_url,
-        )
-        cl_node_url = cl_context.ports[
-            "http"
-        ].url  # TODO: Do not hardcode the port name!
+        el_validator_config_artifact = None
+        if is_validator:
+            el_validator_config_artifact = validator_config_artifacts.el_configs[i]
 
         el_context = el_launch_method(
             plan,
