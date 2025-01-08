@@ -47,6 +47,7 @@ echo '  "enclave": "'"${ENCLAVE}"'",'
 echo '  "timestamp": "'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'",'
 echo '  "participants": {'
 
+# Loop through each CL service to get the status.
 echo '    "cl": ['
 for (( i=0; i<"${#cl_services[@]}"; i++ )); do
   name="${cl_services[${i}]}"
@@ -65,6 +66,7 @@ for (( i=0; i<"${#cl_services[@]}"; i++ )); do
 done
 echo '    ],'
 
+# Loop through each EL service to get the status.
 echo '    "el": ['
 for (( i=0; i<"${#el_services[@]}"; i++ )); do
   name="${el_services[${i}]}"
