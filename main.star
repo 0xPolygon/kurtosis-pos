@@ -110,7 +110,6 @@ def run(plan, args):
     el_cl_launcher.launch(
         plan,
         participants,
-        validator_accounts,
         polygon_pos_args,
         l2_el_genesis_artifact,
         l2_cl_genesis_artifact,

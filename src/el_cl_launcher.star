@@ -13,7 +13,6 @@ VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/validator"
 def launch(
     plan,
     participants,
-    validator_accounts,
     polygon_pos_args,
     el_genesis_artifact,
     cl_genesis_artifact,
