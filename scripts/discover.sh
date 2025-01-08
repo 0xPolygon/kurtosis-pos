@@ -24,7 +24,7 @@ while IFS= read -r cl_service; do
   cl_services+=("${cl_service}")
   url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${cl_service}" rpc)
   cl_rpc_urls+=("${url}")
-done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids \
+done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING \
   | grep -E "l2-cl-[0-9]+-.*-(validator|rpc)" \
   | grep -v "config" \
   | awk '{print $2}')
@@ -57,7 +57,7 @@ while IFS= read -r el_service; do
   el_services+=("${el_service}")
   url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${el_service}" rpc)
   el_rpc_urls+=("${url}")
-done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids \
+done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING \
   | grep -E "l2-el-[0-9]+-.*-(validator|rpc)" \
   | grep -v "config" \
   | awk '{print $2}')
