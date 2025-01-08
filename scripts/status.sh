@@ -7,19 +7,23 @@ TMP_FOLDER="tmp"
 CL_SERVICES_FILE="cl_services.txt"
 EL_SERVICES_FILE="el_services.txt"
 
-get_status() {
-  cl_rpc_url="$1"
-  el_rpc_url="$2"
+get_cl_status() {
+  rpc_url="$1"
+  local peer_count height latest_block_hash
+  peer_count="$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')"
+  height="$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')"
+  latest_block_hash="$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_hash')"
+  echo "${peer_count} ${height} ${latest_block_hash}"
+}
 
-  local cl_peer_count el_peer_count cl_block_height el_block_height
-  cl_peer_count="$(curl --silent "${cl_rpc_url}/net_info" | jq '.result.peers | length')"
+get_el_status() {
+  rpc_url="$1"
+  local peer_count height latest_block_hash
   # shellcheck disable=SC2116
-  el_peer_count="$(echo $(( $(curl --silent -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${el_rpc_url}" | jq --raw-output '.result') )))"
-  cl_block_height="$(curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')"
-  cl_latest_block_hash="$(curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_hash')"
-  el_block_height="$(cast bn --rpc-url "${el_rpc_url}")"
-  el_latest_block_hash="$(cast block --rpc-url "${el_rpc_url}" --json | jq --raw-output '.hash')"
-  echo "${cl_peer_count} ${el_peer_count} ${cl_block_height} ${cl_latest_block_hash} ${el_block_height} ${el_latest_block_hash}"
+  peer_count="$(echo $(( $(curl --silent -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${rpc_url}" | jq --raw-output '.result') )))"
+  height="$(cast bn --rpc-url "${rpc_url}")"
+  latest_block_hash="$(cast block --rpc-url "${rpc_url}" --json | jq --raw-output '.hash')"
+  echo "${peer_count} ${height} ${latest_block_hash}"
 }
 
 # Load services and rpc urls from files.
@@ -41,33 +45,43 @@ done < "${TMP_FOLDER}/${EL_SERVICES_FILE}"
 echo "{"
 echo '  "enclave": "'"${ENCLAVE}"'",'
 echo '  "timestamp": "'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'",'
-echo '  "participants": ['
+echo '  "participants": {'
 
+echo '    "cl": ['
 for (( i=0; i<"${#cl_services[@]}"; i++ )); do
-  cl_service_name="${cl_services[${i}]}"
-  cl_rpc_url="${cl_rpc_urls[${i}]}"
+  name="${cl_services[${i}]}"
+  rpc_url="${cl_rpc_urls[${i}]}"
 
-  el_service_name="${el_services[${i}]}"
-  el_rpc_url="${el_rpc_urls[${i}]}"
+  status=$(get_cl_status "${rpc_url}")
+  read -r peer_count height latest_block_hash <<< "${status}"
 
-  status=$(get_status "${cl_rpc_url}" "${el_rpc_url}")
-  read -r cl_peer_count el_peer_count cl_block_height cl_latest_block_hash el_block_height el_latest_block_hash <<< "${status}"
+  echo '      {'
+  echo '        "id": '"$(( i + 1))"','
+  echo '        "name": "'"${name}"'",'
+  echo '        "peers": '"${peer_count}"','
+  echo '        "height": '"${height}"','
+  echo '        "latestBlockHash": "'"${latest_block_hash}"'"'
+  echo '      }'"$([ $i -lt $((${#cl_services[@]} - 1)) ] && echo ',')"
+done
+echo '    ],'
 
-  echo '    {'
-  echo '      "id": '"$(( i + 1))"','
-  echo '      "cl": {"name": "'"${cl_service_name}"'",'
-  echo '        "peers": '"${cl_peer_count}"','
-  echo '        "blockHeight": '"${cl_block_height}"','
-  echo '        "blockHash": "'"${cl_latest_block_hash}"'"'
-  echo '      },'
-  echo '      "el": {'
-  echo '        "name": "'"${el_service_name}"'",'
-  echo '        "peers": '"${el_peer_count}"','
-  echo '        "blockHeight": '"${el_block_height}"','
-  echo '        "blockHash": "'"${el_latest_block_hash}"'"'
-  echo '      }'
-  echo '    }'"$([ $i -lt $((${#cl_services[@]} - 1)) ] && echo ',')"
+echo '    "el": ['
+for (( i=0; i<"${#el_services[@]}"; i++ )); do
+  name="${el_services[${i}]}"
+  rpc_url="${el_rpc_urls[${i}]}"
+
+  status=$(get_el_status "${rpc_url}")
+  read -r peer_count height latest_block_hash <<< "${status}"
+
+  echo '      {'
+  echo '        "id": '"$(( i + 1))"','
+  echo '        "name": "'"${name}"'",'
+  echo '        "peers": '"${peer_count}"','
+  echo '        "height": '"${height}"','
+  echo '        "latestBlockHash": "'"${latest_block_hash}"'"'
+  echo '      }'"$([ $i -lt $((${#el_services[@]} - 1)) ] && echo ',')"
 done
 
-echo '  ]'
+echo '    ]'
+echo '  }'
 echo '}'

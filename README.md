@@ -64,7 +64,13 @@ bash scripts/status.sh
 If you want to format the result in a more readable way, you can use the following command.
 
 ```bash
-bash scripts/status.sh | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Height", "CL Hash", "EL Name", "EL Peers", "EL Height", "EL Hash"] | (., map(length*"-"))), (.participants[] | [.id, .cl.name, .cl.peers, .cl.blockHeight, .cl.blockHash[:10], .el.name, .el.peers, .el.blockHeight, .el.blockHash[:10]]) | @tsv' | column -ts $'\t'
+result=$(bash scripts/status.sh)
+
+# CL participants.
+echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .height, .latestBlockHash[:10]]) | @tsv' | column -ts $'\t'
+
+# EL participants.
+echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .height, .latestBlockHash[:10]]) | @tsv' | column -ts $'\t'
 ```
 
 6. Send some load to the network.
