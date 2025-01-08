@@ -62,31 +62,51 @@ while true; do
   if (( current_time - start_time >= TIMEOUT_SECONDS )); then
     echo
     echo "Timeout reached. Exiting monitor."
+    echo
 
-    # error=false
-    # for (( i=0; i<"${#el_services[@]}"; i++ )); do
-    #   cl_service_name="${cl_services[${i}]}"
-    #   cl_rpc_url="${cl_rpc_urls[${i}]}"
-      
-    #   el_service_name="${el_services[${i}]}"
-    #   el_rpc_url="${el_rpc_urls[${i}]}"
+    error=false
+    # Check if there are any issues with the CL clients.
+    for (( i=0; i<"${#cl_services[@]}"; i++ )); do
+      name="${cl_services[${i}]}"
+      rpc_url="${cl_rpc_urls[${i}]}"
 
-    #   status="$(get_status "${cl_rpc_url}" "${el_rpc_url}")"
-    #   read -r cl_peer_count el_peer_count cl_block_height cl_latest_block_hash el_block_height el_latest_block_hash <<< "${status}"
+      status=$(get_cl_status "${rpc_url}")
+      read -r peer_count height latest_block_hash <<< "${status}"
 
-    #   if (( previous_cl_heights[i] < 10 )); then
-    #     echo "💥 ${cl_service_name} is stuck..."
-    #     error=true
-    #   fi
-    #   if (( previous_el_heights[i] < 10 )); then
-    #     echo "💥 ${el_service_name} is stuck..."
-    #     error=true
-    #   fi
-    # done
+      if (( peer_count == 0 )); then
+        echo "❌ ${name} has no peers..."
+        error=true
+      fi
 
-    # if "${error}"; then
-    #   exit 1
-    # fi
+      if (( height < 10 )); then
+        echo "❌ ${name} has not progressed enough... Current height: ${height}, expected more than 10!"
+        error=true
+      fi
+    done
+
+    # Check if there are any issues with EL clients.
+    for (( i=0; i<"${#el_services[@]}"; i++ )); do
+      name="${el_services[${i}]}"
+      rpc_url="${el_rpc_urls[${i}]}"
+
+      status=$(get_el_status "${rpc_url}")
+      read -r peer_count height latest_block_hash <<< "${status}"
+
+      if (( peer_count == 0 )); then
+        echo "❌ ${name} has no peers..."
+        error=true
+      fi
+
+      if (( height < 10 )); then
+        echo "❌ ${name} has not progressed enough... Current height: ${height}, expected more than 10!"
+        error=true
+      fi
+    done
+
+    if "${error}"; then
+      exit 1
+    fi
+    echo "✅ The devnet looks healthy!"
     exit 0
   fi
 
