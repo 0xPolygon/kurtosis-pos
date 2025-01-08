@@ -20,7 +20,7 @@ get_status() {
   cl_block_height="$(curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')"
   cl_latest_block_hash="$(curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_hash')"
   el_block_height="$(cast bn --rpc-url "${el_rpc_url}")"
-  el_latest_block_hash="$(curl --silent "${el_rpc_url}" | jq --raw-output '.hash')"
+  el_latest_block_hash="$(cast block --rpc-url "${el_rpc_url}" --json | jq --raw-output '.hash')"
   echo "${cl_peer_count} ${el_peer_count} ${cl_block_height} ${cl_latest_block_hash} ${el_block_height} ${el_latest_block_hash}"
 }
 
@@ -106,16 +106,16 @@ while true; do
     
     if (( cl_block_height > previous_cl_heights[i] )); then
       diff=$((cl_block_height - previous_cl_heights[i]))
-      echo "✅ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} +${diff} (${cl_latest_block_hash})"
+      echo "✅ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} (+${diff}) | block hash: ${cl_latest_block_hash}"
     else
-      echo "❌ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} +0 (${cl_latest_block_hash})"
+      echo "❌ CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} (+0) | block hash: ${cl_latest_block_hash}"
     fi
 
     if (( el_block_height > previous_el_heights[i] )); then
       diff=$((el_block_height - previous_el_heights[i]))
-      echo "✅ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} +${diff} (${el_latest_block_hash})"
+      echo "✅ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} (+${diff}) | block hash: ${el_latest_block_hash}"
     else
-      echo "❌ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} +0 (${el_latest_block_hash})"
+      echo "❌ EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} (+0) | block hash: ${el_latest_block_hash}"
     fi
 
     # Only print a new line after each participant block except for the last one.

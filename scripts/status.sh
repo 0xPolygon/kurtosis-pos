@@ -18,7 +18,7 @@ get_status() {
   cl_block_height="$(curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')"
   cl_latest_block_hash="$(curl --silent "${cl_rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_hash')"
   el_block_height="$(cast bn --rpc-url "${el_rpc_url}")"
-  el_latest_block_hash="$(curl --silent "${el_rpc_url}" | jq --raw-output '.hash')"
+  el_latest_block_hash="$(cast block --rpc-url "${el_rpc_url}" --json | jq --raw-output '.hash')"
   echo "${cl_peer_count} ${el_peer_count} ${cl_block_height} ${cl_latest_block_hash} ${el_block_height} ${el_latest_block_hash}"
 }
 
@@ -52,8 +52,8 @@ for (( i=0; i<"${#cl_services[@]}"; i++ )); do
   read -r cl_peer_count el_peer_count cl_block_height cl_latest_block_hash el_block_height el_latest_block_hash <<< "${status}"
 
   echo "Participant #$(( i + 1))"
-  echo "- CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} (${cl_latest_block_hash})"
-  echo "- EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} (${el_latest_block_hash})"
+  echo "- CL | name: ${cl_service_name} | peers: ${cl_peer_count} | block height: ${cl_block_height} | block hash: ${cl_latest_block_hash}"
+  echo "- EL | name: ${el_service_name} | peers: ${el_peer_count} | block height: ${el_block_height} | block hash: ${el_latest_block_hash}"
 
   # Only print a new line after each participant block except for the last one.
   if [[ "${i}" -lt $((${#cl_services[@]} - 1)) ]]; then
