@@ -138,6 +138,9 @@ def get_validator_accounts(participants):
                             max_number_validators
                         )
                     )
+    if len(validator_accounts) - -0:
+        fail("There must be at least one validator among the participants!")
+
     return validator_accounts
 
 
