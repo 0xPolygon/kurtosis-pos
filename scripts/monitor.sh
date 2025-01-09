@@ -14,7 +14,7 @@ get_cl_status() {
   local peer_count height latest_block_hash
   peer_count=$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')
   sync_info=$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info | [.latest_block_height, .latest_block_hash, .catching_up] | @tsv')
-  read height latest_block_hash is_syncing <<< "${sync_info}"
+  read -r height latest_block_hash is_syncing <<< "${sync_info}"
   echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
 }
 
@@ -26,6 +26,9 @@ get_el_status() {
   height=$(cast bn --rpc-url "${rpc_url}")
   latest_block_hash=$(cast block --rpc-url "${rpc_url}" --json | jq --raw-output '.hash')
   is_syncing=$(cast rpc --rpc-url "${rpc_url}" eth_syncing)
+  if [[ "${is_syncing}" != false ]]; then
+    is_syncing=true
+  fi
   echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
 }
 
