@@ -178,7 +178,6 @@ def _prepare_validator_data(participants):
 
                 # Increment the index.
                 index += 1
-                return
 
     return struct(
         first_validator_cl_rpc_url=first_validator_cl_rpc_url,
