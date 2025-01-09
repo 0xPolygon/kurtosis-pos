@@ -36,13 +36,11 @@ def launch(
         }
     }
 
-    # Prepare participants data.
+    # Prepare validator data.
     validator_data = _prepare_validator_data(participants)
     cl_node_url = validator_data.first_validator_cl_rpc_url
 
-    persistent_peers_artifact = validator_config_artifacts.persistent_peers
-    cl_node_ids = _read_cl_persistent_peers(plan, persistent_peers_artifact)
-
+    # Generate validator configs.
     validator_config_artifacts = _generate_validator_config(
         plan,
         validator_data.cl_validator_configs_str,
@@ -50,6 +48,10 @@ def launch(
         validator_data.el_validator_keystores,
         polygon_pos_args,
     )
+
+    # Generate CL node ids.
+    persistent_peers_artifact = validator_config_artifacts.persistent_peers
+    cl_node_ids = _read_cl_persistent_peers(plan, persistent_peers_artifact)
 
     for i, participant in enumerate(participants):
         participant_id = i + 1
