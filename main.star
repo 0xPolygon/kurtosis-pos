@@ -25,56 +25,66 @@ def run(plan, args):
     args = input_parser.input_parser(plan, args)
     ethereum_args = args.get("ethereum_package", {})
     polygon_pos_args = args.get("polygon_pos_package", {})
-    participants = polygon_pos_args["participants"]
-    l2_network_params = polygon_pos_args["network_params"]
     dev_args = args.get("dev", {})
 
+    participants = polygon_pos_args.get("participants", {})
     validator_accounts = get_validator_accounts(participants)
+    l2_network_params = polygon_pos_args.get("network_params", {})
 
-    # Deploy local L1 if needed.
-    should_deploy_l1 = dev_args["should_deploy_l1"]
-    if should_deploy_l1 == True:
+    # Deploy a local L1 if needed.
+    # Otherwise, use the provided rpc url.
+    if dev_args.get("should_deploy_l1", True):
         plan.print(
             "Deploying a local L1 with the following input args: {}".format(
                 ethereum_args
             )
         )
-
-        preregistered_validator_keys_mnemonic = l2_network_params[
-            "preregistered_validator_keys_mnemonic"
-        ]
-        l1 = deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic)
+        l1 = deploy_local_l1(
+            plan,
+            ethereum_args,
+            l2_network_params.get("preregistered_validator_keys_mnemonic", ""),
+        )
+        prefunded_accounts_count = len(l1.pre_funded_accounts)
+        if prefunded_accounts_count < 13:
+            fail(
+                "The L1 package did not prefund enough accounts. Expected at least 13 accounts but got {}".format(
+                    prefunded_accounts_count
+                )
+            )
+        if len(l1.all_participants) < 1:
+            fail("The L1 package did not start any participants.")
         l1_context = struct(
             private_key=l1.pre_funded_accounts[
                 12
-            ].private_key,  # reserved for L2 contract deployers
+            ].private_key,  # Reserved for L2 contract deployers.
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
         )
     else:
         plan.print("Using an external l1")
         l1_context = struct(
-            private_key=dev_args["l1_private_key"],
-            rpc_url=dev_args["l1_rpc_url"],
+            private_key=dev_args.get("l1_private_key", ""),
+            rpc_url=dev_args.get("l1_rpc_url", ""),
         )
 
-    # Deploy MATIC contracts if needed.
-    should_deploy_matic_contracts = dev_args["should_deploy_matic_contracts"]
-    if should_deploy_matic_contracts == True:
-        validators_number = len(validator_accounts)
-        plan.print("Number of validators: {}".format(validators_number))
+    # Deploy MATIC contracts and generate the EL and CL genesis files if needed.
+    # Otherwise, use the provided EL and CL genesis files.
+    if dev_args.get("should_deploy_matic_contracts", True):
+        plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
 
         plan.print("Deploying MATIC contracts to L1 and staking for each validator")
         result = contract_deployer.deploy_contracts(
             plan, l1_context, polygon_pos_args, validator_accounts
         )
+        artifact_count = len(result.files_artifacts)
+        if artifact_count != 2:
+            fail(
+                "The contract deployer should have generated 2 artifacts, got {}.".format(
+                    artifact_count
+                )
+            )
         contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
-
-        result = el_genesis_generator.generate_el_genesis_data(
-            plan, polygon_pos_args, validator_config_artifact
-        )
-        l2_el_genesis_artifact = result.files_artifacts[0]
 
         result = cl_genesis_generator.generate_cl_genesis_data(
             plan,
@@ -82,29 +92,51 @@ def run(plan, args):
             validator_accounts,
             contract_addresses_artifact,
         )
+        artifact_count = len(result.files_artifacts)
+        if artifact_count != 1:
+            fail(
+                "The CL genesis generator should have generated 1 artifact, got {}.".format(
+                    artifact_count
+                )
+            )
         l2_cl_genesis_artifact = result.files_artifacts[0]
+
+        result = el_genesis_generator.generate_el_genesis_data(
+            plan, polygon_pos_args, validator_config_artifact
+        )
+        artifact_count = len(result.files_artifacts)
+        if artifact_count != 1:
+            fail(
+                "The EL genesis generator should have generated 1 artifact, got {}.".format(
+                    artifact_count
+                )
+            )
+        l2_el_genesis_artifact = result.files_artifacts[0]
     else:
         plan.print("Using L2 EL/CL genesis provided")
-        l2_el_genesis_file_content = read_file(src=dev_args["l2_el_genesis_filepath"])
         l2_el_genesis_artifact = plan.render_templates(
             name="l2-el-genesis",
             config={
-                "genesis.json": struct(template=l2_el_genesis_file_content, data={})
+                "genesis.json": struct(
+                    template=read_file(src=dev_args.get("l2_el_genesis_filepath", "")),
+                    data={},
+                )
             },
         )
-
-        l2_cl_genesis_file_content = read_file(src=dev_args["l2_cl_genesis_filepath"])
         l2_cl_genesis_artifact = plan.render_templates(
             name="l2-cl-genesis",
             config={
-                "genesis.json": struct(template=l2_cl_genesis_file_content, data={})
+                "genesis.json": struct(
+                    template=read_file(src=dev_args.get("l2_cl_genesis_filepath", "")),
+                    data={},
+                )
             },
         )
 
     # Deploy network participants.
     plan.print(
-        "Launching a Polygon PoS devnet with {} participants and the following network params: {}".format(
-            len(participants), participants
+        "Launching a Polygon PoS devnet with {} participants, including {} validators, and the following network params: {}".format(
+            len(participants), len(validator_accounts), participants
         )
     )
     el_cl_launcher.launch(
@@ -119,24 +151,23 @@ def run(plan, args):
 
 def get_validator_accounts(participants):
     prefunded_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
-    max_number_validators = len(prefunded_accounts)
-
     validator_accounts = []
     index = 0
     for participant in participants:
-        if participant["is_validator"]:
+        if participant.get("is_validator", False):
             count = participant.get("count", 1)
             for _ in range(count):
+                if index >= len(prefunded_accounts):
+                    fail(
+                        "Having more than {} validators is not supported for now.".format(
+                            len(prefunded_accounts)
+                        )
+                    )
+
                 account = prefunded_accounts[index]
                 validator_accounts.append(account)
                 index += 1
-                if index >= max_number_validators:
-                    # TODO: Remove this limitation.
-                    fail(
-                        "Having more than {} validators is not supported for now.".format(
-                            max_number_validators
-                        )
-                    )
+
     if len(validator_accounts) == 0:
         fail("There must be at least one validator among the participants!")
 
@@ -146,9 +177,12 @@ def get_validator_accounts(participants):
 def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
     # Sanity check the mnemonic used.
     # TODO: Remove this limitation.
-    default_l2_mnemonic = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS[
-        "network_params"
-    ]["preregistered_validator_keys_mnemonic"]
+    l2_network_params = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+        "network_params", {}
+    )
+    default_l2_mnemonic = l2_network_params.get(
+        "preregistered_validator_keys_mnemonic", ""
+    )
     if preregistered_validator_keys_mnemonic != default_l2_mnemonic:
         fail("Using a different mnemonic is not supported for now.")
 
@@ -167,6 +201,8 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
 
     l1 = ethereum_package.run(plan, ethereum_args)
     plan.print(l1)
+    if len(l1.all_participants) < 1:
+        fail("The L1 package did not start any participants.")
 
     l1_config_env_vars = {
         "CL_RPC_URL": str(l1.all_participants[0].cl_context.beacon_http_url),
