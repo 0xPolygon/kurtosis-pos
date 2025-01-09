@@ -330,7 +330,7 @@ jobs:
 
       - name: Save L2 EL genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cel-genesis genesis.json > l2-el-genesis.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json > l2-el-genesis.json
           cat l2-el-genesis.json
 
       - name: Deploy network participants
