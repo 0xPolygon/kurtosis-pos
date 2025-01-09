@@ -320,7 +320,20 @@ jobs:
           sudo chmod +x /usr/local/bin/polycli
           /usr/local/bin/polycli version
 
-      - name: Run Starlark
+      - name: Deploy L1 and MATIC contracts and generate genesis files
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+
+      - name: Save L2 CL genesis
+        run: |
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json > l2-cl-genesis.json
+          cat l2-cl-genesis.json
+
+      - name: Save L2 EL genesis
+        run: |
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cel-genesis genesis.json > l2-el-genesis.json
+          cat l2-el-genesis.json
+
+      - name: Deploy network participants
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false .
 
       - name: Inspect enclave
