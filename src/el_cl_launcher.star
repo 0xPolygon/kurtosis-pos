@@ -38,9 +38,6 @@ def launch(
 
     # Prepare validator data.
     validator_data = _prepare_validator_data(participants)
-    cl_node_url = validator_data.first_validator_cl_rpc_url
-
-    # Generate validator configs.
     validator_config_artifacts = _generate_validator_config(
         plan,
         validator_data.cl_validator_configs_str,
@@ -49,9 +46,10 @@ def launch(
         polygon_pos_args,
     )
 
-    # Generate CL node ids.
-    persistent_peers_artifact = validator_config_artifacts.persistent_peers
-    cl_node_ids = _read_cl_persistent_peers(plan, persistent_peers_artifact)
+    cl_node_ids = _read_cl_persistent_peers(
+        plan, validator_config_artifacts.persistent_peers
+    )
+    cl_node_url = validator_data.first_validator_cl_rpc_url
 
     for i, participant in enumerate(participants):
         participant_id = i + 1
@@ -85,11 +83,7 @@ def launch(
         )
 
         # Launching the CL node if it's a validator.
-        el_validator_config_artifact = None
         if participant["is_validator"]:
-            cl_validator_config_artifact = validator_config_artifacts.cl_configs[i]
-            el_validator_config_artifact = validator_config_artifacts.el_configs[i]
-            el_rpc_url = "http://{}:bor.BOR_RPC_PORT_NUMBER".format(el_node_name)
             cl_context = cl_launch_method(
                 plan,
                 i,
@@ -97,16 +91,21 @@ def launch(
                 participant,
                 network_params,
                 cl_genesis_artifact,
-                cl_validator_config_artifact,
+                validator_config_artifacts.cl_configs[i],
                 cl_node_ids,
                 l1_rpc_url,
-                el_rpc_url,
+                "http://{}:bor.BOR_RPC_PORT_NUMBER".format(el_node_name),
             )
             cl_node_url = cl_context.ports[
                 "http"
             ].url  # TODO: Do not hardcode the port name!
 
         # Launching the EL node.
+        el_validator_config_artifact = (
+            validator_config_artifacts.el_configs[i]
+            if participant["is_validator"]
+            else None
+        )
         el_context = el_launch_method(
             plan,
             el_node_name,
