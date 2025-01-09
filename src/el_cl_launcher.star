@@ -160,7 +160,7 @@ def _prepare_validator_data(participants):
                         src="{}/{}/config/".format(
                             constants.HEIMDALL_CONFIG_PATH, validator_id
                         ),
-                        name="{}-config".format(cl_node_name, el_type),
+                        name="{}-config".format(cl_node_name, participant["el_type"]),
                     )
                 )
                 el_validator_keystores.append(
@@ -270,5 +270,5 @@ def _generate_el_node_name(participant, id):
         id,
         participant["el_type"],
         participant["cl_type"],
-        "validator" if is_validator else "rpc",
+        "validator" if participant["is_validator"] else "rpc",
     )
