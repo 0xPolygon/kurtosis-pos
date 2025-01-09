@@ -36,21 +36,21 @@ def launch(
         }
     }
 
-    # Prepare validator data.
-    validator_data = _prepare_validator_data(participants)
+    # Prepare network data and generate validator configs.
+    network_data = _prepare_network_data(participants)
+    cl_node_url = network_data.first_validator_cl_rpc_url
     validator_config_artifacts = _generate_validator_config(
         plan,
-        validator_data.cl_validator_configs_str,
-        validator_data.cl_validator_keystores,
-        validator_data.el_validator_keystores,
+        network_data.cl_validator_configs_str,
+        network_data.cl_validator_keystores,
+        network_data.el_validator_keystores,
         polygon_pos_args,
     )
-
     cl_node_ids = _read_cl_persistent_peers(
         plan, validator_config_artifacts.persistent_peers
     )
-    cl_node_url = validator_data.first_validator_cl_rpc_url
 
+    # Start each participant.
     for i, participant in enumerate(participants):
         participant_id = i + 1
 
@@ -82,7 +82,7 @@ def launch(
             )
         )
 
-        # Launching the CL node if it's a validator.
+        # If the participant is a validator, launch the CL node.
         if participant["is_validator"]:
             cl_context = cl_launch_method(
                 plan,
@@ -100,7 +100,7 @@ def launch(
                 "http"
             ].url  # TODO: Do not hardcode the port name!
 
-        # Launching the EL node.
+        # Launch the EL node.
         el_validator_config_artifact = (
             validator_config_artifacts.el_configs[i]
             if participant["is_validator"]
@@ -114,11 +114,11 @@ def launch(
             el_validator_config_artifact,
             cl_node_url,
             pre_funded_accounts.PRE_FUNDED_ACCOUNTS[i],
-            validator_data.enode_urls,
+            network_data.enode_urls,
         )
 
 
-def _prepare_validator_data(participants):
+def _prepare_network_data(participants):
     # The rpc url of the first validator's CL node.
     first_validator_cl_rpc_url = ""
     # An array of strings containing validator configurations.
