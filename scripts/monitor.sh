@@ -12,20 +12,21 @@ CHECK_RATE_SECONDS=10
 get_cl_status() {
   rpc_url="$1"
   local peer_count height latest_block_hash
-  peer_count="$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')"
-  height="$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')"
-  latest_block_hash="$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_hash')"
-  echo "${peer_count} ${height} ${latest_block_hash}"
+  peer_count=$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')
+  sync_info=$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info | [.latest_block_height, .latest_block_hash, .catching_up] | @tsv')
+  read height latest_block_hash is_syncing <<< "${sync_info}"
+  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
 }
 
 get_el_status() {
   rpc_url="$1"
   local peer_count height latest_block_hash
   # shellcheck disable=SC2116
-  peer_count="$(echo $(( $(curl --silent -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${rpc_url}" | jq --raw-output '.result') )))"
-  height="$(cast bn --rpc-url "${rpc_url}")"
-  latest_block_hash="$(cast block --rpc-url "${rpc_url}" --json | jq --raw-output '.hash')"
-  echo "${peer_count} ${height} ${latest_block_hash}"
+  peer_count=$(cast rpc --rpc-url "${rpc_url}" net_peerCount | sed 's/"//g' | cast to-dec)
+  height=$(cast bn --rpc-url "${rpc_url}")
+  latest_block_hash=$(cast block --rpc-url "${rpc_url}" --json | jq --raw-output '.hash')
+  is_syncing=$(cast rpc --rpc-url "${rpc_url}" eth_syncing)
+  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
 }
 
 # Load services and rpc urls from files.
@@ -126,7 +127,7 @@ while true; do
     rpc_url="${cl_rpc_urls[${i}]}"
 
     status=$(get_cl_status "${rpc_url}")
-    read -r peer_count height latest_block_hash <<< "${status}"
+    read -r peer_count height latest_block_hash is_syncing <<< "${status}"
 
     peer_status="OK"
     if (( peer_count == 0 )); then
@@ -146,7 +147,8 @@ while true; do
     output+='        "peersStatus": "'"${peer_status}"'",'
     output+='        "height": '"${height}"','
     output+='        "heightStatus": "'"${height_status}"'",'
-    output+='        "latestBlockHash": "'"${latest_block_hash}"'"'
+    output+='        "latestBlockHash": "'"${latest_block_hash}"'",'
+    output+='        "isSyncing": '"${is_syncing}"''
     output+='      }'
     if [[ "${i}" -lt $((${#cl_services[@]} - 1)) ]]; then
         output+=','
@@ -164,7 +166,7 @@ while true; do
     rpc_url="${el_rpc_urls[${i}]}"
 
     status=$(get_el_status "${rpc_url}")
-    read -r peer_count height latest_block_hash <<< "${status}"
+    read -r peer_count height latest_block_hash is_syncing <<< "${status}"
 
     peer_status="OK"
     if (( peer_count == 0 )); then
@@ -184,7 +186,8 @@ while true; do
     output+='        "peersStatus": "'"${peer_status}"'",'
     output+='        "height": '"${height}"','
     output+='        "heightStatus": "'"${height_status}"'",'
-    output+='        "latestBlockHash": "'"${latest_block_hash}"'"'
+    output+='        "latestBlockHash": "'"${latest_block_hash}"'",'
+    output+='        "isSyncing": '"${is_syncing}"''
     output+='      }'
     if [[ "${i}" -lt $((${#el_services[@]} - 1)) ]]; then
         output+=','
@@ -197,10 +200,10 @@ while true; do
   output+='  }'
   output+='}'
 
-  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10]]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
 
   echo
-  echo -e "${output}" | jq --raw-output '(["ID", "EL Name", "EL Peers", "EL Peers Status", "EL Height", "EL Height Status", "EL Latest Block Hash"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10]]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["ID", "EL Name", "EL Peers", "EL Peers Status", "EL Height", "EL Height Status", "EL Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
 
   sleep "${CHECK_RATE_SECONDS}"
 done
