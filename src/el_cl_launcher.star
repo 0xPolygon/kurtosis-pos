@@ -18,7 +18,6 @@ def launch(
     cl_genesis_artifact,
     l1_rpc_url,
 ):
-    prefunded_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
     network_params = polygon_pos_args["network_params"]
     matic_contracts_params = polygon_pos_args["matic_contracts_params"]
 
@@ -37,34 +36,25 @@ def launch(
         }
     }
 
-    # Generate CL node artifacts.
-    validator_config_artifacts = _generate_validator_config(
-        plan, participants, prefunded_accounts, polygon_pos_args
-    )
+    # Prepare participants data.
+    validator_data = _prepare_validator_data(participants)
+    cl_node_url = validator_data.first_validator_cl_rpc_url
 
-    # Aggregate CL node identifiers.
     persistent_peers_artifact = validator_config_artifacts.persistent_peers
     cl_node_ids = _read_cl_persistent_peers(plan, persistent_peers_artifact)
 
-    # Get CL node rpc urls.
-    cl_node_rpc_urls = _get_cl_rpc_urls(plan, participants)
-    cl_node_url = cl_node_rpc_urls[0]
-
-    # Aggregate EL node enodes.
-    # Format: static-nodes = [ "enode://<eth_public_key>@<hostname>:<discovery_port_number>", "enode://<eth_public_key>@<hostname>:<discovery_port_number>" ]
-    # Example: static-nodes = [ "enode://ad9180a1468702c7c6a7210544593b4bd444768ca754382d1da92fe9abaf408e58160dc72505936df63ca6afc3052e993cade199fe3ff067a5f11b0ee3c6e378@13.209.168.182:30303", "enode://7cf051238a3f92bbee811472a84592ab547ab2692ec09bd2104182551ca6de55f5a7cea48a3d36b411deccb4df976f27076d32019d9ccc4486a916c0e30f3a74@43.201.242.62:30303" ]
-    bor_static_nodes = _aggregate_el_enodes(participants, prefunded_accounts)
+    validator_config_artifacts = _generate_validator_config(
+        plan,
+        validator_data.cl_validator_configs_str,
+        validator_data.cl_validator_keystores,
+        validator_data.el_validator_keystores,
+        polygon_pos_args,
+    )
 
     for i, participant in enumerate(participants):
-        el_type = participant["el_type"]
-        if el_type not in el_launchers:
-            fail(
-                "Unsupported EL launcher '{0}', need one of '{1}'".format(
-                    el_type, ",".join(el_launchers.keys())
-                )
-            )
-        el_launch_method = el_launchers[el_type]["launch_method"]
+        participant_id = i + 1
 
+        # Get the CL launcher.
         cl_type = participant["cl_type"]
         if cl_type not in cl_launchers:
             fail(
@@ -72,52 +62,49 @@ def launch(
                     cl_type, ",".join(cl_launchers.keys())
                 )
             )
+        cl_node_name = _generate_cl_node_name(participant, participant_id)
         cl_launch_method = cl_launchers[cl_type]["launch_method"]
 
-        is_validator = participant["is_validator"]
+        # Get the EL launcher.
+        el_type = participant["el_type"]
+        if el_type not in el_launchers:
+            fail(
+                "Unsupported EL launcher '{0}', need one of '{1}'".format(
+                    el_type, ",".join(el_launchers.keys())
+                )
+            )
+        el_node_name = _generate_el_node_name(participant, participant_id)
+        el_launch_method = el_launchers[el_type]["launch_method"]
+
         plan.print(
-            "Launching {} {} ({}/{} validator) with config: {}".format(
-                "validator" if is_validator else "rpc",
-                i,
-                cl_type,
-                el_type,
-                str(participant),
+            "Launching participant {} with config: {}".format(
+                participant_id, str(participant)
             )
         )
 
-        el_node_name = "l2-el-{}-{}-{}".format(
-            i + 1,
-            el_type,
-            cl_type,
-        )
-        cl_node_name = "l2-cl-{}-{}-{}".format(
-            i + 1,
-            cl_type,
-            el_type,
-        )
-
-        if is_validator:
+        # Launching the CL node if it's a validator.
+        el_validator_config_artifact = None
+        if participant["is_validator"]:
             cl_validator_config_artifact = validator_config_artifacts.cl_configs[i]
+            el_validator_config_artifact = validator_config_artifacts.el_configs[i]
+            el_rpc_url = "http://{}:bor.BOR_RPC_PORT_NUMBER".format(el_node_name)
             cl_context = cl_launch_method(
                 plan,
                 i,
                 cl_node_name,
-                el_node_name,
                 participant,
                 network_params,
                 cl_genesis_artifact,
                 cl_validator_config_artifact,
                 cl_node_ids,
                 l1_rpc_url,
+                el_rpc_url,
             )
             cl_node_url = cl_context.ports[
                 "http"
             ].url  # TODO: Do not hardcode the port name!
 
-        el_validator_config_artifact = None
-        if is_validator:
-            el_validator_config_artifact = validator_config_artifacts.el_configs[i]
-
+        # Launching the EL node.
         el_context = el_launch_method(
             plan,
             el_node_name,
@@ -125,50 +112,100 @@ def launch(
             el_genesis_artifact,
             el_validator_config_artifact,
             cl_node_url,
-            prefunded_accounts[i],
-            bor_static_nodes,
+            pre_funded_accounts.PRE_FUNDED_ACCOUNTS[i],
+            validator_data.enode_urls,
         )
 
 
-def _generate_validator_config(
-    plan, participants, prefunded_accounts, polygon_pos_args
-):
-    # Get CL validator node and private keys.
-    # Also generate the store spec that will be used to save such keys later.
+def _prepare_validator_data(participants):
+    # The rpc url of the first validator's CL node.
+    first_validator_cl_rpc_url = ""
+    # An array of strings containing validator configurations.
+    # Each string should follow the format: "<private_key>,<p2p_url>".
     cl_validator_configs = []
-    cl_validator_keys_store = []
-    el_validator_keys_store = []
+    # An array of keystores for CL and EL validators.
+    cl_validator_keystores = []
+    el_validator_keystores = []
+    # An array of EL enode URLs.
+    enode_urls = []
+
+    # Iterate through all participants in the network and generate necessary configurations.
+    index = 0
     for i, participant in enumerate(participants):
         if participant["is_validator"]:
-            validator_id = i + 1
-            cl_type = participant["cl_type"]
-            el_type = participant["el_type"]
-            private_key = prefunded_accounts[i].private_key
-            p2p_url = "l2-cl-{}-{}-{}:{}".format(
-                validator_id,
-                cl_type,
-                el_type,
-                heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
-            )
-            cl_validator_configs.append("{},{}".format(private_key, p2p_url))
+            for _ in range(participant["count"]):
+                validator_id = index + 1
+                cl_node_name = _generate_cl_node_name(participant, validator_id)
+                el_node_name = _generate_el_node_name(participant, validator_id)
+                account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[index]
 
-            cl_validator_keys_store.append(
-                StoreSpec(
-                    src="{}/{}/config/".format(
-                        constants.HEIMDALL_CONFIG_PATH, validator_id
-                    ),
-                    name="l2-cl-{}-{}-{}-config".format(validator_id, cl_type, el_type),
+                # Determine the RPC url of the first validator's CL node.
+                if not first_validator_cl_rpc_url:
+                    first_validator_cl_rpc_url = "http://{}:{}".format(
+                        cl_node_name,
+                        heimdall.HEIMDALL_RPC_PORT_NUMBER,
+                    )
+
+                # Generate the CL validator config.
+                cl_validator_config = "{},{}:{}".format(
+                    account.private_key,
+                    cl_node_name,
+                    heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                 )
-            )
-            el_validator_keys_store.append(
-                StoreSpec(
-                    src="{}/{}".format(constants.BOR_CONFIG_PATH, validator_id),
-                    name="l2-el-{}-{}-{}-validator-config".format(
-                        validator_id, el_type, cl_type
+                cl_validator_configs.append(cl_validator_config)
+
+                # Generate the validator CL and EL keystores.
+                cl_validator_keystores.append(
+                    StoreSpec(
+                        src="{}/{}/config/".format(
+                            constants.HEIMDALL_CONFIG_PATH, validator_id
+                        ),
+                        name="{}-config".format(cl_node_name, el_type),
+                    )
+                )
+                el_validator_keystores.append(
+                    StoreSpec(
+                        src="{}/{}".format(constants.BOR_CONFIG_PATH, validator_id),
+                        name="{}-config".format(el_node_name),
                     ),
-                ),
-            )
-    cl_validator_configs_str = ";".join(cl_validator_configs)
+                )
+
+                # Generate the EL enode url.
+                enode_url = _generate_enode_url(
+                    participant, account.eth_public_key[2:], el_node_name
+                )
+                enode_urls.append(enode_url)
+
+                # Increment the index.
+                index += 1
+                return
+
+    return struct(
+        first_validator_cl_rpc_url=first_validator_cl_rpc_url,
+        cl_validator_configs_str=";".join(cl_validator_configs),
+        cl_validator_keystores=cl_validator_keystores,
+        el_validator_keystores=el_validator_keystores,
+        enode_urls=enode_urls,
+    )
+
+
+def _generate_enode_url(participant, eth_public_key, el_node_name):
+    return "enode://{}@{}:{}?discport=0".format(
+        eth_public_key,
+        el_node_name,
+        bor.BOR_DISCOVERY_PORT_NUMBER,
+    )
+
+
+def _generate_validator_config(
+    plan,
+    cl_validator_configs_str,
+    cl_validator_keystores,
+    el_validator_keystores,
+    polygon_pos_args,
+):
+    matic_contracts_params = polygon_pos_args["matic_contracts_params"]
+    network_params = polygon_pos_args["network_params"]
 
     # Generate CL validators configuration such as the public/private keys and node identifiers.
     validator_config_generator_artifact = plan.upload_files(
@@ -176,18 +213,12 @@ def _generate_validator_config(
         name="l2-validator-config-generator-config",
     )
 
-    matic_contracts_params = polygon_pos_args["matic_contracts_params"]
-    validator_config_generator_image = matic_contracts_params[
-        "validator_config_generator_image"
-    ]
-
-    network_params = polygon_pos_args["network_params"]
-    heimdall_id = network_params["heimdall_id"]
+    # Generate validator configs.
     result = plan.run_sh(
         name="l2-validators-config-generator",
-        image=validator_config_generator_image,
+        image=matic_contracts_params["validator_config_generator_image"],
         env_vars={
-            "HEIMDALL_ID": heimdall_id,
+            "HEIMDALL_ID": network_params["heimdall_id"],
             "HEIMDALL_CONFIG_PATH": constants.HEIMDALL_CONFIG_PATH,
             "BOR_CONFIG_PATH": constants.BOR_CONFIG_PATH,
             "HEIMDALL_VALIDATOR_CONFIGS": cl_validator_configs_str,
@@ -195,8 +226,8 @@ def _generate_validator_config(
         files={
             "/opt/data": validator_config_generator_artifact,
         },
-        store=cl_validator_keys_store
-        + el_validator_keys_store
+        store=cl_validator_keystores
+        + el_validator_keystores
         + [
             StoreSpec(
                 src="{}/persistent_peers.txt".format(constants.HEIMDALL_CONFIG_PATH),
@@ -224,41 +255,20 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers):
         files={
             "/opt/data": cl_persistent_peers,
         },
+        # Return the result as a list instead of a string.
         run="cat /opt/data/persistent_peers.txt | tr -d '\n'",
     )
-    # Return the result as a list instead of a string.
     return result.output
 
 
-def _get_cl_rpc_urls(plan, participants):
-    return [
-        {
-            "name": "l2-cl-{}-{}-{}".format(
-                i + 1,
-                participant["cl_type"],
-                participant["el_type"],
-            ),
-            "rpc_url": "http://l2-cl-{}-{}-{}:{}".format(
-                i + 1,
-                participant["cl_type"],
-                participant["el_type"],
-                heimdall.HEIMDALL_RPC_PORT_NUMBER,
-            ),
-        }
-        for i, participant in enumerate(participants)
-        if participant["is_validator"]
-    ]
+def _generate_cl_node_name(participant, id):
+    return "l2-cl-{}-{}-{}".format(id, participant["cl_type"], participant["el_type"])
 
 
-def _aggregate_el_enodes(participants, prefunded_accounts):
-    return [
-        "enode://{}@l2-el-{}-{}-{}-validator:{}?discport=0".format(
-            prefunded_accounts[i].eth_public_key[2:],  # Remove the 0x prefix.
-            i + 1,
-            participant["el_type"],
-            participant["cl_type"],
-            bor.BOR_DISCOVERY_PORT_NUMBER,
-        )
-        for i, participant in enumerate(participants)
-        if participant["is_validator"]
-    ]
+def _generate_el_node_name(participant, id):
+    return "l2-el-{}-{}-{}-{}".format(
+        id,
+        participant["el_type"],
+        participant["cl_type"],
+        "validator" if is_validator else "rpc",
+    )

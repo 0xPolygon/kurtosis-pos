@@ -29,13 +29,13 @@ def launch(
     plan,
     index,
     cl_node_name,
-    el_node_name,
     participant,
     network_params,
     cl_genesis_artifact,
     cl_validator_config_artifact,
     cl_node_ids,
     l1_rpc_url,
+    el_rpc_url,
 ):
     rabbitmq_service = plan.add_service(
         name="rabbitmq-{}".format(cl_node_name),
@@ -90,7 +90,7 @@ def launch(
                     ],
                     # URLs.
                     "amqp_url": rabbitmq_url,
-                    "bor_rpc_url": "http://{}-validator:8545".format(el_node_name),
+                    "el_rpc_url": el_rpc_url,
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
                     "rest_api_port_number": HEIMDALL_REST_API_PORT_NUMBER,
