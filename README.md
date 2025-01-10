@@ -67,10 +67,10 @@ If you want to format the result in a more readable way, you can use the followi
 result=$(bash scripts/status.sh)
 
 # CL participants.
-echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .height, .latestBlockHash[:10]]) | @tsv' | column -ts $'\t'
+echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .height, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
 
 # EL participants.
-echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .height, .latestBlockHash[:10]]) | @tsv' | column -ts $'\t'
+echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .height, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
 ```
 
 6. Send some load to the network.

@@ -10,20 +10,24 @@ EL_SERVICES_FILE="el_services.txt"
 get_cl_status() {
   rpc_url="$1"
   local peer_count height latest_block_hash
-  peer_count="$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')"
-  height="$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')"
-  latest_block_hash="$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_hash')"
-  echo "${peer_count} ${height} ${latest_block_hash}"
+  peer_count=$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')
+  sync_info=$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info | [.latest_block_height, .latest_block_hash, .catching_up] | @tsv')
+  read -r height latest_block_hash is_syncing <<< "${sync_info}"
+  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
 }
 
 get_el_status() {
   rpc_url="$1"
   local peer_count height latest_block_hash
   # shellcheck disable=SC2116
-  peer_count="$(echo $(( $(curl --silent -H "Content-Type: application/json" --data '{"jsonrpc": "2.0", "method": "net_peerCount", "params": [], "id": 1}' "${rpc_url}" | jq --raw-output '.result') )))"
-  height="$(cast bn --rpc-url "${rpc_url}")"
-  latest_block_hash="$(cast block --rpc-url "${rpc_url}" --json | jq --raw-output '.hash')"
-  echo "${peer_count} ${height} ${latest_block_hash}"
+  peer_count=$(cast rpc --rpc-url "${rpc_url}" net_peerCount | sed 's/"//g' | cast to-dec)
+  height=$(cast bn --rpc-url "${rpc_url}")
+  latest_block_hash=$(cast block --rpc-url "${rpc_url}" --json | jq --raw-output '.hash')
+  is_syncing=$(cast rpc --rpc-url "${rpc_url}" eth_syncing)
+  if [[ "${is_syncing}" != false ]]; then
+    is_syncing=true
+  fi
+  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
 }
 
 # Load services and rpc urls from files.
@@ -54,14 +58,15 @@ for (( i=0; i<"${#cl_services[@]}"; i++ )); do
   rpc_url="${cl_rpc_urls[${i}]}"
 
   status=$(get_cl_status "${rpc_url}")
-  read -r peer_count height latest_block_hash <<< "${status}"
+  read -r peer_count height latest_block_hash is_syncing <<< "${status}"
 
   echo '      {'
   echo '        "id": '"$(( i + 1))"','
   echo '        "name": "'"${name}"'",'
   echo '        "peers": '"${peer_count}"','
   echo '        "height": '"${height}"','
-  echo '        "latestBlockHash": "'"${latest_block_hash}"'"'
+  echo '        "latestBlockHash": "'"${latest_block_hash}"'",'
+  echo '        "isSyncing": '"${is_syncing}"''
   echo '      }'"$([ $i -lt $((${#cl_services[@]} - 1)) ] && echo ',')"
 done
 echo '    ],'
@@ -73,14 +78,15 @@ for (( i=0; i<"${#el_services[@]}"; i++ )); do
   rpc_url="${el_rpc_urls[${i}]}"
 
   status=$(get_el_status "${rpc_url}")
-  read -r peer_count height latest_block_hash <<< "${status}"
+  read -r peer_count height latest_block_hash is_syncing <<< "${status}"
 
   echo '      {'
   echo '        "id": '"$(( i + 1))"','
   echo '        "name": "'"${name}"'",'
   echo '        "peers": '"${peer_count}"','
   echo '        "height": '"${height}"','
-  echo '        "latestBlockHash": "'"${latest_block_hash}"'"'
+  echo '        "latestBlockHash": "'"${latest_block_hash}"'",'
+  echo '        "isSyncing": '"${is_syncing}"''
   echo '      }'"$([ $i -lt $((${#el_services[@]} - 1)) ] && echo ',')"
 done
 

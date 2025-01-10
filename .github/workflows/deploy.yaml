@@ -352,5 +352,5 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: dump_run_with_external_l1_and_pre_deployed_matic_contracts_${{ github.run_id }}
+          name: dump_run_with_cl_el_genesis_${{ github.run_id }}
           path: ./dump
