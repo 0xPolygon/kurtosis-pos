@@ -95,7 +95,7 @@ def launch(
                     validator_config_artifacts.cl_configs[index],
                     cl_node_ids,
                     l1_rpc_url,
-                    "http://{}:bor.BOR_RPC_PORT_NUMBER".format(el_node_name),
+                    "http://{}:{}".format(el_node_name, bor.BOR_RPC_PORT_NUMBER),
                 )
                 cl_node_url = cl_context.ports[
                     "http"
