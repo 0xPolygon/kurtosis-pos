@@ -138,8 +138,8 @@ def _prepare_network_data(participants):
     # Iterate through all participants in the network and generate necessary configurations.
     participant_index = 0
     for _, participant in enumerate(participants):
-        if participant["is_validator"]:
-            for _ in range(participant["count"]):
+        for _ in range(participant["count"]):
+            if participant["is_validator"]:
                 cl_node_name = _generate_cl_node_name(
                     participant, participant_index + 1
                 )
@@ -187,8 +187,8 @@ def _prepare_network_data(participants):
                 )
                 enode_urls.append(enode_url)
 
-                # Increment the index.
-                participant_index += 1
+            # Increment the index.
+            participant_index += 1
 
     return struct(
         first_validator_cl_rpc_url=first_validator_cl_rpc_url,
