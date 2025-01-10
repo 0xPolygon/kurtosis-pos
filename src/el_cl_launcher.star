@@ -140,8 +140,12 @@ def _prepare_network_data(participants):
     for _, participant in enumerate(participants):
         if participant["is_validator"]:
             for _ in range(participant["count"]):
-                cl_node_name = _generate_cl_node_name(participant, participant_index + 1)
-                el_node_name = _generate_el_node_name(participant, participant_index + 1)
+                cl_node_name = _generate_cl_node_name(
+                    participant, participant_index + 1
+                )
+                el_node_name = _generate_el_node_name(
+                    participant, participant_index + 1
+                )
                 account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index]
 
                 # Determine the RPC url of the first validator's CL node.
@@ -170,7 +174,9 @@ def _prepare_network_data(participants):
                 )
                 el_validator_keystores.append(
                     StoreSpec(
-                        src="{}/{}".format(constants.BOR_CONFIG_PATH, participant_index + 1),
+                        src="{}/{}".format(
+                            constants.BOR_CONFIG_PATH, participant_index + 1
+                        ),
                         name="{}-config".format(el_node_name),
                     ),
                 )
