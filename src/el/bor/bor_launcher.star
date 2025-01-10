@@ -107,6 +107,7 @@ def launch(
                 BOR_METRICS_PORT_ID: PortSpec(
                     number=BOR_METRICS_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
             },
             files=files,
