@@ -136,14 +136,13 @@ def _prepare_network_data(participants):
     enode_urls = []
 
     # Iterate through all participants in the network and generate necessary configurations.
-    index = 0
+    participant_index = 0
     for _, participant in enumerate(participants):
         if participant["is_validator"]:
             for _ in range(participant["count"]):
-                validator_id = index + 1
-                cl_node_name = _generate_cl_node_name(participant, validator_id)
-                el_node_name = _generate_el_node_name(participant, validator_id)
-                account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[index]
+                cl_node_name = _generate_cl_node_name(participant, participant_index + 1)
+                el_node_name = _generate_el_node_name(participant, participant_index + 1)
+                account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index]
 
                 # Determine the RPC url of the first validator's CL node.
                 if not first_validator_cl_rpc_url:
@@ -164,14 +163,14 @@ def _prepare_network_data(participants):
                 cl_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}/config/".format(
-                            constants.HEIMDALL_CONFIG_PATH, validator_id
+                            constants.HEIMDALL_CONFIG_PATH, participant_index + 1
                         ),
                         name="{}-config".format(cl_node_name, participant["el_type"]),
                     )
                 )
                 el_validator_keystores.append(
                     StoreSpec(
-                        src="{}/{}".format(constants.BOR_CONFIG_PATH, validator_id),
+                        src="{}/{}".format(constants.BOR_CONFIG_PATH, participant_index + 1),
                         name="{}-config".format(el_node_name),
                     ),
                 )
@@ -183,7 +182,7 @@ def _prepare_network_data(participants):
                 enode_urls.append(enode_url)
 
                 # Increment the index.
-                index += 1
+                participant_index += 1
 
     return struct(
         first_validator_cl_rpc_url=first_validator_cl_rpc_url,
