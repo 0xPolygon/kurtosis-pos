@@ -134,9 +134,10 @@ def run(plan, args):
         )
 
     # Deploy network participants.
+    participants_count = sum([p["count"] for p in participants])
     plan.print(
         "Launching a Polygon PoS devnet with {} participants, including {} validators, and the following network params: {}".format(
-            len(participants), len(validator_accounts), participants
+            participants_count, len(validator_accounts), participants
         )
     )
     el_cl_launcher.launch(
