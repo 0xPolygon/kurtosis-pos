@@ -153,22 +153,22 @@ def run(plan, args):
 
 def get_validator_accounts(participants):
     prefunded_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
+
     validator_accounts = []
-    index = 0
+    participant_index = 0
     for participant in participants:
-        if participant.get("is_validator", False):
-            count = participant.get("count", 1)
-            for _ in range(count):
-                if index >= len(prefunded_accounts):
+        for _ in range(participant.get("count", 1)):
+            if participant.get("is_validator", False):
+                if participant_index >= len(prefunded_accounts):
                     fail(
                         "Having more than {} validators is not supported for now.".format(
                             len(prefunded_accounts)
                         )
                     )
-
-                account = prefunded_accounts[index]
+                account = prefunded_accounts[participant_index]
                 validator_accounts.append(account)
-                index += 1
+            # Increment the participant index.
+            participant_index += 1
 
     if len(validator_accounts) == 0:
         fail("There must be at least one validator among the participants!")
