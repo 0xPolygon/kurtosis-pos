@@ -137,6 +137,7 @@ def _prepare_network_data(participants):
 
     # Iterate through all participants in the network and generate necessary configurations.
     participant_index = 0
+    validator_index = 0
     for _, participant in enumerate(participants):
         for _ in range(participant["count"]):
             if participant["is_validator"]:
@@ -167,7 +168,7 @@ def _prepare_network_data(participants):
                 cl_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}/config/".format(
-                            constants.HEIMDALL_CONFIG_PATH, participant_index + 1
+                            constants.HEIMDALL_CONFIG_PATH, validator_index + 1
                         ),
                         name="{}-config".format(cl_node_name, participant["el_type"]),
                     )
@@ -175,7 +176,7 @@ def _prepare_network_data(participants):
                 el_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}".format(
-                            constants.BOR_CONFIG_PATH, participant_index + 1
+                            constants.BOR_CONFIG_PATH, validator_index + 1
                         ),
                         name="{}-config".format(el_node_name),
                     ),
@@ -187,7 +188,10 @@ def _prepare_network_data(participants):
                 )
                 enode_urls.append(enode_url)
 
-            # Increment the index.
+                # Increment the validator index.
+                validator_index += 1
+
+            # Increment the participant index.
             participant_index += 1
 
     return struct(
