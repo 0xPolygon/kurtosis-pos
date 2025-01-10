@@ -81,7 +81,7 @@ def launch(
     ]
 
     return plan.add_service(
-        name="{}-{}".format(el_node_name, "validator" if is_validator else "rpc"),
+        name=el_node_name,
         config=ServiceConfig(
             image=participant["el_image"],
             ports={
