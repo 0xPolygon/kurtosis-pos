@@ -52,6 +52,7 @@ def launch(
 
     # Start each participant.
     index = 0
+    validator_index = 0
     for _, participant in enumerate(participants):
         for _ in range(participant["count"]):
             participant_id = index + 1
@@ -92,7 +93,7 @@ def launch(
                     participant,
                     network_params,
                     cl_genesis_artifact,
-                    validator_config_artifacts.cl_configs[index],
+                    validator_config_artifacts.cl_configs[validator_index],
                     cl_node_ids,
                     l1_rpc_url,
                     "http://{}:{}".format(el_node_name, bor.BOR_RPC_PORT_NUMBER),
@@ -103,7 +104,7 @@ def launch(
 
             # Launch the EL node.
             el_validator_config_artifact = (
-                validator_config_artifacts.el_configs[index]
+                validator_config_artifacts.el_configs[validator_index]
                 if participant["is_validator"]
                 else None
             )
@@ -118,8 +119,10 @@ def launch(
                 network_data.enode_urls,
             )
 
-            # Increment the index.
+            # Increment the indexes.
             index += 1
+            if participant["is_validator"]:
+                validator_index += 1
 
 
 def _prepare_network_data(participants):
