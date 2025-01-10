@@ -51,71 +51,75 @@ def launch(
     )
 
     # Start each participant.
-    for i, participant in enumerate(participants):
-        participant_id = i + 1
+    index = 0
+    for _, participant in enumerate(participants):
+        for _ in range(participant["count"]):
+            participant_id = index + 1
 
-        # Get the CL launcher.
-        cl_type = participant["cl_type"]
-        if cl_type not in cl_launchers:
-            fail(
-                "Unsupported CL launcher '{0}', need one of '{1}'".format(
-                    cl_type, ",".join(cl_launchers.keys())
+            # Get the CL launcher.
+            cl_type = participant["cl_type"]
+            if cl_type not in cl_launchers:
+                fail(
+                    "Unsupported CL launcher '{0}', need one of '{1}'".format(
+                        cl_type, ",".join(cl_launchers.keys())
+                    )
+                )
+            cl_node_name = _generate_cl_node_name(participant, participant_id)
+            cl_launch_method = cl_launchers[cl_type]["launch_method"]
+
+            # Get the EL launcher.
+            el_type = participant["el_type"]
+            if el_type not in el_launchers:
+                fail(
+                    "Unsupported EL launcher '{0}', need one of '{1}'".format(
+                        el_type, ",".join(el_launchers.keys())
+                    )
+                )
+            el_node_name = _generate_el_node_name(participant, participant_id)
+            el_launch_method = el_launchers[el_type]["launch_method"]
+
+            plan.print(
+                "Launching participant {} with config: {}".format(
+                    participant_id, str(participant)
                 )
             )
-        cl_node_name = _generate_cl_node_name(participant, participant_id)
-        cl_launch_method = cl_launchers[cl_type]["launch_method"]
 
-        # Get the EL launcher.
-        el_type = participant["el_type"]
-        if el_type not in el_launchers:
-            fail(
-                "Unsupported EL launcher '{0}', need one of '{1}'".format(
-                    el_type, ",".join(el_launchers.keys())
+            # If the participant is a validator, launch the CL node.
+            if participant["is_validator"]:
+                cl_context = cl_launch_method(
+                    plan,
+                    cl_node_name,
+                    participant,
+                    network_params,
+                    cl_genesis_artifact,
+                    validator_config_artifacts.cl_configs[index],
+                    cl_node_ids,
+                    l1_rpc_url,
+                    "http://{}:bor.BOR_RPC_PORT_NUMBER".format(el_node_name),
                 )
-            )
-        el_node_name = _generate_el_node_name(participant, participant_id)
-        el_launch_method = el_launchers[el_type]["launch_method"]
+                cl_node_url = cl_context.ports[
+                    "http"
+                ].url  # TODO: Do not hardcode the port name!
 
-        plan.print(
-            "Launching participant {} with config: {}".format(
-                participant_id, str(participant)
+            # Launch the EL node.
+            el_validator_config_artifact = (
+                validator_config_artifacts.el_configs[index]
+                if participant["is_validator"]
+                else None
             )
-        )
-
-        # If the participant is a validator, launch the CL node.
-        if participant["is_validator"]:
-            cl_context = cl_launch_method(
+            el_context = el_launch_method(
                 plan,
-                i,
-                cl_node_name,
+                el_node_name,
                 participant,
-                network_params,
-                cl_genesis_artifact,
-                validator_config_artifacts.cl_configs[i],
-                cl_node_ids,
-                l1_rpc_url,
-                "http://{}:bor.BOR_RPC_PORT_NUMBER".format(el_node_name),
+                el_genesis_artifact,
+                el_validator_config_artifact,
+                cl_node_url,
+                pre_funded_accounts.PRE_FUNDED_ACCOUNTS[index],
+                network_data.enode_urls,
             )
-            cl_node_url = cl_context.ports[
-                "http"
-            ].url  # TODO: Do not hardcode the port name!
 
-        # Launch the EL node.
-        el_validator_config_artifact = (
-            validator_config_artifacts.el_configs[i]
-            if participant["is_validator"]
-            else None
-        )
-        el_context = el_launch_method(
-            plan,
-            el_node_name,
-            participant,
-            el_genesis_artifact,
-            el_validator_config_artifact,
-            cl_node_url,
-            pre_funded_accounts.PRE_FUNDED_ACCOUNTS[i],
-            network_data.enode_urls,
-        )
+            # Increment the index.
+            index += 1
 
 
 def _prepare_network_data(participants):
@@ -132,7 +136,7 @@ def _prepare_network_data(participants):
 
     # Iterate through all participants in the network and generate necessary configurations.
     index = 0
-    for i, participant in enumerate(participants):
+    for _, participant in enumerate(participants):
         if participant["is_validator"]:
             for _ in range(participant["count"]):
                 validator_id = index + 1

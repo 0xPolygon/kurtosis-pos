@@ -27,7 +27,6 @@ HEIMDALL_APP_DATA_FOLDER_PATH = "/var/lib/heimdall"
 
 def launch(
     plan,
-    index,
     cl_node_name,
     participant,
     network_params,
