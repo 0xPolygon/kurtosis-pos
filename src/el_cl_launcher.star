@@ -51,12 +51,10 @@ def launch(
     )
 
     # Start each participant.
-    index = 0
+    participant_index = 0
     validator_index = 0
     for _, participant in enumerate(participants):
         for _ in range(participant["count"]):
-            participant_id = index + 1
-
             # Get the CL launcher.
             cl_type = participant["cl_type"]
             if cl_type not in cl_launchers:
@@ -65,7 +63,7 @@ def launch(
                         cl_type, ",".join(cl_launchers.keys())
                     )
                 )
-            cl_node_name = _generate_cl_node_name(participant, participant_id)
+            cl_node_name = _generate_cl_node_name(participant, participant_index + 1)
             cl_launch_method = cl_launchers[cl_type]["launch_method"]
 
             # Get the EL launcher.
@@ -76,12 +74,12 @@ def launch(
                         el_type, ",".join(el_launchers.keys())
                     )
                 )
-            el_node_name = _generate_el_node_name(participant, participant_id)
+            el_node_name = _generate_el_node_name(participant, participant_index + 1)
             el_launch_method = el_launchers[el_type]["launch_method"]
 
             plan.print(
                 "Launching participant {} with config: {}".format(
-                    participant_id, str(participant)
+                    participant_index + 1, str(participant)
                 )
             )
 
@@ -115,12 +113,12 @@ def launch(
                 el_genesis_artifact,
                 el_validator_config_artifact,
                 cl_node_url,
-                pre_funded_accounts.PRE_FUNDED_ACCOUNTS[index],
+                pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index],
                 network_data.enode_urls,
             )
 
             # Increment the indexes.
-            index += 1
+            participant_index += 1
             if participant["is_validator"]:
                 validator_index += 1
 
