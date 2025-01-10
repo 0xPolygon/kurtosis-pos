@@ -19,10 +19,10 @@ syncmode = "full"
     mine = {{.is_validator}}
     gaslimit = 30000000
     gasprice = "25000000000"
+{{if .is_validator}}
     etherbase = "{{.address}}"
     extradata = "{{.node_name}}"
 
-{{if .is_validator}}
 [accounts]
     allow-insecure-unlock = true
     password = "{{.config_folder_path}}/password.txt"
