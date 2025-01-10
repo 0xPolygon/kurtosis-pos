@@ -88,6 +88,7 @@ def launch(
         name=el_node_name,
         config=ServiceConfig(
             image=participant["el_image"],
+            # All port checks are disabled, see the comment above.
             ports={
                 BOR_RPC_PORT_ID: PortSpec(
                     number=BOR_RPC_PORT_NUMBER,
