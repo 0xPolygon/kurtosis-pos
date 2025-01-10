@@ -14,6 +14,7 @@ genesis_constants = import_module(
     "./src/prelaunch_data_generator/genesis_constants/genesis_constants.star"
 )
 input_parser = import_module("./src/package_io/input_parser.star")
+math = import_module("./src/math/math.star")
 pre_funded_accounts = import_module(
     "./src/prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
 )
@@ -134,7 +135,7 @@ def run(plan, args):
         )
 
     # Deploy network participants.
-    participants_count = sum([p["count"] for p in participants])
+    participants_count = math.sum([p["count"] for p in participants])
     plan.print(
         "Launching a Polygon PoS devnet with {} participants, including {} validators, and the following network params: {}".format(
             participants_count, len(validator_accounts), participants
