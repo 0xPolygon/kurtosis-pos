@@ -8,6 +8,9 @@ BOR_WS_PORT_NUMBER = 8546
 BOR_DISCOVERY_PORT_ID = "discovery"
 BOR_DISCOVERY_PORT_NUMBER = 30303
 
+BOR_METRICS_PORT_ID = "metrics"
+BOR_METRICS_PORT_NUMBER = 7071
+
 
 # The folder where the bor template config is stored in the repository.
 BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/bor/config.toml"
@@ -47,6 +50,7 @@ def launch(
                     "rpc_port_number": BOR_RPC_PORT_NUMBER,
                     "ws_port_number": BOR_WS_PORT_NUMBER,
                     "discovery_port_number": BOR_DISCOVERY_PORT_NUMBER,
+                    "metrics_port_number": BOR_METRICS_PORT_NUMBER,
                 },
             ),
         },
@@ -99,6 +103,10 @@ def launch(
                     number=BOR_DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
                     wait=None,
+                ),
+                BOR_METRICS_PORT_ID: PortSpec(
+                    number=BOR_METRICS_PORT_NUMBER,
+                    application_protocol="http",
                 ),
             },
             files=files,

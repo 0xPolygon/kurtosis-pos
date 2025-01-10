@@ -16,6 +16,9 @@ HEIMDALL_RPC_PORT_NUMBER = 26657
 
 HEIMDALL_PROXY_LISTEN_PORT_NUMBER = 26658
 
+HEIMDALL_METRICS_PORT_ID = "metrics"
+HEIMDALL_METRICS_PORT_NUMBER = 26660
+
 # The folder where the heimdall templates are stored in the repository.
 HEIMDALL_TEMPLATES_FOLDER_PATH = "../../../static_files/heimdall"
 
@@ -75,6 +78,7 @@ def launch(
                     "proxy_app_port_number": HEIMDALL_PROXY_LISTEN_PORT_NUMBER,
                     "tendermint_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
                     "p2p_listen_port_number": HEIMDALL_NODE_LISTEN_PORT_NUMBER,
+                    "metrics_port_number": HEIMDALL_METRICS_PORT_NUMBER,
                 },
             ),
             "heimdall-config.toml": struct(
@@ -120,6 +124,10 @@ def launch(
                     number=HEIMDALL_RPC_PORT_NUMBER,
                     application_protocol="http",
                     wait=None,  # Disable the check for this port.
+                ),
+                HEIMDALL_METRICS_PORT_ID: PortSpec(
+                    number=HEIMDALL_METRICS_PORT_NUMBER,
+                    application_protocol="http",
                 ),
             },
             files={
