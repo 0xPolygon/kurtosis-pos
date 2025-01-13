@@ -37,27 +37,26 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     },
 }
 
+DEFAULT_POLYGON_POS_PARTICIPANT = {
+    "el_type": constants.EL_TYPE.bor,
+    "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
+    "el_log_level": "info",
+    "cl_type": constants.CL_TYPE.heimdall,
+    "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
+    "cl_log_level": "info",
+    "cl_db_image": DEFAULT_CL_DB_IMAGE,
+    "is_validator": True,
+    "count": 1,
+}
+
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "participants": [
-        {
-            "el_type": constants.EL_TYPE.bor,
-            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
-            "el_log_level": "info",
-            "cl_type": constants.CL_TYPE.heimdall,
-            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
-            "cl_log_level": "info",
-            "cl_db_image": DEFAULT_CL_DB_IMAGE,
-            "is_validator": True,
+        DEFAULT_POLYGON_POS_PARTICIPANT
+        | {
             "count": 2,
         },
-        {
-            "el_type": constants.EL_TYPE.bor,
-            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
-            "el_log_level": "info",
-            "cl_type": constants.CL_TYPE.heimdall,
-            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
-            "cl_log_level": "info",
-            "cl_db_image": DEFAULT_CL_DB_IMAGE,
+        DEFAULT_POLYGON_POS_PARTICIPANT
+        | {
             "is_validator": False,
         },
     ],
@@ -187,7 +186,6 @@ def _parse_participants(participants):
             "participants", []
         )
 
-    default_participant = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])[0]
     for p in participants:
         # Create a mutable copy of the participant.
         p = dict(p)
@@ -209,7 +207,7 @@ def _parse_participants(participants):
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall]
 
         # Fill in any missing fields with default values.
-        for k, v in default_participant.items():
+        for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
             p.setdefault(k, v)
 
         # Assign the modified dictionary back to the list.
