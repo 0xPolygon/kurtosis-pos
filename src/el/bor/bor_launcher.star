@@ -31,7 +31,7 @@ def launch(
     el_account,
     bor_static_nodes,
 ):
-    is_validator = participant["is_validator"]
+    is_validator = participant.get("is_validator", False)
     bor_node_config_artifactconfig_artifacts = plan.render_templates(
         name="{}-node-config".format(el_node_name),
         config={

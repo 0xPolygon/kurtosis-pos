@@ -84,7 +84,7 @@ def launch(
             )
 
             # If the participant is a validator, launch the CL node.
-            if participant["is_validator"]:
+            if participant.get("is_validator", False):
                 cl_context = cl_launch_method(
                     plan,
                     cl_node_name,
@@ -103,7 +103,7 @@ def launch(
             # Launch the EL node.
             el_validator_config_artifact = (
                 validator_config_artifacts.el_configs[validator_index]
-                if participant["is_validator"]
+                if participant.get("is_validator", False)
                 else None
             )
             el_context = el_launch_method(
@@ -119,7 +119,7 @@ def launch(
 
             # Increment the indexes.
             participant_index += 1
-            if participant["is_validator"]:
+            if participant.get("is_validator", False):
                 validator_index += 1
 
 
@@ -140,7 +140,7 @@ def _prepare_network_data(participants):
     validator_index = 0
     for _, participant in enumerate(participants):
         for _ in range(participant["count"]):
-            if participant["is_validator"]:
+            if participant.get("is_validator", False):
                 cl_node_name = _generate_cl_node_name(
                     participant, participant_index + 1
                 )
@@ -284,5 +284,5 @@ def _generate_el_node_name(participant, id):
         id,
         participant["el_type"],
         participant["cl_type"],
-        "validator" if participant["is_validator"] else "rpc",
+        "validator" if participant.get("is_validator", False) else "rpc",
     )
