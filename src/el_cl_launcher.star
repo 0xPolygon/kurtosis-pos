@@ -18,8 +18,8 @@ def launch(
     cl_genesis_artifact,
     l1_rpc_url,
 ):
-    network_params = polygon_pos_args.get(network_params, {})
-    matic_contracts_params = polygon_pos_args.get(matic_contracts_params, {})
+    network_params = polygon_pos_args.get("network_params", {})
+    matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
 
     el_launchers = {
         "bor": {
