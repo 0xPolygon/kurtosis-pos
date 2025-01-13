@@ -183,7 +183,7 @@ def _parse_participants(participants):
 
     # Set default participant if not provided.
     if len(participants) == 0:
-        participants = DEFAULT_POLYGON_POS_PACKAGE_ARG.get("participants", [])
+        participants = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])
 
     default_participant = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])[0]
     for i, p in enumerate(participants):
