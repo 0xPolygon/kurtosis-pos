@@ -208,6 +208,9 @@ def _parse_participants(participants):
         for k, v in default_participant.items():
             p.setdefault(k, v)
 
+        # Assign the modified dictionary back to the list.
+        participants[i] = p
+
     # Sort each participant dictionary and return the result
     return [_sort_dict_by_values(p) for p in participants]
 
