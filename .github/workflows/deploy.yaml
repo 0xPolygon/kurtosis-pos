@@ -165,13 +165,22 @@ jobs:
       
       - name: Wait for devnet to be ready
         run: |
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
+          if [[ ${{ matrix.file_name }} == "./.github/tests/bor-heimdall-validators-rpc-1.yml" ]]; then
+            kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-2-heimdall-bor --follow &
+            kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-validator --follow &
+          else
+            kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
+            kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
+          fi
           sleep 240
 
       - name: Check devnet status
         run: |
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
+          if [[ ${{ matrix.file_name }} == "./.github/tests/bor-heimdall-validators-rpc-1.yml" ]]; then
+            export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-rpc rpc)"
+          else
+            export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
+          fi
           private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
 
           echo "Sending some load to the network..."
