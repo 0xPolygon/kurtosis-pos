@@ -122,8 +122,8 @@ def _parse_ethereum_args(plan, ethereum_input_args):
     if "network_params" not in ethereum_input_args:
         ethereum_input_args = DEFAULT_ETHEREUM_PACKAGE_ARGS
 
-    for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS["network_params"].items():
-        ethereum_input_args["network_params"].setdefault(k, v)
+    for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
+        ethereum_input_args.get("network_params", {}).setdefault(k, v)
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(ethereum_input_args)
@@ -164,12 +164,14 @@ def _parse_dev_args(plan, dev_input_args):
 
     # Set default params if not provided.
     if "should_deploy_l1" not in dev_input_args:
-        dev_input_args["should_deploy_l1"] = DEFAULT_DEV_ARGS["should_deploy_l1"]
+        dev_input_args["should_deploy_l1"] = DEFAULT_DEV_ARGS.get(
+            "should_deploy_l1", True
+        )
 
     if "should_deploy_matic_contracts" not in dev_input_args:
-        dev_input_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS[
-            "should_deploy_matic_contracts"
-        ]
+        dev_input_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS.get(
+            "should_deploy_matic_contracts", True
+        )
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(dev_input_args)
@@ -181,10 +183,10 @@ def _parse_participants(participants):
 
     # Set default participant if not provided.
     if len(participants) == 0:
-        participants = DEFAULT_POLYGON_POS_PACKAGE_ARGS["participants"]
+        participants = DEFAULT_POLYGON_POS_PACKAGE_ARG.get("participants", [])
 
-    default_participant = DEFAULT_POLYGON_POS_PACKAGE_ARGS["participants"][0]
-    for p in participants:
+    default_participant = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])[0]
+    for i, p in enumerate(participants):
         # Create a mutable copy of the participant.
         p = dict(p)
 
@@ -225,7 +227,9 @@ def _parse_matic_contracts_params(matic_contracts_params):
             "matic_contracts_params"
         ]
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS["matic_contracts_params"].items():
+    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+        "matic_contracts_params", {}
+    ).items():
         matic_contracts_params.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -238,9 +242,9 @@ def _parse_network_params(network_params):
 
     # Set default network params if not provided.
     if not network_params:
-        network_params = DEFAULT_POLYGON_POS_PACKAGE_ARGS["network_params"]
+        network_params = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS["network_params"].items():
+    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
         network_params.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -250,7 +254,9 @@ def _parse_network_params(network_params):
 def _parse_additional_services(additional_services):
     # Set default additional services if not provided.
     if len(additional_services) == 0:
-        additional_services = DEFAULT_POLYGON_POS_PACKAGE_ARGS["additional_services"]
+        additional_services = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+            "additional_services", []
+        )
     return additional_services
 
 
