@@ -8,7 +8,7 @@ DEFAULT_VALIDATOR_CONFIG_GENERATOR = (
 )
 
 DEFAULT_EL_IMAGES = {
-    constants.EL_TYPE.bor: "0xpolygon/bor:1.5.3",
+    constants.EL_TYPE.bor: "0xpolygon/bor:1.5.4",
     constants.EL_TYPE.erigon: "erigontech/erigon:v2.60.10",
 }
 
