@@ -42,7 +42,7 @@ def launch(
     rabbitmq_service = plan.add_service(
         name="rabbitmq-{}".format(cl_node_name),
         config=ServiceConfig(
-            image=participant["cl_db_image"],
+            image=participant.get("cl_db_image", ""),
             ports={
                 RABBITMQ_AMQP_PORT_ID: PortSpec(
                     number=RABBITMQ_AMQP_PORT_NUMBER,
@@ -72,7 +72,7 @@ def launch(
                 data={
                     # Node params.
                     "moniker": cl_node_name,
-                    "log_level": participant["cl_log_level"],
+                    "log_level": participant.get("cl_log_level", ""),
                     "persistent_peers": cl_node_ids,
                     # Port numbers.
                     "proxy_app_port_number": HEIMDALL_PROXY_LISTEN_PORT_NUMBER,
@@ -87,7 +87,9 @@ def launch(
                 ),
                 data={
                     # Network params.
-                    "span_poll_interval": network_params["heimdall_span_poll_interval"],
+                    "span_poll_interval": network_params.get(
+                        "heimdall_span_poll_interval", ""
+                    ),
                     "checkpoint_poll_interval": network_params[
                         "heimdall_checkpoint_poll_interval"
                     ],
@@ -106,7 +108,7 @@ def launch(
     return plan.add_service(
         name="{}".format(cl_node_name),
         config=ServiceConfig(
-            image=participant["cl_image"],
+            image=participant.get("cl_image", ""),
             ports={
                 HEIMDALL_REST_API_PORT_ID: PortSpec(
                     number=HEIMDALL_REST_API_PORT_NUMBER,

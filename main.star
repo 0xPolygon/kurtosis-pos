@@ -135,7 +135,7 @@ def run(plan, args):
         )
 
     # Deploy network participants.
-    participants_count = math.sum([p["count"] for p in participants])
+    participants_count = math.sum([p.get("count", 1) for p in participants])
     plan.print(
         "Launching a Polygon PoS devnet with {} participants, including {} validators, and the following network params: {}".format(
             participants_count, len(validator_accounts), participants

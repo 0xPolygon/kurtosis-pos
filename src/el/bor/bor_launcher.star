@@ -87,7 +87,7 @@ def launch(
     return plan.add_service(
         name=el_node_name,
         config=ServiceConfig(
-            image=participant["el_image"],
+            image=participan.get("el_image", ""),
             # All port checks are disabled, see the comment above.
             ports={
                 BOR_RPC_PORT_ID: PortSpec(

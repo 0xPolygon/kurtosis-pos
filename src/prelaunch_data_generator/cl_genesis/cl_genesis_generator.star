@@ -8,7 +8,7 @@ CL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/cl/genesis.json"
 def generate_cl_genesis_data(
     plan, polygon_pos_args, validator_accounts, contract_addresses_artifact
 ):
-    network_params = polygon_pos_args["network_params"]
+    network_params = polygon_pos_args.get("network_params", {})
     validators_number = len(validator_accounts)
 
     validator_data = _get_validator_data(validator_accounts)
@@ -20,7 +20,7 @@ def generate_cl_genesis_data(
     if validators_number > 0:
         proposer = validator_set[0]
 
-    bor_span_duration = network_params["bor_span_duration"]
+    bor_span_duration = network_params.get("bor_span_duration", "")
     contract_addresses = contract_util.read_contract_addresses(
         plan, contract_addresses_artifact
     )
@@ -31,9 +31,11 @@ def generate_cl_genesis_data(
                 template=read_file(CL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
-                    "heimdall_id": network_params["heimdall_id"],
-                    "bor_id": network_params["bor_id"],
-                    "bor_sprint_duration": network_params["bor_sprint_duration"],
+                    "heimdall_id": network_params.get("heimdall_id", ""),
+                    "bor_id": network_params.get("bor_id", ""),
+                    "bor_sprint_duration": network_params.get(
+                        "bor_sprint_duration", ""
+                    ),
                     "bor_span_duration": bor_span_duration,
                     "bor_span_0_end_block": bor_span_duration - 1,
                     # # validator set, proposer, etc.
@@ -43,12 +45,16 @@ def generate_cl_genesis_data(
                     "validators": json.indent(json.encode(validator_set)),
                     "proposer": json.indent(json.encode(proposer)),
                     # contract addresses
-                    "matic_token_address": contract_addresses["matic_token"],
-                    "staking_manager_address": contract_addresses["staking_manager"],
-                    "slash_manager_address": contract_addresses["slashing_manager"],
-                    "root_chain_address": contract_addresses["root_chain"],
-                    "staking_info_address": contract_addresses["staking_info"],
-                    "state_sender_address": contract_addresses["state_sender"],
+                    "matic_token_address": contract_addresses.get("matic_token", ""),
+                    "staking_manager_address": contract_addresses.get(
+                        "staking_manager", ""
+                    ),
+                    "slash_manager_address": contract_addresses.get(
+                        "slashing_manager", ""
+                    ),
+                    "root_chain_address": contract_addresses.get("root_chain", ""),
+                    "staking_info_address": contract_addresses.get("staking_info", ""),
+                    "state_sender_address": contract_addresses.get("state_sender", ""),
                 },
             ),
         },

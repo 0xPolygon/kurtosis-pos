@@ -18,8 +18,8 @@ def launch(
     cl_genesis_artifact,
     l1_rpc_url,
 ):
-    network_params = polygon_pos_args["network_params"]
-    matic_contracts_params = polygon_pos_args["matic_contracts_params"]
+    network_params = polygon_pos_args.get(network_params, {})
+    matic_contracts_params = polygon_pos_args.get(matic_contracts_params, {})
 
     el_launchers = {
         "bor": {
@@ -54,9 +54,9 @@ def launch(
     participant_index = 0
     validator_index = 0
     for _, participant in enumerate(participants):
-        for _ in range(participant["count"]):
+        for _ in range(participant.get(count, 1)):
             # Get the CL launcher.
-            cl_type = participant["cl_type"]
+            cl_type = participant.get("cl_type", "")
             if cl_type not in cl_launchers:
                 fail(
                     "Unsupported CL launcher '{0}', need one of '{1}'".format(
@@ -67,7 +67,7 @@ def launch(
             cl_launch_method = cl_launchers[cl_type]["launch_method"]
 
             # Get the EL launcher.
-            el_type = participant["el_type"]
+            el_type = participant.get("el_type", "")
             if el_type not in el_launchers:
                 fail(
                     "Unsupported EL launcher '{0}', need one of '{1}'".format(
@@ -139,7 +139,7 @@ def _prepare_network_data(participants):
     participant_index = 0
     validator_index = 0
     for _, participant in enumerate(participants):
-        for _ in range(participant["count"]):
+        for _ in range(participant.get(count, 1)):
             if participant.get("is_validator", False):
                 cl_node_name = _generate_cl_node_name(
                     participant, participant_index + 1
@@ -170,7 +170,9 @@ def _prepare_network_data(participants):
                         src="{}/{}/config/".format(
                             constants.HEIMDALL_CONFIG_PATH, validator_index + 1
                         ),
-                        name="{}-config".format(cl_node_name, participant["el_type"]),
+                        name="{}-config".format(
+                            cl_node_name, participant.get("el_type", "")
+                        ),
                     )
                 )
                 el_validator_keystores.append(
@@ -218,8 +220,8 @@ def _generate_validator_config(
     el_validator_keystores,
     polygon_pos_args,
 ):
-    matic_contracts_params = polygon_pos_args["matic_contracts_params"]
-    network_params = polygon_pos_args["network_params"]
+    matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
+    network_params = polygon_pos_args.get("network_params", {})
 
     # Generate CL validators configuration such as the public/private keys and node identifiers.
     validator_config_generator_artifact = plan.upload_files(
@@ -230,9 +232,9 @@ def _generate_validator_config(
     # Generate validator configs.
     result = plan.run_sh(
         name="l2-validators-config-generator",
-        image=matic_contracts_params["validator_config_generator_image"],
+        image=matic_contracts_params.get("validator_config_generator_image", ""),
         env_vars={
-            "HEIMDALL_ID": network_params["heimdall_id"],
+            "HEIMDALL_ID": network_params.get("heimdall_id", ""),
             "HEIMDALL_CONFIG_PATH": constants.HEIMDALL_CONFIG_PATH,
             "BOR_CONFIG_PATH": constants.BOR_CONFIG_PATH,
             "HEIMDALL_VALIDATOR_CONFIGS": cl_validator_configs_str,
@@ -276,13 +278,15 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers):
 
 
 def _generate_cl_node_name(participant, id):
-    return "l2-cl-{}-{}-{}".format(id, participant["cl_type"], participant["el_type"])
+    return "l2-cl-{}-{}-{}".format(
+        id, participan.get("cl_type", ""), participant.get("el_type", "")
+    )
 
 
 def _generate_el_node_name(participant, id):
     return "l2-el-{}-{}-{}-{}".format(
         id,
-        participant["el_type"],
-        participant["cl_type"],
+        participant.get("el_type", ""),
+        participant.get("cl_type", ""),
         "validator" if participant.get("is_validator", False) else "rpc",
     )
