@@ -179,14 +179,16 @@ def _parse_dev_args(plan, dev_input_args):
 
 def _parse_participants(participants):
     # Create a mutable copy of the participants list.
-    participants = [dict(p) for p in participants]
+    participants_with_defaults = []
 
     # Set default participant if not provided.
     if len(participants) == 0:
-        participants = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])
+        participants_with_defaults = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+            "participants", []
+        )
 
     default_participant = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])[0]
-    for i, p in enumerate(participants):
+    for p in participants:
         # Create a mutable copy of the participant.
         p = dict(p)
 
@@ -211,10 +213,10 @@ def _parse_participants(participants):
             p.setdefault(k, v)
 
         # Assign the modified dictionary back to the list.
-        participants[i] = p
+        participants_with_defaults.append(p)
 
     # Sort each participant dictionary and return the result
-    return [_sort_dict_by_values(p) for p in participants]
+    return [_sort_dict_by_values(p) for p in participants_with_defaults]
 
 
 def _parse_matic_contracts_params(matic_contracts_params):
