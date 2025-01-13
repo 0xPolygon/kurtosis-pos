@@ -42,7 +42,7 @@ def launch(
     rabbitmq_service = plan.add_service(
         name="rabbitmq-{}".format(cl_node_name),
         config=ServiceConfig(
-            image=participant.get("cl_db_image", ""),
+            image=participant.get("cl_db_image"),
             ports={
                 RABBITMQ_AMQP_PORT_ID: PortSpec(
                     number=RABBITMQ_AMQP_PORT_NUMBER,
@@ -108,7 +108,7 @@ def launch(
     return plan.add_service(
         name="{}".format(cl_node_name),
         config=ServiceConfig(
-            image=participant.get("cl_image", ""),
+            image=participant.get("cl_image"),
             ports={
                 HEIMDALL_REST_API_PORT_ID: PortSpec(
                     number=HEIMDALL_REST_API_PORT_NUMBER,

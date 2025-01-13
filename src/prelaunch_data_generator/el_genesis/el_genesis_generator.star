@@ -16,7 +16,7 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
     return plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
-        image=matic_contracts_params.get("genesis_builder_image", ""),
+        image=matic_contracts_params.get("genesis_builder_image"),
         env_vars={
             "BOR_ID": network_params.get("bor_id", ""),
             "DEFAULT_BOR_ID": constants.DEFAULT_BOR_ID,
