@@ -152,7 +152,13 @@ def _validate_participant(p):
     _validate_str(p, "el_type", [constants.EL_TYPE.bor, constants.EL_TYPE.erigon])
     _validate_str(p, "cl_type", [constants.CL_TYPE.heimdall])
 
-    log_values = [constants.LOG_LEVEL.info, constants.LOG_LEVEL.debug]
+    log_values = [
+        constants.LOG_LEVEL.error,
+        constants.LOG_LEVEL.warn,
+        constants.LOG_LEVEL.info,
+        constants.LOG_LEVEL.debug,
+        constants.LOG_LEVEL.trace,
+    ]
     _validate_str(p, "el_log_level", log_values)
     _validate_str(p, "cl_log_level", log_values)
     _validate_strictly_positive_int(p, "count")
