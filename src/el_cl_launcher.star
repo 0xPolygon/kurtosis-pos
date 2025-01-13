@@ -54,7 +54,7 @@ def launch(
     participant_index = 0
     validator_index = 0
     for _, participant in enumerate(participants):
-        for _ in range(participant.get(count, 1)):
+        for _ in range(participant.get("count", 1)):
             # Get the CL launcher.
             cl_type = participant.get("cl_type", "")
             if cl_type not in cl_launchers:
@@ -139,7 +139,7 @@ def _prepare_network_data(participants):
     participant_index = 0
     validator_index = 0
     for _, participant in enumerate(participants):
-        for _ in range(participant.get(count, 1)):
+        for _ in range(participant.get("count", 1)):
             if participant.get("is_validator", False):
                 cl_node_name = _generate_cl_node_name(
                     participant, participant_index + 1
@@ -279,7 +279,7 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers):
 
 def _generate_cl_node_name(participant, id):
     return "l2-cl-{}-{}-{}".format(
-        id, participan.get("cl_type", ""), participant.get("el_type", "")
+        id, participant.get("cl_type", ""), participant.get("el_type", "")
     )
 
 
