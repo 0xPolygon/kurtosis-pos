@@ -37,40 +37,27 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     },
 }
 
+DEFAULT_POLYGON_POS_PARTICIPANT = {
+    "el_type": constants.EL_TYPE.bor,
+    "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
+    "el_log_level": "info",
+    "cl_type": constants.CL_TYPE.heimdall,
+    "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
+    "cl_log_level": "info",
+    "cl_db_image": DEFAULT_CL_DB_IMAGE,
+    "is_validator": True,
+    "count": 1,
+}
+
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "participants": [
-        {
-            "el_type": constants.EL_TYPE.bor,
-            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
-            "el_log_level": "info",
-            "cl_type": constants.CL_TYPE.heimdall,
-            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
-            "cl_log_level": "info",
-            "cl_db_image": DEFAULT_CL_DB_IMAGE,
-            "is_validator": True,
-            "count": 1,
+        DEFAULT_POLYGON_POS_PARTICIPANT
+        | {
+            "count": 2,
         },
-        {
-            "el_type": constants.EL_TYPE.bor,
-            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
-            "el_log_level": "info",
-            "cl_type": constants.CL_TYPE.heimdall,
-            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
-            "cl_log_level": "info",
-            "cl_db_image": DEFAULT_CL_DB_IMAGE,
-            "is_validator": True,
-            "count": 1,
-        },
-        {
-            "el_type": constants.EL_TYPE.bor,
-            "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
-            "el_log_level": "info",
-            "cl_type": constants.CL_TYPE.heimdall,
-            "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
-            "cl_log_level": "info",
-            "cl_db_image": DEFAULT_CL_DB_IMAGE,
+        DEFAULT_POLYGON_POS_PARTICIPANT
+        | {
             "is_validator": False,
-            "count": 1,
         },
     ],
     "matic_contracts_params": {
@@ -127,18 +114,24 @@ def input_parser(plan, input_args):
 
 
 def _parse_ethereum_args(plan, ethereum_input_args):
+    # Create a mutable copy of dev_input_args.
+    ethereum_input_args = dict(ethereum_input_args)
+
     # Set default params if not provided.
     if "network_params" not in ethereum_input_args:
         ethereum_input_args = DEFAULT_ETHEREUM_PACKAGE_ARGS
 
-    for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS["network_params"].items():
-        ethereum_input_args["network_params"].setdefault(k, v)
+    for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
+        ethereum_input_args.get("network_params", {}).setdefault(k, v)
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(ethereum_input_args)
 
 
 def _parse_polygon_pos_args(plan, polygon_pos_input_args):
+    # Create a mutable copy of dev_input_args.
+    polygon_pos_input_args = dict(polygon_pos_input_args)
+
     sanity_check.sanity_check_polygon_args(plan, polygon_pos_input_args)
 
     # Parse the polygon pos input args and set defaults if needed.
@@ -163,28 +156,40 @@ def _parse_polygon_pos_args(plan, polygon_pos_input_args):
 
 
 def _parse_dev_args(plan, dev_input_args):
+    # Create a mutable copy of dev_input_args.
+    dev_args = dict(dev_input_args)
+
     sanity_check.sanity_check_dev_args(plan, dev_input_args)
 
     # Set default params if not provided.
     if "should_deploy_l1" not in dev_input_args:
-        dev_input_args["should_deploy_l1"] = DEFAULT_DEV_ARGS["should_deploy_l1"]
+        dev_input_args["should_deploy_l1"] = DEFAULT_DEV_ARGS.get(
+            "should_deploy_l1", True
+        )
 
     if "should_deploy_matic_contracts" not in dev_input_args:
-        dev_input_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS[
-            "should_deploy_matic_contracts"
-        ]
+        dev_input_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS.get(
+            "should_deploy_matic_contracts", True
+        )
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(dev_input_args)
 
 
 def _parse_participants(participants):
+    # Create a mutable copy of the participants list.
+    participants_with_defaults = []
+
     # Set default participant if not provided.
     if len(participants) == 0:
-        participants = DEFAULT_POLYGON_POS_PACKAGE_ARGS["participants"]
+        participants_with_defaults = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+            "participants", []
+        )
 
-    default_participant = DEFAULT_POLYGON_POS_PACKAGE_ARGS["participants"][0]
     for p in participants:
+        # Create a mutable copy of the participant.
+        p = dict(p)
+
         # Set default EL image based on `el_type` if provided.
         el_type = p.get("el_type", "")
         el_image = p.get("el_image", "")
@@ -202,21 +207,29 @@ def _parse_participants(participants):
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall]
 
         # Fill in any missing fields with default values.
-        for k, v in default_participant.items():
+        for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
             p.setdefault(k, v)
 
+        # Assign the modified dictionary back to the list.
+        participants_with_defaults.append(p)
+
     # Sort each participant dictionary and return the result
-    return [_sort_dict_by_values(p) for p in participants]
+    return [_sort_dict_by_values(p) for p in participants_with_defaults]
 
 
 def _parse_matic_contracts_params(matic_contracts_params):
+    # Create a mutable copy of matic_contracts_params.
+    matic_contracts_params = dict(matic_contracts_params)
+
     # Set default matic contracts params if not provided.
     if not matic_contracts_params:
         matic_contracts_params = DEFAULT_POLYGON_POS_PACKAGE_ARGS[
             "matic_contracts_params"
         ]
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS["matic_contracts_params"].items():
+    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+        "matic_contracts_params", {}
+    ).items():
         matic_contracts_params.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -224,11 +237,14 @@ def _parse_matic_contracts_params(matic_contracts_params):
 
 
 def _parse_network_params(network_params):
+    # Create a mutable copy of network_params.
+    network_params = dict(network_params)
+
     # Set default network params if not provided.
     if not network_params:
-        network_params = DEFAULT_POLYGON_POS_PACKAGE_ARGS["network_params"]
+        network_params = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS["network_params"].items():
+    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
         network_params.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -238,7 +254,9 @@ def _parse_network_params(network_params):
 def _parse_additional_services(additional_services):
     # Set default additional services if not provided.
     if len(additional_services) == 0:
-        additional_services = DEFAULT_POLYGON_POS_PACKAGE_ARGS["additional_services"]
+        additional_services = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+            "additional_services", []
+        )
     return additional_services
 
 

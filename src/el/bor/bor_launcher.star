@@ -8,6 +8,9 @@ BOR_WS_PORT_NUMBER = 8546
 BOR_DISCOVERY_PORT_ID = "discovery"
 BOR_DISCOVERY_PORT_NUMBER = 30303
 
+BOR_METRICS_PORT_ID = "metrics"
+BOR_METRICS_PORT_NUMBER = 7071
+
 
 # The folder where the bor template config is stored in the repository.
 BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/bor/config.toml"
@@ -28,7 +31,7 @@ def launch(
     el_account,
     bor_static_nodes,
 ):
-    is_validator = participant["is_validator"]
+    is_validator = participant.get("is_validator", False)
     bor_node_config_artifactconfig_artifacts = plan.render_templates(
         name="{}-node-config".format(el_node_name),
         config={
@@ -47,6 +50,7 @@ def launch(
                     "rpc_port_number": BOR_RPC_PORT_NUMBER,
                     "ws_port_number": BOR_WS_PORT_NUMBER,
                     "discovery_port_number": BOR_DISCOVERY_PORT_NUMBER,
+                    "metrics_port_number": BOR_METRICS_PORT_NUMBER,
                 },
             ),
         },
@@ -81,9 +85,10 @@ def launch(
     ]
 
     return plan.add_service(
-        name="{}-{}".format(el_node_name, "validator" if is_validator else "rpc"),
+        name=el_node_name,
         config=ServiceConfig(
-            image=participant["el_image"],
+            image=participant.get("el_image"),
+            # All port checks are disabled, see the comment above.
             ports={
                 BOR_RPC_PORT_ID: PortSpec(
                     number=BOR_RPC_PORT_NUMBER,
@@ -97,6 +102,11 @@ def launch(
                 ),
                 BOR_DISCOVERY_PORT_ID: PortSpec(
                     number=BOR_DISCOVERY_PORT_NUMBER,
+                    application_protocol="http",
+                    wait=None,
+                ),
+                BOR_METRICS_PORT_ID: PortSpec(
+                    number=BOR_METRICS_PORT_NUMBER,
                     application_protocol="http",
                     wait=None,
                 ),

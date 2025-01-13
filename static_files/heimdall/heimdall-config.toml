@@ -4,7 +4,7 @@
 amqp_url = "{{.amqp_url}}"
 
 # RPC endpoint for the Bor chain.
-bor_rpc_url = "{{.bor_rpc_url}}"
+bor_rpc_url = "{{.el_rpc_url}}"
 
 # RPC endpoint for the Ethereum chain.
 eth_rpc_url = "{{.l1_rpc_url}}"

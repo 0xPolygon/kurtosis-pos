@@ -165,14 +165,24 @@ jobs:
       
       - name: Wait for devnet to be ready
         run: |
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
+          if [[ ${{ matrix.file_name }} == "./.github/tests/bor-heimdall-validators-rpc-1.yml" ]]; then
+            kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-2-heimdall-bor --follow &
+            kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-validator --follow &
+          else
+            kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
+            kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
+          fi
           sleep 240
 
       - name: Check devnet status
         run: |
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
-          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+          if [[ ${{ matrix.file_name }} == "./.github/tests/bor-heimdall-validators-rpc-1.yml" ]]; then
+            export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-validator rpc)"
+            private_key="0xf92738db8be69a9694b08acfc8e8fa843578da5adfcf4de77482c5a2b15681ad"
+          else
+            export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
+            private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+          fi
 
           echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
