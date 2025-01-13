@@ -170,9 +170,7 @@ def _prepare_network_data(participants):
                         src="{}/{}/config/".format(
                             constants.HEIMDALL_CONFIG_PATH, validator_index + 1
                         ),
-                        name="{}-config".format(
-                            cl_node_name, participant.get("el_type", "")
-                        ),
+                        name="{}-config".format(cl_node_name),
                     )
                 )
                 el_validator_keystores.append(
