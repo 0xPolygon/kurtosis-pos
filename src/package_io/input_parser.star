@@ -185,6 +185,9 @@ def _parse_participants(participants):
 
     default_participant = DEFAULT_POLYGON_POS_PACKAGE_ARGS["participants"][0]
     for p in participants:
+        # Create a mutable copy of the participant.
+        p = dict(p)
+
         # Set default EL image based on `el_type` if provided.
         el_type = p.get("el_type", "")
         el_image = p.get("el_image", "")
