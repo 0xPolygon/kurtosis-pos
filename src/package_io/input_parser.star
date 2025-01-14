@@ -1,9 +1,9 @@
 constants = import_module("./constants.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_CONTRACTS_DEPLOYER = "leovct/matic-contracts-deployer:node-16"
-DEFAULT_GENESIS_BUILDER = "leovct/matic-genesis-builder:node-16"
-DEFAULT_VALIDATOR_CONFIG_GENERATOR = (
+DEFAULT_CONTRACTS_DEPLOYER_IMAGE = "leovct/matic-contracts-deployer:node-16"
+DEFAULT_EL_GENESIS_BUILDER_IMAGE = "leovct/matic-genesis-builder:node-16"
+DEFAULT_VALIDATOR_CONFIG_GENERATOR_IMAGE = (
     "leovct/validator-config-generator:1.0.10"  # based on 0xpolygon/heimdall:1.0.10
 )
 
@@ -61,9 +61,9 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         },
     ],
     "matic_contracts_params": {
-        "contracts_deployer_image": DEFAULT_CONTRACTS_DEPLOYER,
-        "genesis_builder_image": DEFAULT_GENESIS_BUILDER,
-        "validator_config_generator_image": DEFAULT_VALIDATOR_CONFIG_GENERATOR,
+        "contracts_deployer_image": DEFAULT_CONTRACTS_DEPLOYER_IMAGE,
+        "el_genesis_builder_image": DEFAULT_EL_GENESIS_BUILDER_IMAGE,
+        "validator_config_generator_image": DEFAULT_VALIDATOR_CONFIG_GENERATOR_IMAGE,
     },
     "network_params": {
         # TODO: Find out if this `network` parameter is really needed.
