@@ -50,7 +50,7 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
     el_genesis_temporary_artifact = result.files_artifacts[0]
 
     # Retrieve the allocs field from the temporary EL genesis.
-    el_genesis_allocs = _read_el_genesis_allocs(plan, el_genesis_config_artifact)
+    alloc = _read_el_genesis_alloc(plan, el_genesis_config_artifact)
 
     # Render the final genesis of the EL using the template.
     return plan.render_templates(
@@ -69,20 +69,20 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
                     "bor_gas_limit_hex": hex.int_to_hex(
                         network_params.get("bor_gas_limit", 0)
                     ),
-                    "allocs": el_genesis_allocs,
+                    "alloc": alloc,
                 },
             )
         },
     )
 
 
-def _read_el_genesis_allocs(plan, el_genesis_artifact):
+def _read_el_genesis_alloc(plan, el_genesis_artifact):
     result = plan.run_sh(
-        description="Reading EL genesis allocs",
+        description="Reading EL genesis alloc",
         files={
             "/opt/data": el_genesis_artifact,
         },
         # Return the result as a list instead of a string.
-        run="jq --raw-output '.allocs' /opt/data/genesis.json",
+        run="jq '.alloc' /opt/data/genesis.json",
     )
     return result.output
