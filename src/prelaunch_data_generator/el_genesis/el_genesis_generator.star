@@ -11,7 +11,7 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
     matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
 
     # Generate a temporary EL genesis.
-    el_genesis_config_artifact = plan.upload_files(
+    el_genesis_generator_config_artifact = plan.upload_files(
         src=EL_GENESIS_CONFIG_FOLDER_PATH,
         name="l2-genesis-builder-config",
     )
@@ -29,7 +29,7 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
             # supported by Kurtosis when using plan.run_sh unfortunately.
-            "/opt/data/genesis": el_genesis_config_artifact,
+            "/opt/data/genesis": el_genesis_generator_config_artifact,
             "/opt/data/validator": validator_config_artifact,
         },
         store=[
@@ -50,7 +50,7 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
     el_genesis_temporary_artifact = result.files_artifacts[0]
 
     # Retrieve the allocs field from the temporary EL genesis.
-    alloc = _read_el_genesis_alloc(plan, el_genesis_config_artifact)
+    alloc = _read_el_genesis_alloc(plan, el_genesis_temporary_artifact)
 
     # Render the final genesis of the EL using the template.
     return plan.render_templates(
@@ -83,6 +83,6 @@ def _read_el_genesis_alloc(plan, el_genesis_artifact):
             "/opt/data": el_genesis_artifact,
         },
         # Return the result as a list instead of a string.
-        run="jq '.alloc' /opt/data/genesis.json",
+        run="ls /opt/data && jq '.alloc' /opt/data/genesis.json",
     )
     return result.output
