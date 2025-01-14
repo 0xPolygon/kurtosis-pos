@@ -83,6 +83,6 @@ def _read_el_genesis_alloc(plan, el_genesis_artifact):
             "/opt/data": el_genesis_artifact,
         },
         # Return the result as a list instead of a string.
-        run="ls /opt/data && jq '.alloc' /opt/data/genesis.json",
+        run="jq '.alloc' /opt/data/genesis.json",
     )
     return result.output
