@@ -263,11 +263,11 @@ def _generate_validator_config(
     )
 
 
-def _read_cl_persistent_peers(plan, cl_persistent_peers):
+def _read_cl_persistent_peers(plan, cl_persistent_peers_artifact):
     result = plan.run_sh(
         description="Reading CL validator node ids",
         files={
-            "/opt/data": cl_persistent_peers,
+            "/opt/data": cl_persistent_peers_artifact,
         },
         # Return the result as a list instead of a string.
         run="cat /opt/data/persistent_peers.txt | tr -d '\n'",

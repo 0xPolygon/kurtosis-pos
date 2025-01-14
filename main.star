@@ -102,17 +102,9 @@ def run(plan, args):
             )
         l2_cl_genesis_artifact = result.files_artifacts[0]
 
-        result = el_genesis_generator.generate_el_genesis_data(
+        l2_el_genesis_artifact = el_genesis_generator.generate_el_genesis_data(
             plan, polygon_pos_args, validator_config_artifact
         )
-        artifact_count = len(result.files_artifacts)
-        if artifact_count != 1:
-            fail(
-                "The EL genesis generator should have generated 1 artifact, got {}.".format(
-                    artifact_count
-                )
-            )
-        l2_el_genesis_artifact = result.files_artifacts[0]
     else:
         plan.print("Using L2 EL/CL genesis provided")
         l2_el_genesis_artifact = plan.render_templates(
