@@ -115,7 +115,8 @@ def input_parser(plan, input_args):
 
 def _parse_ethereum_args(plan, ethereum_input_args):
     # Create a mutable copy of dev_input_args.
-    ethereum_input_args = dict(ethereum_input_args)
+    if ethereum_input_args:
+        ethereum_input_args = dict(ethereum_input_args)
 
     # Set default params if not provided.
     if "network_params" not in ethereum_input_args:
@@ -130,7 +131,8 @@ def _parse_ethereum_args(plan, ethereum_input_args):
 
 def _parse_polygon_pos_args(plan, polygon_pos_input_args):
     # Create a mutable copy of dev_input_args.
-    polygon_pos_input_args = dict(polygon_pos_input_args)
+    if polygon_pos_input_args:
+        polygon_pos_input_args = dict(polygon_pos_input_args)
 
     sanity_check.sanity_check_polygon_args(plan, polygon_pos_input_args)
 
@@ -157,7 +159,8 @@ def _parse_polygon_pos_args(plan, polygon_pos_input_args):
 
 def _parse_dev_args(plan, dev_input_args):
     # Create a mutable copy of dev_input_args.
-    dev_args = dict(dev_input_args)
+    if dev_args:
+        dev_args = dict(dev_input_args)
 
     sanity_check.sanity_check_dev_args(plan, dev_input_args)
 
@@ -219,7 +222,8 @@ def _parse_participants(participants):
 
 def _parse_matic_contracts_params(matic_contracts_params):
     # Create a mutable copy of matic_contracts_params.
-    matic_contracts_params = dict(matic_contracts_params)
+    if matic_contracts_params:
+        matic_contracts_params = dict(matic_contracts_params)
 
     # Set default matic contracts params if not provided.
     if not matic_contracts_params:
@@ -238,7 +242,8 @@ def _parse_matic_contracts_params(matic_contracts_params):
 
 def _parse_network_params(network_params):
     # Create a mutable copy of network_params.
-    network_params = dict(network_params)
+    if network_params:
+        network_params = dict(network_params)
 
     # Set default network params if not provided.
     if not network_params:
