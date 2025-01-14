@@ -113,74 +113,71 @@ def input_parser(plan, input_args):
     }
 
 
-def _parse_ethereum_args(plan, ethereum_input_args):
-    # Create a mutable copy of dev_input_args.
-    if ethereum_input_args:
-        ethereum_input_args = dict(ethereum_input_args)
+def _parse_ethereum_args(plan, ethereum_args):
+    # Create a mutable copy of ethereum_args.
+    if ethereum_args:
+        ethereum_args = dict(ethereum_args)
 
     # Set default params if not provided.
-    if "network_params" not in ethereum_input_args:
-        ethereum_input_args = DEFAULT_ETHEREUM_PACKAGE_ARGS
+    if "network_params" not in ethereum_args:
+        ethereum_args = DEFAULT_ETHEREUM_PACKAGE_ARGS
 
     for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
-        ethereum_input_args.get("network_params", {}).setdefault(k, v)
+        ethereum_args.get("network_params", {}).setdefault(k, v)
 
     # Sort the dict and return the result.
-    return _sort_dict_by_values(ethereum_input_args)
+    return _sort_dict_by_values(ethereum_args)
 
 
-def _parse_polygon_pos_args(plan, polygon_pos_input_args):
-    # Create a mutable copy of dev_input_args.
-    if polygon_pos_input_args:
-        polygon_pos_input_args = dict(polygon_pos_input_args)
+def _parse_polygon_pos_args(plan, polygon_pos_args):
+    # Create a mutable copy of polygon_pos_args.
+    if polygon_pos_args:
+        polygon_pos_args = dict(polygon_pos_args)
 
-    sanity_check.sanity_check_polygon_args(plan, polygon_pos_input_args)
+    sanity_check.sanity_check_polygon_args(plan, polygon_pos_args)
 
     # Parse the polygon pos input args and set defaults if needed.
     result = {}
 
-    participants = polygon_pos_input_args.get("participants", [])
+    participants = polygon_pos_args.get("participants", [])
     result["participants"] = _parse_participants(participants)
 
-    matic_contracts_params = polygon_pos_input_args.get("matic_contracts_params", {})
+    matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
     result["matic_contracts_params"] = _parse_matic_contracts_params(
         matic_contracts_params
     )
 
-    network_params = polygon_pos_input_args.get("network_params", {})
+    network_params = polygon_pos_args.get("network_params", {})
     result["network_params"] = _parse_network_params(network_params)
 
-    additional_services = polygon_pos_input_args.get("additional_services", [])
+    additional_services = polygon_pos_args.get("additional_services", [])
     result["additional_services"] = _parse_additional_services(additional_services)
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(result)
 
 
-def _parse_dev_args(plan, dev_input_args):
-    # Create a mutable copy of dev_input_args.
+def _parse_dev_args(plan, dev_args):
+    # Create a mutable copy of dev_args.
     if dev_args:
-        dev_args = dict(dev_input_args)
+        dev_args = dict(dev_args)
 
-    sanity_check.sanity_check_dev_args(plan, dev_input_args)
+    sanity_check.sanity_check_dev_args(plan, dev_args)
 
     # Set default params if not provided.
-    if "should_deploy_l1" not in dev_input_args:
-        dev_input_args["should_deploy_l1"] = DEFAULT_DEV_ARGS.get(
-            "should_deploy_l1", True
-        )
+    if "should_deploy_l1" not in dev_args:
+        dev_args["should_deploy_l1"] = DEFAULT_DEV_ARGS.get("should_deploy_l1", True)
 
-    if "should_deploy_matic_contracts" not in dev_input_args:
-        dev_input_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS.get(
+    if "should_deploy_matic_contracts" not in dev_args:
+        dev_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS.get(
             "should_deploy_matic_contracts", True
         )
 
     # Sort the dict and return the result.
-    return _sort_dict_by_values(dev_input_args)
+    return _sort_dict_by_values(dev_args)
 
 
 def _parse_participants(participants):
-    # Create a mutable copy of the participants list.
     participants_with_defaults = []
 
     # Set default participant if not provided.
@@ -190,7 +187,7 @@ def _parse_participants(participants):
         )
 
     for p in participants:
-        # Create a mutable copy of the participant.
+        # Create a mutable copy of participant.
         p = dict(p)
 
         # Set default EL image based on `el_type` if provided.
