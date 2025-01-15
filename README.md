@@ -241,20 +241,28 @@ polygon_pos_package:
 
   matic_contracts_params:
     contracts_deployer_image: ""
-    genesis_builder_image: ""
+    el_genesis_builder_image: ""
     validator_config_generator_image: ""
   
   network_params:
     network: ""
-    bor_id: ""
-    heimdall_id: ""
+
+    # Validators parameters.
     preregistered_validator_keys_mnemonic: ""
     validator_stake_amount: ""
     validator_top_up_fee_amount: ""
-    bor_sprint_duration: ""
-    bor_span_duration: ""
-    heimdall_span_poll_interval: ""
-    heimdall_checkpoint_poll_interval: ""
+
+    # Consensus Layer parameters.
+    cl_chain_id: ""
+    cl_span_poll_interval: ""
+    cl_checkpoint_poll_interval: ""
+    
+    # Execution Layer parameters.
+    el_chain_id: ""
+    el_block_interval_seconds: ""
+    el_sprint_duration: ""
+    el_span_duration: ""
+    el_gas_limit: ""
   
   additional_services:
     - tx_spammer
