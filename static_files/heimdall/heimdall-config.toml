@@ -3,7 +3,7 @@
 # AMQP endpoint.
 amqp_url = "{{.amqp_url}}"
 
-# RPC endpoint for the Bor chain.
+# RPC endpoint for the EL chain.
 bor_rpc_url = "{{.el_rpc_url}}"
 
 # RPC endpoint for the Ethereum chain.
@@ -17,7 +17,7 @@ tendermint_rpc_url = "http://0.0.0.0:{{.tendermint_rpc_port_number}}"
 
 #### Bridge configs ####
 
-# Heimdall REST server endpoint, which is used by the bridge.
+# CL REST server endpoint, which is used by the bridge.
 heimdall_rest_server = "http://0.0.0.0:{{.rest_api_port_number}}"
 
 ## Poll intervals.

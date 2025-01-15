@@ -19,9 +19,9 @@ ADDITIONAL_SERVICES = struct(
     tx_spammer="tx_spammer",
 )
 
-DEFAULT_BOR_ID = "137"
-DEFAULT_HEIMDALL_ID = "heimdall-P5rXwg"
+DEFAULT_EL_CHAIN_ID = "137"
+DEFAULT_CL_CHAIN_ID = "heimdall-P5rXwg"
 VALIDATORS_BALANCE_ETH = 1000000000  # 10^9 ether
 
-HEIMDALL_CONFIG_PATH = "/etc/heimdall"
-BOR_CONFIG_PATH = "/etc/bor"
+CL_CLIENT_CONFIG_PATH = "/etc/cl"
+EL_CLIENT_CONFIG_PATH = "/etc/el"

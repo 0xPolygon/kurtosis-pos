@@ -114,7 +114,7 @@ def launch(
                 el_validator_config_artifact,
                 cl_node_url,
                 pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index],
-                network_data.enode_urls,
+                network_data.el_static_nodes,
             )
 
             # Increment the indexes.
@@ -133,7 +133,7 @@ def _prepare_network_data(participants):
     cl_validator_keystores = []
     el_validator_keystores = []
     # An array of EL enode URLs.
-    enode_urls = []
+    el_static_nodes = []
 
     # Iterate through all participants in the network and generate necessary configurations.
     participant_index = 0
@@ -168,7 +168,7 @@ def _prepare_network_data(participants):
                 cl_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}/config/".format(
-                            constants.HEIMDALL_CONFIG_PATH, validator_index + 1
+                            constants.CL_CLIENT_CONFIG_PATH, validator_index + 1
                         ),
                         name="{}-config".format(cl_node_name),
                     )
@@ -176,7 +176,7 @@ def _prepare_network_data(participants):
                 el_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}".format(
-                            constants.BOR_CONFIG_PATH, validator_index + 1
+                            constants.EL_CLIENT_CONFIG_PATH, validator_index + 1
                         ),
                         name="{}-config".format(el_node_name),
                     ),
@@ -186,7 +186,7 @@ def _prepare_network_data(participants):
                 enode_url = _generate_enode_url(
                     participant, account.eth_public_key[2:], el_node_name
                 )
-                enode_urls.append(enode_url)
+                el_static_nodes.append(enode_url)
 
                 # Increment the validator index.
                 validator_index += 1
@@ -199,7 +199,7 @@ def _prepare_network_data(participants):
         cl_validator_configs_str=";".join(cl_validator_configs),
         cl_validator_keystores=cl_validator_keystores,
         el_validator_keystores=el_validator_keystores,
-        enode_urls=enode_urls,
+        el_static_nodes=el_static_nodes,
     )
 
 
@@ -232,10 +232,10 @@ def _generate_validator_config(
         name="l2-validators-config-generator",
         image=matic_contracts_params.get("validator_config_generator_image"),
         env_vars={
-            "HEIMDALL_ID": network_params.get("heimdall_id", ""),
-            "HEIMDALL_CONFIG_PATH": constants.HEIMDALL_CONFIG_PATH,
-            "BOR_CONFIG_PATH": constants.BOR_CONFIG_PATH,
-            "HEIMDALL_VALIDATOR_CONFIGS": cl_validator_configs_str,
+            "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
+            "CL_CLIENT_CONFIG_PATH": constants.CL_CLIENT_CONFIG_PATH,
+            "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
+            "CL_VALIDATORS_CONFIGS": cl_validator_configs_str,
         },
         files={
             "/opt/data": validator_config_generator_artifact,
@@ -244,7 +244,7 @@ def _generate_validator_config(
         + el_validator_keystores
         + [
             StoreSpec(
-                src="{}/persistent_peers.txt".format(constants.HEIMDALL_CONFIG_PATH),
+                src="{}/persistent_peers.txt".format(constants.CL_CLIENT_CONFIG_PATH),
                 name="l2-cl-persistent-peers",
             )
         ],
