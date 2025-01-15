@@ -1,6 +1,20 @@
 # Polygon PoS Kurtosis Package
 
-TODO
+A [Kurtosis](https://github.com/kurtosis-tech/kurtosis) package for creating a private, portable and modular Polygon PoS devnet that can be deployed locally or in the cloud using Docker or Kubernetes. The package includes network tools and supports multiple clients, making blockchain development and testing more accessible.
+
+> 🚨 Please note that this package is not intended for production use!
+
+Specifically, this package will:
+
+1. Spin up a local L1 chain, fully customizable with multi-client support, leveraging the [ethereum-package](https://github.com/ethpandaops/ethereum-package).
+2. Deploy MATIC contracts to L1 as well as stake for each validators.
+3. Generate Consensus Layer (Cl) and Execution Layer (EL) genesis information.
+4. Configure and boostrap a network of Polygon PoS nodes of configurable size using the genesis data generated above.
+
+Optional features:
+
+- Spin up a transaction spammer to send fake transactions to the network.
+- Spin up monitoring solutions such as Prometheus, Grafana and Blockscout to observe the network.
 
 ## Table of contents
 
@@ -8,56 +22,38 @@ TODO
 
 ## Quickstart
 
-TODO
+### Prerequisites
+
+You will need to install the following tools:
+
+- [kurtosis](https://github.com/kurtosis-tech/kurtosis)
+- [docker](https://docs.docker.com/)
+
+If you intend to interact with and debug the devnet, you may also want to consider a few additional optional tools such as:
+
+- [jq](https://github.com/jqlang/jq)
+- [yq](https://pypi.org/project/yq/) (v3)
+- [foundry](https://github.com/foundry-rs/foundry) (`cast` and `forge`)
+- [polycli](https://github.com/0xPolygon/polygon-cli)
+
+### Deploy
+
+Kurtosis packages are highly configurable, allowing users to customize network behavior by defining parameters in a file that can be dynamically passed at runtime. The devnet operates in a temporary, isolated environment called an *enclave*.
+
 
 ```bash
-# Create a params file and deploy the devnet.
-kurtosis run --enclave polygon-pos --args-file params.yml .
-
-# Save the devnet parameters (genesis, contract addresses, etc.).
-mkdir -p ./tmp
-kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-el-genesis.json
-kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-cl-genesis.json
-kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.json | tail -n +2 | jq > ./tmp/contract-addresses.json
-kurtosis files inspect polygon-pos l2-validators-config validators.js | tail -n +2 > ./tmp/validators.js
+kurtosis run --args-file params.yml --enclave pos-devnet github.com/leovct/kurtosis-polygon-pos
 ```
 
-1. Get MATIC contract addresses.
+Where `params.yml` contains the parameters for your devnet.
 
-```bash
-kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.json | tail -n +2 | jq
-```
+### Interact
 
-2. Get the validators configuration.
-
-```bash
-kurtosis files inspect polygon-pos l2-validators-config validators.js | tail -n +2
-```
-
-3. Get the EL genesis.
-
-```bash
-kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq
-```
-
-4. Get the CL genesis.
-
-```bash
-kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
-```
-
-5. Check the status of the devnet.
-
-First, retrieve the different participants and their rpc urls. You only need to run this script once.
+To make sure the devnet is running correctly, you can use two of our handy scripts. The first script scans the Kurtosis enclave to identify RPC URLs for different nodes (run once per deployment), while the second script returns the status of the devnet.
 
 ```bash
 export ENCLAVE="polygon-pos"
 bash scripts/discover.sh
-```
-
-Second, show the status of the devnet.
-
-```bash
 bash scripts/status.sh
 ```
 
@@ -65,15 +61,30 @@ If you want to format the result in a more readable way, you can use the followi
 
 ```bash
 result=$(bash scripts/status.sh)
-
-# CL participants.
-echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .height, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
-
-# EL participants.
-echo "${result}" | jq --raw-output '(["ID", "Name", "Peers", "Height", "Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .height, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
+echo "${result}" | jq --raw-output '
+  (["Layer", "ID", "Name", "Peers", "Height", "Latest Block Hash", "Is Syncing"] | (., map(length*"-"))),
+  (.participants.cl[] | ["CL"] + [.id, .name, .peers, .height, .latestBlockHash[:10], .isSyncing]),
+  (.participants.el[] | ["EL"] + [.id, .name, .peers, .height, .latestBlockHash[:10], .isSyncing])
+  | @tsv' | column -ts $'\t'
 ```
 
-6. Send some load to the network.
+A healthy devnet is characterized by Consensus Layer (CL) and Execution Layer (EL) nodes that successfully establish peer connections and show consistent block production and finalization across both layers.
+
+Let's do a simple L2 RPC test call.
+
+First, you will need to figure out which port Kurtosis is using for the RPC. You can get a general feel for the entire network layout by running the following command.
+
+```bash
+kurtosis enclave inspect pos-devnet
+```
+
+That output, while quite useful, might also be a little overwhelming. Let's store the RPC URL in an environment variable.
+
+```bash
+export ETH_RPC_URL=$(kurtosis port print pos-devnet l2-el-3-bor-heimdall-rpc)
+```
+
+Send some load to the network.
 
 ```bash
 export ETH_RPC_URL="$(kurtosis port print polygon-pos l2-el-1-bor-heimdall-validator rpc)"
@@ -85,6 +96,129 @@ polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" 
 cast send --legacy --private-key "$private_key" --value 0.01ether $(cast address-zero)
 ```
 
+TODO
+
+To inspect the different genesis files, you can use the following commands.
+
+```bash
+# CL genesis
+kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
+# EL genesis
+kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq
+```
+
+You can also check the MATIC contract addresses on the root and child chains.
+
+```bash
+kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.json | tail -n +2 | jq
+```
+
+### Tear Down
+
+You can remove an enclave and its contents with the following command.
+
 ## Configuration
 
-TODO
+To configure the package behaviour, you can modify the `params.yml` file. The full YAML schema that can be passed in is as follows with the defaults provided:
+
+```yml
+ethereum_package:
+  participants:
+    - el_type: geth
+      el_image: ethereum/client-go:v1.14.12
+      cl_type: lighthouse
+      cl_image: sigp/lighthouse:v6.0.0
+      use_separate_vc: true
+      vc_type: lighthouse
+      vc_image: sigp/lighthouse:v6.0.0
+  network_params:
+    preset: minimal
+    seconds_per_slot: 1
+
+polygon_pos_package:
+  # Specification of the Polygon PoS participants in the network.
+  participants:
+    - ## Execution Layer (EL) specific flags.
+      # The type of EL client that should be started.
+      # Valid values are:
+      # - bor
+      # - erigon (will be supported soon).
+      el_type: bor
+
+      # The docker image that should be used for the EL client.
+      # Leave blank to use the default image for the client type.
+      # Defaults by client:
+      # - bor: 0xpolygon/bor:1.5.3
+      # - erigon: TBD
+      el_image: ""
+
+      # The log level string that this participant's EL client should log at.
+      # Leave blank to use the default log level, info.
+      # Valid values are:
+      # - error
+      # - warn
+      # - info
+      # - debug
+      # - trace
+      el_log_level: ""
+
+      ## Consensus Layer (CL) specific flags.
+      # The type of CL client that should be started.
+      # Valid values are:
+      # - heimdall
+      # - heimdall-v2 (will be supported soon).
+      cl_type: heimdall
+
+      # The docker image that should be used for the CL client.
+      # Leave blank to use the default image for the client type.
+      # Defaults by client:
+      # - heimdall: 0xpolygon/heimdall:1.0.10
+      # - heimdall-v2: TDB
+      cl_image: ""
+
+      # The docker image that should be used for the CL's client database.
+      # Leave blank to use the default image.
+      # Default: rabbitmq:4.0.5
+      cl_db_image: ""
+
+      # The log level string that this participant's CL client should log at.
+      # Leave blank to use the default log level, info.
+      # Valid values are:
+      # - error
+      # - warn
+      # - info
+      # - debug
+      # - trace
+      cl_log_level: ""
+
+      # Wether to run this participant as a validator or an RPC.
+      # Default: false (run as an RPC).
+      is_validator: true
+
+      # Count of nodes to spin up for this participant.
+      # Default: 1
+      count: 2
+    - el_type: bor
+      cl_type: heimdall
+      is_validator: false
+
+  matic_contracts_params:
+    contracts_deployer_image: ""
+    genesis_builder_image: ""
+    validator_config_generator_image: ""
+  
+  network_params:
+    network: ""
+    bor_id: ""
+    heimdall_id: ""
+    preregistered_validator_keys_mnemonic: ""
+    validator_stake_amount: ""
+    validator_top_up_fee_amount: ""
+    bor_sprint_duration: ""
+    bor_span_duration: ""
+    heimdall_span_poll_interval: ""
+    heimdall_checkpoint_poll_interval: ""
+  
+  additional_services:
+    - tx_spammer
+```
