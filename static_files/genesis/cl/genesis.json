@@ -1,6 +1,6 @@
 {
   "genesis_time": "2024-12-18T14:24:15.738266471Z",
-  "chain_id": "{{.heimdall_id}}",
+  "chain_id": "{{.cl_chain_id}}",
   "consensus_params": {
     "block": {
       "max_bytes": "22020096",
@@ -35,21 +35,21 @@
     },
     "bor": {
       "params": {
-        "sprint_duration": "{{.bor_sprint_duration}}",
-        "span_duration": "{{.bor_span_duration}}",
+        "sprint_duration": "{{.el_sprint_duration}}",
+        "span_duration": "{{.el_span_duration}}",
         "producer_count": "4"
       },
       "spans": [
         {
           "span_id": "0",
           "start_block": "0",
-          "end_block": "{{.bor_span_0_end_block}}",
+          "end_block": "{{.el_first_span_end_block}}",
           "validator_set": {
             "validators": {{.validators}},
             "proposer": {{.proposer}}
           },
           "selected_producers": {{.validators}},
-          "bor_chain_id": "{{.bor_id}}"
+          "bor_chain_id": "{{.el_chain_id}}"
         }
       ]
     },
@@ -58,7 +58,7 @@
         "mainchain_tx_confirmations": "6",
         "maticchain_tx_confirmations": "10",
         "chain_params": {
-          "bor_chain_id": "{{.bor_id}}",
+          "bor_chain_id": "{{.el_chain_id}}",
           "matic_token_address": "{{.matic_token_address}}",
           "staking_manager_address": "{{.staking_manager_address}}",
           "slash_manager_address": "{{.slash_manager_address}}",

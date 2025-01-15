@@ -88,10 +88,10 @@ def launch(
                 data={
                     # Network params.
                     "span_poll_interval": network_params.get(
-                        "heimdall_span_poll_interval", ""
+                        "cl_span_poll_interval", ""
                     ),
                     "checkpoint_poll_interval": network_params[
-                        "heimdall_checkpoint_poll_interval"
+                        "cl_checkpoint_poll_interval"
                     ],
                     # URLs.
                     "amqp_url": rabbitmq_url,

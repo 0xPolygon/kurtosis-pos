@@ -19,15 +19,13 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
             "genesis.json": struct(
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
-                    "bor_chain_id": network_params.get("bor_id", ""),
-                    "bor_block_interval_seconds": network_params.get(
-                        "bor_block_interval_seconds", ""
+                    "el_chain_id": network_params.get("el_chain_id", ""),
+                    "el_block_interval_seconds": network_params.get(
+                        "el_block_interval_seconds", ""
                     ),
-                    "bor_sprint_duration": network_params.get(
-                        "bor_sprint_duration", ""
-                    ),
-                    "bor_gas_limit_hex": hex.int_to_hex(
-                        network_params.get("bor_gas_limit", 0)
+                    "el_sprint_duration": network_params.get("el_sprint_duration", ""),
+                    "el_gas_limit_hex": hex.int_to_hex(
+                        network_params.get("el_gas_limit", 0)
                     ),
                 },
             )
@@ -44,10 +42,10 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
         description="Generating L2 EL genesis",
         image=matic_contracts_params.get("el_genesis_builder_image"),
         env_vars={
-            "BOR_ID": network_params.get("bor_id", ""),
-            "DEFAULT_BOR_ID": constants.DEFAULT_BOR_ID,
-            "HEIMDALL_ID": network_params.get("heimdall_id", ""),
-            "DEFAULT_HEIMDALL_ID": constants.DEFAULT_HEIMDALL_ID,
+            "EL_CHAIN_ID": network_params.get("el_chain_id", ""),
+            "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
+            "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
+            "DEFAULT_CL_CHAIN_ID": constants.DEFAULT_CL_CHAIN_ID,
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not

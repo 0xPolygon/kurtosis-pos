@@ -15,7 +15,7 @@ BOR_METRICS_PORT_NUMBER = 7071
 # The folder where the bor template config is stored in the repository.
 BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/bor/config.toml"
 
-# The folder where the heimdall configs are stored inside the service.
+# The folder where bor configs are stored inside the service.
 BOR_CONFIG_FOLDER_PATH = "/etc/bor"
 # The folder where bor app stores data inside the service.
 BOR_APP_DATA_FOLDER_PATH = "/var/lib/bor"
@@ -29,7 +29,7 @@ def launch(
     el_validator_config_artifact,
     cl_node_url,
     el_account,
-    bor_static_nodes,
+    el_static_nodes,
 ):
     is_validator = participant.get("is_validator", False)
     bor_node_config_artifactconfig_artifacts = plan.render_templates(
@@ -44,7 +44,7 @@ def launch(
                     "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
                     "is_validator": is_validator,
                     "address": el_account.eth_address,
-                    "static_nodes": str(bor_static_nodes),
+                    "static_nodes": str(el_static_nodes),
                     "cl_node_url": cl_node_url,
                     # ports
                     "rpc_port_number": BOR_RPC_PORT_NUMBER,
