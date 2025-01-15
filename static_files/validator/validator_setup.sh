@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Create validator configurations (for both Heimdall and Bor).
+# Create validator configurations (for both CL and EL).
 # Unfortunately, the Heimdall node id can only be retrieved using `heimdall init`.
 # Thus, we need to generate the configs of each validator and aggregate all the node identifiers
 # to then be able to create the list of persistent peers.
@@ -71,7 +71,7 @@ setup_validator() {
   # Copy the validator state.
   cp "${heimdall_validator_config_path}/data/priv_validator_state.json" "${heimdall_validator_config_path}/config"
 
-  # Generate bor validator config.
+  # Generate EL validator config.
   local bor_validator_config_path="${BOR_CONFIG_PATH}/${validator_id}"
   echo "Generating bor config for validator ${validator_id}..."
 

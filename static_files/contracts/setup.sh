@@ -4,7 +4,7 @@ set -euxo pipefail
 # Deploy MATIC contracts to the root chain and stake for each validator.
 # For reference: https://github.com/maticnetwork/contracts/tree/v0.3.11/deploy-migrations
 
-# Setting bor chain id if needed.
+# Setting EL chain id if needed.
 if [[ -z "${EL_CHAIN_ID}" ]]; then
   echo "Error: EL_CHAIN_ID environment variable is not set"
   exit 1
@@ -17,9 +17,9 @@ echo "EL_CHAIN_ID: ${EL_CHAIN_ID}"
 echo "DEFAULT_EL_CHAIN_ID: ${DEFAULT_EL_CHAIN_ID}"
 
 if [[ "${EL_CHAIN_ID}" == "${DEFAULT_EL_CHAIN_ID}" ]]; then
-  echo "There is no need to set Bor chain id set since EL_CHAIN_ID is already set to the default value."
+  echo "There is no need to set EL chain id set since EL_CHAIN_ID is already set to the default value."
 else
-  echo "Setting Bor chain id since EL_CHAIN_ID is different than the default value..."
+  echo "Setting EL chain id since EL_CHAIN_ID is different than the default value..."
   npm run template:process -- --bor-chain-id "${EL_CHAIN_ID}"
 
   echo "Re-compiling the MATIC contracts..."
