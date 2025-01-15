@@ -168,7 +168,7 @@ def _prepare_network_data(participants):
                 cl_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}/config/".format(
-                            constants.HEIMDALL_CONFIG_PATH, validator_index + 1
+                            constants.CL_CLIENT_CONFIG_PATH, validator_index + 1
                         ),
                         name="{}-config".format(cl_node_name),
                     )
@@ -176,7 +176,7 @@ def _prepare_network_data(participants):
                 el_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}".format(
-                            constants.BOR_CONFIG_PATH, validator_index + 1
+                            constants.EL_CLIENT_CONFIG_PATH, validator_index + 1
                         ),
                         name="{}-config".format(el_node_name),
                     ),
@@ -233,9 +233,9 @@ def _generate_validator_config(
         image=matic_contracts_params.get("validator_config_generator_image"),
         env_vars={
             "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
-            "HEIMDALL_CONFIG_PATH": constants.HEIMDALL_CONFIG_PATH,
-            "BOR_CONFIG_PATH": constants.BOR_CONFIG_PATH,
-            "HEIMDALL_VALIDATOR_CONFIGS": cl_validator_configs_str,
+            "CL_CLIENT_CONFIG_PATH": constants.CL_CLIENT_CONFIG_PATH,
+            "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
+            "CL_VALIDATORS_CONFIGS": cl_validator_configs_str,
         },
         files={
             "/opt/data": validator_config_generator_artifact,
@@ -244,7 +244,7 @@ def _generate_validator_config(
         + el_validator_keystores
         + [
             StoreSpec(
-                src="{}/persistent_peers.txt".format(constants.HEIMDALL_CONFIG_PATH),
+                src="{}/persistent_peers.txt".format(constants.CL_CLIENT_CONFIG_PATH),
                 name="l2-cl-persistent-peers",
             )
         ],

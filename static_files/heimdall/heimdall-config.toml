@@ -17,7 +17,7 @@ tendermint_rpc_url = "http://0.0.0.0:{{.tendermint_rpc_port_number}}"
 
 #### Bridge configs ####
 
-# Heimdall REST server endpoint, which is used by the bridge.
+# CL REST server endpoint, which is used by the bridge.
 heimdall_rest_server = "http://0.0.0.0:{{.rest_api_port_number}}"
 
 ## Poll intervals.

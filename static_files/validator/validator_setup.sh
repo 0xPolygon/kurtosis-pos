@@ -11,50 +11,50 @@ if [[ -z "${CL_CHAIN_ID}" ]]; then
   echo "Error: CL_CHAIN_ID environment variable is not set"
   exit 1
 fi
-if [[ -z "${HEIMDALL_CONFIG_PATH}" ]]; then
-  echo "Error: HEIMDALL_CONFIG_PATH environment variable is not set"
+if [[ -z "${CL_CLIENT_CONFIG_PATH}" ]]; then
+  echo "Error: CL_CLIENT_CONFIG_PATH environment variable is not set"
   exit 1
 fi
-if [[ -z "${BOR_CONFIG_PATH}" ]]; then
-  echo "Error: BOR_CONFIG_PATH environment variable is not set"
+if [[ -z "${EL_CLIENT_CONFIG_PATH}" ]]; then
+  echo "Error: EL_CLIENT_CONFIG_PATH environment variable is not set"
   exit 1
 fi
-if [[ -z "${HEIMDALL_VALIDATOR_CONFIGS}" ]]; then
-  echo "Error: HEIMDALL_VALIDATOR_CONFIGS environment variable is not set"
+if [[ -z "${CL_VALIDATORS_CONFIGS}" ]]; then
+  echo "Error: CL_VALIDATORS_CONFIGS environment variable is not set"
   exit 1
 fi
-# Note: HEIMDALL_VALIDATOR_CONFIGS is expected to follow this exact pattern:
+# Note: CL_VALIDATORS_CONFIGS is expected to follow this exact pattern:
 # "<private_key_1>,<p2p_url_1>;<private_key_2>,<p2p_url_2>;..."
 echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
-echo "HEIMDALL_CONFIG_PATH: ${HEIMDALL_CONFIG_PATH}"
-echo "BOR_CONFIG_PATH: ${BOR_CONFIG_PATH}"
-echo "HEIMDALL_VALIDATOR_CONFIGS: ${HEIMDALL_VALIDATOR_CONFIGS}"
+echo "CL_CLIENT_CONFIG_PATH: ${CL_CLIENT_CONFIG_PATH}"
+echo "EL_CLIENT_CONFIG_PATH: ${EL_CLIENT_CONFIG_PATH}"
+echo "CL_VALIDATORS_CONFIGS: ${CL_VALIDATORS_CONFIGS}"
 
 setup_validator() {
   local validator_id="${1}"
   local validator_private_key="${2}"
   local validator_p2p_url="${3}"
 
-  # Generate heimdall validator config.
-  local heimdall_validator_config_path="${HEIMDALL_CONFIG_PATH}/${validator_id}"
-  echo "Generating heimdall config for validator ${validator_id}..."
+  # Generate CL validator config.
+  local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${validator_id}"
+  echo "Generating CL config for validator ${validator_id}..."
 
   # Create an initial dummy configuration. It is needed by `heimdallcli` to run.
-  heimdalld init --home "${heimdall_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${validator_id}"
+  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${validator_id}"
 
   # Create the validator key.
   local tmp_dir="$(mktemp -d)"
   pushd "${tmp_dir}"
-  heimdallcli generate-validatorkey --home "${heimdall_validator_config_path}" "${validator_private_key}"
-  mv priv_validator_key.json "${heimdall_validator_config_path}/config/"
+  heimdallcli generate-validatorkey --home "${cl_validator_config_path}" "${validator_private_key}"
+  mv priv_validator_key.json "${cl_validator_config_path}/config/"
   popd
 
   # Drop the temporary genesis.
-  rm "${heimdall_validator_config_path}/config/genesis.json"
+  rm "${cl_validator_config_path}/config/genesis.json"
 
   # Retrive and store the node identifier.
-  heimdalld init --home "${heimdall_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${validator_id}" 2>"${heimdall_validator_config_path}/init.out"
-  local node_id="$(jq --raw-output '.node_id' ${heimdall_validator_config_path}/init.out)"
+  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${validator_id}" 2>"${cl_validator_config_path}/init.out"
+  local node_id="$(jq --raw-output '.node_id' ${cl_validator_config_path}/init.out)"
   local node_full_address="${node_id}@${validator_p2p_url}"
   if [ -z "${persistent_peers}" ]; then
     persistent_peers="${node_full_address}"
@@ -63,27 +63,27 @@ setup_validator() {
   fi
 
   # Drop the unnecessary files.
-  rm -rf "${heimdall_validator_config_path}/config/app.toml"
-  rm -rf "${heimdall_validator_config_path}/config/config.toml"
-  rm -rf "${heimdall_validator_config_path}/config/heimdall-config.toml"
-  rm -rf "${heimdall_validator_config_path}/config/genesis.json"
+  rm -rf "${cl_validator_config_path}/config/app.toml"
+  rm -rf "${cl_validator_config_path}/config/config.toml"
+  rm -rf "${cl_validator_config_path}/config/heimdall-config.toml"
+  rm -rf "${cl_validator_config_path}/config/genesis.json"
 
   # Copy the validator state.
-  cp "${heimdall_validator_config_path}/data/priv_validator_state.json" "${heimdall_validator_config_path}/config"
+  cp "${cl_validator_config_path}/data/priv_validator_state.json" "${cl_validator_config_path}/config"
 
   # Generate EL validator config.
-  local bor_validator_config_path="${BOR_CONFIG_PATH}/${validator_id}"
-  echo "Generating bor config for validator ${validator_id}..."
+  local el_validator_config_path="${EL_CLIENT_CONFIG_PATH}/${validator_id}"
+  echo "Generating EL config for validator ${validator_id}..."
 
-  polycli parseethwallet --hexkey "${validator_private_key}" --keystore "${bor_validator_config_path}/keystore"
-  echo "${validator_private_key}" >"${bor_validator_config_path}/nodekey"
-  touch "${bor_validator_config_path}/password.txt"
+  polycli parseethwallet --hexkey "${validator_private_key}" --keystore "${el_validator_config_path}/keystore"
+  echo "${validator_private_key}" >"${el_validator_config_path}/nodekey"
+  touch "${el_validator_config_path}/password.txt"
 }
 
 # Loop through validators and set them up.
 persistent_peers=""
 id=1
-IFS=';' read -ra validator_configs <<<"${HEIMDALL_VALIDATOR_CONFIGS}"
+IFS=';' read -ra validator_configs <<<"${CL_VALIDATORS_CONFIGS}"
 for config in "${validator_configs[@]}"; do
   IFS=',' read -r private_key p2p_url <<<"${config}"
   setup_validator "${id}" "${private_key}" "${p2p_url}"
@@ -91,5 +91,5 @@ for config in "${validator_configs[@]}"; do
 done
 
 # Store node identifiers.
-echo "${persistent_peers}" >"${HEIMDALL_CONFIG_PATH}/persistent_peers.txt"
+echo "${persistent_peers}" >"${CL_CLIENT_CONFIG_PATH}/persistent_peers.txt"
 echo "Persistent peers: ${persistent_peers}"

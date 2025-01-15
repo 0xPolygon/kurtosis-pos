@@ -15,7 +15,7 @@ BOR_METRICS_PORT_NUMBER = 7071
 # The folder where the bor template config is stored in the repository.
 BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/bor/config.toml"
 
-# The folder where the heimdall configs are stored inside the service.
+# The folder where bor configs are stored inside the service.
 BOR_CONFIG_FOLDER_PATH = "/etc/bor"
 # The folder where bor app stores data inside the service.
 BOR_APP_DATA_FOLDER_PATH = "/var/lib/bor"

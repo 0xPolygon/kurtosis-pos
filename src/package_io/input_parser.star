@@ -68,7 +68,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "network_params": {
         # TODO: Find out if this `network` parameter is really needed.
         "network": "kurtosis",
-        # This mnemonic will be used to create keystores for heimdall validators.
+        # This mnemonic will be used to create keystores for CL validators.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount": "10000",  # in ether
         "validator_top_up_fee_amount": "2000",  # in ether
