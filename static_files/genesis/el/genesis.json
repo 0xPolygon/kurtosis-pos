@@ -43,7 +43,7 @@
   },
   "timestamp": "0x5ce28211",
   "extraData": "",
-  "gasLimit": "{{.bor_gas_limit_hex}}",
+  "gasLimit": "{{.el_gas_limit_hex}}",
   "difficulty": "0x1",
   "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
   "coinbase": "0x0000000000000000000000000000000000000000",
