@@ -14,7 +14,7 @@ POLYGON_POS_PARAMS = {
     ],
     "matic_contracts_params": [
         "contracts_deployer_image",
-        "genesis_builder_image",
+        "el_genesis_builder_image",
         "validator_config_generator_image",
     ],
     "network_params": [

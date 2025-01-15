@@ -23,7 +23,11 @@ COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
 
 # Prepare environment to build MATIC genesis file.
 WORKDIR /opt/genesis-contracts
-RUN npm install --global truffle@5.11.5 \
+RUN apt-get update \
+  && apt-get install --yes jq \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  && npm install --global truffle@5.11.5 \
   && git clone https://github.com/maticnetwork/genesis-contracts.git . \
   && git checkout 96a19dd \
   && git submodule init \
