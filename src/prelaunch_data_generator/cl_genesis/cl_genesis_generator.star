@@ -31,7 +31,7 @@ def generate_cl_genesis_data(
                 template=read_file(CL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
-                    "cl_id": network_params.get("cl_id", ""),
+                    "cl_chain_id": network_params.get("cl_chain_id", ""),
                     "el_chain_id": network_params.get("el_chain_id", ""),
                     "bor_sprint_duration": network_params.get(
                         "bor_sprint_duration", ""

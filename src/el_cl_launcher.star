@@ -232,7 +232,7 @@ def _generate_validator_config(
         name="l2-validators-config-generator",
         image=matic_contracts_params.get("validator_config_generator_image"),
         env_vars={
-            "CL_ID": network_params.get("cl_id", ""),
+            "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
             "HEIMDALL_CONFIG_PATH": constants.HEIMDALL_CONFIG_PATH,
             "BOR_CONFIG_PATH": constants.BOR_CONFIG_PATH,
             "HEIMDALL_VALIDATOR_CONFIGS": cl_validator_configs_str,

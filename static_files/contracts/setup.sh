@@ -41,12 +41,12 @@ if [[ -z "${L1_RPC_URL}" ]]; then
   echo "Error: L1_RPC_URL environment variable is not set"
   exit 1
 fi
-if [[ -z "${CL_ID}" ]]; then
-  echo "Error: CL_ID environment variable is not set"
+if [[ -z "${CL_CHAIN_ID}" ]]; then
+  echo "Error: CL_CHAIN_ID environment variable is not set"
   exit 1
 fi
 echo "L1_RPC_URL: ${L1_RPC_URL}"
-echo "CL_ID: ${CL_ID}"
+echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 
 echo "Running the 4 first steps of the truffle migration..."
 truffle migrate --network development --f 1 --to 4 --compile-none

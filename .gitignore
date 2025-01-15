@@ -1,2 +1,6 @@
 params.yml
 tmp/
+
+# temporary files
+.github/tests/regression
+run_regression_tests.sh

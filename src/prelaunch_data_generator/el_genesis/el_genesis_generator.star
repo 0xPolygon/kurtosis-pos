@@ -46,8 +46,8 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
         env_vars={
             "EL_CHAIN_ID": network_params.get("el_chain_id", ""),
             "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
-            "CL_ID": network_params.get("cl_id", ""),
-            "DEFAULT_CL_ID": constants.DEFAULT_CL_ID,
+            "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
+            "DEFAULT_CL_CHAIN_ID": constants.DEFAULT_CL_CHAIN_ID,
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not

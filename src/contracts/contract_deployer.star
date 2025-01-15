@@ -23,7 +23,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
             "L1_RPC_URL": l1_context.rpc_url,
             "EL_CHAIN_ID": network_params.get("el_chain_id", ""),
             "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
-            "CL_ID": network_params.get("cl_id", ""),
+            "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
             "VALIDATOR_ACCOUNTS": validator_accounts_formatted,
             "VALIDATOR_BALANCE": str(constants.VALIDATORS_BALANCE_ETH),
             "VALIDATOR_STAKE_AMOUNT": network_params.get("validator_stake_amount", ""),

@@ -1,6 +1,6 @@
 {
   "genesis_time": "2024-12-18T14:24:15.738266471Z",
-  "chain_id": "{{.cl_id}}",
+  "chain_id": "{{.cl_chain_id}}",
   "consensus_params": {
     "block": {
       "max_bytes": "22020096",

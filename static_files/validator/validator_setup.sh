@@ -7,8 +7,8 @@ set -euxo pipefail
 # to then be able to create the list of persistent peers.
 
 # Checking environment variables.
-if [[ -z "${CL_ID}" ]]; then
-  echo "Error: CL_ID environment variable is not set"
+if [[ -z "${CL_CHAIN_ID}" ]]; then
+  echo "Error: CL_CHAIN_ID environment variable is not set"
   exit 1
 fi
 if [[ -z "${HEIMDALL_CONFIG_PATH}" ]]; then
@@ -25,7 +25,7 @@ if [[ -z "${HEIMDALL_VALIDATOR_CONFIGS}" ]]; then
 fi
 # Note: HEIMDALL_VALIDATOR_CONFIGS is expected to follow this exact pattern:
 # "<private_key_1>,<p2p_url_1>;<private_key_2>,<p2p_url_2>;..."
-echo "CL_ID: ${CL_ID}"
+echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 echo "HEIMDALL_CONFIG_PATH: ${HEIMDALL_CONFIG_PATH}"
 echo "BOR_CONFIG_PATH: ${BOR_CONFIG_PATH}"
 echo "HEIMDALL_VALIDATOR_CONFIGS: ${HEIMDALL_VALIDATOR_CONFIGS}"
@@ -40,7 +40,7 @@ setup_validator() {
   echo "Generating heimdall config for validator ${validator_id}..."
 
   # Create an initial dummy configuration. It is needed by `heimdallcli` to run.
-  heimdalld init --home "${heimdall_validator_config_path}" --chain-id "${CL_ID}" --id "${validator_id}"
+  heimdalld init --home "${heimdall_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${validator_id}"
 
   # Create the validator key.
   local tmp_dir="$(mktemp -d)"
@@ -53,7 +53,7 @@ setup_validator() {
   rm "${heimdall_validator_config_path}/config/genesis.json"
 
   # Retrive and store the node identifier.
-  heimdalld init --home "${heimdall_validator_config_path}" --chain-id "${CL_ID}" --id "${validator_id}" 2>"${heimdall_validator_config_path}/init.out"
+  heimdalld init --home "${heimdall_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${validator_id}" 2>"${heimdall_validator_config_path}/init.out"
   local node_id="$(jq --raw-output '.node_id' ${heimdall_validator_config_path}/init.out)"
   local node_full_address="${node_id}@${validator_p2p_url}"
   if [ -z "${persistent_peers}" ]; then

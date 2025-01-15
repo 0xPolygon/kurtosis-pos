@@ -16,8 +16,8 @@ FROM node:16-bookworm
 LABEL description="MATIC (Polygon PoS) genesis builder image"
 LABEL author="devtools@polygon.technology"
 
-ENV DEFAULT_EL_ID="137"
-ENV DEFAULT_CL_ID="heimdall-P5rXwg"
+ENV DEFAULT_EL_CHAIN_ID="137"
+ENV DEFAULT_CL_CHAIN_ID="heimdall-P5rXwg"
 
 COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
 
@@ -36,8 +36,8 @@ RUN apt-get update \
   && cd matic-contracts \
   && git checkout mardizzone/node-16 \
   && npm install \
-  && npm run template:process -- --bor-chain-id "${DEFAULT_EL_ID}" \
+  && npm run template:process -- --bor-chain-id "${DEFAULT_EL_CHAIN_ID}" \
   && truffle compile \
   && cd .. \
-  && node generate-borvalidatorset.js --bor-chain-id "${DEFAULT_EL_ID}" --heimdall-chain-id "${DEFAULT_CL_ID}" \
+  && node generate-borvalidatorset.js --bor-chain-id "${DEFAULT_EL_CHAIN_ID}" --heimdall-chain-id "${DEFAULT_CL_CHAIN_ID}" \
   && truffle compile

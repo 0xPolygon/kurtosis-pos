@@ -69,7 +69,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         # TODO: Find out if this `network` parameter is really needed.
         "network": "kurtosis",
         "el_chain_id": "137",
-        "cl_id": "heimdall-P5rXwg",
+        "cl_chain_id": "heimdall-P5rXwg",
         # This mnemonic will be used to create keystores for heimdall validators.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount": "10000",  # in ether
