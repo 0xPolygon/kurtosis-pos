@@ -68,18 +68,20 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "network_params": {
         # TODO: Find out if this `network` parameter is really needed.
         "network": "kurtosis",
-        "el_chain_id": "137",
-        "cl_chain_id": "heimdall-P5rXwg",
         # This mnemonic will be used to create keystores for heimdall validators.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount": "10000",  # in ether
         "validator_top_up_fee_amount": "2000",  # in ether
-        "bor_block_interval_seconds": 2,
-        "bor_sprint_duration": 16,
-        "bor_span_duration": 128,
-        "bor_gas_limit": 10000000,
-        "heimdall_span_poll_interval": "0m15s",
-        "heimdall_checkpoint_poll_interval": "1m0s",
+        # CL network params.
+        "cl_chain_id": "heimdall-P5rXwg",
+        "cl_span_poll_interval": "0m15s",
+        "cl_checkpoint_poll_interval": "1m0s",
+        # EL network params.
+        "el_chain_id": "137",
+        "el_block_interval_seconds": 2,
+        "el_sprint_duration": 16,
+        "el_span_duration": 128,
+        "el_gas_limit": 10000000,
     },
     "additional_services": [],
 }

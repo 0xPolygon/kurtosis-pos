@@ -20,7 +20,7 @@ def generate_cl_genesis_data(
     if validators_number > 0:
         proposer = validator_set[0]
 
-    bor_span_duration = network_params.get("bor_span_duration", "")
+    el_span_duration = network_params.get("el_span_duration", "")
     contract_addresses = contract_util.read_contract_addresses(
         plan, contract_addresses_artifact
     )
@@ -33,11 +33,9 @@ def generate_cl_genesis_data(
                     # chain params
                     "cl_chain_id": network_params.get("cl_chain_id", ""),
                     "el_chain_id": network_params.get("el_chain_id", ""),
-                    "bor_sprint_duration": network_params.get(
-                        "bor_sprint_duration", ""
-                    ),
-                    "bor_span_duration": bor_span_duration,
-                    "bor_span_0_end_block": bor_span_duration - 1,
+                    "el_sprint_duration": network_params.get("el_sprint_duration", ""),
+                    "el_span_duration": el_span_duration,
+                    "el_first_span_end_block": el_span_duration - 1,
                     # # validator set, proposer, etc.
                     "accounts": json.indent(json.encode(accounts)),
                     "dividend_accounts": json.indent(json.encode(dividends)),

@@ -20,14 +20,12 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     "el_chain_id": network_params.get("el_chain_id", ""),
-                    "bor_block_interval_seconds": network_params.get(
-                        "bor_block_interval_seconds", ""
+                    "el_block_interval_seconds": network_params.get(
+                        "el_block_interval_seconds", ""
                     ),
-                    "bor_sprint_duration": network_params.get(
-                        "bor_sprint_duration", ""
-                    ),
-                    "bor_gas_limit_hex": hex.int_to_hex(
-                        network_params.get("bor_gas_limit", 0)
+                    "el_sprint_duration": network_params.get("el_sprint_duration", ""),
+                    "el_gas_limit_hex": hex.int_to_hex(
+                        network_params.get("el_gas_limit", 0)
                     ),
                 },
             )

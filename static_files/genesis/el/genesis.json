@@ -22,13 +22,13 @@
         "256": 128
       },
       "period": {
-        "0": {{.bor_block_interval_seconds}}
+        "0": {{.el_block_interval_seconds}}
       },
       "producerDelay": {
         "0": 5
       },
       "sprint": {
-        "0": {{.bor_sprint_duration}}
+        "0": {{.el_sprint_duration}}
       },
       "backupMultiplier": {
         "0": 5
