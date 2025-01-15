@@ -4,7 +4,7 @@ LABEL author="devtools@polygon.technology"
 
 WORKDIR /opt/solidity
 RUN apt-get update \
-  && apt-get install --yes cmake libboost-all-dev z3 cvc4 git gcc g++ jq \
+  && apt-get install --yes cmake libboost-all-dev z3 cvc4 git gcc g++ \
   && git clone --branch v0.5.17 https://github.com/ethereum/solidity.git . \
   && mkdir build \
   && cd build \
@@ -19,11 +19,15 @@ LABEL author="devtools@polygon.technology"
 ENV DEFAULT_BOR_ID="137"
 ENV DEFAULT_HEIMDALL_ID="heimdall-P5rXwg"
 
-COPY --from=soldity-builder /opt/solidity/build/solc /usr/bin/jq /usr/local/bin/
+COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
 
 # Prepare environment to build MATIC genesis file.
 WORKDIR /opt/genesis-contracts
-RUN npm install --global truffle@5.11.5 \
+RUN apt-get update \
+  && apt-get install --yes jq \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  && npm install --global truffle@5.11.5 \
   && git clone https://github.com/maticnetwork/genesis-contracts.git . \
   && git checkout 96a19dd \
   && git submodule init \
