@@ -49,7 +49,7 @@
             "proposer": {{.proposer}}
           },
           "selected_producers": {{.validators}},
-          "bor_chain_id": "{{.bor_id}}"
+          "bor_chain_id": "{{.el_chain_id}}"
         }
       ]
     },
@@ -58,7 +58,7 @@
         "mainchain_tx_confirmations": "6",
         "maticchain_tx_confirmations": "10",
         "chain_params": {
-          "bor_chain_id": "{{.bor_id}}",
+          "bor_chain_id": "{{.el_chain_id}}",
           "matic_token_address": "{{.matic_token_address}}",
           "staking_manager_address": "{{.staking_manager_address}}",
           "slash_manager_address": "{{.slash_manager_address}}",

@@ -21,8 +21,8 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
         env_vars={
             "PRIVATE_KEY": l1_context.private_key,
             "L1_RPC_URL": l1_context.rpc_url,
-            "BOR_ID": network_params.get("bor_id", ""),
-            "DEFAULT_BOR_ID": constants.DEFAULT_BOR_ID,
+            "EL_CHAIN_ID": network_params.get("el_chain_id", ""),
+            "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
             "CL_ID": network_params.get("cl_id", ""),
             "VALIDATOR_ACCOUNTS": validator_accounts_formatted,
             "VALIDATOR_BALANCE": str(constants.VALIDATORS_BALANCE_ETH),

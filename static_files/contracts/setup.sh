@@ -5,22 +5,22 @@ set -euxo pipefail
 # For reference: https://github.com/maticnetwork/contracts/tree/v0.3.11/deploy-migrations
 
 # Setting bor chain id if needed.
-if [[ -z "${BOR_ID}" ]]; then
-  echo "Error: BOR_ID environment variable is not set"
+if [[ -z "${EL_CHAIN_ID}" ]]; then
+  echo "Error: EL_CHAIN_ID environment variable is not set"
   exit 1
 fi
-if [[ -z "${DEFAULT_BOR_ID}" ]]; then
-  echo "Error: DEFAULT_BOR_ID environment variable is not set"
+if [[ -z "${DEFAULT_EL_CHAIN_ID}" ]]; then
+  echo "Error: DEFAULT_EL_CHAIN_ID environment variable is not set"
   exit 1
 fi
-echo "BOR_ID: ${BOR_ID}"
-echo "DEFAULT_BOR_ID: ${DEFAULT_BOR_ID}"
+echo "EL_CHAIN_ID: ${EL_CHAIN_ID}"
+echo "DEFAULT_EL_CHAIN_ID: ${DEFAULT_EL_CHAIN_ID}"
 
-if [[ "${BOR_ID}" == "${DEFAULT_BOR_ID}" ]]; then
-  echo "There is no need to set Bor chain id set since BOR_ID is already set to the default value."
+if [[ "${EL_CHAIN_ID}" == "${DEFAULT_EL_CHAIN_ID}" ]]; then
+  echo "There is no need to set Bor chain id set since EL_CHAIN_ID is already set to the default value."
 else
-  echo "Setting Bor chain id since BOR_ID is different than the default value..."
-  npm run template:process -- --bor-chain-id "${BOR_ID}"
+  echo "Setting Bor chain id since EL_CHAIN_ID is different than the default value..."
+  npm run template:process -- --bor-chain-id "${EL_CHAIN_ID}"
 
   echo "Re-compiling the MATIC contracts..."
   truffle compile

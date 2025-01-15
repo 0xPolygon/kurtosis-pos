@@ -19,7 +19,7 @@ POLYGON_POS_PARAMS = {
     ],
     "network_params": [
         "network",
-        "bor_id",
+        "el_chain_id",
         "cl_id",
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount",
