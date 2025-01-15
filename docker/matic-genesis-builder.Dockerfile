@@ -4,7 +4,7 @@ LABEL author="devtools@polygon.technology"
 
 WORKDIR /opt/solidity
 RUN apt-get update \
-  && apt-get install --yes cmake libboost-all-dev z3 cvc4 git gcc g++ \
+  && apt-get install --yes cmake libboost-all-dev z3 cvc4 git gcc g++ jq \
   && git clone --branch v0.5.17 https://github.com/ethereum/solidity.git . \
   && mkdir build \
   && cd build \
@@ -19,7 +19,7 @@ LABEL author="devtools@polygon.technology"
 ENV DEFAULT_BOR_ID="137"
 ENV DEFAULT_HEIMDALL_ID="heimdall-P5rXwg"
 
-COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
+COPY --from=soldity-builder /opt/solidity/build/solc /usr/bin/jq /usr/local/bin/
 
 # Prepare environment to build MATIC genesis file.
 WORKDIR /opt/genesis-contracts
