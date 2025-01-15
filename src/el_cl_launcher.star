@@ -114,7 +114,7 @@ def launch(
                 el_validator_config_artifact,
                 cl_node_url,
                 pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index],
-                network_data.enode_urls,
+                network_data.el_static_nodes,
             )
 
             # Increment the indexes.
@@ -133,7 +133,7 @@ def _prepare_network_data(participants):
     cl_validator_keystores = []
     el_validator_keystores = []
     # An array of EL enode URLs.
-    enode_urls = []
+    el_static_nodes = []
 
     # Iterate through all participants in the network and generate necessary configurations.
     participant_index = 0
@@ -186,7 +186,7 @@ def _prepare_network_data(participants):
                 enode_url = _generate_enode_url(
                     participant, account.eth_public_key[2:], el_node_name
                 )
-                enode_urls.append(enode_url)
+                el_static_nodes.append(enode_url)
 
                 # Increment the validator index.
                 validator_index += 1
@@ -199,7 +199,7 @@ def _prepare_network_data(participants):
         cl_validator_configs_str=";".join(cl_validator_configs),
         cl_validator_keystores=cl_validator_keystores,
         el_validator_keystores=el_validator_keystores,
-        enode_urls=enode_urls,
+        el_static_nodes=el_static_nodes,
     )
 
 

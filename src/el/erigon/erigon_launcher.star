@@ -6,7 +6,7 @@ def launch(
     el_validator_config_artifact,
     cl_node_url,
     el_node_address,
-    bor_static_nodes,
+    el_static_nodes,
 ):
     # TODO
     fail("Erigon launcher has not yet been developed!")
