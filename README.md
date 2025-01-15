@@ -8,7 +8,7 @@ Specifically, this package will:
 
 1. Spin up a local L1 chain, fully customizable with multi-client support, leveraging the [ethereum-package](https://github.com/ethpandaops/ethereum-package).
 2. Deploy MATIC contracts to L1 as well as stake for each validators.
-3. Generate Consensus Layer (Cl) and Execution Layer (EL) genesis information.
+3. Generate Consensus Layer (CL) and Execution Layer (EL) genesis information.
 4. Configure and boostrap a network of Polygon PoS nodes of configurable size using the genesis data generated above.
 
 Optional features:
@@ -18,7 +18,12 @@ Optional features:
 
 ## Table of contents
 
-TODO
+- [Quickstart](#quickstart)
+  - [Prerequisites](#prerequisites)
+  - [Deploy](#deploy)
+  - [Interact](#interact)
+  - [Tear Down](#tear-down)
+- [Configuration](#configuration)
 
 ## Quickstart
 
@@ -29,7 +34,7 @@ You will need to install the following tools:
 - [kurtosis](https://github.com/kurtosis-tech/kurtosis)
 - [docker](https://docs.docker.com/)
 
-If you intend to interact with and debug the devnet, you may also want to consider a few additional optional tools such as:
+If you intend to interact with and debug the devnet, you may also want to consider a few additional tools such as:
 
 - [jq](https://github.com/jqlang/jq)
 - [yq](https://pypi.org/project/yq/) (v3)
@@ -38,21 +43,38 @@ If you intend to interact with and debug the devnet, you may also want to consid
 
 ### Deploy
 
-Kurtosis packages are highly configurable, allowing users to customize network behavior by defining parameters in a file that can be dynamically passed at runtime. The devnet operates in a temporary, isolated environment called an *enclave*.
-
+Run the package with default configurations with the following command. It will deploy a PoS devnet with three participants, two Heimdall/Bor validators and one Heimdall/Bor rpc.
 
 ```bash
-kurtosis run --args-file params.yml --enclave pos-devnet github.com/leovct/kurtosis-polygon-pos
+kurtosis run --enclave pos-devnet github.com/0xPolygon/kurtosis-polygon-pos
 ```
 
-Where `params.yml` contains the parameters for your devnet.
+Kurtosis packages are highly configurable, allowing users to customize network behavior by defining parameters in a file that can be dynamically passed at runtime.
+
+```bash
+kurtosis run --args-file params.yml --enclave pos-devnet github.com/0xPolygon/kurtosis-polygon-pos
+```
+
+Where `params.yml` contains the parameters of the devnet.
+
+Note that it is also possible to specify args on the command line.
+
+```bash
+kurtosis run --enclave pos-devnet github.com/0xPolygon/kurtosis-polygon-pos '{"polygon_pos_package": {"network_params": {"bor_id": "137"}}}"'
+```
+
+If you want to make modifications to the package, you can also run the package locally.
+
+```bash
+kurtosis run --args-file params.yml --enclave pos-devnet .
+```
 
 ### Interact
 
-To make sure the devnet is running correctly, you can use two of our handy scripts. The first script scans the Kurtosis enclave to identify RPC URLs for different nodes (run once per deployment), while the second script returns the status of the devnet.
+To make sure the devnet is running correctly, you can use two of our handy scripts. The first script scans the Kurtosis enclave to identify the rpc urls of the different nodes (run this script only once per deployment), while the second script queries the different rpc urls and returns the status of the devnet.
 
 ```bash
-export ENCLAVE="polygon-pos"
+export ENCLAVE="pos-devnet "
 bash scripts/discover.sh
 bash scripts/status.sh
 ```
@@ -68,17 +90,17 @@ echo "${result}" | jq --raw-output '
   | @tsv' | column -ts $'\t'
 ```
 
-A healthy devnet is characterized by Consensus Layer (CL) and Execution Layer (EL) nodes that successfully establish peer connections and show consistent block production and finalization across both layers.
+A healthy devnet is characterized by CL and EL nodes that successfully establish peer connections and show consistent block production and finalization across both layers.
 
-Let's do a simple L2 RPC test call.
+Now that we made sure the devnet is healthy, let's do a simple L2 rpc test call.
 
-First, you will need to figure out which port Kurtosis is using for the RPC. You can get a general feel for the entire network layout by running the following command.
+First, you will need to figure out which port Kurtosis is using for the rpc. You can get a general feel for the entire network layout by running the following command.
 
 ```bash
 kurtosis enclave inspect pos-devnet
 ```
 
-That output, while quite useful, might also be a little overwhelming. Let's store the RPC URL in an environment variable.
+That output, while quite useful, might also be a little overwhelming. Let's store the rpc url in an environment variable.
 
 ```bash
 export ETH_RPC_URL=$(kurtosis port print pos-devnet l2-el-3-bor-heimdall-rpc)
@@ -87,39 +109,54 @@ export ETH_RPC_URL=$(kurtosis port print pos-devnet l2-el-3-bor-heimdall-rpc)
 Send some load to the network.
 
 ```bash
-export ETH_RPC_URL="$(kurtosis port print polygon-pos l2-el-1-bor-heimdall-validator rpc)"
-cast balance 0x97538585a02A3f1B1297EB9979cE1b34ff953f1E # the first pre-funded account
-
+export ETH_RPC_URL="$(kurtosis port print pos-devnet  l2-el-1-bor-heimdall-validator rpc)"
 private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
-polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500 --rate-limit 10 --mode t
-polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500 --rate-limit 10 --mode 2
+
+# Send some load using polycli.
+polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 5000 --rate-limit 10 --mode t
+polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500  --rate-limit 10 --mode 2
+polycli loadtest --rpc-url "$ETH_RPC_URL" --legacy --private-key "$private_key" --verbosity 700 --requests 500  --rate-limit 10 --mode v3
+
+# You can also use cast.
 cast send --legacy --private-key "$private_key" --value 0.01ether $(cast address-zero)
 ```
 
-TODO
-
-To inspect the different genesis files, you can use the following commands.
+Pretty often, you will want to check the output from the service. Here is how you can grab some logs:
 
 ```bash
-# CL genesis
-kurtosis files inspect polygon-pos l2-cl-genesis genesis.json | tail -n +2 | jq
-# EL genesis
-kurtosis files inspect polygon-pos l2-el-genesis genesis.json | tail -n +2 | jq
+kurtosis service logs pos-devnet l2-el-1-bor-heimdall-validator --follow
 ```
 
-You can also check the MATIC contract addresses on the root and child chains.
+In other cases, if you see an error, you might want to get a shell in the service to be able to poke around.
 
 ```bash
-kurtosis files inspect polygon-pos matic-contract-addresses contractAddresses.json | tail -n +2 | jq
+kurtosis service shell pos-devnet l2-el-1-bor-heimdall-validator
+```
+
+You might also want to check the CL and EL genesis files.
+
+```bash
+kurtosis files inspect pos-devnet  l2-cl-genesis genesis.json | tail -n +2 | jq
+kurtosis files inspect pos-devnet  l2-el-genesis genesis.json | tail -n +2 | jq
+```
+
+In the same way, you might want to check the MATIC contract addresses on the root and child chains.
+
+```bash
+kurtosis files inspect pos-devnet  matic-contract-addresses contractAddresses.json | tail -n +2 | jq
 ```
 
 ### Tear Down
 
-You can remove an enclave and its contents with the following command.
+Once done with the enclave, you can remove its contents (services and files) with the following command.
+
+```bash
+kurtosis enclave rm --force pos-devnet
+```
 
 ## Configuration
 
-To configure the package behaviour, you can modify the `params.yml` file. The full YAML schema that can be passed in is as follows with the defaults provided:
+To configure the package behaviour, you can create your own `params.yml` file. By the way, you can name it anything you like. The full YAML schema that can be passed in is as follows with the defaults provided:
 
 ```yml
 ethereum_package:
