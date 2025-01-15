@@ -17,7 +17,7 @@ LABEL description="MATIC (Polygon PoS) genesis builder image"
 LABEL author="devtools@polygon.technology"
 
 ENV DEFAULT_BOR_ID="137"
-ENV DEFAULT_HEIMDALL_ID="heimdall-P5rXwg"
+ENV DEFAULT_CL_ID="heimdall-P5rXwg"
 
 COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
 
@@ -39,5 +39,5 @@ RUN apt-get update \
   && npm run template:process -- --bor-chain-id "${DEFAULT_BOR_ID}" \
   && truffle compile \
   && cd .. \
-  && node generate-borvalidatorset.js --bor-chain-id "${DEFAULT_BOR_ID}" --heimdall-chain-id "${DEFAULT_HEIMDALL_ID}" \
+  && node generate-borvalidatorset.js --bor-chain-id "${DEFAULT_BOR_ID}" --heimdall-chain-id "${DEFAULT_CL_ID}" \
   && truffle compile

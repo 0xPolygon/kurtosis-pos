@@ -46,8 +46,8 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
         env_vars={
             "BOR_ID": network_params.get("bor_id", ""),
             "DEFAULT_BOR_ID": constants.DEFAULT_BOR_ID,
-            "HEIMDALL_ID": network_params.get("heimdall_id", ""),
-            "DEFAULT_HEIMDALL_ID": constants.DEFAULT_HEIMDALL_ID,
+            "CL_ID": network_params.get("cl_id", ""),
+            "DEFAULT_CL_ID": constants.DEFAULT_CL_ID,
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not

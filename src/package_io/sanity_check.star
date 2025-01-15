@@ -20,7 +20,7 @@ POLYGON_POS_PARAMS = {
     "network_params": [
         "network",
         "bor_id",
-        "heimdall_id",
+        "cl_id",
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount",
         "validator_top_up_fee_amount",
