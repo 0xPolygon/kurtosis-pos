@@ -5,6 +5,7 @@ datadir = "{{.data_folder_path}}"
 staticpeers = "{{.static_nodes}}"
 verbosity = "{{.log_level}}"
 snapshots = false
+nat = "none"
 
 # Bor parameters.
 "bor.heimdall" = "{{.cl_node_url}}"
