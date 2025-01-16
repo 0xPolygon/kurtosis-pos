@@ -89,14 +89,17 @@ def launch(
         name=el_node_name,
         config=ServiceConfig(
             image=participant.get("el_image"),
+            # All port checks are disabled, see the comment above.
             ports={
                 ERIGON_RPC_PORT_ID: PortSpec(
                     number=ERIGON_RPC_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 ERIGON_WS_PORT_ID: PortSpec(
                     number=ERIGON_WS_PORT_NUMBER,
                     application_protocol="ws",
+                    wait=None,
                 ),
                 ERIGON_METRICS_PORT_ID: PortSpec(
                     number=ERIGON_METRICS_PORT_NUMBER,
