@@ -2,6 +2,12 @@
 ERIGON_RPC_PORT_ID = "rpc"
 ERIGON_RPC_PORT_NUMBER = 8545
 
+ERIGON_WS_PORT_ID = "ws"
+ERIGON_WS_PORT_NUMBER = 8546
+
+ERIGON_METRICS_PORT_ID = "metrics"
+ERIGON_METRICS_PORT_NUMBER = 7071
+
 
 # The folder where the erigon template config is stored in the repository.
 ERIGONTEMPLATE_CONFIG_FILE_PATH = "../../../static_files/erigon/config.toml"
