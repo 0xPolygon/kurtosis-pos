@@ -152,7 +152,9 @@ def _validate_list_of_dict(input_args, category):
 
 def _validate_participant(p):
     _validate_str(p, "el_type", [constants.EL_TYPE.bor, constants.EL_TYPE.erigon])
-    _validate_str(p, "cl_type", [constants.CL_TYPE.heimdall])
+    _validate_str(
+        p, "cl_type", [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
+    )
 
     log_values = [
         constants.LOG_LEVEL.error,
