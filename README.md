@@ -300,4 +300,31 @@ polygon_pos_package:
     - prometheus_grafana
     # A transaction spammer to send fake transactions to the network (will be supported soon).
     - tx_spammer
+
+# Developper parameters.
+dev:
+  # Wether to deploy a local L1 or not.
+  # By default, the package will deploy a local L1. If you want to use an existing L1, set this
+  # parameter to false and specify the private key and the rpc url.
+  should_deploy_l1: true
+  # The private used to deploy MATIC contracts and fund validator accounts.
+  # You only need to set this parameter if you set `dev.should_deploy_l1` to false and
+  # `dev.should_deploy_matic_contracts` to true. Or in other words if you use an existing L1 but
+  # still plan to deploy the MATIC contracts and generate the genesis files.
+  # Default: ""
+  l1_private_key: ""
+  # The L1 rpc url.
+  # Default: ""
+  l1_rpc_url: ""
+
+  # Wether to deploy MATIC contracts to L1 and generate the CL and EL genesis files.
+  # By default, the package will deploy the contracts and generate the genesis files.
+  # It you want to use your own genesis files, set this parameter to false and specify the filepaths.
+  should_deploy_matic_contracts: true
+  # The L2 CL genesis file path.
+  # Default: ""
+  l2_cl_genesis_filepath: ""
+  # The L2 EL genesis file path.
+  # Default: ""
+  l2_el_genesis_filepath: ""
 ```
