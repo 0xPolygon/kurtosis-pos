@@ -32,7 +32,7 @@ def launch(
     el_static_nodes,
 ):
     is_validator = participant.get("is_validator", False)
-    bor_node_config_artifactconfig_artifacts = plan.render_templates(
+    bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
         config={
             "config.toml": struct(
@@ -57,7 +57,7 @@ def launch(
     )
 
     files = {
-        BOR_CONFIG_FOLDER_PATH: bor_node_config_artifactconfig_artifacts,
+        BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
         "/opt/data/genesis": el_genesis_artifact,
     }
     if is_validator:
@@ -72,7 +72,9 @@ def launch(
     ]
     bor_cmds = [
         # Copy EL genesis file inside bor config folder.
-        "cp /opt/data/genesis/genesis.json {}".format(BOR_CONFIG_FOLDER_PATH),
+        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
+            BOR_CONFIG_FOLDER_PATH
+        ),
         # Start bor.
         # Note: this command attempts to start Bor and retries if it fails.
         # The retry mechanism addresses a race condition where Bor initially fails to
