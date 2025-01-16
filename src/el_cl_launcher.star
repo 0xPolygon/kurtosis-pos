@@ -19,7 +19,7 @@ def launch(
     l1_rpc_url,
 ):
     network_params = polygon_pos_args.get("network_params", {})
-    matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
+    setup_images = polygon_pos_args.get("setup_images", {})
 
     el_launchers = {
         "bor": {
@@ -218,7 +218,7 @@ def _generate_validator_config(
     el_validator_keystores,
     polygon_pos_args,
 ):
-    matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
+    setup_images = polygon_pos_args.get("setup_images", {})
     network_params = polygon_pos_args.get("network_params", {})
 
     # Generate CL validators configuration such as the public/private keys and node identifiers.
@@ -230,7 +230,7 @@ def _generate_validator_config(
     # Generate validator configs.
     result = plan.run_sh(
         name="l2-validators-config-generator",
-        image=matic_contracts_params.get("validator_config_generator_image"),
+        image=setup_images.get("validator_config_generator"),
         env_vars={
             "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
             "CL_CLIENT_CONFIG_PATH": constants.CL_CLIENT_CONFIG_PATH,

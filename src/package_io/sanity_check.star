@@ -12,13 +12,12 @@ POLYGON_POS_PARAMS = {
         "is_validator",
         "count",
     ],
-    "matic_contracts_params": [
-        "contracts_deployer_image",
-        "el_genesis_builder_image",
-        "validator_config_generator_image",
+    "setup_images": [
+        "contract_deployer",
+        "el_genesis_builder",
+        "validator_config_generator",
     ],
     "network_params": [
-        "network",
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount",
         "validator_top_up_fee_amount",
@@ -58,7 +57,7 @@ def sanity_check_polygon_args(plan, input_args):
 
     # Validate keys.
     _validate_list_of_dict(input_args, "participants")
-    _validate_dict(input_args, "matic_contracts_params")
+    _validate_dict(input_args, "setup_images")
     _validate_dict(input_args, "network_params")
     _validate_list(input_args, "additional_services")
 
@@ -79,11 +78,15 @@ def sanity_check_dev_args(plan, input_args):
 
     # Validate values.
     should_deploy_l1 = input_args.get("should_deploy_l1", True)
+    should_deploy_matic_contracts = input_args.get(
+        "should_deploy_matic_contracts", True
+    )
+
     if not should_deploy_l1:
         l1_private_key = input_args.get("l1_private_key", "")
-        if l1_private_key == "":
+        if l1_private_key == "" and should_deploy_matic_contracts:
             fail(
-                "`dev.l1_private_key` must be specified when `dev.should_deploy_l1` is set to false!"
+                "`dev.l1_private_key` must be specified when `dev.should_deploy_l1` is set to false and `dev.should_deploy_matic_contracts` is set to true!"
             )
 
         l1_rpc_url = input_args.get("l1_rpc_url", "")
@@ -92,9 +95,6 @@ def sanity_check_dev_args(plan, input_args):
                 "`dev.l1_rpc_url` must be specified when `dev.should_deploy_l1` is set to false!"
             )
 
-    should_deploy_matic_contracts = input_args.get(
-        "should_deploy_matic_contracts", True
-    )
     if not should_deploy_matic_contracts:
         l2_el_genesis_filepath = input_args.get("l2_el_genesis_filepath", "")
         if l2_el_genesis_filepath == "":

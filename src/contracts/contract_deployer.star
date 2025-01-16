@@ -5,7 +5,7 @@ CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
     network_params = polygon_pos_args.get("network_params", {})
-    matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
+    setup_images = polygon_pos_args.get("setup_images", {})
 
     validator_accounts_formatted = _format_validator_accounts(validator_accounts)
 
@@ -17,7 +17,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
     return plan.run_sh(
         name="matic-contracts-deployer",
         description="Deploying MATIC contracts to L1 and staking for each validator - it can take up to 5 minutes",
-        image=matic_contracts_params.get("contracts_deployer_image"),
+        image=setup_images.get("contract_deployer"),
         env_vars={
             "PRIVATE_KEY": l1_context.private_key,
             "L1_RPC_URL": l1_context.rpc_url,
