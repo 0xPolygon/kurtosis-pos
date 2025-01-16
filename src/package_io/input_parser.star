@@ -2,10 +2,10 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_CONTRACT_DEPLOYER_IMAGE = "leovct/matic-contracts-deployer:node-16"
-DEFAULT_EL_GENESIS_BUILDER_IMAGE = "leovct/matic-genesis-builder:node-16"
-DEFAULT_VALIDATOR_CONFIG_GENERATOR_IMAGE = (
-    "leovct/validator-config-generator:1.0.10"  # based on 0xpolygon/heimdall:1.0.10
+DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer:node-16"
+DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:node-16"
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = (
+    "leovct/pos-validator-config-generator:1.0.10"  # based on 0xpolygon/heimdall:1.0.10
 )
 
 DEFAULT_EL_IMAGES = {
@@ -62,9 +62,9 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         },
     ],
     "setup_images": {
-        "contract_deployer": DEFAULT_CONTRACT_DEPLOYER_IMAGE,
-        "el_genesis_builder": DEFAULT_EL_GENESIS_BUILDER_IMAGE,
-        "validator_config_generator": DEFAULT_VALIDATOR_CONFIG_GENERATOR_IMAGE,
+        "contract_deployer": DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE,
+        "el_genesis_builder": DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE,
+        "validator_config_generator": DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE,
     },
     "network_params": {
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
