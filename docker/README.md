@@ -26,3 +26,15 @@ docker push leovct/pos-el-genesis-builder:node-16
 docker build --tag leovct/pos-validator-config-generator:1.0.10 --file pos-validator-config-generator.Dockerfile .
 docker push leovct/pos-validator-config-generator:1.0.10
 ```
+
+## Heimdall V2
+
+```bash
+git clone git@github.com:0xPolygon/heimdall-v2.git
+pushd heimdall-v2
+tag="3138e07"
+git checkout "${tag}" # 06/01/2025
+sed -i 's/RUN make install/RUN make heimdalld/' Dockerfile
+docker build --tag "leovct/heimdall-v2:${tag}" --file Dockerfile .
+docker push "leovct/heimdall-v2:${tag}"
+```
