@@ -12,13 +12,12 @@ POLYGON_POS_PARAMS = {
         "is_validator",
         "count",
     ],
-    "matic_contracts_params": [
-        "contracts_deployer_image",
-        "el_genesis_builder_image",
-        "validator_config_generator_image",
+    "setup_images": [
+        "contract_deployer",
+        "el_genesis_builder",
+        "validator_config_generator",
     ],
     "network_params": [
-        "network",
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount",
         "validator_top_up_fee_amount",
@@ -58,7 +57,7 @@ def sanity_check_polygon_args(plan, input_args):
 
     # Validate keys.
     _validate_list_of_dict(input_args, "participants")
-    _validate_dict(input_args, "matic_contracts_params")
+    _validate_dict(input_args, "setup_images")
     _validate_dict(input_args, "network_params")
     _validate_list(input_args, "additional_services")
 

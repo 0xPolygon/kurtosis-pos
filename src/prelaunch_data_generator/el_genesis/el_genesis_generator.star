@@ -10,7 +10,7 @@ EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/el/genesis.json"
 
 def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
     network_params = polygon_pos_args.get("network_params", {})
-    matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
+    setup_images = polygon_pos_args.get("setup_images", {})
 
     # Generate a temporary EL genesis with an empty `alloc` field.
     el_genesis_temporary_artifact = plan.render_templates(
@@ -40,7 +40,7 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
     return plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
-        image=matic_contracts_params.get("el_genesis_builder_image"),
+        image=setup_images.get("el_genesis_builder"),
         env_vars={
             "EL_CHAIN_ID": network_params.get("el_chain_id", ""),
             "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,

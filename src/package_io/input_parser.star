@@ -1,7 +1,8 @@
 constants = import_module("./constants.star")
+math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_CONTRACTS_DEPLOYER_IMAGE = "leovct/matic-contracts-deployer:node-16"
+DEFAULT_CONTRACT_DEPLOYER_IMAGE = "leovct/matic-contracts-deployer:node-16"
 DEFAULT_EL_GENESIS_BUILDER_IMAGE = "leovct/matic-genesis-builder:node-16"
 DEFAULT_VALIDATOR_CONFIG_GENERATOR_IMAGE = (
     "leovct/validator-config-generator:1.0.10"  # based on 0xpolygon/heimdall:1.0.10
@@ -60,15 +61,12 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
             "is_validator": False,
         },
     ],
-    "matic_contracts_params": {
-        "contracts_deployer_image": DEFAULT_CONTRACTS_DEPLOYER_IMAGE,
-        "el_genesis_builder_image": DEFAULT_EL_GENESIS_BUILDER_IMAGE,
-        "validator_config_generator_image": DEFAULT_VALIDATOR_CONFIG_GENERATOR_IMAGE,
+    "setup_images": {
+        "contract_deployer": DEFAULT_CONTRACT_DEPLOYER_IMAGE,
+        "el_genesis_builder": DEFAULT_EL_GENESIS_BUILDER_IMAGE,
+        "validator_config_generator": DEFAULT_VALIDATOR_CONFIG_GENERATOR_IMAGE,
     },
     "network_params": {
-        # TODO: Find out if this `network` parameter is really needed.
-        "network": "kurtosis",
-        # This mnemonic will be used to create keystores for CL validators.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount": "10000",  # in ether
         "validator_top_up_fee_amount": "2000",  # in ether
@@ -81,7 +79,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "el_block_interval_seconds": 2,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
-        "el_gas_limit": 10000000,
+        "el_gas_limit": math.pow(10, 7),
     },
     "additional_services": [],
 }
@@ -144,10 +142,8 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     participants = polygon_pos_args.get("participants", [])
     result["participants"] = _parse_participants(participants)
 
-    matic_contracts_params = polygon_pos_args.get("matic_contracts_params", {})
-    result["matic_contracts_params"] = _parse_matic_contracts_params(
-        matic_contracts_params
-    )
+    setup_images = polygon_pos_args.get("setup_images", {})
+    result["setup_images"] = _parse_setup_images(setup_images)
 
     network_params = polygon_pos_args.get("network_params", {})
     result["network_params"] = _parse_network_params(network_params)
@@ -219,24 +215,20 @@ def _parse_participants(participants):
     return [_sort_dict_by_values(p) for p in participants_with_defaults]
 
 
-def _parse_matic_contracts_params(matic_contracts_params):
-    # Create a mutable copy of matic_contracts_params.
-    if matic_contracts_params:
-        matic_contracts_params = dict(matic_contracts_params)
+def _parse_setup_images(setup_images):
+    # Create a mutable copy of setup_images.
+    if setup_images:
+        setup_images = dict(setup_images)
 
     # Set default matic contracts params if not provided.
-    if not matic_contracts_params:
-        matic_contracts_params = DEFAULT_POLYGON_POS_PACKAGE_ARGS[
-            "matic_contracts_params"
-        ]
+    if not setup_images:
+        setup_images = DEFAULT_POLYGON_POS_PACKAGE_ARGS["setup_images"]
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
-        "matic_contracts_params", {}
-    ).items():
-        matic_contracts_params.setdefault(k, v)
+    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}).items():
+        setup_images.setdefault(k, v)
 
     # Sort the dict and return the result.
-    return _sort_dict_by_values(matic_contracts_params)
+    return _sort_dict_by_values(setup_images)
 
 
 def _parse_network_params(network_params):
