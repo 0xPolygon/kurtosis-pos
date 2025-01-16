@@ -2,7 +2,6 @@
 identity = "{{.node_name}}"
 chain = "mainnet"
 datadir = "{{.data_folder_path}}"
-nodekey = "{{.config_folder_path}}/nodekey"
 staticpeers = "{{.static_nodes}}"
 verbosity = "{{.log_level}}"
 snapshots = false
@@ -14,6 +13,7 @@ snapshots = false
 
 {{if .is_validator}}
 # Miner parameters.
+nodekey = "{{.config_folder_path}}/nodekey"
 allow-insecure-unlock = true
 "miner.gaslimit" = 30000000
 "miner.etherbase" = "{{.address}}"
@@ -24,7 +24,7 @@ allow-insecure-unlock = true
 "http" = true
 "http.addr" = "0.0.0.0"
 "http.port" = {{.rpc_port_number}}
-"http.api" = ["eth", "net", "web3", "txpool"]
+"http.api" = ["eth", "net", "web3", "txpool", "bor"]
 "http.vhosts" = ["*"]
 "http.corsdomain" = ["*"]
 
