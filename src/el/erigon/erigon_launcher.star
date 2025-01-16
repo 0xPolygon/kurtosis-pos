@@ -90,6 +90,7 @@ def launch(
                 ERIGON_METRICS_PORT_ID: PortSpec(
                     number=ERIGON_METRICS_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
             },
             files=files,
