@@ -33,24 +33,24 @@ def launch(
                 data={
                     # node params
                     "node_name": el_node_name,
-                    "config_folder_path": BOR_CONFIG_FOLDER_PATH,
-                    "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
+                    "config_folder_path": ERIGON_CONFIG_FOLDER_PATH,
+                    "data_folder_path": ERIGON_APP_DATA_FOLDER_PATH,
                     "is_validator": is_validator,
                     "address": el_account.eth_address,
                     "static_nodes": str(el_static_nodes),
                     "cl_node_url": cl_node_url,
                     "log_level": participant.get("el_log_level", ""),
                     # ports
-                    "rpc_port_number": BOR_RPC_PORT_NUMBER,
-                    "ws_port_number": BOR_WS_PORT_NUMBER,
-                    "metrics_port_number": BOR_METRICS_PORT_NUMBER,
+                    "rpc_port_number": ERIGON_RPC_PORT_NUMBER,
+                    "ws_port_number": ERIGON_WS_PORT_NUMBER,
+                    "metrics_port_number": ERIGON_METRICS_PORT_NUMBER,
                 },
             ),
         },
     )
 
     files = {
-        BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
+        ERIGON_CONFIG_FOLDER_PATH: erigon_node_config_artifact,
         "/opt/data/genesis": el_genesis_artifact,
     }
     if is_validator:
