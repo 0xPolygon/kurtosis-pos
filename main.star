@@ -2,6 +2,7 @@ ethereum_package = import_module(
     "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 )
 
+blockscout = import_module("./src/additional_services/blockscout.star")
 cl_genesis_generator = import_module(
     "./src/prelaunch_data_generator/cl_genesis/cl_genesis_generator.star"
 )
@@ -18,6 +19,8 @@ math = import_module("./src/math/math.star")
 pre_funded_accounts = import_module(
     "./src/prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
 )
+prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
+tx_spammer = import_module("./src/additional_services/tx_spammer.star")
 wait = import_module("./src/wait/wait.star")
 
 
@@ -149,6 +152,18 @@ def run(plan, args):
         l2_cl_genesis_artifact,
         l1_context.rpc_url,
     )
+
+    # Deploy additional services.
+    additional_services = polygon_pos_args.get("additional_services", [])
+    for svc in additional_services:
+        if svc == "blockscout":
+            blockscout.launch(plan)
+        elif svc == "prometheus_grafana":
+            prometheus_grafana.launch(plan)
+        elif svc == "tx_spammer":
+            tx_spammer.launch(plan)
+        else:
+            fail("Invalid additional service: %s" % (svc))
 
 
 def get_validator_accounts(participants):
