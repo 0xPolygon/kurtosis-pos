@@ -42,7 +42,7 @@ def launch(
                     "data_folder_path": ERIGON_APP_DATA_FOLDER_PATH,
                     "is_validator": is_validator,
                     "address": el_account.eth_address,
-                    "static_nodes": str(el_static_nodes),
+                    "static_nodes": ",".join(el_static_nodes),
                     "cl_node_url": cl_node_url,
                     "log_level": participant.get("el_log_level", ""),
                     # ports
@@ -83,11 +83,20 @@ def launch(
                     number=ERIGON_RPC_PORT_NUMBER,
                     application_protocol="http",
                 ),
+                ERIGON_WS_PORT_ID: PortSpec(
+                    number=ERIGON_WS_PORT_NUMBER,
+                    application_protocol="ws",
+                ),
+                ERIGON_METRICS_PORT_ID: PortSpec(
+                    number=ERIGON_METRICS_PORT_NUMBER,
+                    application_protocol="http",
+                ),
             },
             files=files,
             entrypoint=["sh", "-c"],
             cmd=[
                 "&&".join(validator_cmds + erigon_cmd if is_validator else erigon_cmd)
             ],
+            user=User(uid=0, gid=0),  # Run the container as root user.
         ),
     )
