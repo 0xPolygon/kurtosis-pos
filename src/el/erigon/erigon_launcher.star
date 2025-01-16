@@ -28,7 +28,6 @@ def launch(
     cl_node_url,
     el_account,
     el_static_nodes,
-    network_params,
 ):
     is_validator = participant.get("is_validator", False)
     erigon_node_config_artifact = plan.render_templates(
@@ -72,24 +71,7 @@ def launch(
             ERIGON_CONFIG_FOLDER_PATH
         ),
         # Start erigon.
-        "".join(
-            [
-                "erigon",
-                "--verbosity={}".format(participant.get("el_log_level", "")),
-                "--nodekey={}/nodekey".format(ERIGON_CONFIG_FOLDER_PATH),
-                "--datadir={}".format(ERIGON_APP_DATA_FOLDER_PATH),
-                "--chain=mainnet",
-                "--networkid={}".format(network_params.get("el_chain_id", "")),
-                "--bor.heimdall={}".format(cl_node_url),
-                "--staticpeers='{}'".format(el_static_nodes),
-                "--http.api='eth,admin,debug,web3,txpool,trace,net,bor'",
-                "--http.vhosts='*'",
-                "--http.corsdomain='*'",
-                "--http.addr='0.0.0.0'",
-                "--http.port={}".format(ERIGON_RPC_PORT_NUMBER),
-                "--snapshots=false",
-            ]
-        ),
+        "erigon --config {}/config.toml".format(ERIGON_CONFIG_FOLDER_PATH),
     ]
 
     return plan.add_service(
