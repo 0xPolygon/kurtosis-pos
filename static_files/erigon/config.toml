@@ -1,3 +1,4 @@
+# Node parameters.
 identity = "{{.node_name}}"
 chain = "mainnet"
 datadir = "{{.data_folder_path}}"
@@ -6,33 +7,31 @@ staticpeers = "{{.static_nodes}}"
 verbosity = "{{.log_level}}"
 snapshots = false
 
-
-[bor]
-    heimdall = "{{.cl_node_url}}"
-    milestone = true
-    waypoints = false
+# Bor parameters.
+"bor.heimdall" = "{{.cl_node_url}}"
+"bor.milestone" = true
+"bor.waypoints" = false
 
 {{if .is_validator}}
+# Miner parameters.
 allow-insecure-unlock = true
-[mine]
-    gaslimit = 30000000
-    gasprice = "25000000000"
-    etherbase = "{{.address}}"
-    extradata = "{{.node_name}}"
+"miner.gaslimit" = 30000000
+"miner.etherbase" = "{{.address}}"
+"miner.extradata" = "{{.node_name}}"
 {{end}}
 
-[http]
-    enabled = true
-    addr = "0.0.0.0"
-    port = {{.rpc_port_number}}
-    api = ["eth", "net", "web3", "txpool", "bor"]
-    vhosts = ["*"]
-    corsdomain = ["*"]
+# HTTP RPC
+"http" = true
+"http.addr" = "0.0.0.0"
+"http.port" = {{.rpc_port_number}}
+"http.api" = ["eth", "net", "web3", "txpool"]
+"http.vhosts" = ["*"]
+"http.corsdomain" = ["*"]
 
-[ws]
-    enabled = true
-    port = {{.ws_port_number}}
+# WS RPC
+"ws" = true
+"ws.port" = {{.ws_port_number}}
 
-[metrics]
-    addr = "0.0.0.0"
-    port = {{.metrics_port_number}}
+# Metrics
+"metrics.addr" = "0.0.0.0"
+"metrics.port" = {{.metrics_port_number}}
