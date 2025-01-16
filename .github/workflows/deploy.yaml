@@ -71,10 +71,9 @@ jobs:
       
       - name: Check devnet status
         run: |
+          echo "Sending some load to the network..."
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
           private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
-
-          echo "Sending some load to the network..."
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
 
           export ENCLAVE="${{ env.ENCLAVE_NAME }}"
@@ -165,14 +164,23 @@ jobs:
       
       - name: Wait for devnet to be ready
         run: |
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
+          cl_node_name="l2-cl-1-${cl_type}-${el_type}"
+          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}" --follow &
           sleep 240
 
       - name: Check devnet status
         run: |
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
+          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+
           echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${el_node_name} rpc)"
           private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
 
@@ -251,16 +259,24 @@ jobs:
       
       - name: Wait for devnet to be ready
         run: |
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ./.github/tests/external-l1/polygon-pos-with-external-l1.yml)
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ./.github/tests/external-l1/polygon-pos-with-external-l1.yml)
+          cl_node_name="l2-cl-1-${cl_type}-${el_type}"
+          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}" --follow &
           sleep 240
 
       - name: Check devnet status
         run: |
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
-          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ./.github/tests/external-l1/polygon-pos-with-external-l1.yml)
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ./.github/tests/external-l1/polygon-pos-with-external-l1.yml)
+          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
 
           echo "Sending some load to the network..."
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${el_node_name} rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
 
           export ENCLAVE="${{ env.ENCLAVE_NAME }}"
@@ -327,16 +343,24 @@ jobs:
       
       - name: Wait for devnet to be ready
         run: |
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml)
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml)
+          cl_node_name="l2-cl-1-${cl_type}-${el_type}"
+          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --follow &
+          kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}"--follow &
           sleep 240
 
       - name: Check devnet status
         run: |
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
-          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml)
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml)
+          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
 
           echo "Sending some load to the network..."
+          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${el_node_name} rpc)"
+          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
           polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 5000 --rate-limit 50 --mode t &
 
           export ENCLAVE="${{ env.ENCLAVE_NAME }}"
