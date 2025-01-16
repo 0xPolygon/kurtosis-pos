@@ -28,6 +28,7 @@ def launch(
     cl_node_url,
     el_account,
     el_static_nodes,
+    el_chain_id,
 ):
     is_validator = participant.get("is_validator", False)
     erigon_node_config_artifact = plan.render_templates(
@@ -40,11 +41,12 @@ def launch(
                     "node_name": el_node_name,
                     "config_folder_path": ERIGON_CONFIG_FOLDER_PATH,
                     "data_folder_path": ERIGON_APP_DATA_FOLDER_PATH,
-                    "is_validator": is_validator,
                     "address": el_account.eth_address,
-                    "static_nodes": ",".join(el_static_nodes),
                     "cl_node_url": cl_node_url,
                     "log_level": participant.get("el_log_level", ""),
+                    # network params.
+                    "el_chain_id": el_chain_id,
+                    "static_nodes": ",".join(el_static_nodes),
                     # ports
                     "rpc_port_number": ERIGON_RPC_PORT_NUMBER,
                     "ws_port_number": ERIGON_WS_PORT_NUMBER,
@@ -73,6 +75,10 @@ def launch(
         # Copy EL genesis file inside erigon config folder.
         "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
             ERIGON_CONFIG_FOLDER_PATH
+        ),
+        # Initialise erigon.
+        "erigon init --datadir {} {}/genesis.json".format(
+            ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
         ),
         # Start erigon.
         # Note: this command attempts to start Erigon and retries if it fails.

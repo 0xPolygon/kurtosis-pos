@@ -1,6 +1,6 @@
 # Node parameters.
 identity = "{{.node_name}}"
-chain = "mainnet"
+networkid = "{{.el_chain_id}}"
 datadir = "{{.data_folder_path}}"
 staticpeers = "{{.static_nodes}}"
 verbosity = "{{.log_level}}"
@@ -11,15 +11,6 @@ nat = "none"
 "bor.heimdall" = "{{.cl_node_url}}"
 "bor.milestone" = true
 "bor.waypoints" = false
-
-{{if .is_validator}}
-# Miner parameters.
-nodekey = "{{.config_folder_path}}/nodekey"
-allow-insecure-unlock = true
-"miner.gaslimit" = 30000000
-"miner.etherbase" = "{{.address}}"
-"miner.extradata" = "{{.node_name}}"
-{{end}}
 
 # HTTP RPC
 "http" = true

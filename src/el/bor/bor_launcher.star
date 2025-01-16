@@ -30,6 +30,7 @@ def launch(
     cl_node_url,
     el_account,
     el_static_nodes,
+    el_chain_id,
 ):
     is_validator = participant.get("is_validator", False)
     bor_node_config_artifact = plan.render_templates(
@@ -44,8 +45,9 @@ def launch(
                     "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
                     "is_validator": is_validator,
                     "address": el_account.eth_address,
-                    "static_nodes": str(el_static_nodes),
                     "cl_node_url": cl_node_url,
+                    # network params
+                    "static_nodes": str(el_static_nodes),
                     # ports
                     "rpc_port_number": BOR_RPC_PORT_NUMBER,
                     "ws_port_number": BOR_WS_PORT_NUMBER,
