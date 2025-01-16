@@ -43,7 +43,7 @@ If you intend to interact with and debug the devnet, you may also want to consid
 
 ### Deploy
 
-Run the package with default configurations with the following command. It will deploy a PoS devnet with three participants, two Heimdall/Bor validators and one Heimdall/Bor rpc.
+Run the package with default configurations with the following command. It will deploy a PoS devnet with three participants, two Heimdall/Bor validators and one Heimdall/Bor rpc. This process typically takes around five minutes.
 
 ```bash
 kurtosis run --enclave pos-devnet github.com/0xPolygon/kurtosis-polygon-pos
@@ -74,7 +74,7 @@ kurtosis run --args-file params.yml --enclave pos-devnet .
 To make sure the devnet is running correctly, you can use two of our handy scripts. The first script scans the Kurtosis enclave to identify the rpc urls of the different nodes (run this script only once per deployment), while the second script queries the different rpc urls and returns the status of the devnet.
 
 ```bash
-export ENCLAVE="pos-devnet "
+export ENCLAVE="pos-devnet"
 bash scripts/discover.sh
 bash scripts/status.sh
 ```
