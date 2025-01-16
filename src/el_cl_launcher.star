@@ -1,10 +1,11 @@
 bor = import_module("./el/bor/bor_launcher.star")
 constants = import_module("./package_io/constants.star")
 erigon = import_module("./el/erigon/erigon_launcher.star")
+heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
+heimdall_v2 = import_module("./cl/heimdall_v2/heimdall_v2_launcher.star")
 pre_funded_accounts = import_module(
     "./prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
 )
-heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
 
 
 VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/validator"
@@ -33,7 +34,10 @@ def launch(
     cl_launchers = {
         "heimdall": {
             "launch_method": heimdall.launch,
-        }
+        },
+        "heimdall-v2": {
+            "launch_method": heimdall_v2.launch,
+        },
     }
 
     # Prepare network data and generate validator configs.
