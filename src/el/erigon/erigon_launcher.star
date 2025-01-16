@@ -63,7 +63,11 @@ def launch(
 
     validator_cmds = [
         # Copy EL validator config inside erigon data and config folders.
+        "cp /opt/data/config/password.txt {}/password.txt".format(
+            ERIGON_CONFIG_FOLDER_PATH
+        ),
         "cp /opt/data/config/nodekey {}/nodekey".format(ERIGON_CONFIG_FOLDER_PATH),
+        "cp -r /opt/data/config/keystore {}".format(ERIGON_APP_DATA_FOLDER_PATH),
     ]
     erigon_cmd = [
         # Copy EL genesis file inside erigon config folder.
