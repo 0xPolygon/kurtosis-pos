@@ -41,18 +41,18 @@ jobs:
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
-      
+
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: ${{ env.FOUNDRY_VERSION }}
-      
+
       - name: Install polycli
         run: |
           POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
-          tmp_dir=$(mktemp -d) 
-          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
-          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          tmp_dir=$(mktemp -d)
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir"
+          mv "$tmp_dir"/* /usr/local/bin/polycli
           rm -rf "$tmp_dir"
           sudo chmod +x /usr/local/bin/polycli
           /usr/local/bin/polycli version
@@ -62,13 +62,13 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
+
       - name: Wait for devnet to be ready
         run: |
           kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
           kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
           sleep 240
-      
+
       - name: Check devnet status
         run: |
           echo "Sending some load to the network..."
@@ -127,11 +127,6 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      - name: Install yq
-        run: |
-          pip3 install yq
-          yq --version
 
       - name: Install kurtosis
         run: |
@@ -140,34 +135,39 @@ jobs:
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
-      
+
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: ${{ env.FOUNDRY_VERSION }}
-      
+
       - name: Install polycli
         run: |
           POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
-          tmp_dir=$(mktemp -d) 
-          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
-          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          tmp_dir=$(mktemp -d)
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir"
+          mv "$tmp_dir"/* /usr/local/bin/polycli
           rm -rf "$tmp_dir"
           sudo chmod +x /usr/local/bin/polycli
           /usr/local/bin/polycli version
+
+      - name: Install yq
+        run: |
+          pip3 install yq
+          yq --version
 
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
+
       - name: Wait for devnet to be ready
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
           cl_node_name="l2-cl-1-${cl_type}-${el_type}"
-          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
           kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --follow &
           kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}" --follow &
@@ -177,7 +177,7 @@ jobs:
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
-          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
           echo "Sending some load to the network..."
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${el_node_name} rpc)"
@@ -232,22 +232,27 @@ jobs:
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
-      
+
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: ${{ env.FOUNDRY_VERSION }}
-      
+
       - name: Install polycli
         run: |
           POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
-          tmp_dir=$(mktemp -d) 
-          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
-          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          tmp_dir=$(mktemp -d)
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir"
+          mv "$tmp_dir"/* /usr/local/bin/polycli
           rm -rf "$tmp_dir"
           sudo chmod +x /usr/local/bin/polycli
           /usr/local/bin/polycli version
-      
+
+      - name: Install yq
+        run: |
+          pip3 install yq
+          yq --version
+
       - name: Deploy L1
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/tests/external-l1/ethereum.yml github.com/ethpandaops/ethereum-package@4.4.0
 
@@ -256,13 +261,13 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
+
       - name: Wait for devnet to be ready
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ./.github/tests/external-l1/polygon-pos-with-external-l1.yml)
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ./.github/tests/external-l1/polygon-pos-with-external-l1.yml)
           cl_node_name="l2-cl-1-${cl_type}-${el_type}"
-          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
           kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --follow &
           kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}" --follow &
@@ -272,7 +277,7 @@ jobs:
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ./.github/tests/external-l1/polygon-pos-with-external-l1.yml)
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ./.github/tests/external-l1/polygon-pos-with-external-l1.yml)
-          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
           echo "Sending some load to the network..."
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${el_node_name} rpc)"
@@ -293,7 +298,7 @@ jobs:
         with:
           name: dump_run_with_external_l1_${{ github.run_id }}
           path: ./dump
-  
+
   run-with-cl-el-genesis:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -319,34 +324,39 @@ jobs:
           sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
-      
+
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: ${{ env.FOUNDRY_VERSION }}
-      
+
       - name: Install polycli
         run: |
           POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
-          tmp_dir=$(mktemp -d) 
-          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir" 
-          mv "$tmp_dir"/* /usr/local/bin/polycli 
+          tmp_dir=$(mktemp -d)
+          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir"
+          mv "$tmp_dir"/* /usr/local/bin/polycli
           rm -rf "$tmp_dir"
           sudo chmod +x /usr/local/bin/polycli
           /usr/local/bin/polycli version
+
+      - name: Install yq
+        run: |
+          pip3 install yq
+          yq --version
 
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
+
       - name: Wait for devnet to be ready
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml)
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml)
           cl_node_name="l2-cl-1-${cl_type}-${el_type}"
-          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
           kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --follow &
           kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}"--follow &
@@ -356,7 +366,7 @@ jobs:
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml)
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml)
-          el_node_name="l2-el-1-${el_type}-${el_type}-validator"
+          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
           echo "Sending some load to the network..."
           export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${el_node_name} rpc)"
