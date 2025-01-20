@@ -204,6 +204,8 @@ def _parse_participants(participants):
         if cl_type and not cl_image:
             if cl_type == constants.CL_TYPE.heimdall:
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall]
+            elif cl_type == constants.CL_TYPE.heimdall_v2:
+                p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2]
 
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
