@@ -29,6 +29,8 @@ docker push leovct/pos-validator-config-generator:1.0.10
 
 ## Heimdall V2
 
+- [Docker Hub](https://hub.docker.com/r/leovct/heimdall-v2)
+
 ```bash
 git clone git@github.com:0xPolygon/heimdall-v2.git
 pushd heimdall-v2
