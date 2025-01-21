@@ -255,9 +255,6 @@ sub_graph_url = ""
 
 #### Bridge config ####
 
-# CL REST server endpoint, which is used by the bridge.
-heimdall_rest_server = "http://0.0.0.0:{{.rest_api_port_number}}"
-
 ## Poll intervals.
 checkpoint_poll_interval = "{{.checkpoint_poll_interval}}"
 clerk_poll_interval = "10s"
