@@ -80,6 +80,15 @@ def launch(
                     "cometbft_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
                 },
             ),
+            "client.toml": struct(
+                template=read_file(
+                    "{}/client.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH),
+                ),
+                data={
+                    "cl_chain_id": network_params.get("cl_chain_id", ""),
+                    "cometbft_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
+                },
+            ),
             "config.toml": struct(
                 template=read_file(
                     "{}/config.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH)
@@ -143,6 +152,10 @@ def launch(
                         ),
                         "mkdir {}/data".format(HEIMDALL_CONFIG_FOLDER_PATH),
                         "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
+                            HEIMDALL_CONFIG_FOLDER_PATH
+                        ),
+                        # Heimdall-v2 requires that the `round` property of priv_validator_state.json is of type int32 whereas heimdall-v1 asks for a string.
+                        'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
                             HEIMDALL_CONFIG_FOLDER_PATH
                         ),
                         # Start heimdall.
