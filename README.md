@@ -245,7 +245,7 @@ polygon_pos_package:
     # Default: "leovct/pos-el-genesis-builder:node-16"
     el_genesis_builder: ""
     # Image used to generate L2 CL/EL validators configurations.
-    # Default: "leovct/heimdall-validator-config-generator:1.0.10"
+    # Default: "leovct/pos-validator-config-generator:1.0.10"
     validator_config_generator: ""
 
   # L2 network parameters.
