@@ -12,9 +12,11 @@ if [[ -z "${MNEMONIC}" ]]; then
   echo "Error: MNEMONIC environment variable is not set"
   exit 1
 fi
+echo "ACCOUNTS_NUMBER: ${ACCOUNTS_NUMBER}"
+echo "MNEMONIC: ${MNEMONIC}"
 
 # Generating accounts.
-cl_client_config_path="/etc/cl"
+cl_client_config_path="/etc/heimdall"
 echo "Generating Ethereum accounts..."
 polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}" |
   jq '[.Addresses[] | {Path: .Path, ETHAddress: .ETHAddress, ETHPublicKey: ("0x" + .HexFullPublicKey), PrivateKey: .HexPrivateKey}]' \
