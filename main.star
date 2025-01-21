@@ -90,21 +90,13 @@ def run(plan, args):
         contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
 
-        devnet_cl_type = participants[0].get("cl_type")
-        if devnet_cl_type == constants.CL_TYPE.heimdall:
-            result = cl_genesis_generator.generate_heimdall_cl_genesis_data(
-                plan,
-                polygon_pos_args,
-                validator_accounts,
-                contract_addresses_artifact,
-            )
-        elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
-            result = cl_genesis_generator.generate_heimdall_v2_cl_genesis_data(
-                plan,
-                polygon_pos_args,
-                validator_accounts,
-                contract_addresses_artifact,
-            )
+        result = cl_genesis_generator.generate_cl_genesis_data(
+            plan,
+            polygon_pos_args,
+            participants[0].get("cl_type"),
+            validator_accounts,
+            contract_addresses_artifact,
+        )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 1:
             fail(
