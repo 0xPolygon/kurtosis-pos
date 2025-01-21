@@ -4,8 +4,8 @@ contract_util = import_module("../../contracts/util.star")
 
 CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
 HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
-    constants.CL_TYPE.heimdall: HEIMDALL_GENESIS_TEMPLATE_FILE_NAME,
-    constants.CL_TYPE.heimdall_v2: HEIMDALL_V2_GENESIS_TEMPLATE_FILE_NAME,
+    constants.CL_TYPE.heimdall: "heimdall-genesis.json",
+    constants.CL_TYPE.heimdall_v2: "heimdall-v2-genesis.json",
 }
 
 
