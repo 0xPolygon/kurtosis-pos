@@ -19,14 +19,33 @@ def generate_cl_genesis_data(
     network_params = polygon_pos_args.get("network_params", {})
     validators_number = len(validator_accounts)
 
-    validator_data = _get_validator_data(validator_accounts, devnet_cl_type)
-    accounts = validator_data.accounts
-    dividends = validator_data.dividends
-    signing_infos = validator_data.signing_infos
-    validator_set = validator_data.validator_set
-    proposer = []
-    if validators_number > 0:
-        proposer = validator_set[0]
+    cl_type_specific_data = {}
+    if devnet_cl_type == constants.CL_TYPE.heimdall:
+        validator_data = _get_heimdall_validator_data(validator_accounts)
+        proposer = []
+        if validators_number > 0:
+            proposer = validator_set[0]
+        cl_type_specific_data = {
+            "accounts": json.indent(json.encode(validator_data.accounts)),
+            "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
+            "signing_infos": json.indent(json.encode(validator_data.signing_infos)),
+            "validators": json.indent(json.encode(validator_data.validator_set)),
+            "proposer": json.indent(json.encode(proposer)),
+        }
+    elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
+        validator_data = _get_heimdall_v2_validator_data(validator_accounts)
+        proposer = []
+        if validators_number > 0:
+            proposer = validator_set[0]
+        cl_type_specific_data = {
+            "accounts": json.indent(json.encode(validator_data.accounts)),
+            "balances": json.indent(json.encode(validator_data.balances)),
+            "supply": json.indent(json.encode(validator_data.supply)),
+            "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
+            "validators": json.indent(json.encode(validator_data.validator_set)),
+            "proposer": json.indent(json.encode(proposer)),
+            "total_voting_power": validator_data.total_voting_power,
+        }
 
     el_span_duration = network_params.get("el_span_duration", "")
     contract_addresses = contract_util.read_contract_addresses(
@@ -50,12 +69,6 @@ def generate_cl_genesis_data(
                     "el_sprint_duration": network_params.get("el_sprint_duration", ""),
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,
-                    # # validator set, proposer, etc.
-                    "accounts": json.indent(json.encode(accounts)),
-                    "dividend_accounts": json.indent(json.encode(dividends)),
-                    "signing_infos": json.indent(json.encode(signing_infos)),
-                    "validators": json.indent(json.encode(validator_set)),
-                    "proposer": json.indent(json.encode(proposer)),
                     # contract addresses
                     "matic_token_address": contract_addresses.get("matic_token", ""),
                     "staking_manager_address": contract_addresses.get(
@@ -67,7 +80,8 @@ def generate_cl_genesis_data(
                     "root_chain_address": contract_addresses.get("root_chain", ""),
                     "staking_info_address": contract_addresses.get("staking_info", ""),
                     "state_sender_address": contract_addresses.get("state_sender", ""),
-                },
+                }
+                | cl_type_specific_data,
             ),
         },
     )
@@ -91,7 +105,7 @@ def generate_cl_genesis_data(
     )
 
 
-def _get_validator_data(validator_accounts, devnet_cl_type):
+def _get_heimdall_validator_data(validator_accounts):
     accounts = []
     dividends = []
     signing_infos = {}
@@ -100,42 +114,22 @@ def _get_validator_data(validator_accounts, devnet_cl_type):
     for i, account in enumerate(validator_accounts):
         validator_id = str(i + 1)
 
-        # Determine the format of the genesis (heimdall or heimdall-v2).
-        if devnet_cl_type == constants.CL_TYPE.heimdall:
-            denom = "matic"
-            accounts_params = {
-                "sequence_number": "0",
-                "account_number": "0",
-                "module_name": "",
-                "module_permissions": None,
-            }
-            validator_params = {
-                "ID": validator_id,
-                "power": str(constants.VALIDATORS_BALANCE_ETH),
-                "accum": "0",
-            }
-        elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
-            denom = "pol"
-            accounts_params = {}
-            validator_params = {
-                "valId": validator_id,
-                "votingPower": str(constants.VALIDATORS_BALANCE_ETH),
-                "proposerPriority": "0",
-            }
-
         # Accounts.
         accounts.append(
             {
                 "address": account.eth_address,
                 "coins": [
                     {
-                        "denom": denom,
+                        "denom": "matic",
                         "amount": "{}000000000000000000".format(
                             constants.VALIDATORS_BALANCE_ETH
                         ),  # 18 zeros
                     }
-                    | accounts_params
                 ],
+                "sequence_number": "0",
+                "account_number": "0",
+                "module_name": "",
+                "module_permissions": None,
             }
         )
 
@@ -157,15 +151,17 @@ def _get_validator_data(validator_accounts, devnet_cl_type):
         # Validator set.
         validator_set.append(
             {
-                "startEpoch": "0",
+                "ID": validator_id,
+                "accum": "0",
                 "endEpoch": "0",
+                "jailed": False,
+                "last_updated": "",
                 "nonce": "1",
+                "power": str(constants.VALIDATORS_BALANCE_ETH),
                 "pubKey": account.tendermint_public_key,
                 "signer": account.eth_address,
-                "last_updated": "",
-                "jailed": False,
+                "startEpoch": "0",
             }
-            | validator_params
         )
 
     return struct(
@@ -173,4 +169,87 @@ def _get_validator_data(validator_accounts, devnet_cl_type):
         dividends=dividends,
         signing_infos=signing_infos,
         validator_set=validator_set,
+    )
+
+
+def _get_heimdall_v2_validator_data(validator_accounts):
+    accounts = []
+    balances = []
+    dividends = []
+    signing_infos = {}
+    validator_set = []
+
+    for i, account in enumerate(validator_accounts):
+        validator_id = str(i + 1)
+
+        # Accounts.
+        accounts.append(
+            {
+                "@type": "/cosmos.auth.v1beta1.BaseAccount",
+                "address": account.eth_address,
+                "pub_key": {
+                    "@type": "/cosmos.crypto.secp256k1.PubKey",
+                    "key": account.tendermint_public_key,
+                },
+                "account_number": validator_id,
+                "sequence": "0",
+            }
+        )
+
+        # Token balances.
+        balances.append(
+            {
+                "address": account.eth_address,
+                "coins": [
+                    {
+                        "denom": "pol",
+                        "amount": "{}000000000000000000".format(
+                            constants.VALIDATORS_BALANCE_ETH
+                        ),  # 18 zeros
+                    },
+                ],
+            }
+        )
+
+        # Dividends.
+        dividends.append(
+            {
+                "user": account.eth_address,
+                "feeAmount": "0",
+            }
+        )
+
+        # Validator set.
+        validator_set.append(
+            {
+                "startEpoch": "0",
+                "endEpoch": "0",
+                "nonce": "1",
+                "pubKey": account.tendermint_public_key,
+                "signer": account.eth_address,
+                "last_updated": "",
+                "jailed": False,
+                "valId": validator_id,
+                "votingPower": str(constants.VALIDATORS_BALANCE_ETH),
+                "proposerPriority": "0",
+            }
+        )
+
+    # Token supply.
+    supply = [
+        {
+            "denom": "pol",
+            "amount": "{}000000000000000000".format(
+                constants.VALIDATORS_BALANCE_ETH * len(validator_accounts)
+            ),  # 18 zeros
+        }
+    ]
+
+    return struct(
+        accounts=accounts,
+        balances=balances,
+        supply=supply,
+        dividends=dividends,
+        validator_set=validator_set,
+        total_voting_power=constants.VALIDATORS_BALANCE_ETH * len(validator_accounts),
     )

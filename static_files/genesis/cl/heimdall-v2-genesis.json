@@ -23,8 +23,8 @@
         "send_enabled": [],
         "default_send_enabled": true
       },
-      "balances": [],
-      "supply": [],
+      "balances": {{.balances}},
+      "supply": {{.supply}},
       "denom_metadata": [],
       "send_enabled": []
     },
