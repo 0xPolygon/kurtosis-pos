@@ -90,9 +90,11 @@ def run(plan, args):
         contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
 
+        devnet_cl_type = participants[0].get("cl_type")
         result = cl_genesis_generator.generate_cl_genesis_data(
             plan,
             polygon_pos_args,
+            devnet_cl_type,
             validator_accounts,
             contract_addresses_artifact,
         )

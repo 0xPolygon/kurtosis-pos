@@ -185,6 +185,9 @@ def _parse_participants(participants):
             "participants", []
         )
 
+    # Determine the devnet CL type.
+    devnet_cl_type = participants[0].get("cl_type")
+
     for p in participants:
         # Create a mutable copy of participant.
         p = dict(p)
@@ -210,6 +213,14 @@ def _parse_participants(participants):
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
             p.setdefault(k, v)
+
+        # Make sure that CL types have not been mixed.
+        if p.get("cl_type") != devnet_cl_type:
+            fail(
+                'Mixing different CL types is not supported. Got "{}" and "{}".'.format(
+                    devnet_cl_type, cl_type
+                )
+            )
 
         # Assign the modified dictionary back to the list.
         participants_with_defaults.append(p)

@@ -60,7 +60,6 @@
         "chain_params": {
           "bor_chain_id": "{{.el_chain_id}}",
           "matic_token_address": "{{.matic_token_address}}",
-          "pol_token_address": "{{.matic_token_address}}",
           "staking_manager_address": "{{.staking_manager_address}}",
           "slash_manager_address": "{{.slash_manager_address}}",
           "root_chain_address": "{{.root_chain_address}}",

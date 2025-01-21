@@ -2,11 +2,19 @@ constants = import_module("../../package_io/constants.star")
 contract_util = import_module("../../contracts/util.star")
 
 
-CL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/cl/genesis.json"
+CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
+HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
+    constants.CL_TYPE.heimdall: HEIMDALL_GENESIS_TEMPLATE_FILE_NAME,
+    constants.CL_TYPE.heimdall_v2: HEIMDALL_V2_GENESIS_TEMPLATE_FILE_NAME,
+}
 
 
 def generate_cl_genesis_data(
-    plan, polygon_pos_args, validator_accounts, contract_addresses_artifact
+    plan,
+    polygon_pos_args,
+    devnet_cl_type,
+    validator_accounts,
+    contract_addresses_artifact,
 ):
     network_params = polygon_pos_args.get("network_params", {})
     validators_number = len(validator_accounts)
@@ -24,11 +32,17 @@ def generate_cl_genesis_data(
     contract_addresses = contract_util.read_contract_addresses(
         plan, contract_addresses_artifact
     )
+
     cl_genesis_temporary_artifact = plan.render_templates(
         name="l2-cl-genesis-tmp",
         config={
             "genesis-tmp.json": struct(
-                template=read_file(CL_GENESIS_TEMPLATE_FILE_PATH),
+                template=read_file(
+                    "{}/{}".format(
+                        CL_GENESIS_TEMPLATE_FOLDER_PATH,
+                        HEIMDALL_GENESIS_TEMPLATE_FILE_NAME[devnet_cl_type],
+                    )
+                ),
                 data={
                     # chain params
                     "cl_chain_id": network_params.get("cl_chain_id", ""),
@@ -77,7 +91,7 @@ def generate_cl_genesis_data(
     )
 
 
-def _get_validator_data(validator_accounts):
+def _get_validator_data(validator_accounts, cl_type):
     accounts = []
     dividends = []
     signing_infos = {}
@@ -86,22 +100,47 @@ def _get_validator_data(validator_accounts):
     for i, account in enumerate(validator_accounts):
         validator_id = str(i + 1)
 
+        # Determine the format of the genesis (heimdall or heimdall-v2).
+        if cl_type == constants.CL_TYPE.heimdall:
+            denom = "matic"
+            accounts_params = {
+                "sequence_number": "0",
+                "account_number": "0",
+                "module_name": "",
+                "module_permissions": None,
+            }
+            validator_params = {
+                "ID": validator_id,
+                "power": str(constants.VALIDATORS_BALANCE_ETH),
+                "accum": "0",
+            }
+        elif cl_type == constants.CL_TYPE.heimdall_v2:
+            denom = "pol"
+            accounts_params = {}
+            validator_params = {
+                "valId": validator_id,
+                "votingPower": str(constants.VALIDATORS_BALANCE_ETH),
+                "proposerPriority": "0",
+            }
+        else:
+            fail(
+                'Unsupported CL type: "{}". Allowed values: "{}".'.format(cl_type),
+                [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2],
+            )
+
         # Accounts.
         accounts.append(
             {
                 "address": account.eth_address,
                 "coins": [
                     {
-                        "denom": "matic",
+                        "denom": denom,
                         "amount": "{}000000000000000000".format(
                             constants.VALIDATORS_BALANCE_ETH
                         ),  # 18 zeros
                     }
+                    | accounts_params
                 ],
-                "sequence_number": "0",
-                "account_number": "0",
-                "module_name": "",
-                "module_permissions": None,
             }
         )
 
@@ -123,17 +162,15 @@ def _get_validator_data(validator_accounts):
         # Validator set.
         validator_set.append(
             {
-                "ID": validator_id,
-                "accum": "0",
+                "startEpoch": "0",
                 "endEpoch": "0",
-                "jailed": False,
-                "last_updated": "",
                 "nonce": "1",
-                "power": str(constants.VALIDATORS_BALANCE_ETH),
                 "pubKey": account.tendermint_public_key,
                 "signer": account.eth_address,
-                "startEpoch": "0",
+                "last_updated": "",
+                "jailed": False,
             }
+            | validator_params
         )
 
     return struct(
