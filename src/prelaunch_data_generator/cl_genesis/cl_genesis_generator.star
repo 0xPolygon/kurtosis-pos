@@ -24,7 +24,7 @@ def generate_cl_genesis_data(
         validator_data = _get_heimdall_validator_data(validator_accounts)
         proposer = []
         if validators_number > 0:
-            proposer = validator_set[0]
+            proposer = validator_data.validator_set[0]
         cl_type_specific_data = {
             "accounts": json.indent(json.encode(validator_data.accounts)),
             "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
@@ -36,7 +36,7 @@ def generate_cl_genesis_data(
         validator_data = _get_heimdall_v2_validator_data(validator_accounts)
         proposer = []
         if validators_number > 0:
-            proposer = validator_set[0]
+            proposer = validator_data.validator_set[0]
         cl_type_specific_data = {
             "accounts": json.indent(json.encode(validator_data.accounts)),
             "balances": json.indent(json.encode(validator_data.balances)),
