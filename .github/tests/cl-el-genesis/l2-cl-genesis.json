@@ -148,6 +148,7 @@
         "chain_params": {
           "bor_chain_id": "137",
           "matic_token_address": "0xA8CF7E31740f127cEdF36EEEDDA228565C0C781F",
+          "pol_token_address": "0xA8CF7E31740f127cEdF36EEEDDA228565C0C781F",
           "staking_manager_address": "0xB5322Da185AF39b53f8d3CBF40636eb3f1B527f2",
           "slash_manager_address": "0x892bb1f48977B66A0620F5c10909b8cAfbb800be",
           "root_chain_address": "0xEd2Be21C3A66c11FefB10C6b07271C450Bd09Ae5",
