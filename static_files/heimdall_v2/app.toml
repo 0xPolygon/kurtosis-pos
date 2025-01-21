@@ -2,7 +2,7 @@
 ###                           Base Configuration                            ###
 ###############################################################################
 
-# NOTE: This part of the config is similar to app.toml and heimdall-config.toml (heimdall-v1).
+# NOTE: This part of the config is similar to app.toml (heimdall-v1).
 
 # The minimum gas prices a validator is willing to accept for processing a
 # transaction. A transaction's fees must meet the minimum of any denomination
@@ -248,7 +248,7 @@ bor_rpc_url = "{{.el_rpc_url}}"
 eth_rpc_url = "{{.l1_rpc_url}}"
 
 # RPC endpoint for cometBFT.
-comet_bft_rpc_url = "http://0.0.0.0:{{.tendermint_rpc_port_number}}"
+comet_bft_rpc_url = "http://0.0.0.0:{{.cometbft_rpc_port_number}}"
 
 # Polygon Sub Graph URL for self-heal mechanism (optional).
 sub_graph_url = ""

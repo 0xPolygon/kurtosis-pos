@@ -63,28 +63,6 @@ def launch(
                 template=read_file(
                     "{}/app.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH)
                 ),
-                data={},
-            ),
-            "config.toml": struct(
-                template=read_file(
-                    "{}/config.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH)
-                ),
-                data={
-                    # Node params.
-                    "moniker": cl_node_name,
-                    "log_level": participant.get("cl_log_level", ""),
-                    "persistent_peers": cl_node_ids,
-                    # Port numbers.
-                    "proxy_app_port_number": HEIMDALL_PROXY_LISTEN_PORT_NUMBER,
-                    "tendermint_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
-                    "p2p_listen_port_number": HEIMDALL_NODE_LISTEN_PORT_NUMBER,
-                    "metrics_port_number": HEIMDALL_METRICS_PORT_NUMBER,
-                },
-            ),
-            "heimdall-config.toml": struct(
-                template=read_file(
-                    "{}/heimdall-config.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH)
-                ),
                 data={
                     # Network params.
                     "span_poll_interval": network_params.get(
@@ -99,7 +77,23 @@ def launch(
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
                     "rest_api_port_number": HEIMDALL_REST_API_PORT_NUMBER,
-                    "tendermint_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
+                    "cometbft_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
+                },
+            ),
+            "config.toml": struct(
+                template=read_file(
+                    "{}/config.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH)
+                ),
+                data={
+                    # Node params.
+                    "moniker": cl_node_name,
+                    "log_level": participant.get("cl_log_level", ""),
+                    "persistent_peers": cl_node_ids,
+                    # Port numbers.
+                    "proxy_app_port_number": HEIMDALL_PROXY_LISTEN_PORT_NUMBER,
+                    "cometbft_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
+                    "p2p_listen_port_number": HEIMDALL_NODE_LISTEN_PORT_NUMBER,
+                    "metrics_port_number": HEIMDALL_METRICS_PORT_NUMBER,
                 },
             ),
         },
