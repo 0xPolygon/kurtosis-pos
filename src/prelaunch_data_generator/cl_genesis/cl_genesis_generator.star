@@ -222,16 +222,16 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         # Validator set.
         validator_set.append(
             {
-                "startEpoch": "0",
-                "endEpoch": "0",
+                "start_epoch": "0",
+                "end_epoch": "0",
                 "nonce": "1",
-                "pubKey": account.tendermint_public_key,
+                "pub_key": account.tendermint_public_key,
                 "signer": account.eth_address,
                 "last_updated": "",
                 "jailed": False,
-                "valId": validator_id,
-                "votingPower": str(constants.VALIDATORS_BALANCE_ETH),
-                "proposerPriority": "0",
+                "val_id": validator_id,
+                "voting_power": str(constants.VALIDATORS_BALANCE_ETH),
+                "proposer_priority": "0",
             }
         )
 
