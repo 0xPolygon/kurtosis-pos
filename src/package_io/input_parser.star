@@ -123,7 +123,7 @@ def _parse_ethereum_args(plan, ethereum_args):
 
     # Set default params if not provided.
     if "network_params" not in ethereum_args:
-        ethereum_args = DEFAULT_ETHEREUM_PACKAGE_ARGS
+        ethereum_args = dict(DEFAULT_ETHEREUM_PACKAGE_ARGS)
 
     for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
         ethereum_args.get("network_params", {}).setdefault(k, v)
@@ -230,13 +230,12 @@ def _parse_participants(participants):
 
 
 def _parse_setup_images(setup_images, devnet_cl_type):
-    # Create a mutable copy of setup_images.
     if setup_images:
+        # Create a mutable copy of setup_images.
         setup_images = dict(setup_images)
-
-    # Set default matic contracts params if not provided.
-    if not setup_images:
-        setup_images = DEFAULT_POLYGON_POS_PACKAGE_ARGS["setup_images"]
+    else:
+        # Set default matic contracts params if not provided.
+        setup_images = dict(DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}))
 
     for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}).items():
         setup_images.setdefault(k, v)
@@ -256,13 +255,14 @@ def _parse_setup_images(setup_images, devnet_cl_type):
 
 
 def _parse_network_params(network_params):
-    # Create a mutable copy of network_params.
     if network_params:
+        # Create a mutable copy of network_params.
         network_params = dict(network_params)
-
-    # Set default network params if not provided.
-    if not network_params:
-        network_params = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
+    else:
+        # Set default network params if not provided.
+        network_params = dict(
+            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
+        )
 
     for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
         network_params.setdefault(k, v)
