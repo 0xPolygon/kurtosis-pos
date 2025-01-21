@@ -1,4 +1,4 @@
-##### RPC and REST configs #####
+##### RPC and REST config #####
 
 # AMQP endpoint.
 amqp_url = "{{.amqp_url}}"
@@ -9,13 +9,13 @@ bor_rpc_url = "{{.el_rpc_url}}"
 # RPC endpoint for the Ethereum chain.
 eth_rpc_url = "{{.l1_rpc_url}}"
 
-# Polygon Sub Graph URL for self-heal mechanism (optional).
-sub_graph_url = ""
-
 # RPC endpoint for Tendermint.
 tendermint_rpc_url = "http://0.0.0.0:{{.tendermint_rpc_port_number}}"
 
-#### Bridge configs ####
+# Polygon Sub Graph URL for self-heal mechanism (optional).
+sub_graph_url = ""
+
+#### Bridge config ####
 
 # CL REST server endpoint, which is used by the bridge.
 heimdall_rest_server = "http://0.0.0.0:{{.rest_api_port_number}}"
@@ -32,14 +32,13 @@ sh_state_synced_interval = "15m0s"
 span_poll_interval = "{{.span_poll_interval}}"
 syncer_poll_interval = "1m0s"
 
-#### Gas configs ####
+#### Gas config ####
 main_chain_gas_limit = "5000000"
 main_chain_max_gas_price = "400000000000"
 
-##### Timeout Config #####
+##### Timeout config #####
 eth_rpc_timeout = "5m0s"
 bor_rpc_timeout = "5m0s"
 no_ack_wait_time = "30m0s"
 
-##### chain - newSelectionAlgoHeight depends on this #####
 chain = "mainnet"

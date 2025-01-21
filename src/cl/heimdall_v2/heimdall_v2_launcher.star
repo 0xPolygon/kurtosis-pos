@@ -20,7 +20,7 @@ HEIMDALL_METRICS_PORT_ID = "metrics"
 HEIMDALL_METRICS_PORT_NUMBER = 26660
 
 # The folder where the heimdall templates are stored in the repository.
-HEIMDALL_TEMPLATES_FOLDER_PATH = "../../../static_files/heimdall"
+HEIMDALL_TEMPLATES_FOLDER_PATH = "../../../static_files/heimdall_v2"
 
 # The folder where the heimdall configs are stored inside the service.
 HEIMDALL_CONFIG_FOLDER_PATH = "/etc/heimdall"
