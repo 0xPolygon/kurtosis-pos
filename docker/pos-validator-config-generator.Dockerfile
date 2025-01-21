@@ -1,4 +1,5 @@
 FROM 0xpolygon/heimdall:1.0.10 AS heimdall
+FROM leovct/heimdall-v2:3138e07 AS heimdall-v2
 
 
 FROM golang:1.22 AS polycli-builder
@@ -17,6 +18,7 @@ ENV DEFAULT_CL_CHAIN_ID="heimdall-P5rXwg"
 ENV CL_CLIENT_CONFIG_PATH="/etc/cl"
 
 COPY --from=heimdall /usr/bin/heimdallcli /usr/bin/heimdalld /usr/local/bin/
+COPY --from=heimdall-v2 /usr/bin/heimdalld /usr/local/bin/heimdalld-v2
 COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/local/bin/polycli
 COPY --from=polycli-builder /opt/polygon-cli/bindings /opt/bindings
 
