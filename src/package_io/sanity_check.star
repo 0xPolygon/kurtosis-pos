@@ -50,7 +50,7 @@ def sanity_check_polygon_args(plan, input_args):
     for param in input_args.keys():
         if param not in POLYGON_POS_PARAMS.keys():
             fail(
-                'Invalid parameter: "{}". Allowed fields: {}.'.format(
+                'Invalid parameter: "{}". Allowed fields: "{}".'.format(
                     param, POLYGON_POS_PARAMS.keys()
                 )
             )
@@ -73,7 +73,9 @@ def sanity_check_dev_args(plan, input_args):
     for param in input_args.keys():
         if param not in DEV_PARAMS:
             fail(
-                'Invalid parameter: "{}". Allowed fields: {}.'.format(param, DEV_PARAMS)
+                'Invalid parameter: "{}". Allowed fields: "{}".'.format(
+                    param, DEV_PARAMS
+                )
             )
 
     # Validate values.
@@ -115,7 +117,7 @@ def _validate_list(input_args, category):
         for item in input_args[category]:
             if item not in allowed_values:
                 fail(
-                    'Invalid item: "{}" in "{}" list. Allowed items: {}.'.format(
+                    'Invalid item: "{}" in "{}" list. Allowed items: "{}".'.format(
                         item,
                         category,
                         allowed_values,
@@ -131,7 +133,7 @@ def _validate_dict(input_args, category):
             for param in item.keys():
                 if param not in allowed_params:
                     fail(
-                        'Invalid key: "{}" in "{}" dict. Allowed keys: {}.'.format(
+                        'Invalid key: "{}" in "{}" dict. Allowed keys: "{}".'.format(
                             param, category, allowed_params
                         )
                     )
@@ -144,7 +146,7 @@ def _validate_list_of_dict(input_args, category):
             for key in item.keys():
                 if key not in allowed_keys:
                     fail(
-                        'Invalid key: "{}" in "{}" list of dict. Allowed keys: {}.'.format(
+                        'Invalid key: "{}" in "{}" list of dict. Allowed keys: "{}".'.format(
                             key, category, allowed_keys
                         )
                     )
@@ -172,7 +174,7 @@ def _validate_str(input, attribute, allowed_values):
     value = input.get(attribute)
     if value and value not in allowed_values:
         fail(
-            'Invalid "{}" attribute: "{}". Allowed value(s): {}.'.format(
+            'Invalid "{}" attribute: "{}". Allowed value(s): "{}".'.format(
                 attribute, value, allowed_values
             )
         )
@@ -182,5 +184,7 @@ def _validate_strictly_positive_int(input, attribute):
     value = input.get(attribute)
     if value == 0:
         fail(
-            'Invalid "{}": must be strictly positive, got: {}.'.format(attribute, value)
+            'Invalid "{}": must be strictly positive, got: "{}".'.format(
+                attribute, value
+            )
         )

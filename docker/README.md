@@ -20,11 +20,22 @@ docker push leovct/pos-el-genesis-builder:node-16
 
 ## Polygon PoS Validator Config Generator
 
-- [Docker Hub](https://hub.docker.com/r/leovct/pos-validator-config-generator)
+### Heimdall Validator Config Generator
+
+- [Docker Hub](https://hub.docker.com/r/leovct/heimdall-validator-config-generator)
 
 ```bash
-docker build --tag leovct/pos-validator-config-generator:1.0.10 --file pos-validator-config-generator.Dockerfile .
-docker push leovct/pos-validator-config-generator:1.0.10
+docker build --tag leovct/heimdall-validator-config-generator:1.0.10 --file heimdall-validator-config-generator.Dockerfile .
+docker push leovct/heimdall-validator-config-generator:1.0.10
+```
+
+### Heimdall V2 Validator Config Generator
+
+- [Docker Hub](https://hub.docker.com/r/leovct/heimdall-v2-validator-config-generator)
+
+```bash
+docker build --tag leovct/heimdall-v2-validator-config-generator:1.0.10 --file heimdall-v2-validator-config-generator.Dockerfile .
+docker push leovct/heimdall-v2-validator-config-generator:1.0.10
 ```
 
 ## Heimdall V2

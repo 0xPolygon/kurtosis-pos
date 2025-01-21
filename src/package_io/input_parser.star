@@ -4,9 +4,6 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer:node-16"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:node-16"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = (
-    "leovct/pos-validator-config-generator:1.0.10"  # Based on 0xpolygon/heimdall:1.0.10
-)
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:1.5.4",
@@ -16,6 +13,11 @@ DEFAULT_EL_IMAGES = {
 DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.0.10",
     constants.CL_TYPE.heimdall_v2: "leovct/heimdall-v2:3138e07",  # There is no official image yet.
+}
+
+DEFAULT_CL_VALIDATOR_CONFIG_GENERATOR_IMAGES = {
+    constants.CL_TYPE.heimdall: "leovct/heimdall-validator-config-generator:1.0.10",  # Based on 0xpolygon/heimdall:1.0.10
+    constants.CL_TYPE.heimdall_v2: "leovct/heimdall-v2-validator-config-generator:3138e07",  # There is no official image yet.
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.5"
@@ -65,7 +67,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "setup_images": {
         "contract_deployer": DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE,
         "el_genesis_builder": DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE,
-        "validator_config_generator": DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE,
+        # "validator_config_generator": "", # Determined based on the devnet CL type.
     },
     "network_params": {
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
@@ -143,8 +145,10 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     participants = polygon_pos_args.get("participants", [])
     result["participants"] = _parse_participants(participants)
 
+    # Check which type of consensus layer is used.
+    devnet_cl_type = participants[0].get("cl_type")
     setup_images = polygon_pos_args.get("setup_images", {})
-    result["setup_images"] = _parse_setup_images(setup_images)
+    result["setup_images"] = _parse_setup_images(setup_images, devnet_cl_type)
 
     network_params = polygon_pos_args.get("network_params", {})
     result["network_params"] = _parse_network_params(network_params)
@@ -185,6 +189,7 @@ def _parse_participants(participants):
             "participants", []
         )
 
+    devnet_cl_type = participants[0].get("cl_type")
     for p in participants:
         # Create a mutable copy of participant.
         p = dict(p)
@@ -206,6 +211,12 @@ def _parse_participants(participants):
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall]
             elif cl_type == constants.CL_TYPE.heimdall_v2:
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2]
+        if cl_type != devnet_cl_type:
+            fail(
+                'Using different CL type: "{}" is not supported. Expected: "{}".'.format(
+                    devnet_cl_type, cl_type
+                )
+            )
 
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
@@ -218,7 +229,7 @@ def _parse_participants(participants):
     return [_sort_dict_by_values(p) for p in participants_with_defaults]
 
 
-def _parse_setup_images(setup_images):
+def _parse_setup_images(setup_images, devnet_cl_type):
     # Create a mutable copy of setup_images.
     if setup_images:
         setup_images = dict(setup_images)
@@ -229,6 +240,16 @@ def _parse_setup_images(setup_images):
 
     for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}).items():
         setup_images.setdefault(k, v)
+
+    # Set the validator config generator image based on the devnet CL type.
+    if devnet_cl_type == constants.CL_TYPE.heimdall:
+        setup_images[
+            "validator_config_generator"
+        ] = DEFAULT_CL_VALIDATOR_CONFIG_GENERATOR_IMAGES[constants.CL_TYPE.heimdall]
+    elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
+        setup_images[
+            "validator_config_generator"
+        ] = DEFAULT_CL_VALIDATOR_CONFIG_GENERATOR_IMAGES[constants.CL_TYPE.heimdall_v2]
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(setup_images)
