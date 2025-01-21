@@ -19,7 +19,7 @@ def generate_cl_genesis_data(
     network_params = polygon_pos_args.get("network_params", {})
     validators_number = len(validator_accounts)
 
-    validator_data = _get_validator_data(validator_accounts)
+    validator_data = _get_validator_data(validator_accounts, devnet_cl_type)
     accounts = validator_data.accounts
     dividends = validator_data.dividends
     signing_infos = validator_data.signing_infos
@@ -91,7 +91,7 @@ def generate_cl_genesis_data(
     )
 
 
-def _get_validator_data(validator_accounts, cl_type):
+def _get_validator_data(validator_accounts, devnet_cl_type):
     accounts = []
     dividends = []
     signing_infos = {}
@@ -101,7 +101,7 @@ def _get_validator_data(validator_accounts, cl_type):
         validator_id = str(i + 1)
 
         # Determine the format of the genesis (heimdall or heimdall-v2).
-        if cl_type == constants.CL_TYPE.heimdall:
+        if devnet_cl_type == constants.CL_TYPE.heimdall:
             denom = "matic"
             accounts_params = {
                 "sequence_number": "0",
@@ -114,7 +114,7 @@ def _get_validator_data(validator_accounts, cl_type):
                 "power": str(constants.VALIDATORS_BALANCE_ETH),
                 "accum": "0",
             }
-        elif cl_type == constants.CL_TYPE.heimdall_v2:
+        elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
             denom = "pol"
             accounts_params = {}
             validator_params = {
@@ -122,11 +122,6 @@ def _get_validator_data(validator_accounts, cl_type):
                 "votingPower": str(constants.VALIDATORS_BALANCE_ETH),
                 "proposerPriority": "0",
             }
-        else:
-            fail(
-                'Unsupported CL type: "{}". Allowed values: "{}".'.format(cl_type),
-                [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2],
-            )
 
         # Accounts.
         accounts.append(
