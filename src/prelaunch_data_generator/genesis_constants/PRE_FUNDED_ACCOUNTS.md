@@ -17,7 +17,7 @@ In this example, we are going to generate 20 accounts using the following mnemon
 Please be aware that the process may take some time; the more accounts that need to be generated, the longer it will take!
 
 ```bash
-export ACCOUNTS_NUMBER=20
+export ACCOUNTS_NUMBER=100
 export MNEMONIC="sibling lend brave explain wait orbit mom alcohol disorder message grace sun"
 bash generate_accounts.sh
 ```
