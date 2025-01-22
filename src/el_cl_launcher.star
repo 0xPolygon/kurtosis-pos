@@ -162,7 +162,7 @@ def _prepare_network_data(participants):
 
                 # Generate the CL validator config.
                 cl_validator_config = "{},{}:{}".format(
-                    account.private_key,
+                    account.eth_private_key,
                     cl_node_name,
                     heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                 )

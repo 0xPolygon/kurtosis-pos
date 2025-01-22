@@ -4,14 +4,18 @@ constants = import_module("../../package_io/constants.star")
 def new_prefunded_account(
     eth_address,
     eth_public_key,
+    eth_private_key,
+    cometbft_address,
     cometbft_public_key,
-    private_key,
+    cometbft_private_key,
 ):
     return struct(
         eth_address=eth_address,
         eth_public_key=eth_public_key,
-        private_key=private_key,
+        eth_private_key=eth_private_key,
+        cometbft_address=cometbft_address,
         cometbft_public_key=cometbft_public_key,
+        cometbft_private_key=cometbft_private_key,
     )
 
 

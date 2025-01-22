@@ -6,6 +6,7 @@ FROM golang:1.22 AS polycli-builder
 LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
 WORKDIR /opt/polygon-cli
+# TODO: Use latest tag once the feature has been merged into polycli.
 # RUN git clone --branch "v0.1.65" https://github.com/maticnetwork/polygon-cli.git . \
 RUN git clone --branch feat/nodeKey-input-file https://github.com/leovct/polycli.git . \
   && make build
