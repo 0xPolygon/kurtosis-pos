@@ -16,13 +16,13 @@ echo "ACCOUNTS_NUMBER: ${ACCOUNTS_NUMBER}"
 echo "MNEMONIC: ${MNEMONIC}"
 
 # Generating accounts.
-cl_client_config_path="/etc/heimdall"
 echo "Generating Ethereum accounts..."
 polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}" |
   jq '[.Addresses[] | {Path: .Path, ETHAddress: .ETHAddress, ETHPublicKey: ("0x" + .HexFullPublicKey), PrivateKey: .HexPrivateKey}]' \
     >eth_accounts.json
 
 echo "Generating Tendermint public keys... It might take a while..."
+cl_client_config_path="/etc/heimdall"
 jq --compact-output '.[]' eth_accounts.json | while read -r account; do
   # Generate validator key.
   private_key=$(echo "${account}" | jq --raw-output '.PrivateKey')
