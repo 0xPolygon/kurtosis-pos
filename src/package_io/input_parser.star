@@ -181,9 +181,7 @@ def _parse_participants(participants):
 
     # Set default participant if not provided.
     if len(participants) == 0:
-        participants_with_defaults = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
-            "participants", []
-        )
+        participants = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])
 
     # Determine the devnet CL type.
     devnet_cl_type = participants[0].get("cl_type")
