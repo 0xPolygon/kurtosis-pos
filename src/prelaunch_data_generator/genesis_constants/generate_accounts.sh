@@ -15,14 +15,18 @@ fi
 echo "ACCOUNTS_NUMBER: ${ACCOUNTS_NUMBER}"
 echo "MNEMONIC: ${MNEMONIC}"
 
-# Generating accounts.
+# Generating Ethereum accounts.
 echo "Generating Ethereum accounts..."
 polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}" |
   jq '[.Addresses[] | {Path: .Path, ETHAddress: .ETHAddress, ETHPublicKey: ("0x" + .HexFullPublicKey), PrivateKey: .HexPrivateKey}]' \
     >eth_accounts.json
 
-echo "Generating Tendermint public keys... It might take a while..."
-cl_client_config_path="/etc/heimdall"
+# Initialize heimdalld. This is needed by heimdallcli to run properly.
+cl_client_config_path="/root/.heimdalld"
+heimdalld init --home "${cl_client_config_path}"
+
+# Generating Tendermint accounts.
+echo "Generating Tendermint accounts... It might take a while..."
 jq --compact-output '.[]' eth_accounts.json | while read -r account; do
   # Generate validator key.
   private_key=$(echo "${account}" | jq --raw-output '.PrivateKey')
