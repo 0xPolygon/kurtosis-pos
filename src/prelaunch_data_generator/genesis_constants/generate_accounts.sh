@@ -22,18 +22,22 @@ polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}"
     >eth_accounts.json
 
 # Initialize heimdalld. This is needed by heimdallcli to run properly.
-cl_client_config_path="/root/.heimdalld"
+cl_client_config_path="/etc/heimdall"
 heimdalld init --home "${cl_client_config_path}"
 
 # Generating Tendermint accounts.
-echo "Generating Tendermint accounts... It might take a while..."
-jq --compact-output '.[]' eth_accounts.json | while read -r account; do
-  # Generate validator key.
+generate_tendermint_account() {
+  local account="$1"
   private_key=$(echo "${account}" | jq --raw-output '.PrivateKey')
   heimdallcli generate-validatorkey --home "${cl_client_config_path}" --logs_writer_file logs.txt "${private_key}"
   cp ./priv_validator_key.json "${cl_client_config_path}"/config
   tendermint_public_key=$(heimdalld show-account --home "${cl_client_config_path}" --logs_writer_file logs.txt | jq --raw-output '.pub_key')
   echo "${account}" | jq --arg v "${tendermint_public_key}" '. + {TendermintPublicKey: $v}'
+}
+
+echo "Generating Tendermint accounts... It might take a while..."
+jq --compact-output '.[]' eth_accounts.json | while read -r account; do
+  generate_tendermint_account "${account}"
 done | jq --slurp '.' >eth_tendermint_accounts.json
 
 echo "Generating the Starlark pre_funded_accounts.star file..."
