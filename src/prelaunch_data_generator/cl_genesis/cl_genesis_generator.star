@@ -158,7 +158,7 @@ def _get_heimdall_validator_data(validator_accounts):
                 "last_updated": "",
                 "nonce": "1",
                 "power": str(constants.VALIDATORS_BALANCE_ETH),
-                "pubKey": account.tendermint_public_key,
+                "pubKey": account.to_tendermint_public_key(),
                 "signer": account.eth_address,
                 "startEpoch": "0",
             }
@@ -189,7 +189,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "address": account.eth_address,
                 "pub_key": {
                     "@type": "/cosmos.crypto.secp256k1.PubKey",
-                    "key": account.tendermint_public_key,
+                    "key": account.to_tendermint_public_key(),
                 },
                 "account_number": validator_id,
                 "sequence": "0",
@@ -225,7 +225,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "start_epoch": "0",
                 "end_epoch": "0",
                 "nonce": "1",
-                "pub_key": account.tendermint_public_key,
+                "pub_key": account.to_tendermint_public_key(),
                 "signer": account.eth_address,
                 "last_updated": "",
                 "jailed": False,
