@@ -1,5 +1,6 @@
 constants = import_module("../../package_io/constants.star")
 contract_util = import_module("../../contracts/util.star")
+genesis_constants = import_module("./genesis_constants.star")
 
 
 CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
@@ -158,7 +159,7 @@ def _get_heimdall_validator_data(validator_accounts):
                 "last_updated": "",
                 "nonce": "1",
                 "power": str(constants.VALIDATORS_BALANCE_ETH),
-                "pubKey": to_tendermint_public_key(account),
+                "pubKey": genesis_constants.to_tendermint_public_key(account),
                 "signer": account.eth_address,
                 "startEpoch": "0",
             }
@@ -189,7 +190,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "address": account.eth_address,
                 "pub_key": {
                     "@type": "/cosmos.crypto.secp256k1.PubKey",
-                    "key": to_tendermint_public_key(account),
+                    "key": genesis_constants.to_tendermint_public_key(account),
                 },
                 "account_number": validator_id,
                 "sequence": "0",
@@ -225,7 +226,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "start_epoch": "0",
                 "end_epoch": "0",
                 "nonce": "1",
-                "pub_key": to_tendermint_public_key(account),
+                "pub_key": genesis_constants.to_tendermint_public_key(account),
                 "signer": account.eth_address,
                 "last_updated": "",
                 "jailed": False,
