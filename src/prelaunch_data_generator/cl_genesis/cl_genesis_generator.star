@@ -190,7 +190,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "address": account.eth_address,
                 "pub_key": {
                     "@type": "/cosmos.crypto.secp256k1.PubKey",
-                    "key": genesis_constants.to_tendermint_public_key(account),
+                    "key": account.cometbft_public_key,
                 },
                 "account_number": validator_id,
                 "sequence": "0",
@@ -226,7 +226,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "start_epoch": "0",
                 "end_epoch": "0",
                 "nonce": "1",
-                "pub_key": genesis_constants.to_tendermint_public_key(account),
+                "pub_key": account.cometbft_public_key,
                 "signer": account.eth_address,
                 "last_updated": "",
                 "jailed": False,
