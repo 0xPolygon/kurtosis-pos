@@ -1,6 +1,6 @@
 constants = import_module("../../package_io/constants.star")
 contract_util = import_module("../../contracts/util.star")
-genesis_constants = import_module("./genesis_constants.star")
+genesis_constants = import_module("../genesis_constants/genesis_constants.star")
 
 
 CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
