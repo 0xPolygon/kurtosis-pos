@@ -1,8 +1,8 @@
 diff --git a/cmd/heimdalld/cmd/commands.go b/cmd/heimdalld/cmd/commands.go
-index 78ff9ac..3c67719 100644
+index 78ff9ac..4fa3fa2 100644
 --- a/cmd/heimdalld/cmd/commands.go
 +++ b/cmd/heimdalld/cmd/commands.go
-@@ -441,12 +441,19 @@ func importKeyStore() *cobra.Command {
+@@ -441,12 +441,22 @@ func importKeyStore() *cobra.Command {
  func generateValidatorKey() *cobra.Command {
  	cdc := codec.NewLegacyAmino()
  	cmd := &cobra.Command{
@@ -20,14 +20,17 @@ index 78ff9ac..3c67719 100644
 +			if err != nil {
 +				return err
 +			}
++			if len(ds) != 32 {
++				return fmt.Errorf("private key must be 32 bytes long, got %d bytes", len(ds))
++			}
 +
 +			// set private object
 +			var privKeyObject secp256k1.PrivKey
-+			copy(privKeyObject[:], ds)
++			copy(privKeyObject[:], ds[:32])
  
  			// node key
  			nodeKey := privval.FilePVKey{
-@@ -478,6 +485,7 @@ func importValidatorKey() *cobra.Command {
+@@ -478,6 +488,7 @@ func importValidatorKey() *cobra.Command {
  	return &cobra.Command{
  		Use:   "import-validator-key <private-key-file>",
  		Short: "Import private key from a private key stored in file (without 0x prefix)",
