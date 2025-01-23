@@ -35,7 +35,7 @@ jq --compact-output '.[]' eth_accounts.json | while read -r account; do
 done | jq --slurp '.' >eth_cometbft_accounts.json
 
 echo "Generating the Starlark pre_funded_accounts.star file..."
-jq --raw-output '[.[] | "    # \(.Path)\n    genesis_constants.new_prefunded_account(\n        # ETH account (address, public key, private key).\n        \"\(.ETHAddress)\",\n        \"\(.ETHPublicKey)\",\n        \"\(.ETHPrivateKey)\",\n        # CometBft account (address, public key, private key).\n        \"\(.CometBftAddress)\",\n        \"\(.CometBftPublicKey)\",\n        \"\(.CometBftPrivateKey)\",\n    ),"] | "genesis_constants = import_module(\"./genesis_constants.star\")\n\nPRE_FUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json >pre_funded_accounts.star
+jq --raw-output '[.[] | "    # \(.Path)\n    genesis_constants.new_prefunded_account(\n        # ETH account (address, public key, private key).\n        \"\(.ETHAddress)\",\n        \"\(.ETHPublicKey)\",\n        \"\(.ETHPrivateKey)\",\n        # CometBft account (address, public key, private key) - derived from the ETH private key.\n        \"\(.CometBftAddress)\",\n        \"\(.CometBftPublicKey)\",\n        \"\(.CometBftPrivateKey)\",\n    ),"] | "genesis_constants = import_module(\"./genesis_constants.star\")\n\nPRE_FUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json >pre_funded_accounts.star
 
 echo "Cleaning up..."
 rm -rf eth_accounts.json eth_cometbft_accounts.json priv_validator_key.json logs.txt data/
