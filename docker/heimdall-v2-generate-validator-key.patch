@@ -1,0 +1,37 @@
+diff --git a/cmd/heimdalld/cmd/commands.go b/cmd/heimdalld/cmd/commands.go
+index 78ff9ac..3c67719 100644
+--- a/cmd/heimdalld/cmd/commands.go
++++ b/cmd/heimdalld/cmd/commands.go
+@@ -441,12 +441,19 @@ func importKeyStore() *cobra.Command {
+ func generateValidatorKey() *cobra.Command {
+ 	cdc := codec.NewLegacyAmino()
+ 	cmd := &cobra.Command{
+-		Use:   "generate-validator-key",
+-		Short: "Generate validator key",
++		Use:   "generate-validator-key <private-key>",
++		Short: "Generate validator key file using private key",
+ 		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, _ []string) error {
+-			// generate private key
+-			privKeyObject := secp256k1.GenPrivKey()
++		RunE: func(cmd *cobra.Command, args []string) error {
++			s := strings.ReplaceAll(args[0], "0x", "")
++			ds, err := hex.DecodeString(s)
++			if err != nil {
++				return err
++			}
++
++			// set private object
++			var privKeyObject secp256k1.PrivKey
++			copy(privKeyObject[:], ds)
+ 
+ 			// node key
+ 			nodeKey := privval.FilePVKey{
+@@ -478,6 +485,7 @@ func importValidatorKey() *cobra.Command {
+ 	return &cobra.Command{
+ 		Use:   "import-validator-key <private-key-file>",
+ 		Short: "Import private key from a private key stored in file (without 0x prefix)",
++		Args:  cobra.ExactArgs(1),
+ 		RunE: func(cmd *cobra.Command, args []string) error {
+ 			pk, err := ethcrypto.LoadECDSA(args[0])
+ 			if err != nil {
