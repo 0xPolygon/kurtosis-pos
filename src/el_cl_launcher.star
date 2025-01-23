@@ -162,7 +162,7 @@ def _prepare_network_data(participants):
 
                 # Generate the CL validator config.
                 cl_validator_config = "{},{}:{}".format(
-                    account.ed25519.private_key,
+                    account.eth_tendermint.private_key,
                     cl_node_name,
                     heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                 )
@@ -189,7 +189,7 @@ def _prepare_network_data(participants):
                 # Generate the EL enode url.
                 enode_url = _generate_enode_url(
                     participant,
-                    account.ed25519.public_key.removeprefix("0x"),
+                    account.eth_tendermint.public_key.removeprefix("0x"),
                     el_node_name,
                 )
                 el_static_nodes.append(enode_url)

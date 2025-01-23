@@ -118,7 +118,7 @@ def _get_heimdall_validator_data(validator_accounts):
         # Accounts.
         accounts.append(
             {
-                "address": account.ed25519.address,
+                "address": account.eth_tendermint.address,
                 "coins": [
                     {
                         "denom": "matic",
@@ -137,7 +137,7 @@ def _get_heimdall_validator_data(validator_accounts):
         # Dividends.
         dividends.append(
             {
-                "user": account.ed25519.address,
+                "user": account.eth_tendermint.address,
                 "feeAmount": "0",
             }
         )
@@ -160,7 +160,7 @@ def _get_heimdall_validator_data(validator_accounts):
                 "nonce": "1",
                 "power": str(constants.VALIDATORS_BALANCE_ETH),
                 "pubKey": genesis_constants.to_tendermint_public_key(account),
-                "signer": account.ed25519.address,
+                "signer": account.eth_tendermint.address,
                 "startEpoch": "0",
             }
         )
@@ -187,10 +187,10 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         accounts.append(
             {
                 "@type": "/cosmos.auth.v1beta1.BaseAccount",
-                "address": account.secp256k1.address,
+                "address": account.cometbft.address,
                 "pub_key": {
                     "@type": "/cosmos.crypto.secp256k1.PubKey",
-                    "key": account.secp256k1.public_key,
+                    "key": account.cometbft.public_key,
                 },
                 "account_number": validator_id,
                 "sequence": "0",
@@ -200,7 +200,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         # Token balances.
         balances.append(
             {
-                "address": account.secp256k1.address.removeprefix("0x"),
+                "address": account.cometbft.address.removeprefix("0x"),
                 "coins": [
                     {
                         "denom": "pol",
@@ -215,7 +215,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         # Dividends.
         dividends.append(
             {
-                "user": account.secp256k1.address.removeprefix("0x"),
+                "user": account.cometbft.address.removeprefix("0x"),
                 "feeAmount": "0",
             }
         )
@@ -226,8 +226,8 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "start_epoch": "0",
                 "end_epoch": "0",
                 "nonce": "1",
-                "pub_key": account.secp256k1.public_key,
-                "signer": account.secp256k1.address.removeprefix("0x"),
+                "pub_key": account.cometbft.public_key,
+                "signer": account.cometbft.address.removeprefix("0x"),
                 "last_updated": "",
                 "jailed": False,
                 "val_id": validator_id,
