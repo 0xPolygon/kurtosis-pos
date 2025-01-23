@@ -41,7 +41,8 @@
           "end_block": "{{.el_first_span_end_block}}",
           "validator_set": {
             "validators": {{.validators}},
-            "proposer": {{.proposer}}
+            "proposer": {{.proposer}},
+            "total_voting_power": "{{.total_voting_power}}"
           },
           "selected_producers": {{.validators}},
           "bor_chain_id": "{{.el_chain_id}}"
