@@ -187,7 +187,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         accounts.append(
             {
                 "@type": "/cosmos.auth.v1beta1.BaseAccount",
-                "address": account.eth_address,
+                "address": account.cometbft_address,
                 "pub_key": {
                     "@type": "/cosmos.crypto.secp256k1.PubKey",
                     "key": account.cometbft_public_key,
@@ -200,7 +200,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         # Token balances.
         balances.append(
             {
-                "address": account.eth_address.removeprefix("0x"),
+                "address": account.cometbft_address.removeprefix("0x"),
                 "coins": [
                     {
                         "denom": "pol",
@@ -215,7 +215,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         # Dividends.
         dividends.append(
             {
-                "user": account.eth_address.removeprefix("0x"),
+                "user": account.cometbft_address.removeprefix("0x"),
                 "feeAmount": "0",
             }
         )
@@ -227,7 +227,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "end_epoch": "0",
                 "nonce": "1",
                 "pub_key": account.cometbft_public_key,
-                "signer": account.eth_address.removeprefix("0x"),
+                "signer": account.cometbft_address.removeprefix("0x"),
                 "last_updated": "",
                 "jailed": False,
                 "val_id": validator_id,
