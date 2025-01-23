@@ -3,11 +3,15 @@ constants = import_module("../package_io/constants.star")
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 
-def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
+def deploy_contracts(
+    plan, l1_context, polygon_pos_args, validator_accounts, devnet_cl_type
+):
     network_params = polygon_pos_args.get("network_params", {})
     setup_images = polygon_pos_args.get("setup_images", {})
 
-    validator_accounts_formatted = _format_validator_accounts(validator_accounts)
+    validator_accounts_formatted = _format_validator_accounts(
+        validator_accounts, devnet_cl_type
+    )
 
     contracts_config_artifact = plan.upload_files(
         src=CONTRACTS_CONFIG_FILE_PATH,
@@ -49,12 +53,19 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
     )
 
 
-def _format_validator_accounts(accounts):
-    return ";".join(
-        [
-            "{},{}".format(
-                account.eth_tendermint.address, account.eth_tendermint.public_key
-            )
-            for account in accounts
-        ]
-    )
+def _format_validator_accounts(validator_accounts, devnet_cl_type):
+    account_type_map = {
+        constants.CL_TYPE.heimdall: "eth_tendermint",
+        constants.CL_TYPE.heimdall_v2: "cometbft",
+    }
+    account_type = account_type_map.get(devnet_cl_type)
+
+    formatted_accounts = []
+    for validator_account in validator_accounts:
+        account = {}
+        if devnet_cl_type == constants.CL_TYPE.heimdall:
+            account = validator_account.eth_tendermint
+        elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
+            account = validator_account.cometbft
+        formatted_accounts.append("{},{}".format(account.address, account.public_key))
+    return ";".join(formatted_accounts)

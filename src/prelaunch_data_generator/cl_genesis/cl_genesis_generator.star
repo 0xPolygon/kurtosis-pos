@@ -159,7 +159,9 @@ def _get_heimdall_validator_data(validator_accounts):
                 "last_updated": "",
                 "nonce": "1",
                 "power": str(constants.VALIDATORS_BALANCE_ETH),
-                "pubKey": genesis_constants.to_tendermint_public_key(account),
+                "pubKey": genesis_constants.to_tendermint_public_key(
+                    account.eth_tendermint
+                ),
                 "signer": account.eth_tendermint.address,
                 "startEpoch": "0",
             }

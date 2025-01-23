@@ -35,6 +35,9 @@ def run(plan, args):
     validator_accounts = get_validator_accounts(participants)
     l2_network_params = polygon_pos_args.get("network_params", {})
 
+    # Determine the devnet CL type to be able to select the appropriate validator address format later.
+    devnet_cl_type = participants[0].get("cl_type")
+
     # Deploy a local L1 if needed.
     # Otherwise, use the provided rpc url.
     if dev_args.get("should_deploy_l1", True):
@@ -47,6 +50,7 @@ def run(plan, args):
             plan,
             ethereum_args,
             l2_network_params.get("preregistered_validator_keys_mnemonic", ""),
+            devnet_cl_type,
         )
         prefunded_accounts_count = len(l1.pre_funded_accounts)
         if prefunded_accounts_count < 13:
@@ -78,7 +82,11 @@ def run(plan, args):
 
         plan.print("Deploying MATIC contracts to L1 and staking for each validator")
         result = contract_deployer.deploy_contracts(
-            plan, l1_context, polygon_pos_args, validator_accounts
+            plan,
+            l1_context,
+            polygon_pos_args,
+            validator_accounts,
+            devnet_cl_type,
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 2:
@@ -93,7 +101,7 @@ def run(plan, args):
         result = cl_genesis_generator.generate_cl_genesis_data(
             plan,
             polygon_pos_args,
-            participants[0].get("cl_type"),
+            devnet_cl_type,
             validator_accounts,
             contract_addresses_artifact,
         )
@@ -192,7 +200,9 @@ def get_validator_accounts(participants):
     return validator_accounts
 
 
-def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
+def deploy_local_l1(
+    plan, ethereum_args, preregistered_validator_keys_mnemonic, devnet_cl_type
+):
     # Sanity check the mnemonic used.
     # TODO: Remove this limitation.
     l2_network_params = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
@@ -205,8 +215,9 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
         fail("Using a different mnemonic is not supported for now.")
 
     # Merge the user-specified prefunded accounts and the validator prefunded accounts.
-    prefunded_accounts = genesis_constants.to_ethereum_pkg_pre_funded_accounts(
-        pre_funded_accounts.PRE_FUNDED_ACCOUNTS
+    prefunded_accounts = genesis_constants.to_ethereum_pkg_prefunded_accounts(
+        pre_funded_accounts.PRE_FUNDED_ACCOUNTS,
+        devnet_cl_type,
     )
     l1_network_params = ethereum_args.get("network_params", {})
     user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts", "")
