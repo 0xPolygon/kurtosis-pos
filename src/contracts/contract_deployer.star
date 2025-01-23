@@ -1,3 +1,4 @@
+account = import_module("../prelaunch_data_generator/genesis_constants/account.star")
 constants = import_module("../package_io/constants.star")
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
@@ -53,19 +54,13 @@ def deploy_contracts(
     )
 
 
-def _format_validator_accounts(validator_accounts, devnet_cl_type):
-    account_type_map = {
-        constants.CL_TYPE.heimdall: "eth_tendermint",
-        constants.CL_TYPE.heimdall_v2: "cometbft",
-    }
-    account_type = account_type_map.get(devnet_cl_type)
-
+def _format_validator_accounts(validator_account_pairs, devnet_cl_type):
     formatted_accounts = []
-    for validator_account in validator_accounts:
-        account = {}
-        if devnet_cl_type == constants.CL_TYPE.heimdall:
-            account = validator_account.eth_tendermint
-        elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
-            account = validator_account.cometbft
-        formatted_accounts.append("{},{}".format(account.address, account.public_key))
+    for validator_account_pair in validator_account_pairs:
+        validator_account = account.get_validator_account(
+            validator_account_pair, devnet_cl_type
+        )
+        formatted_accounts.append(
+            "{},{}".format(validator_account.address, validator_account.public_key)
+        )
     return ";".join(formatted_accounts)

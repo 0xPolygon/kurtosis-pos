@@ -29,7 +29,7 @@ jq --compact-output '.[]' eth_accounts.json | while read -r account; do
 done | jq --slurp '.' >eth_cometbft_accounts.json
 
 echo "Generating the Starlark pre_funded_accounts.star file..."
-jq --raw-output '[.[] | "    # \(.Path)\n    genesis_constants.new_prefunded_account(\n        # ETH/Tendermint account - used by heimdall validators.\n        genesis_constants.new_account(\n            \"\(.ETHAddress)\",\n            \"\(.ETHPublicKey)\",\n            \"\(.ETHPrivateKey)\",\n        ),\n        # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.\n        genesis_constants.new_account(\n            \"\(.CometBftAddress)\",\n            \"\(.CometBftPublicKey)\",\n            \"\(.CometBftPrivateKey)\",\n        ),\n    ),"] | "genesis_constants = import_module(\"./genesis_constants.star\")\n\nPRE_FUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json >pre_funded_accounts.star
+jq --raw-output '[.[] | "    # \(.Path)\n    account.new_validator(\n        # ETH/Tendermint account - used by heimdall validators.\n        account.new(\n            \"\(.ETHAddress)\",\n            \"\(.ETHPublicKey)\",\n            \"\(.ETHPrivateKey)\",\n        ),\n        # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.\n        account.new(\n            \"\(.CometBftAddress)\",\n            \"\(.CometBftPublicKey)\",\n            \"\(.CometBftPrivateKey)\",\n        ),\n    ),"] | "account = import_module(\"./account.star\")\n\nPRE_FUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json >pre_funded_accounts.star
 
 echo "Cleaning up..."
 rm -rf eth_accounts.json eth_cometbft_accounts.json priv_validator_key.json logs.txt data/

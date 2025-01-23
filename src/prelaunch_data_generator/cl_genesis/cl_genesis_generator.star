@@ -1,6 +1,6 @@
+account = import_module("../genesis_constants/account.star")
 constants = import_module("../../package_io/constants.star")
 contract_util = import_module("../../contracts/util.star")
-genesis_constants = import_module("../genesis_constants/genesis_constants.star")
 
 
 CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
@@ -112,13 +112,13 @@ def _get_heimdall_validator_data(validator_accounts):
     signing_infos = {}
     validator_set = []
 
-    for i, account in enumerate(validator_accounts):
+    for i, validator_account in enumerate(validator_accounts):
         validator_id = str(i + 1)
 
         # Accounts.
         accounts.append(
             {
-                "address": account.eth_tendermint.address,
+                "address": validator_account.eth_tendermint.address,
                 "coins": [
                     {
                         "denom": "matic",
@@ -137,7 +137,7 @@ def _get_heimdall_validator_data(validator_accounts):
         # Dividends.
         dividends.append(
             {
-                "user": account.eth_tendermint.address,
+                "user": validator_account.eth_tendermint.address,
                 "feeAmount": "0",
             }
         )
@@ -159,10 +159,10 @@ def _get_heimdall_validator_data(validator_accounts):
                 "last_updated": "",
                 "nonce": "1",
                 "power": str(constants.VALIDATORS_BALANCE_ETH),
-                "pubKey": genesis_constants.to_tendermint_public_key(
-                    account.eth_tendermint
+                "pubKey": account.to_tendermint_public_key(
+                    validator_account.eth_tendermint
                 ),
-                "signer": account.eth_tendermint.address,
+                "signer": validator_account.eth_tendermint.address,
                 "startEpoch": "0",
             }
         )
@@ -182,17 +182,17 @@ def _get_heimdall_v2_validator_data(validator_accounts):
     signing_infos = {}
     validator_set = []
 
-    for i, account in enumerate(validator_accounts):
+    for i, validator_account in enumerate(validator_accounts):
         validator_id = str(i + 1)
 
         # Accounts.
         accounts.append(
             {
                 "@type": "/cosmos.auth.v1beta1.BaseAccount",
-                "address": account.cometbft.address,
+                "address": validator_account.cometbft.address,
                 "pub_key": {
                     "@type": "/cosmos.crypto.secp256k1.PubKey",
-                    "key": account.cometbft.public_key,
+                    "key": validator_account.cometbft.public_key,
                 },
                 "account_number": validator_id,
                 "sequence": "0",
@@ -202,7 +202,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         # Token balances.
         balances.append(
             {
-                "address": account.cometbft.address.removeprefix("0x"),
+                "address": validator_account.cometbft.address.removeprefix("0x"),
                 "coins": [
                     {
                         "denom": "pol",
@@ -217,7 +217,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         # Dividends.
         dividends.append(
             {
-                "user": account.cometbft.address.removeprefix("0x"),
+                "user": validator_account.cometbft.address.removeprefix("0x"),
                 "feeAmount": "0",
             }
         )
@@ -228,8 +228,8 @@ def _get_heimdall_v2_validator_data(validator_accounts):
                 "start_epoch": "0",
                 "end_epoch": "0",
                 "nonce": "1",
-                "pub_key": account.cometbft.public_key,
-                "signer": account.cometbft.address.removeprefix("0x"),
+                "pub_key": validator_account.cometbft.public_key,
+                "signer": validator_account.cometbft.address.removeprefix("0x"),
                 "last_updated": "",
                 "jailed": False,
                 "val_id": validator_id,
