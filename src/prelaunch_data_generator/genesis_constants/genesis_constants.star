@@ -30,4 +30,4 @@ def to_ethereum_pkg_pre_funded_accounts(pre_funded_accounts):
 def to_tendermint_public_key(account):
     # Heimdall's public keys (tendermint) must be in uncompressed format, which starts with the
     # prefix byte 0x04, followed by two 32-byte integers.
-    return "0x04{}".format(account.eth_public_key[2:])
+    return "0x04{}".format(account.eth_public_key.removeprefix("0x"))

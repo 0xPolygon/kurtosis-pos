@@ -188,7 +188,7 @@ def _prepare_network_data(participants):
 
                 # Generate the EL enode url.
                 enode_url = _generate_enode_url(
-                    participant, account.eth_public_key[2:], el_node_name
+                    participant, account.eth_public_key.removeprefix("0x"), el_node_name
                 )
                 el_static_nodes.append(enode_url)
 
