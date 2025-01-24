@@ -25,7 +25,7 @@ def new_validator(
     )
 
 
-def get_validator_account(validator, devnet_cl_type):
+def get_cl_validator_account(validator, devnet_cl_type):
     # Select the appropriate validator account based on the devnet CL type.
     if devnet_cl_type == constants.CL_TYPE.heimdall:
         return validator.eth_tendermint
@@ -40,10 +40,11 @@ def get_validator_account(validator, devnet_cl_type):
         )
 
 
-def to_ethereum_pkg_prefunded_accounts(validators, devnet_cl_type):
+def to_ethereum_pkg_prefunded_accounts(validators):
     ethereum_prefunded_accounts = {}
     balance = "{}ETH".format(constants.VALIDATORS_BALANCE_ETH)
     for validator in validators:
-        account = get_validator_account(validator, devnet_cl_type)
-        ethereum_prefunded_accounts[account.address] = {"balance": balance}
+        ethereum_prefunded_accounts[validator.eth_tendermint.address] = {
+            "balance": balance
+        }
     return ethereum_prefunded_accounts

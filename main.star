@@ -33,9 +33,6 @@ def run(plan, args):
     validator_accounts = get_validator_accounts(participants)
     l2_network_params = polygon_pos_args.get("network_params", {})
 
-    # Determine the devnet CL type to be able to select the appropriate validator address format later.
-    devnet_cl_type = participants[0].get("cl_type")
-
     # Deploy a local L1 if needed.
     # Otherwise, use the provided rpc url.
     if dev_args.get("should_deploy_l1", True):
@@ -48,7 +45,6 @@ def run(plan, args):
             plan,
             ethereum_args,
             l2_network_params.get("preregistered_validator_keys_mnemonic", ""),
-            devnet_cl_type,
         )
         prefunded_accounts_count = len(l1.pre_funded_accounts)
         if prefunded_accounts_count < 13:
@@ -77,6 +73,10 @@ def run(plan, args):
     if dev_args.get("should_deploy_matic_contracts", True):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
+
+        # Determine the devnet CL type to be able to select the appropriate validator address format later.
+        devnet_cl_type = participants[0].get("cl_type")
+        plan.print("Devnet CL type: {}".format(devnet_cl_type))
 
         plan.print("Deploying MATIC contracts to L1 and staking for each validator")
         result = contract_deployer.deploy_contracts(
@@ -198,9 +198,7 @@ def get_validator_accounts(participants):
     return validator_accounts
 
 
-def deploy_local_l1(
-    plan, ethereum_args, preregistered_validator_keys_mnemonic, devnet_cl_type
-):
+def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
     # Sanity check the mnemonic used.
     # TODO: Remove this limitation.
     l2_network_params = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
@@ -215,7 +213,6 @@ def deploy_local_l1(
     # Merge the user-specified prefunded accounts and the validator prefunded accounts.
     prefunded_accounts = account.to_ethereum_pkg_prefunded_accounts(
         pre_funded_accounts.PRE_FUNDED_ACCOUNTS,
-        devnet_cl_type,
     )
     l1_network_params = ethereum_args.get("network_params", {})
     user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts", "")
