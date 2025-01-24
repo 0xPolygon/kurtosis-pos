@@ -1,3 +1,6 @@
+account_util = import_module(
+    "./prelaunch_data_generator/genesis_constants/account.star"
+)
 bor = import_module("./el/bor/bor_launcher.star")
 constants = import_module("./package_io/constants.star")
 erigon = import_module("./el/erigon/erigon_launcher.star")
@@ -151,7 +154,9 @@ def _prepare_network_data(participants):
                 el_node_name = _generate_el_node_name(
                     participant, participant_index + 1
                 )
-                account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index]
+                validator_account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[
+                    participant_index
+                ]
 
                 # Determine the RPC url of the first validator's CL node.
                 if not first_validator_cl_rpc_url:
@@ -161,8 +166,11 @@ def _prepare_network_data(participants):
                     )
 
                 # Generate the CL validator config.
+                cl_validator_account = account_util.get_cl_validator_account(
+                    validator_account, devnet_cl_type
+                )
                 cl_validator_config = "{},{}:{}".format(
-                    account.eth_tendermint.private_key,
+                    cl_validator_account.private_key,
                     cl_node_name,
                     heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                 )
@@ -189,7 +197,7 @@ def _prepare_network_data(participants):
                 # Generate the EL enode url.
                 enode_url = _generate_enode_url(
                     participant,
-                    account.eth_tendermint.public_key.removeprefix("0x"),
+                    validator_account.eth_tendermint.public_key.removeprefix("0x"),
                     el_node_name,
                 )
                 el_static_nodes.append(enode_url)
