@@ -21,6 +21,7 @@ def launch(
     el_genesis_artifact,
     cl_genesis_artifact,
     l1_rpc_url,
+    devnet_cl_type,
 ):
     network_params = polygon_pos_args.get("network_params", {})
     setup_images = polygon_pos_args.get("setup_images", {})
@@ -130,7 +131,7 @@ def launch(
                 validator_index += 1
 
 
-def _prepare_network_data(participants):
+def _prepare_network_data(participants, devnet_cl_type):
     # The rpc url of the first validator's CL node.
     first_validator_cl_rpc_url = ""
     # An array of strings containing validator configurations.

@@ -35,6 +35,9 @@ def run(plan, args):
     validator_accounts = get_validator_accounts(participants)
     l2_network_params = polygon_pos_args.get("network_params", {})
 
+    # Determine the devnet CL type to be able to select the appropriate validator address format later.
+    devnet_cl_type = participants[0].get("cl_type")
+
     # Deploy a local L1 if needed.
     # Otherwise, use the provided rpc url.
     if dev_args.get("should_deploy_l1", True):
@@ -89,10 +92,6 @@ def run(plan, args):
             )
         contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
-
-        # Determine the devnet CL type to be able to select the appropriate validator address format later.
-        devnet_cl_type = participants[0].get("cl_type")
-        plan.print("Devnet CL type: {}".format(devnet_cl_type))
 
         result = cl_genesis_generator.generate_cl_genesis_data(
             plan,
@@ -156,6 +155,7 @@ def run(plan, args):
         l2_el_genesis_artifact,
         l2_cl_genesis_artifact,
         l1_context.rpc_url,
+        devnet_cl_type,
     )
 
     # Deploy additional services.
