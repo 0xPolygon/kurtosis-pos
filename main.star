@@ -76,10 +76,7 @@ def run(plan, args):
 
         plan.print("Deploying MATIC contracts to L1 and staking for each validator")
         result = contract_deployer.deploy_contracts(
-            plan,
-            l1_context,
-            polygon_pos_args,
-            validator_accounts,
+            plan, l1_context, polygon_pos_args, validator_accounts
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 2:
