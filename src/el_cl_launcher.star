@@ -45,7 +45,7 @@ def launch(
     }
 
     # Prepare network data and generate validator configs.
-    network_data = _prepare_network_data(participants)
+    network_data = _prepare_network_data(participants, devnet_cl_type)
     cl_node_url = network_data.first_validator_cl_rpc_url
     validator_config_artifacts = _generate_validator_config(
         plan,
