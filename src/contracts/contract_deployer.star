@@ -5,13 +5,16 @@ CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 
 def deploy_contracts(
-    plan, l1_context, polygon_pos_args, validator_accounts, devnet_cl_type
+    plan,
+    l1_context,
+    polygon_pos_args,
+    validator_accounts,
 ):
     network_params = polygon_pos_args.get("network_params", {})
     setup_images = polygon_pos_args.get("setup_images", {})
 
     validator_accounts_formatted = _format_validator_accounts(
-        validator_accounts, devnet_cl_type
+        validator_accounts,
     )
 
     contracts_config_artifact = plan.upload_files(
@@ -54,13 +57,12 @@ def deploy_contracts(
     )
 
 
-def _format_validator_accounts(validator_account_pairs, devnet_cl_type):
-    formatted_accounts = []
-    for validator_account_pair in validator_account_pairs:
-        validator_account = account.get_validator_account(
-            validator_account_pair, devnet_cl_type
-        )
-        formatted_accounts.append(
-            "{},{}".format(validator_account.address, validator_account.public_key)
-        )
-    return ";".join(formatted_accounts)
+def _format_validator_accounts(accounts):
+    return ";".join(
+        [
+            "{},{}".format(
+                account.eth_tendermint.address, account.eth_tendermint.public_key
+            )
+            for account in accounts
+        ]
+    )

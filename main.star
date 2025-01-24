@@ -74,17 +74,12 @@ def run(plan, args):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
 
-        # Determine the devnet CL type to be able to select the appropriate validator address format later.
-        devnet_cl_type = participants[0].get("cl_type")
-        plan.print("Devnet CL type: {}".format(devnet_cl_type))
-
         plan.print("Deploying MATIC contracts to L1 and staking for each validator")
         result = contract_deployer.deploy_contracts(
             plan,
             l1_context,
             polygon_pos_args,
             validator_accounts,
-            devnet_cl_type,
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 2:
@@ -95,6 +90,10 @@ def run(plan, args):
             )
         contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
+
+        # Determine the devnet CL type to be able to select the appropriate validator address format later.
+        devnet_cl_type = participants[0].get("cl_type")
+        plan.print("Devnet CL type: {}".format(devnet_cl_type))
 
         result = cl_genesis_generator.generate_cl_genesis_data(
             plan,
