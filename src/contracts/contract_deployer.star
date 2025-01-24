@@ -1,4 +1,3 @@
-account = import_module("../prelaunch_data_generator/genesis_constants/account.star")
 constants = import_module("../package_io/constants.star")
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
