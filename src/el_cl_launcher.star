@@ -1,6 +1,3 @@
-account_util = import_module(
-    "./prelaunch_data_generator/genesis_constants/account.star"
-)
 bor = import_module("./el/bor/bor_launcher.star")
 constants = import_module("./package_io/constants.star")
 erigon = import_module("./el/erigon/erigon_launcher.star")
@@ -45,7 +42,7 @@ def launch(
     }
 
     # Prepare network data and generate validator configs.
-    network_data = _prepare_network_data(participants, devnet_cl_type)
+    network_data = _prepare_network_data(participants)
     cl_node_url = network_data.first_validator_cl_rpc_url
     validator_config_artifacts = _generate_validator_config(
         plan,
@@ -53,6 +50,7 @@ def launch(
         network_data.cl_validator_keystores,
         network_data.el_validator_keystores,
         polygon_pos_args,
+        devnet_cl_type,
     )
     cl_node_ids = _read_cl_persistent_peers(
         plan, validator_config_artifacts.persistent_peers
@@ -131,7 +129,7 @@ def launch(
                 validator_index += 1
 
 
-def _prepare_network_data(participants, devnet_cl_type):
+def _prepare_network_data(participants):
     # The rpc url of the first validator's CL node.
     first_validator_cl_rpc_url = ""
     # An array of strings containing validator configurations.
@@ -167,11 +165,8 @@ def _prepare_network_data(participants, devnet_cl_type):
                     )
 
                 # Generate the CL validator config.
-                cl_validator_account = account_util.get_cl_validator_account(
-                    validator_account, devnet_cl_type
-                )
                 cl_validator_config = "{},{}:{}".format(
-                    cl_validator_account.private_key,
+                    validator_account.eth_tendermint.private_key,
                     cl_node_name,
                     heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                 )
@@ -232,6 +227,7 @@ def _generate_validator_config(
     cl_validator_keystores,
     el_validator_keystores,
     polygon_pos_args,
+    devnet_cl_type,
 ):
     setup_images = polygon_pos_args.get("setup_images", {})
     network_params = polygon_pos_args.get("network_params", {})
@@ -247,6 +243,7 @@ def _generate_validator_config(
         name="l2-validators-config-generator",
         image=setup_images.get("validator_config_generator"),
         env_vars={
+            "DEVNET_CL_TYPE": devnet_cl_type,
             "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
             "CL_CLIENT_CONFIG_PATH": constants.CL_CLIENT_CONFIG_PATH,
             "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
