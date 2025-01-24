@@ -31,31 +31,30 @@ echo "EL_CLIENT_CONFIG_PATH: ${EL_CLIENT_CONFIG_PATH}"
 echo "CL_VALIDATORS_CONFIGS: ${CL_VALIDATORS_CONFIGS}"
 
 setup_validator() {
-  local validator_id="${1}"
-  local validator_private_key="${2}"
-  local validator_p2p_url="${3}"
+  local id="${1}"
+  local execution_key="${2}"
+  local p2p_url="${3}"
 
-  # Generate CL validator config.
-  local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${validator_id}"
-  echo "Generating CL config for validator ${validator_id}..."
+  # 1. Generate CL validator config.
+  local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${id}"
+  echo "Generating CL config for validator ${id}..."
 
+  ## Create the validator key (or consensus key).
   # Create an initial dummy configuration. It is needed by `heimdallcli` to run.
-  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${validator_id}"
-
-  # Create the validator key.
+  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${id}"
+  # Generate the validator key from the execution key.
   local tmp_dir="$(mktemp -d)"
   pushd "${tmp_dir}"
-  heimdallcli generate-validatorkey --home "${cl_validator_config_path}" "${validator_private_key}"
+  heimdallcli generate-validatorkey --home "${cl_validator_config_path}" "${execution_key}"
   mv priv_validator_key.json "${cl_validator_config_path}/config/"
   popd
-
   # Drop the temporary genesis.
   rm "${cl_validator_config_path}/config/genesis.json"
 
   # Retrive and store the node identifier.
-  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${validator_id}" 2>"${cl_validator_config_path}/init.out"
+  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${id}" 2>"${cl_validator_config_path}/init.out"
   local node_id="$(jq --raw-output '.node_id' ${cl_validator_config_path}/init.out)"
-  local node_full_address="${node_id}@${validator_p2p_url}"
+  local node_full_address="${node_id}@${p2p_url}"
   if [ -z "${persistent_peers}" ]; then
     persistent_peers="${node_full_address}"
   else
@@ -71,9 +70,9 @@ setup_validator() {
   # Copy the validator state.
   cp "${cl_validator_config_path}/data/priv_validator_state.json" "${cl_validator_config_path}/config"
 
-  # Generate EL validator config.
-  local el_validator_config_path="${EL_CLIENT_CONFIG_PATH}/${validator_id}"
-  echo "Generating EL config for validator ${validator_id}..."
+  # 2. Generate EL validator config.
+  local el_validator_config_path="${EL_CLIENT_CONFIG_PATH}/${id}"
+  echo "Generating EL config for validator ${id}..."
 
   polycli parseethwallet --hexkey "${validator_private_key}" --keystore "${el_validator_config_path}/keystore"
   echo "${validator_private_key}" >"${el_validator_config_path}/nodekey"
@@ -85,8 +84,8 @@ persistent_peers=""
 id=1
 IFS=';' read -ra validator_configs <<<"${CL_VALIDATORS_CONFIGS}"
 for config in "${validator_configs[@]}"; do
-  IFS=',' read -r private_key p2p_url <<<"${config}"
-  setup_validator "${id}" "${private_key}" "${p2p_url}"
+  IFS=',' read -r execution_key p2p_url <<<"${config}"
+  setup_validator "${id}" "${execution_key}" "${p2p_url}"
   ((id++))
 done
 
