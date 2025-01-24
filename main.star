@@ -2,7 +2,9 @@ ethereum_package = import_module(
     "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 )
 
-account = import_module("./src/prelaunch_data_generator/genesis_constants/account.star")
+account_util = import_module(
+    "./src/prelaunch_data_generator/genesis_constants/account.star"
+)
 blockscout = import_module("./src/additional_services/blockscout.star")
 cl_genesis_generator = import_module(
     "./src/prelaunch_data_generator/cl_genesis/cl_genesis_generator.star"
@@ -207,7 +209,7 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
         fail("Using a different mnemonic is not supported for now.")
 
     # Merge the user-specified prefunded accounts and the validator prefunded accounts.
-    prefunded_accounts = account.to_ethereum_pkg_prefunded_accounts(
+    prefunded_accounts = account_util.to_ethereum_pkg_prefunded_accounts(
         pre_funded_accounts.PRE_FUNDED_ACCOUNTS,
     )
     l1_network_params = ethereum_args.get("network_params", {})

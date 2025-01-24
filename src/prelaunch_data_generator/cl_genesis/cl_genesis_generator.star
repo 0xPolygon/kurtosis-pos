@@ -1,4 +1,4 @@
-account = import_module("../genesis_constants/account.star")
+account_util = import_module("../genesis_constants/account.star")
 constants = import_module("../../package_io/constants.star")
 contract_util = import_module("../../contracts/util.star")
 
@@ -159,7 +159,7 @@ def _get_heimdall_validator_data(validator_accounts):
                 "last_updated": "",
                 "nonce": "1",
                 "power": str(constants.VALIDATORS_BALANCE_ETH),
-                "pubKey": account.to_tendermint_public_key(
+                "pubKey": account_util.to_tendermint_public_key(
                     validator_account.eth_tendermint
                 ),
                 "signer": validator_account.eth_tendermint.address,
