@@ -4,18 +4,11 @@ constants = import_module("../package_io/constants.star")
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 
-def deploy_contracts(
-    plan,
-    l1_context,
-    polygon_pos_args,
-    validator_accounts,
-):
+def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
     network_params = polygon_pos_args.get("network_params", {})
     setup_images = polygon_pos_args.get("setup_images", {})
 
-    validator_accounts_formatted = _format_validator_accounts(
-        validator_accounts,
-    )
+    validator_accounts_formatted = _format_validator_accounts(validator_accounts)
 
     contracts_config_artifact = plan.upload_files(
         src=CONTRACTS_CONFIG_FILE_PATH,
