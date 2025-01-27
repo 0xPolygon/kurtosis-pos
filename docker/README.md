@@ -50,11 +50,13 @@ pushd bor
 tag="e5bf9cc"
 git checkout "${tag}" # 24/01/2025
 patch -p1 < ../bor-modified-for-heimdall-v2.patch
+
+eval $(ssh-agent -s)
+ssh-add $HOME/.ssh/id_ed25519
 docker build \
   --tag "leovct/bor-modified-for-heimdall-v2:${tag}" \
   --file Dockerfile \
-  --secret id=id_ed25519,src=$HOME/.ssh/id_ed25519 \
-  --secret id=id_ed25519_pub,src=$HOME/.ssh/id_ed25519.pub \
+  --ssh default=$SSH_AUTH_SOCK \
   .
 docker push "leovct/bor-modified-for-heimdall-v2:${tag}"
 ```

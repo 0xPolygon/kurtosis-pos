@@ -1,19 +1,18 @@
 diff --git a/Dockerfile b/Dockerfile
-index 6c65faf12..d46acb9cd 100644
+index 6c65faf12..c92871061 100644
 --- a/Dockerfile
 +++ b/Dockerfile
-@@ -9,6 +9,14 @@ RUN apt-get update -y && apt-get upgrade -y \
+@@ -9,7 +9,12 @@ RUN apt-get update -y && apt-get upgrade -y \
  
  WORKDIR ${BOR_DIR}
  COPY . .
+-RUN make bor
 +
-+# Allow to clone heimdall-v2, a private repository.
-+RUN mkdir ~/.ssh
-+RUN --mount=type=secret,id=id_ed25519 cp /run/secrets/id_ed25519 ~/.ssh/id_ed25519
-+RUN --mount=type=secret,id=id_ed25519_pub cp /run/secrets/id_ed25519_pub ~/.ssh/id_ed25519.pub
-+RUN git config --global --add url."ssh://git@github.com".insteadOf "https://github.com"
-+ENV GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-+
- RUN make bor
++# Allow to clone private repositories.
++RUN --mount=type=ssh git config --global url."git@github.com:".insteadOf "https://github.com/" \
++  && mkdir -p ~/.ssh \
++  && ssh-keyscan github.com >> ~/.ssh/known_hosts
++RUN --mount=type=ssh make bor
  
  RUN cp build/bin/bor /usr/bin/
+ 
