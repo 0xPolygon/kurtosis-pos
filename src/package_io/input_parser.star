@@ -8,6 +8,7 @@ DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-gene
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:1.5.4",
+    constants.EL_TYPE.bor_modified_for_heimdall_v2: "0xpolygon/bor:1.5.4",  # TODO: Build an image from the correct branch.
     constants.EL_TYPE.erigon: "erigontech/erigon:v2.61.0",
 }
 
@@ -194,6 +195,10 @@ def _parse_participants(participants):
         if el_type and not el_image:
             if el_type == constants.EL_TYPE.bor:
                 p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
+            if el_type == constants.EL_TYPE.bor_modified_for_heimdall_v2:
+                p["el_image"] = DEFAULT_EL_IMAGES[
+                    constants.EL_TYPE.bor_modified_for_heimdall_v2
+                ]
             elif el_type == constants.EL_TYPE.erigon:
                 p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.erigon]
 

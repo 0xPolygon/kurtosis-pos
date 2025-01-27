@@ -36,7 +36,11 @@ POLYGON_POS_PARAMS = {
 }
 
 VALID_CLIENT_COMBINATIONS = {
-    constants.CL_TYPE.heimdall: [constants.EL_TYPE.bor, constants.EL_TYPE.erigon],
+    constants.CL_TYPE.heimdall: [
+        constants.EL_TYPE.bor,
+        constants.EL_TYPE.bor_modified_for_heimdall_v2,
+        constants.EL_TYPE.erigon,
+    ],
     constants.CL_TYPE.heimdall_v2: [constants.EL_TYPE.bor],
 }
 
@@ -159,7 +163,15 @@ def _validate_participant(p):
     _validate_str(
         p, "cl_type", [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
     )
-    _validate_str(p, "el_type", [constants.EL_TYPE.bor, constants.EL_TYPE.erigon])
+    _validate_str(
+        p,
+        "el_type",
+        [
+            constants.EL_TYPE.bor,
+            constants.EL_TYPE.bor_modified_for_heimdall_v2,
+            constants.EL_TYPE.erigon,
+        ],
+    )
 
     # Validate client combination.
     cl_type = p.get("cl_type")
