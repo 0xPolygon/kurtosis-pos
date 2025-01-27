@@ -12,7 +12,7 @@ get_cl_status() {
   local peer_count height latest_block_hash
   peer_count=$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')
   sync_info=$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info | [.latest_block_height, .latest_block_hash, .catching_up] | @tsv')
-  read -r height latest_block_hash is_syncing <<< "${sync_info}"
+  read -r height latest_block_hash is_syncing <<<"${sync_info}"
   echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
 }
 
@@ -37,13 +37,13 @@ declare -a cl_services cl_rpc_urls
 while IFS='=' read -r service url; do
   cl_services+=("${service}")
   cl_rpc_urls+=("${url}")
-done < "${TMP_FOLDER}/${CL_SERVICES_FILE}"
+done <"${TMP_FOLDER}/${CL_SERVICES_FILE}"
 
 declare -a el_services el_rpc_urls
 while IFS='=' read -r service url; do
   el_services+=("${service}")
   el_rpc_urls+=("${url}")
-done < "${TMP_FOLDER}/${EL_SERVICES_FILE}"
+done <"${TMP_FOLDER}/${EL_SERVICES_FILE}"
 
 # Print status.
 echo "{"
@@ -53,15 +53,15 @@ echo '  "participants": {'
 
 # Loop through each CL service to get the status.
 echo '    "cl": ['
-for (( i=0; i<"${#cl_services[@]}"; i++ )); do
+for ((i = 0; i < "${#cl_services[@]}"; i++)); do
   name="${cl_services[${i}]}"
   rpc_url="${cl_rpc_urls[${i}]}"
 
   status=$(get_cl_status "${rpc_url}")
-  read -r peer_count height latest_block_hash is_syncing <<< "${status}"
+  read -r peer_count height latest_block_hash is_syncing <<<"${status}"
 
   echo '      {'
-  echo '        "id": '"$(( i + 1))"','
+  echo '        "id": '"$((i + 1))"','
   echo '        "name": "'"${name}"'",'
   echo '        "peers": '"${peer_count}"','
   echo '        "height": '"${height}"','
@@ -73,15 +73,15 @@ echo '    ],'
 
 # Loop through each EL service to get the status.
 echo '    "el": ['
-for (( i=0; i<"${#el_services[@]}"; i++ )); do
+for ((i = 0; i < "${#el_services[@]}"; i++)); do
   name="${el_services[${i}]}"
   rpc_url="${el_rpc_urls[${i}]}"
 
   status=$(get_el_status "${rpc_url}")
-  read -r peer_count height latest_block_hash is_syncing <<< "${status}"
+  read -r peer_count height latest_block_hash is_syncing <<<"${status}"
 
   echo '      {'
-  echo '        "id": '"$(( i + 1))"','
+  echo '        "id": '"$((i + 1))"','
   echo '        "name": "'"${name}"'",'
   echo '        "peers": '"${peer_count}"','
   echo '        "height": '"${height}"','

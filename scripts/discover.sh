@@ -24,10 +24,10 @@ while IFS= read -r cl_service; do
   cl_services+=("${cl_service}")
   url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${cl_service}" rpc)
   cl_rpc_urls+=("${url}")
-done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING \
-  | grep -E "l2-cl-[0-9]+-.*" \
-  | grep -v "rabbitmq" \
-  | awk '{print $2}')
+done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING |
+  grep -E "l2-cl-[0-9]+-.*" |
+  grep -v "rabbitmq" |
+  awk '{print $2}')
 
 # Sanity check.
 if [ "${#cl_services[@]}" -eq 0 ]; then
@@ -46,7 +46,7 @@ echo "Found ${#cl_services[@]}."
   for i in "${!cl_services[@]}"; do
     echo "${cl_services[$i]}=${cl_rpc_urls[$i]}"
   done
-} > "${TMP_FOLDER}/${CL_SERVICES_FILE}"
+} >"${TMP_FOLDER}/${CL_SERVICES_FILE}"
 echo "Saved at ${TMP_FOLDER}/${CL_SERVICES_FILE}"
 
 # Get EL rpc urls.
@@ -57,10 +57,10 @@ while IFS= read -r el_service; do
   el_services+=("${el_service}")
   url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${el_service}" rpc)
   el_rpc_urls+=("${url}")
-done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING \
-  | grep -E "l2-el-[0-9]+-.*-(validator|rpc)" \
-  | grep -v "config" \
-  | awk '{print $2}')
+done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING |
+  grep -E "l2-el-[0-9]+-.*-(validator|rpc)" |
+  grep -v "config" |
+  awk '{print $2}')
 
 # Sanity checks.
 if [ "${#el_services[@]}" -eq 0 ]; then
@@ -79,6 +79,6 @@ echo "Found ${#el_services[@]}."
   for i in "${!el_services[@]}"; do
     echo "${el_services[$i]}=${el_rpc_urls[$i]}"
   done
-} > "${TMP_FOLDER}/${EL_SERVICES_FILE}"
+} >"${TMP_FOLDER}/${EL_SERVICES_FILE}"
 echo "Saved at ${TMP_FOLDER}/${EL_SERVICES_FILE}"
 echo
