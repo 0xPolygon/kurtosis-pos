@@ -347,7 +347,7 @@ jobs:
 
           export ENCLAVE="${{ env.ENCLAVE_NAME }}"
           bash scripts/discover.sh
-          export TIMEOUT_SECONDS=120
+          export TIMEOUT_SECONDS=150 # 2min30s
           bash scripts/monitor.sh
 
       - name: Dump enclave
