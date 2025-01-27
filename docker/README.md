@@ -29,9 +29,13 @@ docker push leovct/pos-validator-config-generator:1.0.10
 
 ## Heimdall V2
 
-- [Docker Hub](https://hub.docker.com/r/leovct/heimdall-v2)
+Docker Hub:
+
+- [heimdall-v2](https://hub.docker.com/r/leovct/heimdall-v2)
+- [bor-modified-for-heimdall-v2](https://hub.docker.com/r/leovct/bor-modified-for-heimdall-v2)
 
 ```bash
+# heimdall-v2
 git clone git@github.com:0xPolygon/heimdall-v2.git
 pushd heimdall-v2
 tag="3138e07"
@@ -39,4 +43,18 @@ git checkout "${tag}" # 06/01/2025
 sed -i 's/RUN make install/RUN make heimdalld \&\& cp build\/heimdalld \/usr\/bin\/heimdalld/' Dockerfile
 docker build --tag "leovct/heimdall-v2:${tag}" --file Dockerfile .
 docker push "leovct/heimdall-v2:${tag}"
+
+# bor-modified-for-heimdall-v2
+git clone --branch raneet10/heimdallv2-changes git@github.com:maticnetwork/bor.git
+pushd bor
+tag="e5bf9cc"
+git checkout "${tag}" # 24/01/2025
+patch -p1 < bor-modified-for-heimdall-v2.patch
+docker build \
+  --tag "leovct/bor-modified-for-heimdall-v2:${tag}" \
+  --file Dockerfile \
+  --secret id=id_ed25519,src=$HOME/.ssh/id_ed25519 \
+  --secret id=id_ed25519_pub,src=$HOME/.ssh/id_ed25519.pub \
+  .
+docker push "leovct/bor-modified-for-heimdall-v2:${tag}"
 ```

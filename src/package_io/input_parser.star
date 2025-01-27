@@ -8,7 +8,7 @@ DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-gene
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:1.5.4",
-    constants.EL_TYPE.bor_modified_for_heimdall_v2: "0xpolygon/bor:1.5.4",  # TODO: Build an image from the correct branch.
+    constants.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor-modified-for-heimdall-v2:e5bf9cc",  # There is no official image yet.
     constants.EL_TYPE.erigon: "erigontech/erigon:v2.61.0",
 }
 
