@@ -6,11 +6,10 @@ TMP_FOLDER="tmp"
 CL_SERVICES_FILE="cl_services.txt"
 EL_SERVICES_FILE="el_services.txt"
 
-TIMEOUT_SECONDS=90
 CHECK_RATE_SECONDS=10
-# Expected heights of the different chains at the end of the timeout.
-EXPECTED_MIN_CL_HEIGHT=50
-EXPECTED_MIN_EL_HEIGHT=30
+TIMEOUT_SECONDS=${TIMEOUT_SECONDS:-90}
+EXPECTED_MIN_CL_HEIGHT=${EXPECTED_MIN_CL_HEIGHT:-50}
+EXPECTED_MIN_EL_HEIGHT=${EXPECTED_MIN_EL_HEIGHT:-30}
 
 get_cl_status() {
   rpc_url="$1"

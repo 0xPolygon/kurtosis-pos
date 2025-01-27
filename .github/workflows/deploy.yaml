@@ -256,7 +256,7 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-      
+
       - name: Wait for devnet to be ready
         run: |
           kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
@@ -347,6 +347,7 @@ jobs:
 
           export ENCLAVE="${{ env.ENCLAVE_NAME }}"
           bash scripts/discover.sh
+          export TIMEOUT_SECONDS=120
           bash scripts/monitor.sh
 
       - name: Dump enclave
