@@ -336,7 +336,7 @@ jobs:
         run: |
           kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
           kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
-          sleep 240
+          sleep 300 # A bit longer than the other workflows.
 
       - name: Check devnet status
         run: |
