@@ -77,6 +77,7 @@ def launch(
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
                     "rest_api_port_number": HEIMDALL_REST_API_PORT_NUMBER,
+                    "grpc_port_number": HEIMDALL_GRPC_PORT_NUMBER,
                     "cometbft_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
                 },
             ),
@@ -128,7 +129,6 @@ def launch(
                 HEIMDALL_RPC_PORT_ID: PortSpec(
                     number=HEIMDALL_RPC_PORT_NUMBER,
                     application_protocol="http",
-                    wait=None,  # Disable the check for this port.
                 ),
                 HEIMDALL_METRICS_PORT_ID: PortSpec(
                     number=HEIMDALL_METRICS_PORT_NUMBER,
@@ -160,7 +160,7 @@ def launch(
                         ),
                         # Start heimdall.
                         "heimdalld start --all --bridge --rest-server --home {}".format(
-                            HEIMDALL_CONFIG_FOLDER_PATH
+                            HEIMDALL_CONFIG_FOLDER_PATH,
                         ),
                     ]
                 )
