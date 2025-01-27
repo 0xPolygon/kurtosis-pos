@@ -49,7 +49,7 @@ git clone --branch raneet10/heimdallv2-changes git@github.com:maticnetwork/bor.g
 pushd bor
 tag="e5bf9cc"
 git checkout "${tag}" # 24/01/2025
-patch -p1 < bor-modified-for-heimdall-v2.patch
+patch -p1 < ../bor-modified-for-heimdall-v2.patch
 docker build \
   --tag "leovct/bor-modified-for-heimdall-v2:${tag}" \
   --file Dockerfile \
