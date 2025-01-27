@@ -121,6 +121,7 @@ def launch(
                 cl_node_url,
                 pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index],
                 network_data.el_static_nodes,
+                network_params.get("el_chain_id", ""),
             )
 
             # Increment the indexes.
