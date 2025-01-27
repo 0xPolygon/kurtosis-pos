@@ -33,6 +33,8 @@ def run(plan, args):
 
     participants = polygon_pos_args.get("participants", {})
     validator_accounts = get_validator_accounts(participants)
+
+    l1_network_params = ethereum_args.get("network_params", {})
     l2_network_params = polygon_pos_args.get("network_params", {})
 
     # Deploy a local L1 if needed.
@@ -159,7 +161,13 @@ def run(plan, args):
         if svc == "blockscout":
             blockscout.launch(plan)
         elif svc == "prometheus_grafana":
-            prometheus_grafana.launch(plan)
+            prometheus_grafana.launch(
+                plan,
+                ethereum_args.get("participants", {}),
+                l1_network_params.get("network_id", 3151908),
+                participants,
+                l2_network_params.get("el_chain_id", 137),
+            )
         elif svc == "tx_spammer":
             tx_spammer.launch(plan)
         else:

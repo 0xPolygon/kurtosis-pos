@@ -1,0 +1,2360 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 1
+          },
+          "id": 10,
+          "maxDataPoints": 25,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.1.4",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "max(panoptichain_rpc_height{network=~\"$network\", provider=~\"$provider\"})",
+              "format": "time_series",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Block Height",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 6,
+            "y": 1
+          },
+          "id": 11,
+          "maxDataPoints": 25,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.1.4",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "max(panoptichain_rpc_block{network=~\"$network\", provider=~\"$provider\"})",
+              "format": "time_series",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Total Blocks Observed",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 20,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_gas_used_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_gas_used_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_gas_used_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Gas Used (million gas)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 9
+          },
+          "id": 9,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "avg(panoptichain_rpc_base_fee_per_gas{network=~\"$network\", provider=~\"$provider\"})",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Base Fee Per Gas (gwei)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 6,
+            "y": 9
+          },
+          "id": 15,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "avg(panoptichain_rpc_gas_limit{network=~\"$network\", provider=~\"$provider\"})",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Block Gas Limit",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 9
+          },
+          "id": 14,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_block_interval_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_block_interval_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_block_interval_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Block Interval",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 17
+          },
+          "id": 12,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "avg(panoptichain_rpc_difficulty{network=~\"$network\", provider=~\"$provider\"})",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Block Difficulty",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 6,
+            "y": 17
+          },
+          "id": 13,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "avg(panoptichain_rpc_block_size{network=~\"$network\", provider=~\"$provider\"})",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Block Size",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 12,
+            "y": 17
+          },
+          "id": 42,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "avg(panoptichain_rpc_uncles{network=~\"$network\", provider=~\"$provider\"})",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Uncles",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Blocks",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 16,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 2
+          },
+          "id": 3,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_transactions_per_block_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_transactions_per_block_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_transactions_per_block_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Transactions Per Block",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 0,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 2
+          },
+          "id": 1,
+          "options": {
+            "displayMode": "gradient",
+            "maxVizHeight": 300,
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "namePlacement": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "sizing": "auto",
+            "valueMode": "color"
+          },
+          "pluginVersion": "11.1.4",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "expr": "avg by(le) (panoptichain_rpc_transactions_per_block_bucket{network=~\"$network\", provider=~\"$provider\"})",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "{{le}}",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Transactions Per Block",
+          "type": "bargauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 10
+          },
+          "id": 41,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_transaction_value_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_transaction_value_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_transaction_value_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Transaction Value (ETH)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 6,
+            "y": 10
+          },
+          "id": 38,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_transaction_gas_tip_cap_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_transaction_gas_tip_cap_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_transaction_gas_tip_cap_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Transaction Gas Tip Cap (gwei)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 12,
+            "y": 10
+          },
+          "id": 35,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_transaction_gas_price_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_transaction_gas_price_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_transaction_gas_price_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Transaction Gas Price (gwei)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 18,
+            "y": 10
+          },
+          "id": 36,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_transaction_gas_limit_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_transaction_gas_limit_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_transaction_gas_limit_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Transaction Gas Limit (gas)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 18
+          },
+          "id": 34,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_transaction_cost_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_transaction_cost_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_transaction_cost_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Transaction Cost (ETH)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 6,
+            "y": 18
+          },
+          "id": 76,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_rpc_time_to_mine_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_rpc_time_to_mine_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_rpc_time_to_mine_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Time to Mine",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Transactions",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
+      "id": 71,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 29
+          },
+          "id": 73,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.1.4",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "expr": "max(panoptichain_system_uptime)",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Panoptichain Uptime",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 6,
+            "y": 29
+          },
+          "id": 72,
+          "maxDataPoints": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.2.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.5, sum by(le) (rate(panoptichain_system_refresh_state_time_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.75, sum by(le) (rate(panoptichain_system_refresh_state_time_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p75",
+              "range": true,
+              "refId": "p75",
+              "useBackend": false
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum by(le) (rate(panoptichain_system_refresh_state_time_bucket{network=~\"$network\", provider=~\"$provider\"}[$__rate_interval])))",
+              "format": "heatmap",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95",
+              "useBackend": false
+            }
+          ],
+          "title": "Refresh State Time",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Panoptichain",
+      "type": "row"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(network)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "network",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(network)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(provider)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "provider",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(provider)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Panoptichain",
+  "uid": "be64161b-2874-4af1-9fca-3d460ced24bb",
+  "version": 2,
+  "weekStart": ""
+}
