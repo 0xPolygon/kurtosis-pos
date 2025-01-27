@@ -82,7 +82,7 @@ while true; do
         error=true
       fi
 
-      if (( height < 10 )); then
+      if (( height < 50 )); then
         echo "❌ ${name} has not progressed enough... Current height: ${height}, expected more than 10!"
         error=true
       fi
@@ -101,7 +101,7 @@ while true; do
         error=true
       fi
 
-      if (( height < 10 )); then
+      if (( height < 30 )); then
         echo "❌ ${name} has not progressed enough... Current height: ${height}, expected more than 10!"
         error=true
       fi
