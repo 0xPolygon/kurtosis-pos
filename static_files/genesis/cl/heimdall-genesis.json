@@ -37,7 +37,7 @@
       "params": {
         "sprint_duration": "{{.el_sprint_duration}}",
         "span_duration": "{{.el_span_duration}}",
-        "producer_count": "{{len .validators}}"
+        "producer_count": "4"
       },
       "spans": [
         {
