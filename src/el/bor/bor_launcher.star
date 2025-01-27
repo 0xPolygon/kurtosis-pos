@@ -45,7 +45,6 @@ def launch(
                     "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
                     "is_validator": is_validator,
                     "address": el_account.eth_tendermint.address,
-                    "static_nodes": str(el_static_nodes),
                     "cl_node_url": cl_node_url,
                     # network params
                     "static_nodes": str(el_static_nodes),
