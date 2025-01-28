@@ -35,6 +35,7 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "network_params": {
         "preset": "minimal",
         "seconds_per_slot": 1,
+        "network_id": "3151908",  # 0x301824
     },
 }
 
