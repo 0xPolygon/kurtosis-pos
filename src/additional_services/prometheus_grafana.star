@@ -2,7 +2,7 @@ prometheus_package = import_module(
     "github.com/kurtosis-tech/prometheus-package/main.star"
 )
 grafana_package = import_module(
-    "github.com/minhd-vu/grafana-package/main.star@dashboards-files-artifact"
+    "github.com/minhd-vu/grafana-package/main.star@51de47fb46e54e74fbc841bb400a44257386b327"
 )
 contract_util = import_module("../contracts/util.star")
 el_cl_launcher = import_module("../el_cl_launcher.star")
