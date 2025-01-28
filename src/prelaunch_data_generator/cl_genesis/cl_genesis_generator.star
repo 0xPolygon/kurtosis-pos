@@ -36,12 +36,13 @@ def generate_cl_genesis_data(
                     "el_sprint_duration": network_params.get("el_sprint_duration", ""),
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,
-                    # # validator set, proposer, etc.
+                    # validator set, proposer, etc.
                     "accounts": json.indent(json.encode(accounts)),
                     "dividend_accounts": json.indent(json.encode(dividends)),
                     "signing_infos": json.indent(json.encode(signing_infos)),
                     "validators": json.indent(json.encode(validator_set)),
                     "proposer": json.indent(json.encode(proposer)),
+                    "producer_count": len(validator_set),
                     # contract addresses
                     "matic_token_address": contract_addresses.get("matic_token", ""),
                     "staking_manager_address": contract_addresses.get(
