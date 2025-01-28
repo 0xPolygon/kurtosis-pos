@@ -22,6 +22,7 @@ pre_funded_accounts = import_module(
 prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
 tx_spammer = import_module("./src/additional_services/tx_spammer.star")
 wait = import_module("./src/wait/wait.star")
+constants = import_module("./src/package_io/constants.star")
 
 
 def run(plan, args):
@@ -34,7 +35,6 @@ def run(plan, args):
     participants = polygon_pos_args.get("participants", {})
     validator_accounts = get_validator_accounts(participants)
 
-    l1_network_params = ethereum_args.get("network_params", {})
     l2_network_params = polygon_pos_args.get("network_params", {})
 
     # Deploy a local L1 if needed.
@@ -161,12 +161,13 @@ def run(plan, args):
         if svc == "blockscout":
             blockscout.launch(plan)
         elif svc == "prometheus_grafana":
+            l1_network_params = ethereum_args.get("network_params", {})
             prometheus_grafana.launch(
                 plan,
                 ethereum_args.get("participants", {}),
                 l1_network_params.get("network_id", 3151908),
                 participants,
-                l2_network_params.get("el_chain_id", 137),
+                constants.DEFAULT_EL_CHAIN_ID,
             )
         elif svc == "tx_spammer":
             tx_spammer.launch(plan)
