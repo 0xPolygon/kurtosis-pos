@@ -187,7 +187,14 @@ jobs:
           export ENCLAVE="${{ env.ENCLAVE_NAME }}"
           bash scripts/discover.sh
 
-          # TODO: Remove this limitation once the following bugs are solved:
+          # If the devnet only contains one validator, don't check the peer count.
+          file_name=$(basename "${{ matrix.file_name }}" ".yml")
+          if [[ "${file_name}" =~ .*"single-validator" ]]; then
+            export EXPECTED_MIN_CL_PEERS=0
+            export EXPECTED_MIN_EL_PEERS=0
+          fi
+          # Check if the EL chain has mined at least 10 blocks.
+          # TODO: Bump this number to 30 (more than the number of blocks in a sprint: 16) once the following bugs are solved:
           # 1. https://github.com/0xPolygon/kurtosis-polygon-pos/issues/28
           # 2. https://github.com/0xPolygon/kurtosis-polygon-pos/issues/26
           export EXPECTED_MIN_EL_HEIGHT=10

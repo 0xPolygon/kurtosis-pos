@@ -8,6 +8,10 @@ EL_SERVICES_FILE="el_services.txt"
 
 CHECK_RATE_SECONDS=10
 TIMEOUT_SECONDS=${TIMEOUT_SECONDS:-90}
+# Minimum number of peers expected, per client.
+EXPECTED_MIN_CL_PEERS=${EXPECTED_CL_PEERS:-1}
+EXPECTED_MIN_EL_PEERS=${EXPECTED_EL_PEERS:-1}
+# Minimum chain height expected.
 EXPECTED_MIN_CL_HEIGHT=${EXPECTED_MIN_CL_HEIGHT:-50}
 EXPECTED_MIN_EL_HEIGHT=${EXPECTED_MIN_EL_HEIGHT:-30}
 
@@ -79,8 +83,8 @@ while true; do
       status=$(get_cl_status "${rpc_url}")
       read -r peer_count height latest_block_hash <<<"${status}"
 
-      if ((peer_count == 0)); then
-        echo "❌ ${name} has no peers..."
+      if ((peer_count < EXPECTED_MIN_CL_PEERS)); then
+        echo "❌ ${name} has not enough peers... Number of peers: ${peer_count}, expected more than ${EXPECTED_MIN_CL_PEERS}!"
         error=true
       fi
 
@@ -98,8 +102,8 @@ while true; do
       status=$(get_el_status "${rpc_url}")
       read -r peer_count height latest_block_hash <<<"${status}"
 
-      if ((peer_count == 0)); then
-        echo "❌ ${name} has no peers..."
+      if ((peer_count < EXPECTED_MIN_EL_PEERS)); then
+        echo "❌ ${name} has not enough peers... Number of peers: ${peer_count}, expected more than ${EXPECTED_MIN_EL_PEERS}!"
         error=true
       fi
 
