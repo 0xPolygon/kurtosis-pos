@@ -32,6 +32,7 @@ def generate_cl_genesis_data(
             "signing_infos": json.indent(json.encode(validator_data.signing_infos)),
             "validators": json.indent(json.encode(validator_data.validator_set)),
             "proposer": json.indent(json.encode(proposer)),
+            "producer_count": len(validator_set),
         }
     elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
         validator_data = _get_heimdall_v2_validator_data(validator_accounts)
@@ -45,6 +46,7 @@ def generate_cl_genesis_data(
             "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
             "validators": json.indent(json.encode(validator_data.validator_set)),
             "proposer": json.indent(json.encode(proposer)),
+            "producer_count": len(validator_set),
             "total_voting_power": validator_data.total_voting_power,
         }
 
