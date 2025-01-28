@@ -186,6 +186,11 @@ jobs:
 
           export ENCLAVE="${{ env.ENCLAVE_NAME }}"
           bash scripts/discover.sh
+
+          # TODO: Remove this limitation once the following bugs are solved:
+          # 1. https://github.com/0xPolygon/kurtosis-polygon-pos/issues/28
+          # 2. https://github.com/0xPolygon/kurtosis-polygon-pos/issues/26
+          export EXPECTED_MIN_EL_HEIGHT=10
           bash scripts/monitor.sh
 
       - name: Dump enclave
