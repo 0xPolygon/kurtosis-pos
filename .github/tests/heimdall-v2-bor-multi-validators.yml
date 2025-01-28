@@ -4,7 +4,7 @@ polygon_pos_package:
     - cl_type: heimdall-v2
       el_type: bor-modified-for-heimdall-v2
       is_validator: true
-      count: 2
+      count: 4
 
     # rpcs
     - cl_type: heimdall-v2
