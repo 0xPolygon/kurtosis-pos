@@ -38,8 +38,8 @@ Docker Hub:
 # heimdall-v2
 git clone git@github.com:0xPolygon/heimdall-v2.git
 pushd heimdall-v2
-tag="3138e07"
-git checkout "${tag}" # 06/01/2025
+tag="57830a6" # 24/01/2025
+git checkout "${tag}"
 sed -i 's/RUN make install/RUN make heimdalld \&\& cp build\/heimdalld \/usr\/bin\/heimdalld/' Dockerfile
 docker build --tag "leovct/heimdall-v2:${tag}" --file Dockerfile .
 docker push "leovct/heimdall-v2:${tag}"
@@ -47,8 +47,8 @@ docker push "leovct/heimdall-v2:${tag}"
 # bor-modified-for-heimdall-v2
 git clone --branch raneet10/heimdallv2-changes git@github.com:maticnetwork/bor.git
 pushd bor
-tag="e5bf9cc"
-git checkout "${tag}" # 24/01/2025
+tag="e5bf9cc" # 24/01/2025
+git checkout "${tag}"
 patch -p1 < ../bor-modified-for-heimdall-v2.patch
 
 eval $(ssh-agent -s)

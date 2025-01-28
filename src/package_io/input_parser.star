@@ -14,7 +14,7 @@ DEFAULT_EL_IMAGES = {
 
 DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.0.10",
-    constants.CL_TYPE.heimdall_v2: "leovct/heimdall-v2:3138e07",  # There is no official image yet.
+    constants.CL_TYPE.heimdall_v2: "leovct/heimdall-v2:57830a6",  # There is no official image yet.
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.5"
