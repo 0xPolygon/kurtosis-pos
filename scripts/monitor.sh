@@ -14,7 +14,7 @@ get_cl_status() {
   local peer_count height latest_block_hash
   peer_count=$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')
   sync_info=$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info | [.latest_block_height, .latest_block_hash, .catching_up] | @tsv')
-  read -r height latest_block_hash is_syncing <<< "${sync_info}"
+  read -r height latest_block_hash is_syncing <<<"${sync_info}"
   echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
 }
 
@@ -39,13 +39,13 @@ declare -a cl_services cl_rpc_urls
 while IFS='=' read -r service url; do
   cl_services+=("${service}")
   cl_rpc_urls+=("${url}")
-done < "${TMP_FOLDER}/${CL_SERVICES_FILE}"
+done <"${TMP_FOLDER}/${CL_SERVICES_FILE}"
 
 declare -a el_services el_rpc_urls
 while IFS='=' read -r service url; do
   el_services+=("${service}")
   el_rpc_urls+=("${url}")
-done < "${TMP_FOLDER}/${EL_SERVICES_FILE}"
+done <"${TMP_FOLDER}/${EL_SERVICES_FILE}"
 
 # Monitor the status of the devnet.
 echo "Monitoring the status of the devnet..."
@@ -54,7 +54,7 @@ echo "- Timeout: ${TIMEOUT_SECONDS}"
 echo "- Check rate: ${CHECK_RATE_SECONDS}"
 
 declare -a previous_cl_heights previous_el_heights
-for (( i=0; i<"${#el_services[@]}"; i++ )); do
+for ((i = 0; i < "${#el_services[@]}"; i++)); do
   previous_cl_heights[i]=0
   previous_el_heights[i]=0
 done
@@ -63,46 +63,46 @@ start_time="$(date +%s)"
 while true; do
   # Check for timeout.
   current_time="$(date +%s)"
-  if (( current_time - start_time >= TIMEOUT_SECONDS )); then
+  if ((current_time - start_time >= TIMEOUT_SECONDS)); then
     echo
     echo "Timeout reached. Exiting monitor."
     echo
 
     error=false
     # Check if there are any issues with the CL clients.
-    for (( i=0; i<"${#cl_services[@]}"; i++ )); do
+    for ((i = 0; i < "${#cl_services[@]}"; i++)); do
       name="${cl_services[${i}]}"
       rpc_url="${cl_rpc_urls[${i}]}"
 
       status=$(get_cl_status "${rpc_url}")
-      read -r peer_count height latest_block_hash <<< "${status}"
+      read -r peer_count height latest_block_hash <<<"${status}"
 
-      if (( peer_count == 0 )); then
+      if ((peer_count == 0)); then
         echo "❌ ${name} has no peers..."
         error=true
       fi
 
-      if (( height < 10 )); then
-        echo "❌ ${name} has not progressed enough... Current height: ${height}, expected more than 10!"
+      if ((height < 20)); then
+        echo "❌ ${name} has not progressed enough... Current height: ${height}, expected more than 20!"
         error=true
       fi
     done
 
     # Check if there are any issues with EL clients.
-    for (( i=0; i<"${#el_services[@]}"; i++ )); do
+    for ((i = 0; i < "${#el_services[@]}"; i++)); do
       name="${el_services[${i}]}"
       rpc_url="${el_rpc_urls[${i}]}"
 
       status=$(get_el_status "${rpc_url}")
-      read -r peer_count height latest_block_hash <<< "${status}"
+      read -r peer_count height latest_block_hash <<<"${status}"
 
-      if (( peer_count == 0 )); then
+      if ((peer_count == 0)); then
         echo "❌ ${name} has no peers..."
         error=true
       fi
 
-      if (( height < 10 )); then
-        echo "❌ ${name} has not progressed enough... Current height: ${height}, expected more than 10!"
+      if ((height < 20)); then
+        echo "❌ ${name} has not progressed enough... Current height: ${height}, expected more than 20!"
         error=true
       fi
     done
@@ -125,26 +125,26 @@ while true; do
 
   # Loop through each CL service to get the status.
   output+='    "cl": ['
-  for (( i=0; i<"${#cl_services[@]}"; i++ )); do
+  for ((i = 0; i < "${#cl_services[@]}"; i++)); do
     name="${cl_services[${i}]}"
     rpc_url="${cl_rpc_urls[${i}]}"
 
     status=$(get_cl_status "${rpc_url}")
-    read -r peer_count height latest_block_hash is_syncing <<< "${status}"
+    read -r peer_count height latest_block_hash is_syncing <<<"${status}"
 
     peer_status="OK"
-    if (( peer_count == 0 )); then
+    if ((peer_count == 0)); then
       peer_status="NONE"
     fi
 
     height_diff=$((height - previous_cl_heights[i]))
     height_status="+${height_diff}"
-    if (( height_diff == 0)); then
+    if ((height_diff == 0)); then
       height_status="STUCK"
     fi
 
     output+='      {'
-    output+='        "id": '"$(( i + 1))"','
+    output+='        "id": '"$((i + 1))"','
     output+='        "name": "'"${name}"'",'
     output+='        "peers": '"${peer_count}"','
     output+='        "peersStatus": "'"${peer_status}"'",'
@@ -154,7 +154,7 @@ while true; do
     output+='        "isSyncing": '"${is_syncing}"''
     output+='      }'
     if [[ "${i}" -lt $((${#cl_services[@]} - 1)) ]]; then
-        output+=','
+      output+=','
     fi
 
     # Update previous heights for next iteration.
@@ -164,26 +164,26 @@ while true; do
 
   # Loop through each EL service to get the status.
   output+='    "el": ['
-  for (( i=0; i<"${#el_services[@]}"; i++ )); do
+  for ((i = 0; i < "${#el_services[@]}"; i++)); do
     name="${el_services[${i}]}"
     rpc_url="${el_rpc_urls[${i}]}"
 
     status=$(get_el_status "${rpc_url}")
-    read -r peer_count height latest_block_hash is_syncing <<< "${status}"
+    read -r peer_count height latest_block_hash is_syncing <<<"${status}"
 
     peer_status="OK"
-    if (( peer_count == 0 )); then
+    if ((peer_count == 0)); then
       peer_status="NONE"
     fi
 
     height_diff=$((height - previous_el_heights[i]))
     height_status="+${height_diff}"
-    if (( height_diff == 0)); then
+    if ((height_diff == 0)); then
       height_status="STUCK"
     fi
 
     output+='      {'
-    output+='        "id": '"$(( i + 1))"','
+    output+='        "id": '"$((i + 1))"','
     output+='        "name": "'"${name}"'",'
     output+='        "peers": '"${peer_count}"','
     output+='        "peersStatus": "'"${peer_status}"'",'
@@ -193,7 +193,7 @@ while true; do
     output+='        "isSyncing": '"${is_syncing}"''
     output+='      }'
     if [[ "${i}" -lt $((${#el_services[@]} - 1)) ]]; then
-        output+=','
+      output+=','
     fi
 
     # Update previous heights for next iteration.
