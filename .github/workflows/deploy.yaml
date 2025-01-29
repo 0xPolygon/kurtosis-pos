@@ -52,7 +52,7 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Wait for blocks to be mined on the EL chain
+      - name: Wait for the first block producer to commit a span
         run: |
           # Wait for the first producer to produce blocks on the EL chain.
           start_time=$(date +%s)
@@ -61,13 +61,13 @@ jobs:
             # Timeout check.
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
-              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not mined any blocks yet..."
+              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
               exit 1
             fi
 
             # New block check.
-            if kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all | grep -q "Commit new sealing work"; then
-              echo "✅ The first producer started to mine blocks!"
+            if kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all | grep -q "Committing new span"; then
+              echo "✅ The first producer committed a span!"
               break
             fi
 
@@ -151,7 +151,7 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Wait for blocks to be mined on the EL chain
+      - name: Wait for the first block producer to commit a span
         run: |
           # Wait for the first producer to produce blocks on the EL chain.
           start_time=$(date +%s)
@@ -160,13 +160,13 @@ jobs:
             # Timeout check.
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
-              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not mined any blocks yet..."
+              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
               exit 1
             fi
 
             # New block check.
-            if kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all | grep -q "Commit new sealing work"; then
-              echo "✅ The first producer started to mine blocks!"
+            if kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all | grep -q "Committing new span"; then
+              echo "✅ The first producer committed a span!"
               break
             fi
 
@@ -237,7 +237,7 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Wait for blocks to be mined on the EL chain
+      - name: Wait for the first block producer to commit a span
         run: |
           # Wait for the first producer to produce blocks on the EL chain.
           start_time=$(date +%s)
@@ -246,13 +246,13 @@ jobs:
             # Timeout check.
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
-              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not mined any blocks yet..."
+              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
               exit 1
             fi
 
             # New block check.
-            if kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all | grep -q "Commit new sealing work"; then
-              echo "✅ The first producer started to mine blocks!"
+            if kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all | grep -q "Committing new span"; then
+              echo "✅ The first producer committed a span!"
               break
             fi
 
@@ -312,7 +312,7 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Wait for blocks to be mined on the EL chain
+      - name: Wait for the first block producer to commit a span
         run: |
           # Wait for the first producer to produce blocks on the EL chain.
           start_time=$(date +%s)
@@ -321,13 +321,13 @@ jobs:
             # Timeout check.
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
-              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not mined any blocks yet..."
+              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
               exit 1
             fi
 
             # New block check.
-            if kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all | grep -q "Commit new sealing work"; then
-              echo "✅ The first producer started to mine blocks!"
+            if kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all | grep -q "Committing new span"; then
+              echo "✅ The first producer committed a span!"
               break
             fi
 
