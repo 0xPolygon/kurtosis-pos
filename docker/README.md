@@ -23,6 +23,6 @@ docker push leovct/pos-el-genesis-builder:node-16
 - [Docker Hub](https://hub.docker.com/r/leovct/pos-validator-config-generator)
 
 ```bash
-docker build --tag leovct/pos-validator-config-generator:1.0.10 --file pos-validator-config-generator.Dockerfile .
-docker push leovct/pos-validator-config-generator:1.0.10
+docker build --tag leovct/pos-validator-config-generator:1.2.0 --file pos-validator-config-generator.Dockerfile .
+docker push leovct/pos-validator-config-generator:1.2.0
 ```
