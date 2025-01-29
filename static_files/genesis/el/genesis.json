@@ -14,11 +14,11 @@
     "berlinBlock": 0,
     "londonBlock": 0,
     "shanghaiBlock": 0,
-    "cancunBlock": 0,
     "bor": {
       "jaipurBlock": 0,
       "delhiBlock": 0,
       "indoreBlock": 0,
+      "ahmedabadBlock": 0,
       "stateSyncConfirmationDelay": {
         "256": 128
       },
