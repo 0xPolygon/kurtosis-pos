@@ -2,7 +2,7 @@ prometheus_package = import_module(
     "github.com/kurtosis-tech/prometheus-package/main.star"
 )
 grafana_package = import_module(
-    "github.com/minhd-vu/grafana-package/main.star@51de47fb46e54e74fbc841bb400a44257386b327"
+    "github.com/kurtosis-tech/grafana-package/main.star@cc66468b167d16c0fc7153980be5b67550be01be"
 )
 contract_util = import_module("../contracts/util.star")
 el_cl_launcher = import_module("../el_cl_launcher.star")
@@ -42,7 +42,7 @@ def get_l2_config(plan, participants):
     participant_index = 0
     validator_index = 0
 
-    for _, participant in enumerate(participants):
+    for participant in participants:
         for _ in range(participant.get("count", 1)):
             el_node_name = el_cl_launcher._generate_el_node_name(
                 participant, participant_index + 1
@@ -79,24 +79,9 @@ def get_l2_config(plan, participants):
     )
 
 
-def get_l1_rpcs(plan, participants):
-    rpcs = {}
-
-    for i, participant in enumerate(participants):
-        for _ in range(participant.get("count", 1)):
-            el_node_name = el_cl_launcher._generate_l1_el_node_name(participant, i + 1)
-            el_service = plan.get_service(name=el_node_name)
-
-            rpcs[el_node_name] = "http://{}:{}".format(
-                el_service.ip_address, el_service.ports["rpc"].number
-            )
-
-    return rpcs
-
-
 def launch_panoptichain(
     plan,
-    l1_participants,
+    l1_rpcs,
     l1_chain_id,
     l2_participants,
     l2_chain_id,
@@ -121,7 +106,7 @@ def launch_panoptichain(
         src="../../static_files/panoptichain/config.yml"
     )
     panoptichain_data = {
-        "l1_rpcs": get_l1_rpcs(plan, l1_participants),
+        "l1_rpcs": l1_rpcs,
         "l2_rpcs": l2_config.rpcs,
         "l1_chain_id": l1_chain_id,
         "l2_chain_id": l2_chain_id,

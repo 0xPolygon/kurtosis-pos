@@ -293,11 +293,3 @@ def _generate_el_node_name(participant, id):
         participant.get("cl_type", ""),
         "validator" if participant.get("is_validator", False) else "rpc",
     )
-
-
-def _generate_l1_el_node_name(participant, id):
-    return "el-{}-{}-{}".format(
-        id,
-        participant.get("el_type", ""),
-        participant.get("cl_type", ""),
-    )
