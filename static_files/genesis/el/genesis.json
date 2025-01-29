@@ -18,6 +18,7 @@
       "jaipurBlock": 0,
       "delhiBlock": 0,
       "indoreBlock": 0,
+      "ahmedabadBlock": 0,
       "stateSyncConfirmationDelay": {
         "256": 128
       },
