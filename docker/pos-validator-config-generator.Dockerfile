@@ -1,4 +1,4 @@
-FROM 0xpolygon/heimdall:1.0.10 AS heimdall
+FROM 0xpolygon/heimdall:1.2.0 AS heimdall
 
 
 FROM golang:1.22 AS polycli-builder
