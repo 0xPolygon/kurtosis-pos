@@ -6,7 +6,7 @@ TMP_FOLDER="tmp"
 CL_SERVICES_FILE="cl_services.txt"
 EL_SERVICES_FILE="el_services.txt"
 
-TIMEOUT_SECONDS=120
+TIMEOUT_SECONDS=60
 CHECK_RATE_SECONDS=10
 
 get_cl_status() {
