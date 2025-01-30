@@ -60,7 +60,7 @@ Where `params.yml` contains the parameters of the devnet.
 Note that it is also possible to specify args on the command line.
 
 ```bash
-kurtosis run --enclave pos-devnet github.com/0xPolygon/kurtosis-polygon-pos '{"polygon_pos_package": {"network_params": {"bor_id": "100"}}}"'
+kurtosis run --enclave pos-devnet github.com/0xPolygon/kurtosis-polygon-pos '{"polygon_pos_package": {"network_params": {"bor_id": "137"}}}"'
 ```
 
 If you want to make modifications to the package, you can also run the package locally.
@@ -276,7 +276,7 @@ polygon_pos_package:
 
     ## Execution Layer parameters.
     # The EL network id.
-    # Default: "100"
+    # Default: "137"
     el_chain_id: ""
     # The number of seconds per block on the EL chain.
     # Default: 2
