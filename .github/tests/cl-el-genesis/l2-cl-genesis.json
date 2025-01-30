@@ -137,7 +137,7 @@
               "startEpoch": "0"
             }
           ],
-          "bor_chain_id": "137"
+          "bor_chain_id": "100"
         }
       ]
     },
@@ -146,7 +146,7 @@
         "mainchain_tx_confirmations": "6",
         "maticchain_tx_confirmations": "10",
         "chain_params": {
-          "bor_chain_id": "137",
+          "bor_chain_id": "100",
           "matic_token_address": "0xA8CF7E31740f127cEdF36EEEDDA228565C0C781F",
           "staking_manager_address": "0xB5322Da185AF39b53f8d3CBF40636eb3f1B527f2",
           "slash_manager_address": "0x892bb1f48977B66A0620F5c10909b8cAfbb800be",
