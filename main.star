@@ -2,6 +2,9 @@ ethereum_package = import_module(
     "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 )
 
+account_util = import_module(
+    "./src/prelaunch_data_generator/genesis_constants/account.star"
+)
 blockscout = import_module("./src/additional_services/blockscout.star")
 cl_genesis_generator = import_module(
     "./src/prelaunch_data_generator/cl_genesis/cl_genesis_generator.star"
@@ -10,9 +13,6 @@ contract_deployer = import_module("./src/contracts/contract_deployer.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis_generator = import_module(
     "./src/prelaunch_data_generator/el_genesis/el_genesis_generator.star"
-)
-genesis_constants = import_module(
-    "./src/prelaunch_data_generator/genesis_constants/genesis_constants.star"
 )
 input_parser = import_module("./src/package_io/input_parser.star")
 math = import_module("./src/math/math.star")
@@ -34,6 +34,9 @@ def run(plan, args):
     participants = polygon_pos_args.get("participants", {})
     validator_accounts = get_validator_accounts(participants)
     l2_network_params = polygon_pos_args.get("network_params", {})
+
+    # Determine the devnet CL type to be able to select the appropriate validator address format later.
+    devnet_cl_type = participants[0].get("cl_type")
 
     # Deploy a local L1 if needed.
     # Otherwise, use the provided rpc url.
@@ -93,6 +96,7 @@ def run(plan, args):
         result = cl_genesis_generator.generate_cl_genesis_data(
             plan,
             polygon_pos_args,
+            devnet_cl_type,
             validator_accounts,
             contract_addresses_artifact,
         )
@@ -151,6 +155,7 @@ def run(plan, args):
         l2_el_genesis_artifact,
         l2_cl_genesis_artifact,
         l1_context.rpc_url,
+        devnet_cl_type,
     )
 
     # Deploy additional services.
@@ -204,8 +209,8 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
         fail("Using a different mnemonic is not supported for now.")
 
     # Merge the user-specified prefunded accounts and the validator prefunded accounts.
-    prefunded_accounts = genesis_constants.to_ethereum_pkg_pre_funded_accounts(
-        pre_funded_accounts.PRE_FUNDED_ACCOUNTS
+    prefunded_accounts = account_util.to_ethereum_pkg_prefunded_accounts(
+        pre_funded_accounts.PRE_FUNDED_ACCOUNTS,
     )
     l1_network_params = ethereum_args.get("network_params", {})
     user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts", "")

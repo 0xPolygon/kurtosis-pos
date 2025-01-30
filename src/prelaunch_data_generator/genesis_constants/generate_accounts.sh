@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -uxo pipefail
 
-# Generate a number of Ethereum/Tendermint accounts to be prefunded.
+# Generate a number of Ethereum/Tendermint/CometBFT accounts to be prefunded.
 
 # Checking environment variables.
 if [[ -z "${ACCOUNTS_NUMBER}" ]]; then
@@ -12,28 +12,26 @@ if [[ -z "${MNEMONIC}" ]]; then
   echo "Error: MNEMONIC environment variable is not set"
   exit 1
 fi
+echo "ACCOUNTS_NUMBER: ${ACCOUNTS_NUMBER}"
+echo "MNEMONIC: ${MNEMONIC}"
 
-# Generating accounts.
-cl_client_config_path="/etc/cl"
+# Generating Ethereum/Tendermint accounts.
 echo "Generating Ethereum accounts..."
 polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}" |
-  jq '[.Addresses[] | {Path: .Path, ETHAddress: .ETHAddress, ETHPublicKey: ("0x" + .HexFullPublicKey), PrivateKey: .HexPrivateKey}]' \
+  jq '[.Addresses[] | {Path: .Path, ETHAddress: .ETHAddress, ETHPublicKey: ("0x" + .HexFullPublicKey), ETHPrivateKey: .HexPrivateKey}]' \
     >eth_accounts.json
 
-echo "Generating Tendermint public keys... It might take a while..."
+# Generating CometBFT accounts (secp256k1).
 jq --compact-output '.[]' eth_accounts.json | while read -r account; do
-  # Generate validator key.
-  private_key=$(echo "${account}" | jq --raw-output '.PrivateKey')
-  heimdallcli generate-validatorkey --home "${cl_client_config_path}" --logs_writer_file logs.txt "${private_key}"
-  cp ./priv_validator_key.json "${cl_client_config_path}"/config
-  tendermint_public_key=$(heimdalld show-account --home "${cl_client_config_path}" --logs_writer_file logs.txt | jq --raw-output '.pub_key')
-  echo "${account}" | jq --arg v "${tendermint_public_key}" '. + {TendermintPublicKey: $v}'
-done | jq --slurp '.' >eth_tendermint_accounts.json
+  eth_private_key=$(echo "${account}" | jq --raw-output '.ETHPrivateKey')
+  secp256k1_nodekey=$(polycli nodekey --private-key "${eth_private_key}" --key-type secp256k1 | jq)
+  echo "${account}" | jq --argjson nk "${secp256k1_nodekey}" '. + {CometBftAddress: ("0x" + $nk.address), CometBftPublicKey: $nk.pub_key.value, CometBftPrivateKey: $nk.priv_key.value}'
+done | jq --slurp '.' >eth_cometbft_accounts.json
 
 echo "Generating the Starlark pre_funded_accounts.star file..."
-jq --raw-output '[.[] | "    # \(.Path)\n    genesis_constants.new_prefunded_account(\n        \"\(.ETHAddress)\",\n        \"\(.ETHPublicKey)\",\n        \"\(.TendermintPublicKey)\",\n        \"\(.PrivateKey)\",\n    ),"] | "genesis_constants = import_module(\"./genesis_constants.star\")\n\nPRE_FUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_tendermint_accounts.json >pre_funded_accounts.star
+jq --raw-output '[.[] | "    # \(.Path)\n    account.new_validator(\n        # ETH/Tendermint account - used by heimdall validators.\n        account.new(\n            \"\(.ETHAddress)\",\n            \"\(.ETHPublicKey)\",\n            \"\(.ETHPrivateKey)\",\n        ),\n        # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.\n        account.new(\n            \"\(.CometBftAddress)\",\n            \"\(.CometBftPublicKey)\",\n            \"\(.CometBftPrivateKey)\",\n        ),\n    ),"] | "account = import_module(\"./account.star\")\n\nPRE_FUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json >pre_funded_accounts.star
 
 echo "Cleaning up..."
-rm -rf eth_accounts.json eth_tendermint_accounts.json priv_validator_key.json logs.txt
+rm -rf eth_accounts.json eth_cometbft_accounts.json priv_validator_key.json logs.txt data/
 
 echo "✅ Done!"

@@ -26,3 +26,37 @@ docker push leovct/pos-el-genesis-builder:node-16
 docker build --tag leovct/pos-validator-config-generator:1.2.0 --file pos-validator-config-generator.Dockerfile .
 docker push leovct/pos-validator-config-generator:1.2.0
 ```
+
+## Heimdall V2
+
+Docker Hub:
+
+- [heimdall-v2](https://hub.docker.com/r/leovct/heimdall-v2)
+- [bor-modified-for-heimdall-v2](https://hub.docker.com/r/leovct/bor-modified-for-heimdall-v2)
+
+```bash
+# heimdall-v2
+git clone git@github.com:0xPolygon/heimdall-v2.git
+pushd heimdall-v2
+tag="57830a6" # 24/01/2025
+git checkout "${tag}"
+sed -i 's/RUN make install/RUN make heimdalld \&\& cp build\/heimdalld \/usr\/bin\/heimdalld/' Dockerfile
+docker build --tag "leovct/heimdall-v2:${tag}" --file Dockerfile .
+docker push "leovct/heimdall-v2:${tag}"
+
+# bor-modified-for-heimdall-v2
+git clone --branch raneet10/heimdallv2-changes git@github.com:maticnetwork/bor.git
+pushd bor
+tag="e5bf9cc" # 24/01/2025
+git checkout "${tag}"
+patch -p1 < ../bor-modified-for-heimdall-v2.patch
+
+eval $(ssh-agent -s)
+ssh-add $HOME/.ssh/id_ed25519
+docker build \
+  --tag "leovct/bor-modified-for-heimdall-v2:${tag}" \
+  --file Dockerfile \
+  --ssh default=$SSH_AUTH_SOCK \
+  .
+docker push "leovct/bor-modified-for-heimdall-v2:${tag}"
+```
