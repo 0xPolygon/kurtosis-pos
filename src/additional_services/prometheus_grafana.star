@@ -7,8 +7,8 @@ grafana_package = import_module(
 contract_util = import_module("../contracts/util.star")
 el_cl_launcher = import_module("../el_cl_launcher.star")
 
-PROMETHEUS_IMAGE = "prom/prometheus:v3.0.1"
-GRAFANA_VERSION = "11.1.4"
+PROMETHEUS_IMAGE = "prom/prometheus:v3.1.0"
+GRAFANA_VERSION = "11.5.0"
 GRAFANA_DASHBOARDS = "../../static_files/grafana/dashboards"
 PANOPTICHAIN_IMAGE = "0xpolygon/panoptichain:v1.2.0"  # https://github.com/0xPolygon/panoptichain/releases
 
