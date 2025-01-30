@@ -210,7 +210,7 @@ polygon_pos_package:
       # The docker image that should be used for the CL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
-      # - heimdall: "0xpolygon/heimdall:1.0.10"
+      # - heimdall: "0xpolygon/heimdall:1.2.0"
       # - heimdall-v2: TDB
       cl_image: ""
 

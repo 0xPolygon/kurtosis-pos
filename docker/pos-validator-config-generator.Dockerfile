@@ -1,4 +1,4 @@
-FROM 0xpolygon/heimdall:1.0.10 AS heimdall
+FROM 0xpolygon/heimdall:1.2.0 AS heimdall
 FROM leovct/heimdall-v2:3138e07 AS heimdall-v2
 
 
