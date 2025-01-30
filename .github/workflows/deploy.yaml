@@ -12,7 +12,6 @@ concurrency:
 env:
   KURTOSIS_VERSION: "1.4.3"
   FOUNDRY_VERSION: "v0.3.0"
-  POLYCLI_VERSION: "v0.1.69"
   ENCLAVE_NAME: pos
 
 jobs:
@@ -47,38 +46,42 @@ jobs:
         with:
           version: ${{ env.FOUNDRY_VERSION }}
 
-      - name: Install polycli
-        run: |
-          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
-          tmp_dir=$(mktemp -d)
-          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir"
-          mv "$tmp_dir"/* /usr/local/bin/polycli
-          rm -rf "$tmp_dir"
-          sudo chmod +x /usr/local/bin/polycli
-          /usr/local/bin/polycli version
-
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Wait for devnet to be ready
+      - name: Wait for the first block producer to commit a span
         run: |
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
-          sleep 240
+          # Wait for the first producer to produce blocks on the EL chain.
+          start_time=$(date +%s)
+          timeout_duration=120 # in seconds
+          while true; do
+            # New block check.
+            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${output}" | grep -q "Committing new span"; then
+              echo "✅ The first producer committed a span!"
+              echo; echo "${output}"
+              break
+            fi
+
+            # Timeout check.
+            current_time=$(date +%s)
+            if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
+              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
+              echo; echo "${output}"
+              exit 1
+            fi
+
+            echo "Checking again in 15 seconds..."
+            sleep 15
+          done
 
       - name: Check devnet status
-        run: |
-          echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
-          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
-          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 10000 --rate-limit 50 --mode t &
-
-          export ENCLAVE="${{ env.ENCLAVE_NAME }}"
-          bash scripts/discover.sh
-          bash scripts/monitor.sh
+        env:
+          ENCLAVE: ${{ env.ENCLAVE_NAME }}
+        run: bash scripts/discover.sh && bash scripts/monitor.sh
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -128,6 +131,11 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Install yq
+        run: |
+          pip3 install yq
+          yq --version
+
       - name: Install kurtosis
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
@@ -141,16 +149,6 @@ jobs:
         with:
           version: ${{ env.FOUNDRY_VERSION }}
 
-      - name: Install polycli
-        run: |
-          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
-          tmp_dir=$(mktemp -d)
-          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir"
-          mv "$tmp_dir"/* /usr/local/bin/polycli
-          rm -rf "$tmp_dir"
-          sudo chmod +x /usr/local/bin/polycli
-          /usr/local/bin/polycli version
-
       - name: Install yq
         run: |
           pip3 install yq
@@ -162,42 +160,44 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Wait for devnet to be ready
+      - name: Wait for the first block producer to commit a span
         run: |
-          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
-          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
-          cl_node_name="l2-cl-1-${cl_type}-${el_type}"
-          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
+          # Wait for the first producer to produce blocks on the EL chain.
+          start_time=$(date +%s)
+          timeout_duration=120 # in seconds
+          while true; do
+            # New block check.
+            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${output}" | grep -q "Committing new span"; then
+              echo "✅ The first producer committed a span!"
+              echo; echo "${output}"
+              break
+            fi
 
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}" --follow &
-          sleep 240
+            # Timeout check.
+            current_time=$(date +%s)
+            if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
+              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
+              echo; echo "${output}"
+              exit 1
+            fi
+
+            echo "Checking again in 15 seconds..."
+            sleep 15
+          done
 
       - name: Check devnet status
+        env:
+          ENCLAVE: ${{ env.ENCLAVE_NAME }}
         run: |
-          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
-          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
-          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
-
-          echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${el_node_name} rpc)"
-          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
-          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 10000 --rate-limit 50 --mode t &
-
-          export ENCLAVE="${{ env.ENCLAVE_NAME }}"
           bash scripts/discover.sh
-
+          
           # If the devnet only contains one validator, don't check the peer count.
           file_name=$(basename "${{ matrix.file_name }}" ".yml")
           if [[ "${file_name}" =~ .*"single-validator" ]]; then
             export EXPECTED_MIN_CL_PEERS=0
             export EXPECTED_MIN_EL_PEERS=0
           fi
-          # Check if the EL chain has mined at least 10 blocks.
-          # TODO: Bump this number to 30 (more than the number of blocks in a sprint: 16) once the following bugs are solved:
-          # 1. https://github.com/0xPolygon/kurtosis-polygon-pos/issues/28
-          # 2. https://github.com/0xPolygon/kurtosis-polygon-pos/issues/26
-          export EXPECTED_MIN_EL_HEIGHT=10
           bash scripts/monitor.sh
 
       - name: Dump enclave
@@ -250,16 +250,6 @@ jobs:
         with:
           version: ${{ env.FOUNDRY_VERSION }}
 
-      - name: Install polycli
-        run: |
-          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
-          tmp_dir=$(mktemp -d)
-          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir"
-          mv "$tmp_dir"/* /usr/local/bin/polycli
-          rm -rf "$tmp_dir"
-          sudo chmod +x /usr/local/bin/polycli
-          /usr/local/bin/polycli version
-
       - name: Deploy L1
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/tests/external-l1/ethereum.yml github.com/ethpandaops/ethereum-package@4.4.0
 
@@ -269,22 +259,36 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Wait for devnet to be ready
+      - name: Wait for the first block producer to commit a span
         run: |
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
-          sleep 240
+          # Wait for the first producer to produce blocks on the EL chain.
+          start_time=$(date +%s)
+          timeout_duration=120 # in seconds
+          while true; do
+            # New block check.
+            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${output}" | grep -q "Committing new span"; then
+              echo "✅ The first producer committed a span!"
+              echo; echo "${output}"
+              break
+            fi
+
+            # Timeout check.
+            current_time=$(date +%s)
+            if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
+              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
+              echo; echo "${output}"
+              exit 1
+            fi
+
+            echo "Checking again in 15 seconds..."
+            sleep 15
+          done
 
       - name: Check devnet status
-        run: |
-          echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
-          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
-          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 10000 --rate-limit 50 --mode t &
-
-          export ENCLAVE="${{ env.ENCLAVE_NAME }}"
-          bash scripts/discover.sh
-          bash scripts/monitor.sh
+        env:
+          ENCLAVE: ${{ env.ENCLAVE_NAME }}
+        run: bash scripts/discover.sh && bash scripts/monitor.sh
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -328,39 +332,42 @@ jobs:
         with:
           version: ${{ env.FOUNDRY_VERSION }}
 
-      - name: Install polycli
-        run: |
-          POLYCLI_VERSION="${{ env.POLYCLI_VERSION }}"
-          tmp_dir=$(mktemp -d)
-          curl -L "https://github.com/0xPolygon/polygon-cli/releases/download/${POLYCLI_VERSION}/polycli_${POLYCLI_VERSION}_linux_amd64.tar.gz" | tar -xz -C "$tmp_dir"
-          mv "$tmp_dir"/* /usr/local/bin/polycli
-          rm -rf "$tmp_dir"
-          sudo chmod +x /usr/local/bin/polycli
-          /usr/local/bin/polycli version
-
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Wait for devnet to be ready
+      - name: Wait for the first block producer to commit a span
         run: |
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --follow &
-          kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --follow &
-          sleep 240
+          # Wait for the first producer to produce blocks on the EL chain.
+          start_time=$(date +%s)
+          timeout_duration=120 # in seconds
+          while true; do
+            # New block check.
+            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${output}" | grep -q "Committing new span"; then
+              echo "✅ The first producer committed a span!"
+              echo; echo "${output}"
+              break
+            fi
+
+            # Timeout check.
+            current_time=$(date +%s)
+            if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
+              echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
+              echo; echo "${output}"
+              exit 1
+            fi
+
+            echo "Checking again in 15 seconds..."
+            sleep 15
+          done
 
       - name: Check devnet status
-        run: |
-          echo "Sending some load to the network..."
-          export ETH_RPC_URL="$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)"
-          private_key="0x2a4ae8c4c250917781d38d95dafbb0abe87ae2c9aea02ed7c7524685358e49c2"
-          polycli loadtest --rpc-url "${ETH_RPC_URL}" --legacy --private-key "${private_key}" --verbosity 500 --requests 10000 --rate-limit 50 --mode t &
-
-          export ENCLAVE="${{ env.ENCLAVE_NAME }}"
-          bash scripts/discover.sh
-          export TIMEOUT_SECONDS=150 # 2min30s
-          bash scripts/monitor.sh
+        env:
+          ENCLAVE: ${{ env.ENCLAVE_NAME }}
+        run: bash scripts/discover.sh && bash scripts/monitor.sh
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
