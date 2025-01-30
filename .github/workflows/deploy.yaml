@@ -59,10 +59,10 @@ jobs:
           timeout_duration=120 # in seconds
           while true; do
             # New block check.
-            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            if echo "${output}" | grep -q "Committing new span"; then
+            el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               break
             fi
 
@@ -70,7 +70,7 @@ jobs:
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
               echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               exit 1
             fi
 
@@ -159,6 +159,7 @@ jobs:
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
+          cl_node_name="l2-cl-1-${cl_type}-${el_type}"
           el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
           # Wait for the first producer to produce blocks on the EL chain.
@@ -166,10 +167,12 @@ jobs:
           timeout_duration=120 # in seconds
           while true; do
             # New block check.
-            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}" --all)
-            if echo "${output}" | grep -q "Committing new span"; then
+            cl_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --all)
+            el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}" --all)
+            if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
-              echo; echo "${output}"
+              echo; echo "EL node output:"; echo "${el_node_output}"
+              echo; echo "CL node output:"; echo "${cl_node_output}"
               break
             fi
 
@@ -177,7 +180,8 @@ jobs:
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
               echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
-              echo; echo "${output}"
+              echo; echo "EL node output:"; echo "${el_node_output}"
+              echo; echo "CL node output:"; echo "${cl_node_output}"
               exit 1
             fi
 
@@ -265,10 +269,10 @@ jobs:
           timeout_duration=120 # in seconds
           while true; do
             # New block check.
-            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            if echo "${output}" | grep -q "Committing new span"; then
+            el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               break
             fi
 
@@ -276,7 +280,7 @@ jobs:
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
               echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               exit 1
             fi
 
@@ -344,10 +348,10 @@ jobs:
           timeout_duration=120 # in seconds
           while true; do
             # New block check.
-            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            if echo "${output}" | grep -q "Committing new span"; then
+            el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               break
             fi
 
@@ -355,7 +359,7 @@ jobs:
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
               echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               exit 1
             fi
 
