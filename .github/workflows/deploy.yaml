@@ -131,11 +131,6 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Install yq
-        run: |
-          pip3 install yq
-          yq --version
-
       - name: Install kurtosis
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
@@ -148,11 +143,6 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: ${{ env.FOUNDRY_VERSION }}
-
-      - name: Install yq
-        run: |
-          pip3 install yq
-          yq --version
 
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false .
