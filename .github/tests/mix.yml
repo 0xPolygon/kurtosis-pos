@@ -10,6 +10,6 @@ polygon_pos_package:
     - el_type: bor
       cl_type: heimdall
       is_validator: false
-    - el_type: erigon
-      cl_type: heimdall
-      is_validator: false
+    # - el_type: erigon
+    #   cl_type: heimdall
+    #   is_validator: false

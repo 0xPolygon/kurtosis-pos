@@ -16,7 +16,7 @@ FROM node:16-bookworm
 LABEL description="MATIC (Polygon PoS) genesis builder image"
 LABEL author="devtools@polygon.technology"
 
-ENV DEFAULT_EL_CHAIN_ID="137"
+ENV DEFAULT_EL_CHAIN_ID="4927"
 ENV DEFAULT_CL_CHAIN_ID="heimdall-P5rXwg"
 
 COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/

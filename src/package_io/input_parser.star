@@ -76,7 +76,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "cl_span_poll_interval": "0m15s",
         "cl_checkpoint_poll_interval": "1m0s",
         # EL network params.
-        "el_chain_id": "137",
+        "el_chain_id": "4927",
         "el_block_interval_seconds": 2,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
