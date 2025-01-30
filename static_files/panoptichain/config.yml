@@ -36,17 +36,15 @@ http:
 # observe. These are the currently known networks. See ./network/network.go for
 # details.
 #
-# - "Polygon Mumbai"
-#	- "Heimdall Mumbai"
+# - "Polygon Amoy"
+#	- "Heimdall Amoy"
 # - "Polygon Mainnet"
 # - "Heimdall Mainnet"
 #	- "zkEVM Mainnet"
-# - "zkEVM Testnet"
 # - "zkEVM Cardona"
 # - "zkEVM Bali"
 # - "Ethereum"
 # - "Sepolia"
-# - "Goerli"
 #
 # If you wish to have a custom network name, you should define those in the
 # network section in this file.
