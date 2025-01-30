@@ -34,7 +34,6 @@ def run(plan, args):
 
     participants = polygon_pos_args.get("participants", {})
     validator_accounts = get_validator_accounts(participants)
-
     l2_network_params = polygon_pos_args.get("network_params", {})
 
     # Deploy a local L1 if needed.
