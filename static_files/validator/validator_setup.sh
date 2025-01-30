@@ -58,6 +58,7 @@ setup_validator() {
   elif [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
     mkdir -p "${cl_validator_config_path}/config"
     polycli nodekey --private-key "${execution_key}" --key-type secp256k1 | jq >"${cl_validator_config_path}/config/priv_validator_key.json"
+    chmod 600 "${cl_validator_config_path}/config/priv_validator_key.json"
     mkdir -p "${cl_validator_config_path}/data"
     echo '{"height":"0","round":0,"step":0}' | jq >"${cl_validator_config_path}/data/priv_validator_state.json"
   else
