@@ -1,5 +1,5 @@
 FROM 0xpolygon/heimdall:1.2.0 AS heimdall
-FROM leovct/heimdall-v2:3138e07 AS heimdall-v2
+FROM leovct/heimdall-v2:57830a6 AS heimdall-v2
 
 
 FROM golang:1.22 AS polycli-builder
