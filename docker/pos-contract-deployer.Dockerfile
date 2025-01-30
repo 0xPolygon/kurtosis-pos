@@ -2,7 +2,7 @@ FROM node:16-bookworm
 LABEL description="MATIC (Polygon PoS) contracts deployment image"
 LABEL author="devtools@polygon.technology"
 
-ENV DEFAULT_EL_CHAIN_ID="137"
+ENV DEFAULT_EL_CHAIN_ID="4927"
 
 # Prepare MATIC smart contracts for deployment by compiling them.
 # For reference: https://github.com/maticnetwork/contracts/tree/v0.3.11/deploy-migrations
