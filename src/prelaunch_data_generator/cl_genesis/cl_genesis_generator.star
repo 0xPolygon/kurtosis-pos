@@ -220,7 +220,7 @@ def _get_heimdall_v2_validator_data(validator_accounts):
         dividends.append(
             {
                 "user": validator_account.cometbft.address.removeprefix("0x"),
-                "feeAmount": "0",
+                "fee_amount": "0",
             }
         )
 
