@@ -204,7 +204,7 @@ polygon_pos_package:
 
       ## Consensus Layer (CL) specific flags.
       # The type of CL client that should be started.
-      # Valid values are: "heimdall", "heimdall-v2".
+      # Valid values are: "heimdall", "heimdall-v2"
       cl_type: heimdall
 
       # The docker image that should be used for the CL client.
