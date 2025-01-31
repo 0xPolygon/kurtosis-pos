@@ -10,7 +10,7 @@ el_cl_launcher = import_module("../el_cl_launcher.star")
 PROMETHEUS_IMAGE = "prom/prometheus:v3.1.0"
 GRAFANA_VERSION = "11.5.0"
 GRAFANA_DASHBOARDS = "../../static_files/grafana/dashboards"
-PANOPTICHAIN_IMAGE = "0xpolygon/panoptichain:v1.2.0"  # https://github.com/0xPolygon/panoptichain/releases
+PANOPTICHAIN_IMAGE = "0xpolygon/panoptichain:v1.2.1"  # https://github.com/0xPolygon/panoptichain/releases
 
 
 def get_metrics_jobs(plan):
@@ -64,10 +64,10 @@ def get_l2_config(plan, participants):
 
             heimdall_urls[cl_node_name] = struct(
                 tendermint="http://{}:{}".format(
-                    cl_service.ip_address, cl_service.ports["rpc"].number
+                    cl_service.ip_address, cl_service.ports["http"].number
                 ),
                 heimdall="http://{}:{}".format(
-                    cl_service.ip_address, cl_service.ports["http"].number
+                    cl_service.ip_address, cl_service.ports["rpc"].number
                 ),
             )
 
