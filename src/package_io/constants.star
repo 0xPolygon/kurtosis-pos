@@ -22,7 +22,7 @@ ADDITIONAL_SERVICES = struct(
 )
 
 DEFAULT_EL_CHAIN_ID = "4927"
-DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-{el_chain_id}".
+DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".
 
 VALIDATORS_BALANCE_ETH = 1000000000  # 10^9 ether
 

@@ -163,7 +163,7 @@ def _validate_list_of_dict(input_args, category):
                     )
 
 
-# For now, heimdall-v2 expects that the cl chain id follows the standard "heimdall-{el_chain_id}".
+# For now, heimdall-v2 expects that the cl chain id follows the standard "heimdall-<el_chain_id>".
 # https://github.com/0xPolygon/heimdall-v2/issues/135
 def validate_chain_ids(cl_chain_id, el_chain_id):
     if not cl_chain_id and not el_chain_id:
@@ -172,7 +172,7 @@ def validate_chain_ids(cl_chain_id, el_chain_id):
     expected_cl_chain_id = "heimdall-" + el_chain_id
     if cl_chain_id != expected_cl_chain_id:
         fail(
-            'CL chain id must follow the standard "heimdall-\{el_chain_id\}". Expected "{}" but got: "{}".'.format(
+            'CL chain id must follow the standard "heimdall-<el_chain_id>". Expected "{}" but got: "{}".'.format(
                 expected_cl_chain_id, cl_chain_id
             )
         )
