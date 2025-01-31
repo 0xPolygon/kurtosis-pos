@@ -187,7 +187,7 @@ polygon_pos_package:
   participants:
     - ## Execution Layer (EL) specific flags.
       # The type of EL client that should be started.
-      # Valid values are: "bor", "erigon" (will be supported soon)
+      # Valid values are: "bor", "bor-modified-for-heimdall-v2", "erigon"
       el_type: bor
 
       # The docker image that should be used for the EL client.
@@ -204,7 +204,7 @@ polygon_pos_package:
 
       ## Consensus Layer (CL) specific flags.
       # The type of CL client that should be started.
-      # Valid values are: "heimdall", "heimdall-v2" (will be supported soon)
+      # Valid values are: "heimdall", "heimdall-v2".
       cl_type: heimdall
 
       # The docker image that should be used for the CL client.
