@@ -10,6 +10,10 @@ pre_funded_accounts = import_module(
 
 VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/validator"
 
+# Port identifiers and numbers.
+RABBITMQ_AMQP_PORT_ID = "amqp"
+RABBITMQ_AMQP_PORT_NUMBER = 5672
+
 
 def launch(
     plan,
@@ -92,8 +96,29 @@ def launch(
                 )
             )
 
-            # If the participant is a validator, launch the CL node.
+            # If the participant is a validator, launch the CL node and it's AMQP dedicated server.
             if participant.get("is_validator", False):
+                rabbitmq_name = _generate_amqp_name(participant_index + 1)
+                rabbitmq_service = plan.add_service(
+                    name=rabbitmq_name,
+                    config=ServiceConfig(
+                        image=participant.get("cl_db_image"),
+                        ports={
+                            RABBITMQ_AMQP_PORT_ID: PortSpec(
+                                number=RABBITMQ_AMQP_PORT_NUMBER,
+                                application_protocol="amqp",
+                            )
+                        },
+                    ),
+                )
+                rabbitmq_amqp_port = rabbitmq_service.ports[RABBITMQ_AMQP_PORT_ID]
+                rabbitmq_url = "amqp://{}:{}@{}:{}".format(
+                    constants.RABBITMQ_USERNAME,
+                    constants.RABBITMQ_PASSWORD,
+                    rabbitmq_service.name,
+                    rabbitmq_amqp_port.number,
+                )
+
                 cl_context = cl_launch_method(
                     plan,
                     cl_node_name,
@@ -104,6 +129,7 @@ def launch(
                     cl_node_ids,
                     l1_rpc_url,
                     "http://{}:{}".format(el_node_name, bor.BOR_RPC_PORT_NUMBER),
+                    rabbitmq_url,
                 )
                 cl_node_url = cl_context.ports[
                     "http"
@@ -295,6 +321,10 @@ def _generate_cl_node_name(participant, id):
     return "l2-cl-{}-{}-{}-validator".format(
         id, participant.get("cl_type", ""), participant.get("el_type", "")
     )
+
+
+def _generate_amqp_name(id):
+    return "rabbitmq-l2-cl-{}-validator".format(id)
 
 
 def _generate_el_node_name(participant, id):
