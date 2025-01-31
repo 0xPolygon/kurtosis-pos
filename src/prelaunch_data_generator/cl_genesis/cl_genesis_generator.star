@@ -104,7 +104,20 @@ def generate_cl_genesis_data(
                 name="l2-cl-genesis",
             ),
         ],
-        run="jq . /opt/data/genesis/genesis-tmp.json > /opt/data/genesis/genesis.json && cat /opt/data/genesis/genesis.json",
+        run="&&".join(
+            [
+                # Generate the L2 CL genesis.
+                "jq . /opt/data/genesis/genesis-tmp.json > /opt/data/genesis/genesis.json",
+                # Add the current date to the CL genesis.
+                # 2025-01-31T22:51:08.000000000Z
+                'date=$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ" | tr -d "\n")',
+                "date=${date}000000000Z",
+                "jq --arg d \"$date\" '.genesis_time = $d' /opt/data/genesis/genesis.json > tmp.json",
+                "mv tmp.json /opt/data/genesis/genesis.json",
+                # Print the final CL genesis.
+                "cat /opt/data/genesis/genesis.json",
+            ]
+        ),
     )
 
 

@@ -1,7 +1,7 @@
 {
   "app_name": "heimdall-v2",
   "app_version": "v0.1.7-beta-polygon",
-  "genesis_time": "2024-12-18T14:24:15.738266471Z",
+  "genesis_time": "1970-01-01T00:00:00.000000000Z",
   "chain_id": "{{.cl_chain_id}}",
   "initial_height": 1,
   "app_hash": null,
