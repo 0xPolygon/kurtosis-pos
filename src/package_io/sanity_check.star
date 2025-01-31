@@ -72,6 +72,10 @@ def sanity_check_polygon_args(plan, input_args):
     _validate_list(input_args, "additional_services")
 
     # Validate values.
+    network_params = input_args.get("network_params", {})
+    cl_chain_id = network_params.get("cl_chain_id", "")
+    el_chain_id = network_params.get("el_chain_id", "")
+    validate_chain_ids(cl_chain_id, el_chain_id)
     for p in input_args.get("participants", []):
         _validate_participant(p)
 
@@ -160,6 +164,21 @@ def _validate_list_of_dict(input_args, category):
                     )
 
 
+# For now, heimdall-v2 expects that the cl chain id follows the standard "heimdall-<el_chain_id>".
+# https://github.com/0xPolygon/heimdall-v2/issues/135
+def validate_chain_ids(cl_chain_id, el_chain_id):
+    if not cl_chain_id and not el_chain_id:
+        return
+
+    expected_cl_chain_id = "heimdall-" + el_chain_id
+    if cl_chain_id != expected_cl_chain_id:
+        fail(
+            'CL chain id must follow the standard "heimdall-<el_chain_id>". Expected "{}" but got: "{}".'.format(
+                expected_cl_chain_id, cl_chain_id
+            )
+        )
+
+
 def _validate_participant(p):
     _validate_str(
         p, "cl_type", [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
@@ -188,15 +207,32 @@ def _validate_participant(p):
     else:
         fail('The CL client "{}" has no valid client combination.'.format(cl_type))
 
-    log_values = [
+    log_levels = [
         constants.LOG_LEVEL.error,
         constants.LOG_LEVEL.warn,
         constants.LOG_LEVEL.info,
         constants.LOG_LEVEL.debug,
         constants.LOG_LEVEL.trace,
     ]
-    _validate_str(p, "el_log_level", log_values)
-    _validate_str(p, "cl_log_level", log_values)
+    _validate_str(p, "cl_log_level", log_levels)
+    _validate_str(p, "el_log_level", log_levels)
+
+    # Heimdall (v1) only supports "error", "info", "debug" or "none" log levels.
+    # ERROR: Failed to parse default log level (pair *:trace, list *:trace): Expected either "info", "debug", "error" or "none" level, given trace
+    heimdall_v1_log_levels = [
+        constants.LOG_LEVEL.error,
+        constants.LOG_LEVEL.info,
+        constants.LOG_LEVEL.debug,
+    ]
+    if p.get("cl_type", "") == constants.CL_TYPE.heimdall and p.get(
+        "cl_log_level", ""
+    ) not in heimdall_v1_log_levels + [""]:
+        fail(
+            'Heimdall (v1) does not support "{}" log level. Valid log levels are: "{}"'.format(
+                p.get("cl_log_level", ""), heimdall_v1_log_levels
+            )
+        )
+
     _validate_strictly_positive_int(p, "count")
 
 
