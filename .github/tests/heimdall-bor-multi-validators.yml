@@ -2,7 +2,7 @@ polygon_pos_package:
   participants:
     # validators
     - cl_type: heimdall
-      cl_log_level: trace
+      cl_log_level: debug
       el_type: bor
       el_log_level: trace
       is_validator: true
