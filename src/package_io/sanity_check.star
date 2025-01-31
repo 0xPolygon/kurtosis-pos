@@ -204,10 +204,9 @@ def _validate_participant(p):
         constants.LOG_LEVEL.info,
         constants.LOG_LEVEL.debug,
     ]
-    if (
-        p.get("cl_type", "") == constants.CL_TYPE.heimdall
-        and p.get("cl_log_level", "") not in heimdall_v1_log_levels
-    ):
+    if p.get("cl_type", "") == constants.CL_TYPE.heimdall and p.get(
+        "cl_log_level", ""
+    ) not in heimdall_v1_log_levels + [""]:
         fail(
             'Heimdall (v1) does not support "{}" log level. Valid log levels are: "{}"'.format(
                 p.get("cl_log_level", ""), heimdall_v1_log_levels
