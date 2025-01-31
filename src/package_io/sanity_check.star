@@ -71,6 +71,10 @@ def sanity_check_polygon_args(plan, input_args):
     _validate_list(input_args, "additional_services")
 
     # Validate values.
+    network_params = input_args.get("network_params", "")
+    cl_chain_id = network_params.get("cl_chain_id", "")
+    el_chain_id = network_params.get("el_chain_id", "")
+    validate_chain_ids(cl_chain_id, el_chain_id)
     for p in input_args.get("participants", []):
         _validate_participant(p)
 
@@ -157,6 +161,21 @@ def _validate_list_of_dict(input_args, category):
                             key, category, allowed_keys
                         )
                     )
+
+
+# For now, heimdall-v2 expects that the cl chain id follows the standard "heimdall-{el_chain_id}".
+# https://github.com/0xPolygon/heimdall-v2/issues/135
+def validate_chain_ids(cl_chain_id, el_chain_id):
+    if not cl_chain_id and not el_chain_id:
+        return
+
+    expected_cl_chain_id = "heimdall-" + el_chain_id
+    if cl_chain_id != expected_cl_chain_id:
+        fail(
+            'CL chain id must follow the standard "heimdall-\{el_chain_id\}". Expected "{}" but got: "{}".'.format(
+                expected_cl_chain_id, cl_chain_id
+            )
+        )
 
 
 def _validate_participant(p):

@@ -265,7 +265,7 @@ polygon_pos_package:
 
     ## Consensus Layer parameters.
     # The CL network id.
-    # Default: "heimdall-P5rXwg"
+    # Default: "heimdall-4927"
     cl_chain_id: ""
     # The span poll interval on the CL chain.
     # Default: "0m15s"

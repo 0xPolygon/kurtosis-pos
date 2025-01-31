@@ -14,7 +14,7 @@ FROM debian:bookworm-slim
 LABEL description="CL genesis builder image"
 LABEL author="devtools@polygon.technology"
 
-ENV DEFAULT_CL_CHAIN_ID="heimdall-P5rXwg"
+ENV DEFAULT_CL_CHAIN_ID="heimdall-4927"
 ENV CL_CLIENT_CONFIG_PATH="/etc/cl"
 
 COPY --from=heimdall /usr/bin/heimdallcli /usr/bin/heimdalld /usr/local/bin/

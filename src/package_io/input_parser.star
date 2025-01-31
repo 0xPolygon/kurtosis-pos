@@ -71,11 +71,11 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "validator_stake_amount": "10000",  # in ether
         "validator_top_up_fee_amount": "2000",  # in ether
         # CL network params.
-        "cl_chain_id": "heimdall-P5rXwg",
+        "cl_chain_id": constants.DEFAULT_CL_CHAIN_ID,
         "cl_span_poll_interval": "0m15s",
         "cl_checkpoint_poll_interval": "1m0s",
         # EL network params.
-        "el_chain_id": "4927",
+        "el_chain_id": constants.DEFAULT_EL_CHAIN_ID,
         "el_block_interval_seconds": 2,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
