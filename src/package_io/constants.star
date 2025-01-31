@@ -22,8 +22,12 @@ ADDITIONAL_SERVICES = struct(
 )
 
 DEFAULT_EL_CHAIN_ID = "4927"
-DEFAULT_CL_CHAIN_ID = "heimdall-P5rXwg"
+DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".
+
 VALIDATORS_BALANCE_ETH = 1000000000  # 10^9 ether
 
 CL_CLIENT_CONFIG_PATH = "/etc/cl"
 EL_CLIENT_CONFIG_PATH = "/etc/el"
+
+RABBITMQ_USERNAME = "guest"
+RABBITMQ_PASSWORD = "guest"

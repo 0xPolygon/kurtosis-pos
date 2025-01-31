@@ -1,7 +1,4 @@
 # Port identifiers and numbers.
-RABBITMQ_AMQP_PORT_ID = "amqp"
-RABBITMQ_AMQP_PORT_NUMBER = 5672
-
 HEIMDALL_REST_API_PORT_ID = "http"
 HEIMDALL_REST_API_PORT_NUMBER = 1317
 
@@ -38,24 +35,8 @@ def launch(
     cl_node_ids,
     l1_rpc_url,
     el_rpc_url,
+    amqp_url,
 ):
-    rabbitmq_service = plan.add_service(
-        name="rabbitmq-{}".format(cl_node_name),
-        config=ServiceConfig(
-            image=participant.get("cl_db_image"),
-            ports={
-                RABBITMQ_AMQP_PORT_ID: PortSpec(
-                    number=RABBITMQ_AMQP_PORT_NUMBER,
-                    application_protocol="amqp",
-                )
-            },
-        ),
-    )
-    rabbitmq_amqp_port = rabbitmq_service.ports[RABBITMQ_AMQP_PORT_ID]
-    rabbitmq_url = "amqp://guest:guest@{}:{}".format(
-        rabbitmq_service.name, rabbitmq_amqp_port.number
-    )  # TODO: Remove hardcoded username and password!
-
     heimdall_node_config_artifacts = plan.render_templates(
         name="{}-node-config".format(cl_node_name),
         config={
@@ -72,7 +53,7 @@ def launch(
                         "cl_checkpoint_poll_interval"
                     ],
                     # URLs.
-                    "amqp_url": rabbitmq_url,
+                    "amqp_url": amqp_url,
                     "el_rpc_url": el_rpc_url,
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.

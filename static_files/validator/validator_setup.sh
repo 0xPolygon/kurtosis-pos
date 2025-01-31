@@ -86,10 +86,11 @@ setup_validator() {
   fi
 
   # Drop the unnecessary files.
-  rm -rf "${cl_validator_config_path}/config/app.toml"
-  rm -rf "${cl_validator_config_path}/config/config.toml"
-  rm -rf "${cl_validator_config_path}/config/heimdall-config.toml"
-  rm -rf "${cl_validator_config_path}/config/genesis.json"
+  rm -rf "${cl_validator_config_path}/config/app.toml" \
+    "${cl_validator_config_path}/config/client.toml" \
+    "${cl_validator_config_path}/config/config.toml" \
+    "${cl_validator_config_path}/config/heimdall-config.toml" \
+    "${cl_validator_config_path}/config/genesis.json"
 
   # Copy the validator state.
   cp "${cl_validator_config_path}/data/priv_validator_state.json" "${cl_validator_config_path}/config"

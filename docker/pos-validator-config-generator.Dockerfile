@@ -1,5 +1,7 @@
-FROM 0xpolygon/heimdall:1.2.0 AS heimdall
-FROM leovct/heimdall-v2:57830a6 AS heimdall-v2
+ARG HEIMDALL_VERSION=1.2.0
+ARG HEIMDALL_V2_VERSION=57830a6
+FROM 0xpolygon/heimdall:${HEIMDALL_VERSION} AS heimdall
+FROM leovct/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
 FROM golang:1.22 AS polycli-builder
@@ -14,7 +16,7 @@ FROM debian:bookworm-slim
 LABEL description="CL genesis builder image"
 LABEL author="devtools@polygon.technology"
 
-ENV DEFAULT_CL_CHAIN_ID="heimdall-P5rXwg"
+ENV DEFAULT_CL_CHAIN_ID="heimdall-4927"
 ENV CL_CLIENT_CONFIG_PATH="/etc/cl"
 
 COPY --from=heimdall /usr/bin/heimdallcli /usr/bin/heimdalld /usr/local/bin/
