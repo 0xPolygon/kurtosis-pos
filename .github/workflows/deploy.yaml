@@ -60,7 +60,7 @@ jobs:
           while true; do
             # New block check.
             el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            cl_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --all)
+            cl_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator --all)
             if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
               echo; echo "EL node output:"; echo "${el_node_output}"
@@ -162,7 +162,7 @@ jobs:
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
-          cl_node_name="l2-cl-1-${cl_type}-${el_type}"
+          cl_node_name="l2-cl-1-${cl_type}-${el_type}-validator"
           el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
           # Wait for the first producer to produce blocks on the EL chain.
@@ -273,7 +273,7 @@ jobs:
           while true; do
             # New block check.
             el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            cl_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --all)
+            cl_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator --all)
             if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
               echo; echo "EL node output:"; echo "${el_node_output}"
@@ -355,7 +355,7 @@ jobs:
           while true; do
             # New block check.
             el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            cl_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor --all)
+            cl_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator --all)
             if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
               echo; echo "EL node output:"; echo "${el_node_output}"

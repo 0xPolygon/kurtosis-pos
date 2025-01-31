@@ -292,7 +292,7 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers_artifact):
 
 
 def _generate_cl_node_name(participant, id):
-    return "l2-cl-{}-{}-{}".format(
+    return "l2-cl-{}-{}-{}-validator".format(
         id, participant.get("cl_type", ""), participant.get("el_type", "")
     )
 
