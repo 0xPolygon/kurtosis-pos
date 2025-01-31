@@ -64,10 +64,10 @@ def get_l2_config(plan, participants):
 
             heimdall_urls[cl_node_name] = struct(
                 tendermint="http://{}:{}".format(
-                    cl_service.ip_address, cl_service.ports["http"].number
+                    cl_service.ip_address, cl_service.ports["rpc"].number
                 ),
                 heimdall="http://{}:{}".format(
-                    cl_service.ip_address, cl_service.ports["rpc"].number
+                    cl_service.ip_address, cl_service.ports["http"].number
                 ),
             )
 
