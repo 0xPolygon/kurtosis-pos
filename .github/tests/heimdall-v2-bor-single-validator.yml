@@ -2,7 +2,9 @@ polygon_pos_package:
   participants:
     # validators
     - cl_type: heimdall-v2
+      cl_log_level: trace
       el_type: bor-modified-for-heimdall-v2
+      el_log_level: trace
       is_validator: true
 
     # rpcs
