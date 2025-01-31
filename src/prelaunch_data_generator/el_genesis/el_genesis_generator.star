@@ -67,6 +67,10 @@ def generate_el_genesis_data(plan, polygon_pos_args, validator_config_artifact):
                 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
                 "jq --arg key 'alloc' '. + {($key): input | .[$key]}' /opt/data/genesis/genesis.json /opt/genesis-contracts/genesis.json > tmp.json",
                 "mv tmp.json /opt/data/genesis/genesis.json",
+                # Add the current timestamp to the EL genesis.
+                'timestamp=$(printf "0x%x" $(date +%s))',
+                "jq --arg t \"$timestamp\" '.timestamp = $t' /opt/data/genesis/genesis.json > tmp.json",
+                "mv tmp.json /opt/data/genesis/genesis.json",
                 # Print the final EL genesis.
                 "cat /opt/data/genesis/genesis.json",
             ]
