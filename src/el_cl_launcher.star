@@ -96,7 +96,7 @@ def launch(
                 )
             )
 
-            # If the participant is a validator, launch the CL node and it's AMQP dedicated server.
+            # If the participant is a validator, launch the CL node and it's dedicated AMQP server.
             if participant.get("is_validator", False):
                 rabbitmq_name = _generate_amqp_name(participant_index + 1)
                 rabbitmq_service = plan.add_service(
