@@ -59,10 +59,10 @@ jobs:
           timeout_duration=120 # in seconds
           while true; do
             # New block check.
-            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            if echo "${output}" | grep -q "Committing new span"; then
+            el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               break
             fi
 
@@ -70,7 +70,7 @@ jobs:
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
               echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               exit 1
             fi
 
@@ -131,11 +131,6 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Install yq
-        run: |
-          pip3 install yq
-          yq --version
-
       - name: Install kurtosis
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
@@ -149,6 +144,11 @@ jobs:
         with:
           version: ${{ env.FOUNDRY_VERSION }}
 
+      - name: Install yq
+        run: |
+          pip3 install yq
+          yq --version
+
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false .
 
@@ -157,15 +157,22 @@ jobs:
 
       - name: Wait for the first block producer to commit a span
         run: |
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
+          cl_node_name="l2-cl-1-${cl_type}-${el_type}"
+          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
+
           # Wait for the first producer to produce blocks on the EL chain.
           start_time=$(date +%s)
           timeout_duration=120 # in seconds
           while true; do
             # New block check.
-            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            if echo "${output}" | grep -q "Committing new span"; then
+            cl_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} "${cl_node_name}" --all)
+            el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} "${el_node_name}" --all)
+            if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
-              echo; echo "${output}"
+              echo; echo "EL node output:"; echo "${el_node_output}"
+              echo; echo "CL node output:"; echo "${cl_node_output}"
               break
             fi
 
@@ -173,7 +180,8 @@ jobs:
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
               echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
-              echo; echo "${output}"
+              echo; echo "EL node output:"; echo "${el_node_output}"
+              echo; echo "CL node output:"; echo "${cl_node_output}"
               exit 1
             fi
 
@@ -184,7 +192,16 @@ jobs:
       - name: Check devnet status
         env:
           ENCLAVE: ${{ env.ENCLAVE_NAME }}
-        run: bash scripts/discover.sh && bash scripts/monitor.sh
+        run: |
+          bash scripts/discover.sh
+
+          # If the devnet only contains one validator, don't check the peer count.
+          file_name=$(basename "${{ matrix.file_name }}" ".yml")
+          if [[ "${file_name}" =~ .*"single-validator" ]]; then
+            export EXPECTED_MIN_CL_PEERS=0
+            export EXPECTED_MIN_EL_PEERS=0
+          fi
+          bash scripts/monitor.sh
 
       - name: Dump enclave
         if: ${{ !cancelled() }}
@@ -252,10 +269,10 @@ jobs:
           timeout_duration=120 # in seconds
           while true; do
             # New block check.
-            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            if echo "${output}" | grep -q "Committing new span"; then
+            el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               break
             fi
 
@@ -263,7 +280,7 @@ jobs:
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
               echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               exit 1
             fi
 
@@ -331,10 +348,10 @@ jobs:
           timeout_duration=120 # in seconds
           while true; do
             # New block check.
-            output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
-            if echo "${output}" | grep -q "Committing new span"; then
+            el_node_output=$(kurtosis service logs ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator --all)
+            if echo "${el_node_output}" | grep -q "Committing new span"; then
               echo "✅ The first producer committed a span!"
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               break
             fi
 
@@ -342,7 +359,7 @@ jobs:
             current_time=$(date +%s)
             if [[ $((current_time - start_time)) -ge ${timeout_duration} ]]; then
               echo "❌ Timeout occurred after ${timeout_duration} seconds. The first producer has not committed any span yet..."
-              echo; echo "${output}"
+              echo; echo "${el_node_output}"
               exit 1
             fi
 

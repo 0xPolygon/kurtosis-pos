@@ -41,7 +41,7 @@ def launch(
                     "node_name": el_node_name,
                     "config_folder_path": ERIGON_CONFIG_FOLDER_PATH,
                     "data_folder_path": ERIGON_APP_DATA_FOLDER_PATH,
-                    "address": el_account.eth_address,
+                    "address": el_account.eth_tendermint.address,
                     "cl_node_url": cl_node_url,
                     "log_level": participant.get("el_log_level", ""),
                     # network params.

@@ -18,12 +18,16 @@ def launch(
     el_genesis_artifact,
     cl_genesis_artifact,
     l1_rpc_url,
+    devnet_cl_type,
 ):
     network_params = polygon_pos_args.get("network_params", {})
     setup_images = polygon_pos_args.get("setup_images", {})
 
     el_launchers = {
         "bor": {
+            "launch_method": bor.launch,
+        },
+        "bor-modified-for-heimdall-v2": {
             "launch_method": bor.launch,
         },
         "erigon": {
@@ -49,6 +53,7 @@ def launch(
         network_data.cl_validator_keystores,
         network_data.el_validator_keystores,
         polygon_pos_args,
+        devnet_cl_type,
     )
     cl_node_ids = _read_cl_persistent_peers(
         plan, validator_config_artifacts.persistent_peers
@@ -152,7 +157,9 @@ def _prepare_network_data(participants):
                 el_node_name = _generate_el_node_name(
                     participant, participant_index + 1
                 )
-                account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index]
+                validator_account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[
+                    participant_index
+                ]
 
                 # Determine the RPC url of the first validator's CL node.
                 if not first_validator_cl_rpc_url:
@@ -163,7 +170,7 @@ def _prepare_network_data(participants):
 
                 # Generate the CL validator config.
                 cl_validator_config = "{},{}:{}".format(
-                    account.private_key,
+                    validator_account.eth_tendermint.private_key,
                     cl_node_name,
                     heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                 )
@@ -189,7 +196,9 @@ def _prepare_network_data(participants):
 
                 # Generate the EL enode url.
                 enode_url = _generate_enode_url(
-                    participant, account.eth_public_key[2:], el_node_name
+                    participant,
+                    validator_account.eth_tendermint.public_key.removeprefix("0x"),
+                    el_node_name,
                 )
                 el_static_nodes.append(enode_url)
 
@@ -222,6 +231,7 @@ def _generate_validator_config(
     cl_validator_keystores,
     el_validator_keystores,
     polygon_pos_args,
+    devnet_cl_type,
 ):
     setup_images = polygon_pos_args.get("setup_images", {})
     network_params = polygon_pos_args.get("network_params", {})
@@ -237,6 +247,7 @@ def _generate_validator_config(
         name="l2-validators-config-generator",
         image=setup_images.get("validator_config_generator"),
         env_vars={
+            "DEVNET_CL_TYPE": devnet_cl_type,
             "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
             "CL_CLIENT_CONFIG_PATH": constants.CL_CLIENT_CONFIG_PATH,
             "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,

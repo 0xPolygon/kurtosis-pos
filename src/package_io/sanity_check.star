@@ -36,6 +36,15 @@ POLYGON_POS_PARAMS = {
     ],
 }
 
+VALID_CLIENT_COMBINATIONS = {
+    constants.CL_TYPE.heimdall: [
+        constants.EL_TYPE.bor,
+        constants.EL_TYPE.bor_modified_for_heimdall_v2,
+        constants.EL_TYPE.erigon,
+    ],
+    constants.CL_TYPE.heimdall_v2: [constants.EL_TYPE.bor_modified_for_heimdall_v2],
+}
+
 DEV_PARAMS = [
     "should_deploy_l1",  # boolean
     "l1_private_key",
@@ -152,8 +161,32 @@ def _validate_list_of_dict(input_args, category):
 
 
 def _validate_participant(p):
-    _validate_str(p, "el_type", [constants.EL_TYPE.bor, constants.EL_TYPE.erigon])
-    _validate_str(p, "cl_type", [constants.CL_TYPE.heimdall])
+    _validate_str(
+        p, "cl_type", [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
+    )
+    _validate_str(
+        p,
+        "el_type",
+        [
+            constants.EL_TYPE.bor,
+            constants.EL_TYPE.bor_modified_for_heimdall_v2,
+            constants.EL_TYPE.erigon,
+        ],
+    )
+
+    # Validate client combination.
+    cl_type = p.get("cl_type")
+    el_type = p.get("el_type")
+    if cl_type in VALID_CLIENT_COMBINATIONS:
+        valid_combinations = VALID_CLIENT_COMBINATIONS[cl_type]
+        if el_type not in valid_combinations:
+            fail(
+                'Invalid client combination. The CL client "{}" does not support the EL client "{}". Valid combinations are: "{}".'.format(
+                    cl_type, el_type, valid_combinations
+                )
+            )
+    else:
+        fail('The CL client "{}" has no valid client combination.'.format(cl_type))
 
     log_values = [
         constants.LOG_LEVEL.error,

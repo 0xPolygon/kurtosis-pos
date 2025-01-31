@@ -1,0 +1,14 @@
+###############################################################################
+###                           Client Configuration                            ###
+###############################################################################
+
+# The network chain ID
+chain-id = "{{.cl_chain_id}}"
+# The keyring's backend, where the keys are stored (os|file|kwallet|pass|test|memory)
+keyring-backend = "os"
+# CLI output format (text|json)
+output = "text"
+# <host>:<port> to CometBFT RPC interface for this chain
+node = "tcp://0.0.0.0:{{.cometbft_rpc_port_number}}"
+# Transaction broadcasting mode (sync|async)
+broadcast-mode = "sync"

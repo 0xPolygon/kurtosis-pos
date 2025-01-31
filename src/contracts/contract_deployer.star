@@ -52,7 +52,9 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
 def _format_validator_accounts(accounts):
     return ";".join(
         [
-            "{},{}".format(account.eth_address, account.eth_public_key)
+            "{},{}".format(
+                account.eth_tendermint.address, account.eth_tendermint.public_key
+            )
             for account in accounts
         ]
     )

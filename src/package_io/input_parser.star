@@ -4,17 +4,17 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer:node-16"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:node-16"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = (
-    "leovct/pos-validator-config-generator:1.2.0"  # based on 0xpolygon/heimdall:1.2.0
-)
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.0"  # Based on 0xpolygon/heimdall:1.2.0 and leovct/heimdall-v2:57830a6.
 
 DEFAULT_EL_IMAGES = {
-    constants.EL_TYPE.bor: "0xpolygon/bor:1.5.4",
+    constants.EL_TYPE.bor: "0xpolygon/bor:1.5.5",
+    constants.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor-modified-for-heimdall-v2:e5bf9cc",  # There is no official image yet.
     constants.EL_TYPE.erigon: "erigontech/erigon:v2.61.0",
 }
 
 DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.2.0",
+    constants.CL_TYPE.heimdall_v2: "leovct/heimdall-v2:57830a6",  # There is no official image yet.
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.5"
@@ -121,7 +121,7 @@ def _parse_ethereum_args(plan, ethereum_args):
 
     # Set default params if not provided.
     if "network_params" not in ethereum_args:
-        ethereum_args = DEFAULT_ETHEREUM_PACKAGE_ARGS
+        ethereum_args = dict(DEFAULT_ETHEREUM_PACKAGE_ARGS)
 
     for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
         ethereum_args.get("network_params", {}).setdefault(k, v)
@@ -181,9 +181,10 @@ def _parse_participants(participants):
 
     # Set default participant if not provided.
     if len(participants) == 0:
-        participants_with_defaults = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
-            "participants", []
-        )
+        participants = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])
+
+    # Determine the devnet CL type.
+    devnet_cl_type = participants[0].get("cl_type")
 
     for p in participants:
         # Create a mutable copy of participant.
@@ -195,6 +196,10 @@ def _parse_participants(participants):
         if el_type and not el_image:
             if el_type == constants.EL_TYPE.bor:
                 p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
+            if el_type == constants.EL_TYPE.bor_modified_for_heimdall_v2:
+                p["el_image"] = DEFAULT_EL_IMAGES[
+                    constants.EL_TYPE.bor_modified_for_heimdall_v2
+                ]
             elif el_type == constants.EL_TYPE.erigon:
                 p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.erigon]
 
@@ -204,10 +209,20 @@ def _parse_participants(participants):
         if cl_type and not cl_image:
             if cl_type == constants.CL_TYPE.heimdall:
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall]
+            elif cl_type == constants.CL_TYPE.heimdall_v2:
+                p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2]
 
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
             p.setdefault(k, v)
+
+        # Make sure that CL types have not been mixed.
+        if p.get("cl_type") != devnet_cl_type:
+            fail(
+                'Mixing different CL types is not supported. Got "{}" and "{}".'.format(
+                    devnet_cl_type, cl_type
+                )
+            )
 
         # Assign the modified dictionary back to the list.
         participants_with_defaults.append(p)
@@ -219,11 +234,11 @@ def _parse_participants(participants):
 def _parse_setup_images(setup_images):
     # Create a mutable copy of setup_images.
     if setup_images:
+        # Create a mutable copy of setup_images.
         setup_images = dict(setup_images)
-
-    # Set default matic contracts params if not provided.
-    if not setup_images:
-        setup_images = DEFAULT_POLYGON_POS_PACKAGE_ARGS["setup_images"]
+    else:
+        # Set default matic contracts params if not provided.
+        setup_images = dict(DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}))
 
     for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}).items():
         setup_images.setdefault(k, v)
@@ -233,13 +248,14 @@ def _parse_setup_images(setup_images):
 
 
 def _parse_network_params(network_params):
-    # Create a mutable copy of network_params.
     if network_params:
+        # Create a mutable copy of network_params.
         network_params = dict(network_params)
-
-    # Set default network params if not provided.
-    if not network_params:
-        network_params = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
+    else:
+        # Set default network params if not provided.
+        network_params = dict(
+            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
+        )
 
     for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
         network_params.setdefault(k, v)

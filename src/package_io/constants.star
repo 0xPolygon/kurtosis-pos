@@ -1,10 +1,12 @@
 EL_TYPE = struct(
     bor="bor",
+    bor_modified_for_heimdall_v2="bor-modified-for-heimdall-v2",
     erigon="erigon",
 )
 
 CL_TYPE = struct(
     heimdall="heimdall",
+    heimdall_v2="heimdall-v2",
 )
 
 LOG_LEVEL = struct(

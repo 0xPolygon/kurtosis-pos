@@ -193,7 +193,7 @@ polygon_pos_package:
       # The docker image that should be used for the EL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
-      # - bor: "0xpolygon/bor:1.5.4"
+      # - bor: "0xpolygon/bor:1.5.5"
       # - erigon: TBD
       el_image: ""
 
@@ -245,7 +245,7 @@ polygon_pos_package:
     # Default: "leovct/pos-el-genesis-builder:node-16"
     el_genesis_builder: ""
     # Image used to generate L2 CL/EL validators configurations.
-    # Default: "leovct/pos-validator-config-generator:1.0.10"
+    # Default: "leovct/pos-validator-config-generator:1.2.0"
     validator_config_generator: ""
 
   # L2 network parameters.

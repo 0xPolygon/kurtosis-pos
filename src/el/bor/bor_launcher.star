@@ -44,8 +44,11 @@ def launch(
                     "config_folder_path": BOR_CONFIG_FOLDER_PATH,
                     "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
                     "is_validator": is_validator,
-                    "address": el_account.eth_address,
+                    "address": el_account.eth_tendermint.address,
                     "cl_node_url": cl_node_url,
+                    "log_level_to_int": log_level_to_int(
+                        participant.get("el_log_level", "")
+                    ),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     # ports
@@ -120,3 +123,19 @@ def launch(
             cmd=["&&".join(validator_cmds + bor_cmds if is_validator else bor_cmds)],
         ),
     )
+
+
+# Bor log level must be specified using an integer instead of a string.
+# https://github.com/maticnetwork/bor/blob/ceb62bb9d3b91b57579f674f5823f7becbd01df8/internal/cli/server/server.go#L86
+def log_level_to_int(log_level):
+    map_log_level_to_int = {
+        "trace": 5,
+        "debug": 4,
+        "info": 3,
+        "warn": 2,
+        "error": 1,
+        "crit": 0,
+    }
+    if log_level not in map_log_level_to_int:
+        fail("Invalid log level: " + log_level)
+    return map_log_level_to_int.get(log_level)
