@@ -187,15 +187,33 @@ def _validate_participant(p):
     else:
         fail('The CL client "{}" has no valid client combination.'.format(cl_type))
 
-    log_values = [
+    log_levels = [
         constants.LOG_LEVEL.error,
         constants.LOG_LEVEL.warn,
         constants.LOG_LEVEL.info,
         constants.LOG_LEVEL.debug,
         constants.LOG_LEVEL.trace,
     ]
-    _validate_str(p, "el_log_level", log_values)
-    _validate_str(p, "cl_log_level", log_values)
+    _validate_str(p, "cl_log_level", log_levels)
+    _validate_str(p, "el_log_level", log_levels)
+
+    # Heimdall (v1) only supports "error", "info", "debug" or "none" log levels.
+    # ERROR: Failed to parse default log level (pair *:trace, list *:trace): Expected either "info", "debug", "error" or "none" level, given trace
+    heimdall_v1_log_levels = [
+        constants.LOG_LEVEL.error,
+        constants.LOG_LEVEL.info,
+        constants.LOG_LEVEL.debug,
+    ]
+    if (
+        p.get("cl_type", "") == constants.CL_TYPE.heimdall
+        and p.get("cl_log_level", "") not in heimdall_v1_log_levels
+    ):
+        fail(
+            'Heimdall (v1) does not support "{}" log level. Valid log levels are: "{}"'.format(
+                p.get("cl_log_level", ""), heimdall_v1_log_levels
+            )
+        )
+
     _validate_strictly_positive_int(p, "count")
 
 
