@@ -71,7 +71,7 @@ def sanity_check_polygon_args(plan, input_args):
     _validate_list(input_args, "additional_services")
 
     # Validate values.
-    network_params = input_args.get("network_params", "")
+    network_params = input_args.get("network_params", {})
     cl_chain_id = network_params.get("cl_chain_id", "")
     el_chain_id = network_params.get("el_chain_id", "")
     validate_chain_ids(cl_chain_id, el_chain_id)
