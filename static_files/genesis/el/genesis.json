@@ -43,7 +43,7 @@
     },
     "nonce": "0x0"
   },
-  "timestamp": "0x5ce28211",
+  "timestamp": "0x0",
   "extraData": "",
   "gasLimit": "{{.el_gas_limit_hex}}",
   "difficulty": "0x1",
