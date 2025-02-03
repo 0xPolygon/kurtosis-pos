@@ -35,6 +35,7 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "network_params": {
         "preset": "minimal",
         "seconds_per_slot": 1,
+        "network_id": constants.DEFAULT_L1_CHAIN_ID,
     },
 }
 
