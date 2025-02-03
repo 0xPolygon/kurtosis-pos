@@ -22,6 +22,7 @@ pre_funded_accounts = import_module(
 prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
 tx_spammer = import_module("./src/additional_services/tx_spammer.star")
 wait = import_module("./src/wait/wait.star")
+constants = import_module("./src/package_io/constants.star")
 
 
 def run(plan, args):
@@ -66,12 +67,18 @@ def run(plan, args):
             ].private_key,  # Reserved for L2 contract deployers.
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
         )
+        l1_rpcs = {}
+        for participant in l1.all_participants:
+            l1_rpcs[
+                participant.el_context.service_name
+            ] = participant.el_context.rpc_http_url
     else:
         plan.print("Using an external l1")
         l1_context = struct(
             private_key=dev_args.get("l1_private_key", ""),
             rpc_url=dev_args.get("l1_rpc_url", ""),
         )
+        l1_rpcs = {"external-l1": dev_args.get("l1_rpc_url", "")}
 
     # Deploy MATIC contracts and generate the EL and CL genesis files if needed.
     # Otherwise, use the provided EL and CL genesis files.
@@ -164,7 +171,13 @@ def run(plan, args):
         if svc == "blockscout":
             blockscout.launch(plan)
         elif svc == "prometheus_grafana":
-            prometheus_grafana.launch(plan)
+            prometheus_grafana.launch(
+                plan,
+                l1_rpcs,
+                constants.DEFAULT_L1_CHAIN_ID,
+                participants,
+                constants.DEFAULT_EL_CHAIN_ID,
+            )
         elif svc == "tx_spammer":
             tx_spammer.launch(plan)
         else:

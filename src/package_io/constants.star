@@ -21,6 +21,7 @@ ADDITIONAL_SERVICES = struct(
     tx_spammer="tx_spammer",
 )
 
+DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
 DEFAULT_EL_CHAIN_ID = "4927"
 DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".
 

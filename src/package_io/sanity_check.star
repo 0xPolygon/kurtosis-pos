@@ -32,6 +32,7 @@ POLYGON_POS_PARAMS = {
     ],
     "additional_services": [
         "tx_spammer",
+        "prometheus_grafana",
     ],
 }
 
