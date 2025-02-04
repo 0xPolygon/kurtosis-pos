@@ -48,7 +48,6 @@ git clone git@github.com:0xPolygon/heimdall-v2.git
 pushd heimdall-v2
 tag="e0a87ca" # 04/02/2025
 git checkout "${tag}"
-sed -i 's/RUN make install/RUN make heimdalld \&\& cp build\/heimdalld \/usr\/bin\/heimdalld/' Dockerfile
 docker build --tag "leovct/heimdall-v2:${tag}" --file Dockerfile .
 docker push "leovct/heimdall-v2:${tag}"
 
