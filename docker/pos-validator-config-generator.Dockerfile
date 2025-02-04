@@ -20,7 +20,7 @@ ENV DEFAULT_CL_CHAIN_ID="heimdall-4927"
 ENV CL_CLIENT_CONFIG_PATH="/etc/cl"
 
 COPY --from=heimdall /usr/bin/heimdallcli /usr/bin/heimdalld /usr/local/bin/
-COPY --from=heimdall-v2 /usr/bin/heimdalld /usr/local/bin/heimdalld-v2
+COPY --from=heimdall-v2 /usr/local/bin/heimdalld /usr/local/bin/heimdalld-v2
 COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/local/bin/polycli
 COPY --from=polycli-builder /opt/polygon-cli/bindings /opt/bindings
 
