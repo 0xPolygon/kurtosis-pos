@@ -24,7 +24,7 @@ docker push leovct/pos-el-genesis-builder:node-16
 
 ```bash
 heimdall_version="1.2.0"
-heimdall_v2_version="8daff4c"
+heimdall_v2_version="e0a87ca"
 tag="${heimdall_version}-${heimdall_v2_version}"
 docker build \
   --build-arg HEIMDALL_VERSION="${heimdall_version}" \
@@ -46,7 +46,7 @@ Docker Hub:
 # heimdall-v2
 git clone git@github.com:0xPolygon/heimdall-v2.git
 pushd heimdall-v2
-tag="8daff4c" # 03/02/2025
+tag="e0a87ca" # 04/02/2025
 git checkout "${tag}"
 sed -i 's/RUN make install/RUN make heimdalld \&\& cp build\/heimdalld \/usr\/bin\/heimdalld/' Dockerfile
 docker build --tag "leovct/heimdall-v2:${tag}" --file Dockerfile .
