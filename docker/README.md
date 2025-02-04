@@ -5,8 +5,13 @@
 - [Docker Hub](https://hub.docker.com/r/leovct/pos-contract-deployer)
 
 ```bash
-docker build --tag leovct/pos-contract-deployer:node-16 --file pos-contract-deployer.Dockerfile .
+# node-16
+docker build --tag leovct/pos-contract-deployer:node-16 --file pos-contract-deployer-node-16.Dockerfile .
 docker push leovct/pos-contract-deployer:node-16
+
+# node-20
+docker build --tag leovct/pos-contract-deployer:node-20 --file pos-contract-deployer-node-20.Dockerfile .
+docker push leovct/pos-contract-deployer:node-20
 ```
 
 ## Polygon PoS EL Genesis Builder
