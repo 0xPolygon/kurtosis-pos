@@ -72,7 +72,7 @@ setup_validator() {
     node_id="$(jq --raw-output '.node_id' ${cl_validator_config_path}/init.out)"
   elif [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
     heimdalld-v2 init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
-    # HOTFIX: heimdalld-v2 (57830a6) outputs info and debug lines before the json object.
+    # HOTFIX: heimdalld-v2 outputs info and debug lines before the json object.
     node_id="$(cat ${cl_validator_config_path}/init.out | sed '/.DBG\|INF./d' | jq --raw-output '.node_id')"
   else
     echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
