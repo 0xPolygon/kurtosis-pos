@@ -155,7 +155,9 @@ jobs:
           yq --version
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false .
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false .
         env:
           DOCKER_DEFAULT_PLATFORM: linux/amd64
 
