@@ -23,23 +23,16 @@ docker push leovct/pos-el-genesis-builder:node-16
 - [Docker Hub](https://hub.docker.com/r/leovct/pos-validator-config-generator)
 
 ```bash
-# 1.0.10
+heimdall_version="1.2.0"
+heimdall_v2_version="e0a87ca"
+tag="${heimdall_version}-${heimdall_v2_version}"
 docker build \
-  --build-arg HEIMDALL_VERSION="1.0.10" \
-  --build-arg HEIMDALL_V2_VERSION="57830a6" \
-  --tag leovct/pos-validator-config-generator:1.0.10 \
+  --build-arg HEIMDALL_VERSION="${heimdall_version}" \
+  --build-arg HEIMDALL_V2_VERSION="${heimdall_v2_version}" \
+  --tag "leovct/pos-validator-config-generator:${tag}" \
   --file pos-validator-config-generator.Dockerfile \
   .
-docker push leovct/pos-validator-config-generator:1.0.10
-
-# 1.2.0
-docker build \
-  --build-arg HEIMDALL_VERSION="1.2.0" \
-  --build-arg HEIMDALL_V2_VERSION="57830a6" \
-  --tag leovct/pos-validator-config-generator:1.0.10 \
-  --file pos-validator-config-generator.Dockerfile \
-  .
-docker push leovct/pos-validator-config-generator:1.2.0
+docker push "leovct/pos-validator-config-generator:${tag}"
 ```
 
 ## Heimdall V2
@@ -53,9 +46,8 @@ Docker Hub:
 # heimdall-v2
 git clone git@github.com:0xPolygon/heimdall-v2.git
 pushd heimdall-v2
-tag="57830a6" # 24/01/2025
+tag="e0a87ca" # 04/02/2025
 git checkout "${tag}"
-sed -i 's/RUN make install/RUN make heimdalld \&\& cp build\/heimdalld \/usr\/bin\/heimdalld/' Dockerfile
 docker build --tag "leovct/heimdall-v2:${tag}" --file Dockerfile .
 docker push "leovct/heimdall-v2:${tag}"
 
