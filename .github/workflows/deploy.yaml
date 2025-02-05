@@ -46,6 +46,11 @@ jobs:
         with:
           version: ${{ env.FOUNDRY_VERSION }}
 
+      - name: Install yq
+        run: |
+          pip3 install yq
+          yq --version
+
       - name: Run Starlark
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false .
 
