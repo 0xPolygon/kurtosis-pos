@@ -99,8 +99,8 @@ IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
   IFS=',' read -r address eth_public_key <<<"${account}"
   forge script --rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+    scripts/matic-cli-scripts/stake.s.sol:MaticStake \
     --sig "run(address,bytes,uint256,uint256)" "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}" \
-    scripts/matic-cli-scripts/stake.s.sol:MaticStake
 
   # Update the validator config file.
   jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT}" --arg balance "${VALIDATOR_BALANCE}" \
