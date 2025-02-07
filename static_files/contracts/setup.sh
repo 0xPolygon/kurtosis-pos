@@ -45,21 +45,21 @@ echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 echo "Deploying Polygon PoS contracts on L1..."
 export DEPLOYER_PRIVATE_KEY="0x${PRIVATE_KEY}"
 export HEIMDALL_ID="${CL_CHAIN_ID}"
-forge script -vvvv--rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+forge script -vvvv --rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
   scripts/deployment-scripts/deployContracts.s.sol:DeploymentScript
 
-forge script -vvvv--rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+forge script -vvvv --rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
   scripts/deployment-scripts/drainStakeManager.s.sol:DrainStakeManagerDeployment
 
-forge script -vvvv--rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+forge script -vvvv --rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
   scripts/deployment-scripts/initializeState.s.sol:InitializeStateScript
 
 # TODO: Deploy these contracts on bor.
-# forge script -vvvv--rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+# forge script -vvvv --rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
 #   scripts/deployment-scripts/childContractDeployment.s.sol:ChildContractDeploymentScript
 
 # TODO: Sync contracts on L1 once deployed on bor.
-# forge script -vvvv--rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+# forge script -vvvv --rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
 #   scripts/deployment-scripts/syncChildStateToRoot.s.sol:SyncChildStateToRootScript
 
 echo "Polygon PoS contracts deployed to the root chain:"
@@ -98,7 +98,7 @@ echo "Staking for each validator node..."
 IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
   IFS=',' read -r address eth_public_key <<<"${account}"
-  forge script -vvvv--rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+  forge script -vvvv --rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
     scripts/matic-cli-scripts/stake.s.sol:MaticStake \
     --sig "run(address,bytes,uint256,uint256)" "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}" \
 
