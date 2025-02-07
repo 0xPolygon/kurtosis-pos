@@ -19,8 +19,8 @@ RUN apt-get update \
   && /root/.foundry/bin/foundryup --install "stable" \
   && cp /root/.foundry/bin/* /usr/local/bin \
   # Prepare pos contracts.
-  && git clone https://github.com/0xPolygon/pos-contracts . \
-  && git checkout 10caf43 \
+  && git clone --branch arya/matic-cli/pos-1869 https://github.com/0xPolygon/pos-contracts . \
+  && git checkout 4a361e7 \
   && npm install \
   && npm run template:process -- --bor-chain-id "${DEFAULT_EL_CHAIN_ID}" \
   && npm run generate:interfaces \
