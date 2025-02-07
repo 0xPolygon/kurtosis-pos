@@ -21,6 +21,8 @@ RUN apt-get update \
   # Prepare pos contracts.
   && git clone --branch arya/matic-cli/pos-1869 https://github.com/0xPolygon/pos-contracts . \
   && git checkout 4a361e7 \
+  # Remove [etherscan] section from foundry.toml
+  && sed -i '/^\[etherscan\]/,/^$/d' foundry.toml \
   && npm install \
   && npm run template:process -- --bor-chain-id "${DEFAULT_EL_CHAIN_ID}" \
   && npm run generate:interfaces \
