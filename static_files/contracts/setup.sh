@@ -110,3 +110,8 @@ for account in "${validator_accounts[@]}"; do
 done
 echo "exports = module.exports = $(<${validator_config_file})" >"${validator_config_file}"
 echo "Validators config created successfully."
+
+# Move files to /opt/contracts.
+mkdir -p /opt/contracts
+mv contractAddresses.json /opt/contracts
+mv "${validator_config_file}" /opt/contracts
