@@ -22,6 +22,7 @@ Optional features:
   - [Prerequisites](#prerequisites)
   - [Deploy](#deploy)
   - [Interact](#interact)
+  - [Make Changes](#make-changes)
   - [Tear Down](#tear-down)
 - [Configuration](#configuration)
 
@@ -144,6 +145,40 @@ In the same way, you might want to check the MATIC contract addresses on the roo
 kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq
 ```
 
+### Make Changes
+
+Once you have deployed the package once, you should have a fully working L1 devnet, MATIC contracts deployed to L1 and a fully working L2 Polygon PoS devnet. Now imagine you would like to make a change to some of the L2 participants. No need to re-run the entire package, you can specify the `dev` parameters to save some time.
+
+First, we will save the L2 CL and EL genesis files for later.
+
+```bash
+mkdir -p ./tmp
+kurtosis files inspect pos-devnet l2-cl-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-cl-genesis.json
+kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-el-genesis.json
+```
+
+Then, we will add the following parameters to the args file.
+
+```yml
+# params.yml
+dev:
+  # Avoid re-deploying the L1 devnet.
+  should_deploy_l1: False
+  l1_private_key: eaba42282ad33c8ef2524f07277c03a776d98ae19f581990ce75becb7cfa1c23 # Use this private key unless you've changed it.
+  l1_rpc_url: http://el-1-geth-lighthouse:8545
+
+  # Avoid re-deploying the MATIC contracts to L1 and re-generating the L2 CL and EL genesis files.
+  should_deploy_matic_contracts: False
+  l2_cl_genesis_filepath: ./tmp/l2-cl-genesis.json
+  l2_el_genesis_filepath: ./tmp/l2-el-genesis.json
+```
+
+You can now run the package and it will only re-deploy the L2 participants. This will be much faster than a full deployment!
+
+```bash
+kurtosis run --args-file params.yml --enclave pos-devnet .
+```
+
 ### Tear Down
 
 Once done with the enclave, you can remove its contents with the following command.
@@ -211,7 +246,7 @@ polygon_pos_package:
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - heimdall: "0xpolygon/heimdall:1.2.0"
-      # - heimdall-v2: TDB
+      # - heimdall-v2: "leovct/heimdall-v2:e0a87ca" (private image)
       cl_image: ""
 
       # The docker image that should be used for the CL's client database.
