@@ -1,5 +1,5 @@
 FROM node:16-bookworm
-LABEL description="MATIC (Polygon PoS) contracts deployment image"
+LABEL description="Polygon PoS contracts deployment image (node-16)"
 LABEL author="devtools@polygon.technology"
 
 ENV DEFAULT_EL_CHAIN_ID="4927"

@@ -6,6 +6,8 @@ CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
     network_params = polygon_pos_args.get("network_params", {})
     setup_images = polygon_pos_args.get("setup_images", {})
+    contract_deployer_image = setup_images.get("contract_deployer")
+    contract_setup_script = _determine_contract_setup_script(contract_deployer_image)
 
     validator_accounts_formatted = _format_validator_accounts(validator_accounts)
 
@@ -17,7 +19,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
     return plan.run_sh(
         name="matic-contracts-deployer",
         description="Deploying MATIC contracts to L1 and staking for each validator - it can take up to 5 minutes",
-        image=setup_images.get("contract_deployer"),
+        image=contract_deployer_image,
         env_vars={
             "PRIVATE_KEY": l1_context.private_key,
             "L1_RPC_URL": l1_context.rpc_url,
@@ -44,7 +46,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
                 name="l2-validators-config",
             ),
         ],
-        run="bash /opt/data/setup.sh",
+        run="bash /opt/data/setup-{}.sh".format(contract_setup_script),
         wait="300s",  # 5min (default 180s - 3min)
     )
 
@@ -58,3 +60,16 @@ def _format_validator_accounts(accounts):
             for account in accounts
         ]
     )
+
+
+def _determine_contract_setup_script(contract_deployer_image):
+    # The contract deployer image follows the standard: leovct/pos-contract-deployer:<node-version>
+    # where the version can either be "node-16" or "node-20".
+    result = contract_deployer_image.split(":")
+    if len(result) != 2:
+        fail(
+            'The contract deployer image does not follow the standard "leovct/pos-contract-deployer:<node-version>": {}'.format(
+                contract_deployer_image
+            )
+        )
+    return result[1]
