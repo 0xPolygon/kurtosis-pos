@@ -170,7 +170,13 @@ jobs:
       - name: Wait for the first block producer to commit a span
         run: |
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
+          if [[ "${cl_type}" == "null" ]]; then
+            cl_type="heimdall"
+          fi
           el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
+          if [[ "${cl_type}" == "null" ]]; then
+            el_type="bor"
+          fi
           cl_node_name="l2-cl-1-${cl_type}-${el_type}-validator"
           el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
