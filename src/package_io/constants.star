@@ -18,6 +18,8 @@ LOG_LEVEL = struct(
 )
 
 ADDITIONAL_SERVICES = struct(
+    blockscout="blockscout",
+    prometheus_grafana="prometheus_grafana",
     tx_spammer="tx_spammer",
 )
 
