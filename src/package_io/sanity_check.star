@@ -31,8 +31,9 @@ POLYGON_POS_PARAMS = {
         "el_gas_limit",
     ],
     "additional_services": [
-        "tx_spammer",
+        "blockscout",
         "prometheus_grafana",
+        "tx_spammer",
     ],
 }
 
