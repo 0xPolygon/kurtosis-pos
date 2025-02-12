@@ -171,7 +171,7 @@ def validate_chain_ids(cl_chain_id, el_chain_id):
     if not cl_chain_id and not el_chain_id:
         return
 
-    expected_cl_chain_id = "heimdall-" + el_chain_id
+    expected_cl_chain_id = "heimdall-" + str(el_chain_id)
     if cl_chain_id != expected_cl_chain_id:
         fail(
             'CL chain id must follow the standard "heimdall-<el_chain_id>". Expected "{}" but got: "{}".'.format(
