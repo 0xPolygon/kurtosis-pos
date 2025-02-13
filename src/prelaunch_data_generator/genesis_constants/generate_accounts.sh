@@ -24,8 +24,10 @@ polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}"
 # Generating CometBFT accounts (secp256k1).
 jq --compact-output '.[]' eth_accounts.json | while read -r account; do
   eth_private_key=$(echo "${account}" | jq --raw-output '.ETHPrivateKey')
-  secp256k1_nodekey=$(polycli nodekey --private-key "${eth_private_key}" --key-type secp256k1 | jq)
-  echo "${account}" | jq --argjson nk "${secp256k1_nodekey}" '. + {CometBftAddress: ("0x" + $nk.address), CometBftPublicKey: $nk.pub_key.value, CometBftPrivateKey: $nk.priv_key.value}'
+  eth_public_key=$(echo "${account}" | jq --raw-output '.ETHPublicKey' | sed 's/^0x/04/' | xxd -r -p | base64 | tr -d '\n')
+  eth_private_key_base64=$(echo "${eth_private_key}" | xxd -r -p | base64 | tr -d '\n')
+  echo "${account}" | jq --arg pub "${eth_public_key}" --arg priv "${eth_private_key_base64}" \
+    '. + {CometBftAddress: .ETHAddress, CometBftPublicKey: $pub, CometBftPrivateKey: $priv}'
 done | jq --slurp '.' >eth_cometbft_accounts.json
 
 echo "Generating the Starlark pre_funded_accounts.star file..."
