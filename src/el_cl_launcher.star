@@ -1,4 +1,5 @@
 bor = import_module("./el/bor/bor_launcher.star")
+cl_shared = import_module("./cl/cl_shared.star")
 constants = import_module("./package_io/constants.star")
 erigon = import_module("./el/erigon/erigon_launcher.star")
 heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
@@ -132,9 +133,7 @@ def launch(
                     "http://{}:{}".format(el_node_name, bor.BOR_RPC_PORT_NUMBER),
                     rabbitmq_url,
                 )
-                cl_api_url = cl_context.ports[
-                    "http"
-                ].url  # TODO: Do not hardcode the port name!
+                cl_api_url = cl_context.ports[cl_shared.HEIMDALL_REST_API_PORT_ID].url
 
             # Launch the EL node.
             el_validator_config_artifact = (
@@ -161,12 +160,14 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
-    wait.wait_for_l2_startup(plan, cl_api_url)
+    wait.wait_for_l2_startup(plan, cl_api_url, network_data.first_validator_cl_type)
 
 
 def _prepare_network_data(participants):
     # The API url of the first validator's CL node.
     first_validator_cl_api_url = ""
+    # The type of the first validator's CL node.
+    first_validator_cl_type = ""
     # An array of strings containing validator configurations.
     # Each string should follow the format: "<private_key>,<p2p_url>".
     cl_validator_configs = []
@@ -196,14 +197,15 @@ def _prepare_network_data(participants):
                 if not first_validator_cl_api_url:
                     first_validator_cl_api_url = "http://{}:{}".format(
                         cl_node_name,
-                        heimdall.HEIMDALL_REST_API_PORT_NUMBER,
+                        cl_shared.HEIMDALL_REST_API_PORT_NUMBER,
                     )
+                    first_validator_cl_type = participant.get("cl_type")
 
                 # Generate the CL validator config.
                 cl_validator_config = "{},{}:{}".format(
                     validator_account.eth_tendermint.private_key,
                     cl_node_name,
-                    heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
+                    cl_shared.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
                 )
                 cl_validator_configs.append(cl_validator_config)
 
@@ -241,6 +243,7 @@ def _prepare_network_data(participants):
 
     return struct(
         first_validator_cl_api_url=first_validator_cl_api_url,
+        first_validator_cl_type=first_validator_cl_type,
         cl_validator_configs_str=";".join(cl_validator_configs),
         cl_validator_keystores=cl_validator_keystores,
         el_validator_keystores=el_validator_keystores,
@@ -324,7 +327,7 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers_artifact):
 
 def _generate_cl_node_name(participant, id):
     return "l2-cl-{}-{}-{}-validator".format(
-        id, participant.get("cl_type", ""), participant.get("el_type", "")
+        id, participant.get("cl_type"), participant.get("el_type")
     )
 
 
@@ -335,7 +338,7 @@ def _generate_amqp_name(id):
 def _generate_el_node_name(participant, id):
     return "l2-el-{}-{}-{}-{}".format(
         id,
-        participant.get("el_type", ""),
-        participant.get("cl_type", ""),
+        participant.get("el_type"),
+        participant.get("cl_type"),
         "validator" if participant.get("is_validator", False) else "rpc",
     )
