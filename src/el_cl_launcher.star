@@ -192,7 +192,7 @@ def _prepare_network_data(participants):
                     participant_index
                 ]
 
-                # Determine the RPC url of the first validator's CL node.
+                # Determine the API url of the first validator's CL node.
                 if not first_validator_cl_api_url:
                     first_validator_cl_api_url = "http://{}:{}".format(
                         cl_node_name,
