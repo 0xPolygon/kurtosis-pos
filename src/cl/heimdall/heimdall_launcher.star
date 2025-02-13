@@ -75,7 +75,7 @@ def launch(
                     number=cl_shared.CL_REST_API_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                cl_shared.HEIMDALL_GRPC_PORT_ID: PortSpec(
+                cl_shared.CL_GRPC_PORT_ID: PortSpec(
                     number=cl_shared.CL_GRPC_PORT_NUMBER,
                     application_protocol="grpc",
                 ),
