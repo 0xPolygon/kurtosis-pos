@@ -33,6 +33,6 @@ def read_state_receiver_contract_address(plan, el_genesis_artifact):
         files={
             "/opt/contracts": el_genesis_artifact,
         },
-        run="jq --raw-output '.config.bor.stateReceiverContract' /opt/contracts/genesis.json | trd -d '\n'",
+        run="jq --raw-output '.config.bor.stateReceiverContract' /opt/contracts/genesis.json | tr -d '\n'",
     )
     return result.output
