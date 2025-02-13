@@ -1,6 +1,7 @@
 bor = import_module("./el/bor/bor_launcher.star")
 cl_shared = import_module("./cl/cl_shared.star")
 constants = import_module("./package_io/constants.star")
+el_shared = import_module("./el/el_shared.star")
 erigon = import_module("./el/erigon/erigon_launcher.star")
 heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
 heimdall_v2 = import_module("./cl/heimdall_v2/heimdall_v2_launcher.star")
@@ -130,7 +131,7 @@ def launch(
                     validator_config_artifacts.cl_configs[validator_index],
                     cl_node_ids,
                     l1_rpc_url,
-                    "http://{}:{}".format(el_node_name, bor.BOR_RPC_PORT_NUMBER),
+                    "http://{}:{}".format(el_node_name, el_shared.EL_RPC_PORT_NUMBER),
                     rabbitmq_url,
                 )
                 cl_api_url = cl_context.ports[cl_shared.CL_REST_API_PORT_ID].url
@@ -255,7 +256,7 @@ def _generate_enode_url(participant, eth_public_key, el_node_name):
     return "enode://{}@{}:{}?discport=0".format(
         eth_public_key,
         el_node_name,
-        bor.BOR_DISCOVERY_PORT_NUMBER,
+        el_shared.EL_DISCOVERY_PORT_NUMBER,
     )
 
 
