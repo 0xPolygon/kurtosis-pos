@@ -13,9 +13,9 @@ def wait_for_l1_startup(plan, l1_config_env_vars):
 
 def wait_for_l2_startup(plan, cl_api_url, cl_type):
     key = ""
-    if cl_type == constants.heimdall:
+    if cl_type == constants.CL_TYPE.heimdall:
         key = "result"
-    elif cl_type == constants.heimdall_v2:
+    elif cl_type == constants.CL_TYPE.heimdall_v2:
         key = "record"
     else:
         fail("Unable to retrieve the latest-span from bor")
