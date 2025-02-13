@@ -133,7 +133,7 @@ def launch(
                     "http://{}:{}".format(el_node_name, bor.BOR_RPC_PORT_NUMBER),
                     rabbitmq_url,
                 )
-                cl_api_url = cl_context.ports[cl_shared.HEIMDALL_REST_API_PORT_ID].url
+                cl_api_url = cl_context.ports[cl_shared.CL_REST_API_PORT_ID].url
 
             # Launch the EL node.
             el_validator_config_artifact = (
@@ -197,7 +197,7 @@ def _prepare_network_data(participants):
                 if not first_validator_cl_api_url:
                     first_validator_cl_api_url = "http://{}:{}".format(
                         cl_node_name,
-                        cl_shared.HEIMDALL_REST_API_PORT_NUMBER,
+                        cl_shared.CL_REST_API_PORT_NUMBER,
                     )
                     first_validator_cl_type = participant.get("cl_type")
 
@@ -205,7 +205,7 @@ def _prepare_network_data(participants):
                 cl_validator_config = "{},{}:{}".format(
                     validator_account.eth_tendermint.private_key,
                     cl_node_name,
-                    cl_shared.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
+                    cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
                 )
                 cl_validator_configs.append(cl_validator_config)
 
