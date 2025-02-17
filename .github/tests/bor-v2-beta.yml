@@ -4,7 +4,7 @@ polygon_pos_package:
     - cl_type: heimdall
       cl_log_level: debug
       el_type: bor
-      el_image: 0xpolygon/bor:2.0.0-beta2
+      el_image: 0xpolygon/bor:2.0.0
       el_log_level: trace
       is_validator: true
       count: 4
@@ -12,7 +12,7 @@ polygon_pos_package:
     # rpcs
     - cl_type: heimdall
       el_type: bor
-      el_image: 0xpolygon/bor:2.0.0-beta2
+      el_image: 0xpolygon/bor:2.0.0
       is_validator: false
       count: 2
     # There is an issue with erigon rpcs.
