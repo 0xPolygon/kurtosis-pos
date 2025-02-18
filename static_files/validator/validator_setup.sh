@@ -94,6 +94,11 @@ setup_validator() {
     heimdalld-v2 init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
     # HOTFIX: heimdalld-v2 outputs info and debug lines before the json object.
     node_id="$(cat ${cl_validator_config_path}/init.out | sed '/.DBG\|INF./d' | jq --raw-output '.node_id')"
+
+    # Replace "comet/PubKeySecp256k1Uncompressed" with "cometbft/PubKeySecp256k1eth" in priv_validator_key.json
+    sed -i 's/comet\/PubKeySecp256k1Uncompressed/cometbft\/PubKeySecp256k1eth/g' "${cl_validator_config_path}/config/priv_validator_key.json"
+    # Replace "comet/PrivKeySecp256k1Uncompressed" with "cometbft/PrivKeySecp256k1eth" in priv_validator_key.json
+    sed -i 's/comet\/PrivKeySecp256k1Uncompressed/cometbft\/PrivKeySecp256k1eth/g' "${cl_validator_config_path}/config/priv_validator_key.json"
   else
     echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
     exit 1
