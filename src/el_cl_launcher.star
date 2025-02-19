@@ -52,7 +52,7 @@ def launch(
 
     # Prepare network data and generate validator configs.
     network_data = _prepare_network_data(participants)
-    cl_node_url = network_data.first_validator_cl_rpc_url
+    cl_api_url = network_data.first_validator_cl_api_url
     validator_config_artifacts = _generate_validator_config(
         plan,
         network_data.cl_validator_configs_str,
@@ -133,7 +133,7 @@ def launch(
                     "http://{}:{}".format(el_node_name, el_shared.EL_RPC_PORT_NUMBER),
                     rabbitmq_url,
                 )
-                cl_node_url = cl_context.ports[cl_shared.CL_REST_API_PORT_ID].url
+                cl_api_url = cl_context.ports[cl_shared.CL_REST_API_PORT_ID].url
 
             # Launch the EL node.
             el_validator_config_artifact = (
@@ -147,7 +147,7 @@ def launch(
                 participant,
                 el_genesis_artifact,
                 el_validator_config_artifact,
-                cl_node_url,
+                cl_api_url,
                 pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index],
                 network_data.el_static_nodes,
                 network_params.get("el_chain_id", ""),
@@ -160,8 +160,8 @@ def launch(
 
 
 def _prepare_network_data(participants):
-    # The rpc url of the first validator's CL node.
-    first_validator_cl_rpc_url = ""
+    # The API url of the first validator's CL node.
+    first_validator_cl_api_url = ""
     # An array of strings containing validator configurations.
     # Each string should follow the format: "<private_key>,<p2p_url>".
     cl_validator_configs = []
@@ -187,11 +187,11 @@ def _prepare_network_data(participants):
                     participant_index
                 ]
 
-                # Determine the RPC url of the first validator's CL node.
-                if not first_validator_cl_rpc_url:
-                    first_validator_cl_rpc_url = "http://{}:{}".format(
+                # Determine the url of the API of the first validator's CL node.
+                if not first_validator_cl_api_url:
+                    first_validator_cl_api_url = "http://{}:{}".format(
                         cl_node_name,
-                        cl_shared.CL_RPC_PORT_NUMBER,
+                        cl_shared.CL_REST_API_PORT_NUMBER,
                     )
 
                 # Generate the CL validator config.
@@ -235,7 +235,7 @@ def _prepare_network_data(participants):
             participant_index += 1
 
     return struct(
-        first_validator_cl_rpc_url=first_validator_cl_rpc_url,
+        first_validator_cl_api_url=first_validator_cl_api_url,
         cl_validator_configs_str=";".join(cl_validator_configs),
         cl_validator_keystores=cl_validator_keystores,
         el_validator_keystores=el_validator_keystores,
