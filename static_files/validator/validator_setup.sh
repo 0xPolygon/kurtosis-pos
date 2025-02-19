@@ -38,8 +38,8 @@ echo "CL_VALIDATORS_CONFIGS: ${CL_VALIDATORS_CONFIGS}"
 setup_validator() {
   local id="${1}"
   local execution_key="${2}"
-  local cometbft_public_key="${3}"
-  local cometbft_address="${4}"
+  local cometbft_address="${3}"
+  local cometbft_public_key="${4}"
   local cometbft_private_key="${5}"
   local p2p_url="${6}"
 
@@ -67,11 +67,11 @@ setup_validator() {
     echo "{
       \"address\": \"${cometbft_address#0x}\",
       \"pub_key\": {
-        \"type\": \"comet/PubKeySecp256k1Uncompressed\",
+        \"type\": \"cometbft/PubKeySecp256k1eth\",
         \"value\": \"${cometbft_public_key}\"
       },
       \"priv_key\": {
-        \"type\": \"comet/PrivKeySecp256k1Uncompressed\",
+        \"type\": \"cometbft/PrivKeySecp256k1eth\",
         \"value\": \"${cometbft_private_key}\"
       }
     }" | jq >"${cl_validator_config_path}/config/priv_validator_key.json"
@@ -94,11 +94,6 @@ setup_validator() {
     heimdalld-v2 init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
     # HOTFIX: heimdalld-v2 outputs info and debug lines before the json object.
     node_id="$(cat ${cl_validator_config_path}/init.out | sed '/.DBG\|INF./d' | jq --raw-output '.node_id')"
-
-    # Replace "comet/PubKeySecp256k1Uncompressed" with "cometbft/PubKeySecp256k1eth" in priv_validator_key.json
-    sed -i 's/comet\/PubKeySecp256k1Uncompressed/cometbft\/PubKeySecp256k1eth/g' "${cl_validator_config_path}/config/priv_validator_key.json"
-    # Replace "comet/PrivKeySecp256k1Uncompressed" with "cometbft/PrivKeySecp256k1eth" in priv_validator_key.json
-    sed -i 's/comet\/PrivKeySecp256k1Uncompressed/cometbft\/PrivKeySecp256k1eth/g' "${cl_validator_config_path}/config/priv_validator_key.json"
   else
     echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
     exit 1
@@ -133,8 +128,8 @@ persistent_peers=""
 id=1
 IFS=';' read -ra validator_configs <<<"${CL_VALIDATORS_CONFIGS}"
 for config in "${validator_configs[@]}"; do
-  IFS=',' read -r execution_key cometbft_public_key cometbft_address cometbft_private_key p2p_url <<<"${config}"
-  setup_validator "${id}" "${execution_key}" "${cometbft_public_key}" "${cometbft_address}" "${cometbft_private_key}" "${p2p_url}"
+  IFS=',' read -r execution_key cometbft_address cometbft_public_key cometbft_private_key p2p_url <<<"${config}"
+  setup_validator "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}"
   ((id++))
 done
 
