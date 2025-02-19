@@ -1,4 +1,4 @@
-def wait_for_startup(plan, l1_config_env_vars):
+def wait_for_l1_startup(plan, cl_rpc_url):
     plan.run_sh(
         name="wait-for-l1-startup",
         description="Wait for L1 to start up - it can take up to 2 minutes",
