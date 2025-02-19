@@ -135,8 +135,6 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     if polygon_pos_args:
         polygon_pos_args = dict(polygon_pos_args)
 
-    sanity_check.sanity_check_polygon_args(plan, polygon_pos_args)
-
     # Parse the polygon pos input args and set defaults if needed.
     result = {}
 
@@ -152,7 +150,8 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     additional_services = polygon_pos_args.get("additional_services", [])
     result["additional_services"] = _parse_additional_services(additional_services)
 
-    # Sort the dict and return the result.
+    # Sanity check and return the result.
+    sanity_check.sanity_check_polygon_args(plan, result)
     return _sort_dict_by_values(result)
 
 
@@ -160,8 +159,6 @@ def _parse_dev_args(plan, dev_args):
     # Create a mutable copy of dev_args.
     if dev_args:
         dev_args = dict(dev_args)
-
-    sanity_check.sanity_check_dev_args(plan, dev_args)
 
     # Set default params if not provided.
     if "should_deploy_l1" not in dev_args:
@@ -172,7 +169,8 @@ def _parse_dev_args(plan, dev_args):
             "should_deploy_matic_contracts", True
         )
 
-    # Sort the dict and return the result.
+    # Sanity check and return the result.
+    sanity_check.sanity_check_dev_args(plan, dev_args)
     return _sort_dict_by_values(dev_args)
 
 
