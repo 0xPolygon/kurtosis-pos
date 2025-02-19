@@ -36,9 +36,9 @@ def launch(
                     "log_level": participant.get("cl_log_level", ""),
                     "persistent_peers": cl_node_ids,
                     # Port numbers.
-                    "proxy_app_port_number": CL_SHARED.CL_PROXY_LISTEN_PORT_NUMBER,
+                    "proxy_app_port_number": cl_shared.CL_PROXY_LISTEN_PORT_NUMBER,
                     "tendermint_rpc_port_number": cl_shared.CL_RPC_PORT_NUMBER,
-                    "p2p_listen_port_number": CL_SHARED.CL_NODE_LISTEN_PORT_NUMBER,
+                    "p2p_listen_port_number": cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
                     "metrics_port_number": cl_shared.CL_METRICS_PORT_NUMBER,
                 },
             ),
@@ -76,11 +76,11 @@ def launch(
                     application_protocol="http",
                 ),
                 cl_shared.CL_GRPC_PORT_ID: PortSpec(
-                    number=CL_SHARED.CL_GRPC_PORT_NUMBER,
+                    number=cl_shared.CL_GRPC_PORT_NUMBER,
                     application_protocol="grpc",
                 ),
                 cl_shared.CL_NODE_LISTEN_PORT_ID: PortSpec(
-                    number=CL_SHARED.CL_NODE_LISTEN_PORT_NUMBER,
+                    number=cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
                     application_protocol="http",
                 ),
                 cl_shared.CL_RPC_PORT_ID: PortSpec(
