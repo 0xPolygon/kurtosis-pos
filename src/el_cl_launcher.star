@@ -1,5 +1,7 @@
 bor = import_module("./el/bor/bor_launcher.star")
+cl_shared = import_module("./cl/cl_shared.star")
 constants = import_module("./package_io/constants.star")
+el_shared = import_module("./el/el_shared.star")
 erigon = import_module("./el/erigon/erigon_launcher.star")
 heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
 heimdall_v2 = import_module("./cl/heimdall_v2/heimdall_v2_launcher.star")
@@ -128,12 +130,10 @@ def launch(
                     validator_config_artifacts.cl_configs[validator_index],
                     cl_node_ids,
                     l1_rpc_url,
-                    "http://{}:{}".format(el_node_name, bor.BOR_RPC_PORT_NUMBER),
+                    "http://{}:{}".format(el_node_name, el_shared.EL_RPC_PORT_NUMBER),
                     rabbitmq_url,
                 )
-                cl_node_url = cl_context.ports[
-                    "http"
-                ].url  # TODO: Do not hardcode the port name!
+                cl_node_url = cl_context.ports[cl_shared.CL_REST_API_PORT_ID].url
 
             # Launch the EL node.
             el_validator_config_artifact = (
@@ -191,14 +191,14 @@ def _prepare_network_data(participants):
                 if not first_validator_cl_rpc_url:
                     first_validator_cl_rpc_url = "http://{}:{}".format(
                         cl_node_name,
-                        heimdall.HEIMDALL_RPC_PORT_NUMBER,
+                        cl_shared.CL_RPC_PORT_NUMBER,
                     )
 
                 # Generate the CL validator config.
                 cl_validator_config = "{},{}:{}".format(
                     validator_account.eth_tendermint.private_key,
                     cl_node_name,
-                    heimdall.HEIMDALL_NODE_LISTEN_PORT_NUMBER,
+                    cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
                 )
                 cl_validator_configs.append(cl_validator_config)
 
