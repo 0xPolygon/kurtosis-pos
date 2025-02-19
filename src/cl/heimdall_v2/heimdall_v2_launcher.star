@@ -67,7 +67,7 @@ def launch(
                     "{}/client.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH),
                 ),
                 data={
-                    "cl_chain_id": network_params.get("cl_chain_id", ""),
+                    "cl_chain_id": network_params.get("cl_chain_id"),
                     "cometbft_rpc_port_number": HEIMDALL_RPC_PORT_NUMBER,
                 },
             ),
@@ -78,7 +78,7 @@ def launch(
                 data={
                     # Node params.
                     "moniker": cl_node_name,
-                    "log_level": participant.get("cl_log_level", ""),
+                    "log_level": participant.get("cl_log_level"),
                     "persistent_peers": cl_node_ids,
                     # Port numbers.
                     "proxy_app_port_number": HEIMDALL_PROXY_LISTEN_PORT_NUMBER,
