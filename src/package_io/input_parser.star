@@ -17,7 +17,7 @@ DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall_v2: "leovct/heimdall-v2:e0a87ca",  # There is no official image yet.
 }
 
-DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.5"
+DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.6"
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
