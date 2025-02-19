@@ -33,7 +33,7 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
         name="wait-for-l2-startup",
         description="Wait for L2 to start up - it can take up to 2 minutes",
         env_vars={
-            "CL_RPC_URL": cl_rpc_url,
+            "CL_RPC_URL": cl_api_url,
         },
         run="while true; do sleep 5; echo 'L2 Chain is starting up...'; if [ \"$(curl -s $CL_RPC_URL/{} | jq -r '.{}}')\" != \"0\" && \"$(curl -s $CL_RPC_URL/{} | jq -r '.{}}')\" != \"null\" ]; then echo '✅ L2 Chain has started!'; break; fi; done".format(
             endpoint, json_path
