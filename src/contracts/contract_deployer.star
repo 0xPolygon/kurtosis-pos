@@ -28,9 +28,7 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
             "CL_CHAIN_ID": network_params.get("cl_chain_id"),
             "VALIDATOR_ACCOUNTS": validator_accounts_formatted,
             "VALIDATOR_BALANCE": str(constants.VALIDATORS_BALANCE_ETH),
-            "VALIDATOR_STAKE_AMOUNT": str(
-                network_params.get("validator_stake_amount")
-            ),
+            "VALIDATOR_STAKE_AMOUNT": str(network_params.get("validator_stake_amount")),
             "VALIDATOR_TOP_UP_FEE_AMOUNT": str(
                 network_params.get("validator_top_up_fee_amount")
             ),
