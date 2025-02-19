@@ -11,9 +11,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x99AA9FC116C1E5E741E9EC18BD1FD232130A5C44",
-            "BBNYN0nMJsgo0Fp3kVW85PRGBNe7Gdz1XBFuTWQ7D8FnKRb2JYO3i3FK2UiA5+gTSxYu1K66KdYjQYP1mOkH09g=",
-            "OP72E0D7GEi/4VySpolVudLW7uPJm+6PWEtFKJmvp1M=",
+            "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+            "BJPocX9GsUbr+5kVnrE6XQRMGRmYZWyLeQB7FgUbsf92LQmITkN4PYmN1H9iIK8EAgbKu9Rcmia7J4pSLD1Tih8=",
+            "KkroxMJQkXeB042V2vuwq+h64smuoC7Xx1JGhTWOScI=",
         ),
     ),
     # m/44'/60'/0'/0/1
@@ -26,9 +26,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x4A1944A4B8A4BE56220D132D971A8DE74543AAD3",
-            "BNPWXoLfaCc3x/ln5gA525biIjkDoz9njB9AGyluokwqJRgdw/R0DzI4AtmweRyBc52j2ctLLF6mZPkJLkhbDmI=",
-            "4dgx+SPKWmTjMxXgfc2+MfNwrf+7UavfCuL3Zb3YVLY=",
+            "0xeeE6f79486542f85290920073947bc9672C6ACE5",
+            "BA9VTa8ALDWSganFw8tmOcqxIln1cNbRDLFeP4KnnnWqSSTwH1MAaLSgET935pulQ0ygEQChgvvKJgninEqd6R8=",
+            "+Sc424vmmpaUsIrPyOj6hDV42lrfz03ndILForFWga0=",
         ),
     ),
     # m/44'/60'/0'/0/2
@@ -41,9 +41,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xE4B22D40506E095A6F1F77919D6F5054B191D0F1",
-            "BN5GH8274CPXHunsbXNyIFVqq303JU7vO9EfQ3Vl8Zi+eI3faDHLIiL9aysldHFBZxjOlzjrjTysDhtZHXe3t7k=",
-            "YJn/T0tXOuCM/ejCk6vjJIlGAJa4qzuuO8excN4Dohg=",
+            "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc",
+            "BMwO60q+UgmZ7jEKoKmkhVJ+3VhMH9npmBFE/yxXTlv4e1VJkCr9BasrXFC9ix8sb2SNpxcj/fVyGv45xv5JGkU=",
+            "j3I+2EeFy7MgJkPZhsTsYFLsnFWvjLuEBG6rcQStDnU=",
         ),
     ),
     # m/44'/60'/0'/0/3
@@ -56,9 +56,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x893B20B0DA3572D070BB0FF487443B1FBDBA0C9E",
-            "BJcyJPPfGCyVWZB5SrX9nPgrYe3Gq1WKEw+76Pf1k2lIzsSGaJ8jc8DW+Pw/KdRbmJldHjjtkyAnO/ZqLvW53Uo=",
-            "yGeQrudkl2NeMpHso+VtovHa9UPDeM77M1n2ckSWubg=",
+            "0xd3cc855bDb41498920792b77aBCB7431617fA9a4",
+            "BHnpyVMQDGJP/H8y9h+zePKBQb68ANUTdv2W1cGzFRfLExgvSJsORXhDDZ2Oct4b5RwMYk966obmUL+G09XaBjo=",
+            "C4picj+pPk2ns/CYRdDCwj0oB72faxX/uQN3aORc7KE=",
         ),
     ),
     # m/44'/60'/0'/0/4
@@ -71,9 +71,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x489E92C76479512BD9DF65F5143CD852BB8F4895",
-            "BHCwHj6gUrDlm6FAmGUYkmyr4yYCEf6WS1SBHf86MWls3iODCfXz5ejBd+xMi6iFKHBtDcaaGOIZXPuh9cVcyM8=",
-            "m1fi1IjSnkYPxUna5kKiR7hVu2JiqJJIDiHwqnVSppU=",
+            "0xF2dBc05C1f99b6E3442Dbd5524d1fAB7959Fc939",
+            "BCKZfg3EW1SSahK15mg0eXnfOryMHSvCzsOI5AxWmzW+PLkH0V5ethavzzJ56NCQE3PoHhslFJ5JcDbHZGVC9JI=",
+            "0WDCon1nJMlGCCuu7lP9EtMFPZXdzqaS23qyTq7uZow=",
         ),
     ),
     # m/44'/60'/0'/0/5
@@ -86,9 +86,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x71C670B96F3EEE0F915463AFAD08987CD4A25BC5",
-            "BNQlh+0LVAh59o/dE3hHBkNsrKzt2VLY5JJBDl4Kx6pE0bkIhnXNYWU50NAyiKJyy7PJgc4Jj5EY270i/ZQw/SM=",
-            "X4pt6sMIF3yewtD4Uhr3Fk0zvlzpab4ezXhAXQ4voxc=",
+            "0x9bDc763175f3506dEdb5F139854730E23cA82F69",
+            "BHKv9LgWwasaK1jysirm8lRxl/BkGd2Csap+v5vEzWxnm49hb6ZmncI2whKyxYlN7GJRYjn9M3iNwk+M2u2b8Po=",
+            "vKUxLCoNTNGS1u1G2t7rBN9A3k4IscF1ewf/9CtLlRs=",
         ),
     ),
     # m/44'/60'/0'/0/6
@@ -101,9 +101,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xD3DCC37D163F1C3978CE03F5BECC763609144318",
-            "BC3xGC1M6iZcv+ODkpTxy498oHJDVIK/bTSQuoUTy3yB3qwb5a1lZZIGZAORvzvTTrYEbqGAl1xftoownm9/k9Q=",
-            "O8jA4h/EuLdQ5neFZTRH7FJl1rsCIvRzs/Vl3PK46AQ=",
+            "0x307f0aA1456F0B3EDec56D6bA7ebC817D09483cC",
+            "BFSZUiEA3WPgjq2xmqVH7HdbIdjeQ+EnlzplQEIkND3YCGwmbmUeqVU8K522M7dHVBmMmyM633+qHH9CYT0NGM0=",
+            "x2/PDRpZCmDmGakpKYSNg2l165Jw2vkbrrBkSSEdYss=",
         ),
     ),
     # m/44'/60'/0'/0/7
@@ -116,9 +116,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xC96BDCD8F2E32D45DBBEACBF4BCC8717DE18F81B",
-            "BA1/MiJ2fnHkKXpv6auPzK5yqr4ut3cxMoxblvjCsmwzgSa3isbNqBf/1zEliDRWAX2W6minG6cmzGB3dJrU3sI=",
-            "c4UjrvacP5li1x8ilwBZ7GUZopuEuqCLPusQyYJvDM4=",
+            "0x2c64Cab78F2A9AAb96514c5151Afa571301D45d9",
+            "BJgFA3V2HW4t12197hD6brfGwv9QhwmD7duTm30h7QAAAeQZvXNhnHfOBJuVEfs9+F5JZdc2XMeD9fSPQQcdCcI=",
+            "qy53emjjl239CZEUyiluohwUVirmYswvCTkXqEKx0tM=",
         ),
     ),
     # m/44'/60'/0'/0/8
@@ -131,9 +131,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x92AE69B3DFE8AC8F0023444BD3BDA60B34344EFB",
-            "BOZyAuU0TW/6VLlKzStIMef0BUlmpLIsi1m3YKfDLu/GGh/T1AdBblHKdpmb6AjHH8RuWoQkTMiro/b5aeIjaFU=",
-            "6FQllohqNHsfIH2eciHaALIzYszKB9DbJMpV4meTQnQ=",
+            "0xB14908C693fb97dd65bFf82161c2Bdf442B0C952",
+            "BEjMNkyC1yI4/ZSzoC3q77BayL4tofjijXn3oEpIplbehKvQ9KA9yxiAL4uIh8ZJ2tBJOVak6Ueyn3naKYMPA4w=",
+            "kqSWwJC+uQ6sILhDZxf4lD4Fr/IW2/093KtUY88qk38=",
         ),
     ),
     # m/44'/60'/0'/0/9
@@ -146,9 +146,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xAC4984B2861C51FFBD9C8BEED763C1FFE830CCBD",
-            "BFtEV3SSKdRDPMsAtd6c3O9IzUPgcF3dr9iZ/232pl9KAXl9teffrNWYBqTNoUAljA07U2ZXOFo78Q5hFBmFHMo=",
-            "YRhmSt6k/LpU4vV9YloySjfrJESRhOi0VCRLahpxOZw=",
+            "0x3d3e0AdB250437A85013EdD735Af309D29FC6b09",
+            "BKnNcp5mI1zFsyN50k7vfbcDseVShUwC86vSv2YzJ5vIHVYZFj0lK47XGKMID1sJM3D7YTWubd3p97mooKVIMos=",
+            "DdRkTXrBw6SyEBMuaU725RIeeb3HXl6yOD+Frz+bjCI=",
         ),
     ),
     # m/44'/60'/0'/0/10
@@ -161,9 +161,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x17475D15125F79EE4D486E104678D42319E961F4",
-            "BPFPSIdpgm8Ek82lLkxNxLDdBYfdCsTUKotVmnxM993VwdPJneEKoDKK5R+BvObtERx5gjXCglqGyy/8Wxm/fT0=",
-            "8SI7D2PKDYschluskP0k7UVgOnpkKSP971ooNxu8Bto=",
+            "0x3857C1b962cd62f2c45196b319493cEd7bB2b580",
+            "BKkYLzSfZpbJQJJEoMaLNm/wJCVQ389CwO0vu29NdXat2210SRDsb71Z9SmTOwyTpU4E3k8g6x4tsy076WRCuDk=",
+            "xBic3trbik4ZHxkN5vBW7tPPmqfAA9FGVYqemXnn3Zk=",
         ),
     ),
     # m/44'/60'/0'/0/11
@@ -176,9 +176,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x9EDB08DF06A7F2267D08A9AE8C2D24EF6F8586A1",
-            "BFFM3hI8hi52AUrCCTwGU2eaWIM2Ms6aXU+QDv2zD37gY8DxBKaP585dcwK9h/hssc09QWmoAKr4N3+yLxjrMF4=",
-            "XbLrIpwnyiesOVdS0L3i6WoRi9lFIo5wTmpLXuZ8Tjg=",
+            "0x37B6d1C512ffD61242c69863da2CADDBA89f06a1",
+            "BHWRHDT38NQDLnuQqPuPjexuVjnDxYrA5QY0/lNQo6exkGYgtuEqUT1xsNZlpGJSFgLVaorDMgd3yJYiP/haztE=",
+            "/pkdxYrkVrfkTqvd1HXazjHbvMcJwN0mxz8b+e/p5u8=",
         ),
     ),
     # m/44'/60'/0'/0/12
@@ -191,9 +191,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x43F3BB24DB51741AD962875A043CB7D45D5167B8",
-            "BOTcIJ1B4dsLatjQWbicDqh1RVVGb4EsFb0ZT9EbXvqjCFuRLKJeJObAdZwU8+X0Tbhlc/dyA8SbZGwv7Gs7mL4=",
-            "px3C9wTYKoaQdRewoyNXeyUvOni4pwzKRhLlxfdABLQ=",
+            "0x230fbC3D831bADa13df3F91ac6143FaFf595367A",
+            "BBxc2UOditb3K8Sk4GI/FSHFomNPKv1RRU9EsEVYGRCquMPu1/36l2TC7OFSe4OsWA+egyAdgf/avpxa03xbSzQ=",
+            "RWCnlBUAtpT4gPc95ehYhvkKSlkmSu7F3HTmRo+258M=",
         ),
     ),
     # m/44'/60'/0'/0/13
@@ -206,9 +206,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x5AC4630C7FF88056E85592DC74806AB8EF22B796",
-            "BIo0vg2/xFjbPev9YKzuZZi+Lld/XyhcQr/k40YTIv2aOSEh3DsCJl/7fgKhgseN2MT50abIg+qVyBShLSf9Rlo=",
-            "qkDPZYHxY5JO2uTdPWUwfygqwyvaiyKTidPXn2jXNKY=",
+            "0x22b15948E0925214E959Fca360ffdfA74780dF93",
+            "BFLug9wLqD8MEs2AYacXRmb3sXGKwBGtwbLnQvbsPS4KmaM8FwsCAsKTgWEe8iVBhoCGZzhThKqSd2AWcEPm9IY=",
+            "LNrlIC0vzub/k61pXlBG69idlddc3e5/ieEwawyEHro=",
         ),
     ),
     # m/44'/60'/0'/0/14
@@ -221,9 +221,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xD813AC9374B09E83FB80A00A0F2BC91DB9D95F43",
-            "BD42d0KjR79VRZ6+9gjmrbDRp8aT7pNMpKGhSh5SUyyakAf/djUs8sONWTVYVJTAJbyB4gF29DDcRZZ0CuT6qZ8=",
-            "eAObYoTpUzrbzNOr5fAkdvC3HKDtzdt4vxXevs1DHC8=",
+            "0xf3DB09Faf87062b10e4e65000897d0e06e7BECd4",
+            "BIEVunrkKgtEJ+9ZirO3rcoyVJeDtrQxfOr1P7UdwLVDIAyJNd34WBYlKFezzvLMqydo2S7POiwWJ2kJb9jQav8=",
+            "XTr4DLZE8uMyPMmuJ0rMRxxjl369G7ucD1KoYHuM31o=",
         ),
     ),
     # m/44'/60'/0'/0/15
@@ -236,9 +236,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xA52A6A308679B1DDFBAC87FCF1DA61E40AF310DD",
-            "BJRY0i9OW2wKWMMqJ1g7nS5YOjD9sdviTm4HFmZy3/IHP6p6jGoZkXYweryGNzM22SRAl4x7Esh63i4RwMEKq44=",
-            "/l9AVmC7nwUvooAL0yVwIQr2VfTkakkENz/5XJeAnes=",
+            "0x67f6074cd99d55a3587dCF745bC72AA64585C927",
+            "BNgodgzIdOjC7ZGvn/xdBokrhEH7xFOJeM0HZMUTfiVFWRPvWjmUesff57xxNHOAF4QqF41v4cUNWTJT93xJ1OA=",
+            "let4RkE/skJga9TswF8yftBUi95oB390bCAaP5TK8CU=",
         ),
     ),
     # m/44'/60'/0'/0/16
@@ -251,9 +251,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x68E777CA852EFF8F69C2071392435373840E0BE7",
-            "BL72ykg2CUa877wFat4m9c5XfSTGg1WFPLXwi439aC0GC9QrGOKEqzgb4E/zb9U76e78RzmGCN7IOF60pJLsXdk=",
-            "U6NG7vqnQ8f/ubUDET8RYks00o5MXBcteSgjXVB7b0I=",
+            "0xe06dcDdcf4eC8932FeeD78A6f0170Ca1F783927C",
+            "BJ45P3q6QBtS+SOGTHQVhtii4LqrNGpT8finMKWwbNqzipQmCM22hfm0iaoXUpn55y4JMEX4C/+6UA6ddWI6tUY=",
+            "4XmlPF0J9SKw+mJ8j0qmLV+RkcsYfPSY0VHU8evTvKI=",
         ),
     ),
     # m/44'/60'/0'/0/17
@@ -266,9 +266,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x571EDA5BE0F4964972A2E343360711085F486CA1",
-            "BNnUYOnprdT4jbenrIW8A146jLiKeQu1TrNzCJOkRYq7SL8obyirEu6bk1zn+sM5yqNJu8LV8H0vnGM/QqCiOEc=",
-            "OVVfxD7ceukTTrBsyvpwJ2gACsfIPo/u3dUXKEkLxKE=",
+            "0x0dC6e87ac93c46fB6724220e9DF084Ffbd02c2a9",
+            "BLv1/W51kdhoF4NUtb8srxJU6/bv1riSVdJ6bOwPTlsQaJ/sCCAAd5A8LUTOHMj4UlqWK0wYgKNSqxFH0PqGWDk=",
+            "JBFb7Cx3BE96P99f1pC7ECp/TuCRsew1cIGMdjp0mQU=",
         ),
     ),
     # m/44'/60'/0'/0/18
@@ -281,9 +281,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x0AA59E470718329DE2C0D797BEA98F0D40F48747",
-            "BFyOjcz7c823D0w5NOFN2p8W+7ldJjf/EnGbgG6KJO3LA2gapCGqDvkIoTEctsLW6Y0b2/tuCwTkbZJvSd9cgmI=",
-            "VUixMugXxj0XfHfWRucc7QslbqUj9FlczvykWGaj2T4=",
+            "0x56aBACAB4Bc41B6f8FA15b49B244C59FCc152D09",
+            "BB2zJ6i8i+oGqE7VV4ariUwVT0hWc5v2XSbbAT5A3fn47ZbAqNFMqNPmM0EwOwdQTDMfsZAEgO29qY1HVYQTwno=",
+            "WjrCmn/67cjcwqAMCcQycdEWVy0Y/WamsFtODGUYDss=",
         ),
     ),
     # m/44'/60'/0'/0/19
@@ -296,9 +296,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xAC0B299BF3674EDA8390D355D9DF4CC9253587AE",
-            "BBCSUehvRFqDHCHv6VXz+d697oxibMH/9hyNld1Ti9ayvQS9Xr8ppJLcjD5GVSckL8dLoOL5q+/UOfggIEYTQQM=",
-            "ka7h2wyFuQTjduhCEbemw8E020+08nzmB9cC5Ei1gao=",
+            "0xa4ce59D3d8687938cdcAc9Fd73b74e43a6405fB5",
+            "BAJkOuasjobpViiEdqmqbghVeCKYVuXAQScOJVFjZWkHxQ7UXFlWjCCr0sGk8oy6iphplhLVL9VUJnEAzITNBEE=",
+            "uGyTLiBVlLe9qXSI7kOi0cesyZg3ZAZEl2yGkKS13bI=",
         ),
     ),
     # m/44'/60'/0'/0/20
@@ -311,9 +311,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x437C8F076FA35593606967B2B05C6F28907C8E8C",
-            "BGtFtbtRCYHow+GINg7e0cLu8PGjACj/GBtmw0Tte0N4l8HwCPukHUo/YdyQRNL0EGUQZIHITtMgwfVPSEHGgKQ=",
-            "fyhc7PoEQTYUYcAItNC3GbMGpxrg+X4KRMVGA/ZKgwQ=",
+            "0xD8141868ccaD89D50D1338AaC7bD0D23C60dB6d9",
+            "BCf9Zok0cuMrs5FNnO0wT9GY2DDBvUcaff0N1daAZYlQu4DNCwOYXU8jXXs3yCQ9nyT/OXGnKjQnBzcQ7OGW8Bg=",
+            "CcKz6z5vvyaLJIHu2OhPrZhrwMb9e7s0bnNFrBQ2Y40=",
         ),
     ),
     # m/44'/60'/0'/0/21
@@ -326,9 +326,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x2E660C854FB1E88AB09EA4F7009800D1772A0BAB",
-            "BOBC7ANzT0p87ZfDpbsxSvsqKexQSgMs2L6OTdQzRcJ1JfPqMaQFaL7kbL0bal2pqV49yFJ6brarceSEzOArsk8=",
-            "Sy3aDDE779ymv8/VxHkynYfgjj31NfSXYoQOnmyzhB4=",
+            "0x77EDa8182bA4e9F4913da08AE006756Ba0FffBa6",
+            "BLtQn6kOW/YbTd8l42t6W3BLeIXYlpBmTtYxQbO6GwyI3BWMX98Oah5uUI7PykUYRZwK51TjFzC7hoRcXFeoENE=",
+            "qmteHy0yvoex4q+M5Bnk6ppL38tw08ad31HSP3x2apk=",
         ),
     ),
     # m/44'/60'/0'/0/22
@@ -341,9 +341,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x731A8F843AD0FFEDE1A15CA248FBF2D30E7BFBF7",
-            "BCvMiEvzpiP5IfupJ5wqHtpxm6PLPhK8baUqK2K+ZVF8EmwFS3nMi5+ZiN63qFr9RBraF55TC0pYRaqlldds+6o=",
-            "zb3MXI27zXr3GjY+NIzW8kjhZDoP63BLXReSugSkhgI=",
+            "0x605574FcF17A28B66Ac896283CB5Dd581E808788",
+            "BDjlyJ/rdRd343c52Y/XG3PC1RLNY5taIVorp2CyZsW/pyE8X1N+HoxEkLN+T6C8GN+wkNSOHMwvuyrN8j14VkE=",
+            "FQ62UpR/HIkrnF++3OacAbmWrDJqPCk4JFolcpxUh88=",
         ),
     ),
     # m/44'/60'/0'/0/23
@@ -356,9 +356,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x4FF72C691C263203BA5A8BFBA83D92F34B1DD5FC",
-            "BIZFwuk40Xires7+BxPmkGeWT8m2LrQXPhX38YJrzftkY6uiLi415/NJhaEhRvMvNpOLoM42S0JdoWaTglD94Gw=",
-            "22z7tlybgIaIs+piNMu6Zkk9NARaXGukoNiKucsQtO8=",
+            "0x3103E3fEf7791587d9DcAc8B8049D77B0aF0441a",
+            "BA0Deq01f8sIFrr6o8c6w61eV/Atve71O5PSfCmWGDyNi9wYrS6q4L04i5bhJSuYezISfywdenbrDGGfLEquK2o=",
+            "/VrqlAFVHhCNm/eB8aS0psiD3PAMH4eYzUZYM+JoFuw=",
         ),
     ),
     # m/44'/60'/0'/0/24
@@ -371,9 +371,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x9060DCB24E9FDD7A7F20B0B8BB85D9CD7581E5A9",
-            "BIGSTPJJ82N5wW8oa7RgHhMWFxRmNjxzXUe4jidc8uj3TOUs5gLGZeo0XX0s3Ym2gxgq2ZTtNvglNhccbUpgoFc=",
-            "XASG6ZEy2B9WpRbeBpnVC3Tr5AeeQK5ziMKYoyhroP4=",
+            "0x58Bada522AD1036B3300BfaaCCC4f03E973211ef",
+            "BP4nVtUpBbbxer/nLk3FbLrl5lyxj8GRdKSEy9wUXfNQh2zYEMFmfRpI14bNQJfuPFg/vVzgQ2E7ma25JZClHaA=",
+            "jBc7dLpfZYyMvPpCEjSH6RRLUdKq60EXzUhl7ywNMaQ=",
         ),
     ),
     # m/44'/60'/0'/0/25
@@ -386,9 +386,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x28AD3C27F9E9BFC21687009B7695F73C1494C248",
-            "BGhafyaRZy0YFahuArp7j0tc+hTf1KyEPx/p3hsHKiLdqDuwAbxXMbOS92NwAnCWYdQ/kFhgEpEe5q7ZaD/nGL4=",
-            "jDTUXKdA2oFFfdC3BBNwmHA5jx7qq3RPUf/9G1kC52s=",
+            "0xbC885aeB83089F7782505024fc14eC77D32350d1",
+            "BMKgzdyveAddcds29HL8NWwqnASpzZh05Tg6+PCzyoTo9m9G+aya4lMzskIWGFD7jaVReyKoa9d6ph9tS00p2uM=",
+            "fEfrUK+5YiI48wXOuQRzCGtJcfEC+bYEKk/M5z99Xz8=",
         ),
     ),
     # m/44'/60'/0'/0/26
@@ -401,9 +401,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xD103108147D44C3C063832F85A6054D366FBA1B7",
-            "BH1gcl6vskBSIRfImNKQwfKyra4bMeYUhV5byZ2as6xhtgl5orK7r0l2Luw4XlnRpmV2/04Tdlu/554tucOXEFw=",
-            "dOJ3H55yaVA3Sth2FrspWcqborn52DhA2ArVr3t14R4=",
+            "0x574333025c78616B443A14b58C02800C808f0f6e",
+            "BAEvIg5/rrbyr4L/VirCpXtfHu+Qa/mcUIAlFK6ABiDAx8pksowD/YsHBTsX0aaP12ctcbyZNO+vLRDyOXODzEE=",
+            "+5bgUZePhXkhcbcBVj2UVIE012IW1sYg6Hq7sxQbYmM=",
         ),
     ),
     # m/44'/60'/0'/0/27
@@ -416,9 +416,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xEF5663DD50E424876E097B3315D008742BD3A154",
-            "BIrQC94tEpr9pJP+KKR7M/DvN8UCmcdl/suIw11rGfCTXwnhXanX0uZBjanSIARNHqiQ/9HceNP8rXA0zwImBfc=",
-            "jWxPvSAjV7G6PabuNd44o4fxQ0/kwRHHci6bIZICIMs=",
+            "0x6c45934659cEF46a1e5ADBEdEEF28a28a0ccadCD",
+            "BEBpnJVoQRCh3HLa9rj6xnqvY85T2fZXGLRWZe1puZUSXS04dkS0VEYfu7u8NkeVoFye8wBa/DkeU0DPFx9auGo=",
+            "48EE3xnHh2ZeNCVUm3xLRdMYcgoGjO3aGaCWmg1b5LE=",
         ),
     ),
     # m/44'/60'/0'/0/28
@@ -431,9 +431,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xFAFE5C627D8B38D063F08FE107702F850C78B486",
-            "BLbGG/KlQ8LWpBORAjn8Mku02iSfXPOxS11GByQji+wgsDs58zK+w/wqvlKjOoIzpd3w42o6HkNOYe3gCIzy2rk=",
-            "EN0P6anjZLxhGe+IJRfvGYWma+elXonEsPVeNyC1miw=",
+            "0x986fBFacA286a41A9797660b9007cedA0d8b5544",
+            "BGpG/MPPiGTFnDaXvN7orjZtWNn/Fd4LDrVGMd1QQu/iWXHOh3xg8FlYYVYQ2fwpcGHD4WEMCuhKCjEOpernKn0=",
+            "ZqOi5f7spYuDjhD3YD4B3TlZLqfOsHS8+SN4Jlt/PV8=",
         ),
     ),
     # m/44'/60'/0'/0/29
@@ -446,9 +446,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x00B4F7425341B0C1271B8FAD3D5DEC50973B22D6",
-            "BMeY8vWLdOhYqp5zosDKJgj6sqvE8eZGirenpij9IoWvQpYBfo3cqudSkvVNuL47Q5/dSfBnUe27DkhFNuwOMIY=",
-            "BAtxUpwanMlIx5xXK9eHUuYHDrB+VCrdq+T0o5hxKfQ=",
+            "0x03CB13fC1AdaFbC58271aE17B82de6baD79eDC81",
+            "BIQ+edjZhG3ZLRShuk/a55zPBZibbGcPuPicdbya12qZDZFy1nfJcvi22tKGTUL9Ir2O08AinoCWsG/7NQoVVww=",
+            "8PyAkhJrDye07J8L6skb4fJz3XEKQH17dnuq78FLCGQ=",
         ),
     ),
     # m/44'/60'/0'/0/30
@@ -461,9 +461,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xAE1064E9A8DAE30C2C5746C891B1431B82C2C0F3",
-            "BEjdri4H10P0O/d/JSR4QTw0yxKulGmJbUlZz0Uizen8lO2mL9xiCNXekLVXu7p9mvXeuTsAubLsramKlSzsBl8=",
-            "J5wiPisC18fkY6wujcw1k2oNnJ8JjdkDiQElOtOIUfc=",
+            "0x6520A67d45AAb34B38CeFF8540bc96a3b02cf1C8",
+            "BC0B1XgPyZ7nmBOKJtpJ67zBb7eq+9DVo0k2fXia45nT6vb8ONq4X0SJOarNZHDsfz5pbzMm4z4RmWySN4+HAcE=",
+            "oD/iTOAoXkWY87qke85Jmhmx5ty89/pSZxxbPC0J2aw=",
         ),
     ),
     # m/44'/60'/0'/0/31
@@ -476,9 +476,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x86FDAB1E56B9EBD1350FABC79BFA7F241ABF99F4",
-            "BE08P7MpU3a9Y0nRGBdifibaHQoX30MAG86JiwpOazfxORtq4323/PjoqhaMzNhrJQFzo6F6OjoO9mRkWxF4wuQ=",
-            "/lYcVTwQO+8X3gIzhFW0uV+gAqUPTbi72RePtzD5h78=",
+            "0x437b736B390790Efd8D736cF97470d4197dd27d8",
+            "BHqRw4IgLpwmFsMtZJqjJs9OGupnApSh9Ac8l9LUO+gETMNhesPaSNZBGPTjBedqD5x5q4Oy/ndfSU4g/rduyqE=",
+            "SfcYLWP6LTb6ZAu6i0xksoYIDibL5Z33thB3fdmxCPM=",
         ),
     ),
     # m/44'/60'/0'/0/32
@@ -491,9 +491,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x3BDEC822D3ACC942F3808D0C9F6259DB9AD33787",
-            "BBzzPWzPuS3/Wdr+QZHaWI7H+qSscQWnWPVF8K2LNGXkJwqmfQ6fFcP/7ZjAB6TVo9PjAtqKfMuv4BgyVVstU0I=",
-            "H3VwnsvYfMzhZZgzCO1lhdH7B4stzBnln78EatvLvyc=",
+            "0xFd67f44B8c1a6F81C214452C87Ab17A05A944D08",
+            "BBkfGa2UaKyf9QOJQc7cHWVx8/EcLyY7pthe5212GuYsVs5VVK2kxLuY6bEEI7Q95qFYSIDIcIIeCWiMyYKGTsI=",
+            "p6B+rM2FwOPe3Wrsuz4DyTE/NTXZvA2y5jxPf4lLbU4=",
         ),
     ),
     # m/44'/60'/0'/0/33
@@ -506,9 +506,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x4B40D4B881E6B68DAEC45FC77959F5C77402103D",
-            "BFHiWFnDr0KppJbtFjERJesbqs04P4dL5GcqX53U7JDzCRSqL5i1zQDzqc4PhjER/jm/HM3APlq0I5WC66uCp9A=",
-            "L/xgEgtVyYnOZln/tyLizR0Pwdv3EGPSx5BhCI2g1hs=",
+            "0xbd6D0Cb5046dA0c7a13083C9C8E6A591dA92C8F0",
+            "BClmdQIKfr/bLNUhbA15W3dkeAOZw/v1MzUjdYHmW+MaIktjGRILivmK3h4kBO2woTLje0KbNBXujqDgU2V2Bos=",
+            "hOCZifdHCLz2i3MFF//PamLtMAFQ9wXtAyDrmAbzG3M=",
         ),
     ),
     # m/44'/60'/0'/0/34
@@ -521,9 +521,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x5A36D03F5124CE62EA9A5E46C97B2C3CD28C577B",
-            "BKeElJIeLuxCltgo/Zuumt9IHu10FlX6Unb3Hj5537yCM6leWx4HebGHzrvy9xmbn+N5jdlvX+yYIyU6yV+K3dI=",
-            "IJA2GFJiynj36u/W10tyyPyUnM7XOz/mZU01MqJUDvU=",
+            "0xc6f46EC9F3Da34B6E21010D7C8b8eC858B0e42B7",
+            "BEe9pFQxivEbPFrsA4MYwZ7bwK4LlIzKEDdn6VPB67RODftWPD7Z0Tj4a5japnlexWB5/uVNZH94EjEsj9ShRGw=",
+            "VTPMKuibZoRsjW+3g74c7nkxgqierkZlVnxLdlUW3mw=",
         ),
     ),
     # m/44'/60'/0'/0/35
@@ -536,9 +536,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x041D7D628C641A49923A79D6B6DC7275C34FA1B2",
-            "BORosA+XoeVZmQuoz1gu98JX9aCILWFuyBvP0oNbONMZ52GfQ0be0S1kMOKVmRSN6I4xliMRN1OsMtyLO01TXLc=",
-            "jyr4x4svGdb+cmtJQiRf/gxxlgsKfk5iQ3MT09+XFwU=",
+            "0x90fC94FdF632CdfaCcDcAe50ADb9bfF40Ea8e7b7",
+            "BHLCbv3MOP/XNiC9awxsz+n+/CuOo3HiQ0x7Adz4XJaOZpLs3H5q5FoC5N92edF88H8Ot2j4dv5G/w7cZHc+oYg=",
+            "TAK7MXuwafcm0HuvIrE4yeOTyEF8O+PBZrXIuDi+LFs=",
         ),
     ),
     # m/44'/60'/0'/0/36
@@ -551,9 +551,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x0E87E2B9EF33C43AE8FAB01A3165D69A803BF3C9",
-            "BOulEQtp2YWH1yZf7VbgGCAXnOjcwhlPXWwt7aDyDytw0k93suFDQY7D2I3xPmUy/Fqzs005eh+keaGfZebMGTk=",
-            "Ty9+tGH411XQXpcKifNo6RAve4uK0ujhu9vhPeHmL3Y=",
+            "0xE4781bbe3b350C3956c73a2945E283B5bAF5cdfa",
+            "BKGzB2TYB4Jo8X6DevAJXsAqZ7ABs6K9MtpXmeaZgWarRlv2l3whlHSZoMoJhXljaKKNtDtMeIK9q732oPvf9OM=",
+            "XKXmDZgK7yJla+JyDrTE4Lxbk8JAJXfeHC0GAq9IQwU=",
         ),
     ),
     # m/44'/60'/0'/0/37
@@ -566,9 +566,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x25A0331177FF5734BDCE65DB7D22653B16E18D6D",
-            "BPycuwGKKXr2CDxzQKgCvR/qxyWOxA33vWOh9NcHKG7+ZmuV3F0Pf1lUabF9talGyZi8dntBZ8KeSuWIPtiW8G4=",
-            "lEAlq7SxOlWpGI6R/JGqhDb/fG3S2bU3GJdYLdpUJ/4=",
+            "0x28067d88616e70d2C8b62A9E36f36D16A6829b00",
+            "BOgvdsIG1wyQtMf1oATWvnBWMUsL/RavhUOrflRYMwp7r3ZlVWPVw0ZnQxNRTqzzlGnCS8U/qCzcApZkQ1Kc54s=",
+            "EZLB81GV99/o6nEZ6Ha4Op0GjtxHokPLbqr00gNgzuY=",
         ),
     ),
     # m/44'/60'/0'/0/38
@@ -581,9 +581,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x240D27D52AC714A15EFC8E3E82FC1FCCED381CC6",
-            "BDjxNlAxGJBB0RCvfKcfikbUwrABO4aMp+OPDOtWO34dlDC8neKKpu8c+NNCj9JCB3sYF6E81iDBsyzm15VdtV8=",
-            "iH/FdDHH88VfVWjWjpymXgPylGFgVWfPavSyGdCrJaI=",
+            "0x5c48574194DCA0Ed50bcf24806fd532f2A5f8895",
+            "BMmwfBtYu/z4T2T2bbXWNi6sbI8P+pHVn86PUOJMT69RSvheXpXWfd8IItpkwfmlsL2EU+SEQLYKLVVMXzrkTsM=",
+            "Z/i7gGiFGOTPp+Zo3U3/aZGTDHFLWhHq0r0zGAJmvM0=",
         ),
     ),
     # m/44'/60'/0'/0/39
@@ -596,9 +596,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xD8D585606A45BE04999E4BB5F0CC0B29DDD8395B",
-            "BETLAwk0QmjD7Xj6gidAL/2CxFzby4cDgndTG0/lZzqIa/r7wUHbTjDpQbNedNspwkwyYv5o5EDcfOF2pn0MT54=",
-            "n008ArS7wV0TJR8E2EdSZ6S6ZlfQBuEpmUaU7FTXcz4=",
+            "0x66C2ADf7F190E1D639a629dbCfdFE296FC3d6a6b",
+            "BCURngQAc8Q+SrExCEYeh7aKaz8ePH5oOUkjqkOi8+BrT8OQKV9exsfF69pJ6inwfYi59u53n+LKYGVfiSgipfg=",
+            "r756fPaUuSElFWxrNO33peKinuolY27ZkMpUWDjG+6Q=",
         ),
     ),
     # m/44'/60'/0'/0/40
@@ -611,9 +611,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x7B7CD05380FC8DD7A8BA1C8FCE74BFD6BAE83464",
-            "BAlUVmbUJS5dt1v2Oy+Ohyjim0M88lk30m09+vQ01W64w7OpIF3rgJhEeq/ZojUiS/BlAwZTKwnGAdMuw3u6IPo=",
-            "5Krvsthrndf993TEFjjRNs9HG0eFxLjdWmFCpIBro94=",
+            "0x892f73DeE8E8Be9bc4E0Fc590D72189Bb5E4391e",
+            "BFrDfdDjL2I9zneuTbGpeFX+TxFogKxJGEswWlYT5godEYNPGtkm0saDj7a5oD02ngb/qrw3oh1FpmEusJrtj1g=",
+            "Qvw4jEVDGolPaIhndY9/nspbuuxR+BYdcH+PTcAADmA=",
         ),
     ),
     # m/44'/60'/0'/0/41
@@ -626,9 +626,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x881D9CDD0180086B0500B5C7F4AA7C3F36D7BE63",
-            "BLMtGB5R/vE/iHH6kbf9qf96I+VFOqojPqUcg+4HCKtWrb3pu1IHXtT5M7bDDmfDZfziyjXwiUW9H6ivSoleKZg=",
-            "oworNvvBVA8u/ieIeirbXdHiXHhGQ2GxhBsGTQ2t1nQ=",
+            "0xad351A57678111F6FB2D480B8625cAa1E36744F3",
+            "BBCx7aivZezjInVcI5KuSByQT1KWkaUGWBUZ2FcThHWsC3jzq9ALBQX79687kO/APmJCe/4MLcR3mQe5I4iwCVc=",
+            "lE08L59gM8wwZVCYvA6lkLbtw//+1qvEnXdM8HANefk=",
         ),
     ),
     # m/44'/60'/0'/0/42
@@ -641,9 +641,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xAD0CBF1076347231A3CF0088C50E9D2407E01416",
-            "BH2Lx6hxCQUJzWKtfqFE0t3Y8TCa64KJwFDs7tfP60zC5TYWSg7VFLs14vTUYAzSn3YIG/eSzLxy5Dj4vseiSYc=",
-            "fV8jWwpK7f1AjDCvSnIxh5o3S71IDGP2XHyOZdydrLM=",
+            "0x636058Ec9432e994947c3A5BbC213BF46F57447b",
+            "BAj6+xWDU0RcCwA4PjDlNqpydxcx1xX7DbQ4WdENLTYJvY9n0cAPC+j89q8AyEag3k1Zm7feZE8nba8jovGrYaQ=",
+            "2du9atdv7q8YZoI3V7K+fLHajsBjYRPPLH0aniQBJFw=",
         ),
     ),
     # m/44'/60'/0'/0/43
@@ -656,9 +656,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xD7051CB287407A31687AD20BFB7A63B24764CE18",
-            "BFK1lQ3mzxPKf5ug+rRaJi/sGRCNvjn8qzWkEvAhhtjWOJHjYonlOBIoocDUPMWZQyjBI/3InGM60r+gFZvx98Q=",
-            "+QERgJUWfIoVFdogoQJf+rXm717aunvo5p8u47sxkwE=",
+            "0xB395D0c7BcB466776c1e543196b0cDaE03db9547",
+            "BHXP9eI2iNnhggINz5fTXoL4h7ItxwZwaTFBWCoe3WhCAjuolWEUakTam5vpNVAdp4V6Wizxcf6o/5cfAQw5rac=",
+            "h0zW1ik0XEShv2rqANSReKjCfx7ttAex9raPkotlvO4=",
         ),
     ),
     # m/44'/60'/0'/0/44
@@ -671,9 +671,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x433D1B270DBA0320E8731963C4E1954D557E8D8B",
-            "BNDIRQvTMgyOK5Huv4Niav5pGsJOYnxY86Itz6heJs5GqErQMs0DdGvRkLSkjVmnnp3pq5J7YEqnOpeVP8vT9rU=",
-            "xL8CNzsgkmpM/YxoXsr1sleuKKHG3MHVOlzele1zsbQ=",
+            "0x0C55fd03705ef43030F1A7108Ba85E5D215ac8f1",
+            "BCXSjwcW/T9njJ1nCYBP0QI+W1T6PokdBK4+9ji/eeght4HyB4ROOgOyT6JRUawRQ88lGnLG/SiFb0KNx9U24cE=",
+            "DIdSLLWGRZCASp429XYOC/zjx+6XepCfZx2afUNyDu4=",
         ),
     ),
     # m/44'/60'/0'/0/45
@@ -686,9 +686,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xD5E15586136142EE61E7153F919F690683261592",
-            "BGNL6M9HRHvYLAdZVfc2FCCyYYNU9mL7/SAv3aYAi7TtlJ0wfAkmf8NKmFWP8K5tcDlriGeLxzO8ps84MoPDt0Y=",
-            "Ol5fkdNAmd+T10eMbjfMZ2ddYGiDoRFFijhSDO16W3g=",
+            "0xA99E0447509e96c98d88896AF2D22F0cD6dC9DE4",
+            "BNFkofBowGucAVf1wWIo0VrqeKSRDh8y5tKjy5gbqzz4h5uUDjrjXzHBNSg/sNa45tf56evEKlbU2OWham+1vyQ=",
+            "NwcD6kV8595xkJA0B32lf1RzJ3MGxgvoCczfkJLjziI=",
         ),
     ),
     # m/44'/60'/0'/0/46
@@ -701,9 +701,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x1897C0CCFEE11822151EAE98DF682600CBB271E1",
-            "BG0rtFUUcIWcHhjxd0yUXszDZtd4BWScJ/KDyo4mcHoA6WK/Jn0DsZjMQdPEJ574VIoYBDlPUQx08lvsKHUuOzI=",
-            "FYB7hFDvtuqIwvVH5beOLuvYyNekaml2LpY+fyksiq8=",
+            "0xB33Ab023B1e70211E848B8e079885aC5fE5A0F35",
+            "BKfEvT9x3we0SClfXICem++4nAth1Qp/NxnmUdRkSJX14j2jdFwQAgPT5gEwdwD9cmOYh11HqsnF63PvKTS3GMk=",
+            "wODQWXXobsFakOLhuxGmRDVhaiTUbe75qWltS+94iE0=",
         ),
     ),
     # m/44'/60'/0'/0/47
@@ -716,9 +716,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x27C87478AF8AD696B2C13EF4BF6A8D1126CB0A7A",
-            "BCeD0dXEiaP57smoxSyZRINr2+i3nDzfq3tQoGBl5/b96Lbd7iMNjN/uNsmfcQNlv+hTubkDaNp8v5uax62V7lk=",
-            "lFQn4XV82YZkQL+v6CbbfT6MYS/J/Ho6fhWQdSGQTVA=",
+            "0x57EC6EfC5906BFFC0c24708cA48898eDbD41D427",
+            "BLe19hE87pgJcP6hSftE9IY5D+GWW9IA7EspGmjW4TXUZK50rd3RgHYr8S38nZiip9/BUtOMWJsw9mM7lKeGLUE=",
+            "gdhh/FbXl4qdVFR9Rp+gbeEtpT7LuKKztsPRr+Y/A9U=",
         ),
     ),
     # m/44'/60'/0'/0/48
@@ -731,9 +731,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x61A4C4B95203C7CDCC6F29EB8D4D8830922A050F",
-            "BNvx9cQHm+MaO5WZl55lfz+p8a6SvO+Op5wHxFlVxDSNDCrJA1cpYiMMKNNxOYlI9szvHewNolYiSigABCZVJtM=",
-            "1KZAXqMPwqmHq2alihcJo5Ic6Ed9mwTovgdIGyEybo8=",
+            "0xdFD7a8aEeC072E7860645568d75Df27c16Ac80F4",
+            "BJBWYGFos2VobSKJjzqqGp8fIlCiSNEhJcAdF204kpqAwy2xruksco2+iq4sBrGUgI771bAPbiK+38Jl0AuxJqk=",
+            "RkVjrAUEr7BmaIKEJhRcuksYr/Y7OoVRkX8+22CuaIg=",
         ),
     ),
     # m/44'/60'/0'/0/49
@@ -746,9 +746,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x223FBB05914A3B37A5FDBE2F326420BBFEA6B859",
-            "BChKVkF0HYyBinSYXdJelp52j20x7+5Rlew+07vaBKSjwxX1RzyC7MuEAGNBUl4qtLOXwqxAbUY2UgS4aJxKEWw=",
-            "t2NOolk2ePaDkFWHAxgDnCVxegUDgx/Ddx9nWKiM6b8=",
+            "0xFD0a733E3a6E1480E4934FBcB4c55FD8Dc5EacD1",
+            "BDTG7Xml5qC4h1sxZdP1EXEMXaP9Mo5/fyramOD/DHQ6/bVG68+IQNklifs2aWRYpl2s6ZCc7oTk6HJLHDoDQos=",
+            "gdxDd9fZFDZHp/xDglmzJHdQnFmGLRodbdQgLdj8sho=",
         ),
     ),
     # m/44'/60'/0'/0/50
@@ -761,9 +761,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xB4604C8F5CB6ACE3FE57586C73ECF669BFBBE86C",
-            "BBCB+zFgY5275T4Ev9l1r9L3G/n3ZImzub6OZdLnU8hLb5AciyMOahpjavk1l3GIh9Tc6GWrKb8Ob0COYtXE7lg=",
-            "bFlNHtKN9RwLwDyBMkrEQNXercMqbGsz+5yqHniQlxs=",
+            "0xF76FA1957C5c46203349A286577a07F9F8447d65",
+            "BJFolGq35KeFXCHCjsT9b1C7DKSiN+/JXpYvhC8xfykNkR6oS+7VTqER5BiPUbN6CAzh6jILEngjmtsTxr0Otg0=",
+            "yRB4T5U2ZF3900cxHOSh4zlGN8PDIjBIG4X8brqwEuY=",
         ),
     ),
     # m/44'/60'/0'/0/51
@@ -776,9 +776,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x19A3106C627EA0B6296D8BE9B8A775E7D7484D57",
-            "BGDy8w4SOug/0WiOcZ4wzJezLIPFOof2OTOaZ9XHM1Rhyd68sPPHllLorsDh/6m+AMssLjHcSkWS3fjqpPKAJrE=",
-            "DWTdADOnn1s9NNGUFqoSfaJM79oBayyDBV+mIbi3it4=",
+            "0xAd392Ce62D683209bD414D49167f65C8728B6e52",
+            "BMafKyR+VAjKqrhhn4n2qhrj68/4AfLbBBiM9PclIzNkFEXt1UW44LildNgsLDLhw53jPW7kUfDrMm3TldYpz8s=",
+            "PKZChDdZZj2IL522egeJqlBCU2VDeg9ksLB1SezmA40=",
         ),
     ),
     # m/44'/60'/0'/0/52
@@ -791,9 +791,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xACD7DE52298F903C2679018E7871FB41A5F9C32A",
-            "BELrn5GbpnPh+9Y7VrdDyk0w9CdnOFmZUOy3hOn22zQA3bIY7VSxVkBnTQQ9u0XfH3LQTEWpKuq11Jo/PUVbibE=",
-            "9lU4ER/yUF1VVJMQe2bAQiAi/QP3e+UvTJgj02GWaHY=",
+            "0xdB8f08eb207888FfE0e9d715e4909E7Bdb409035",
+            "BEtgo6JYUfYbC5hrFn00pd+fAvVeOeRW9ddTDHxGAIraz+Le+X5mhSkOhz4IjoB/k+3z66CtAbvcLLKdBaSsBLo=",
+            "HyDZbRvXXZfifjwOcAyJS6Tyl2aqeY0mD+L3lSJrJc4=",
         ),
     ),
     # m/44'/60'/0'/0/53
@@ -806,9 +806,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x16851DCE8629AC6C2D83026402FBAC716F0EFD58",
-            "BNEYJCFEkkUTTnvbO+sq6TDdrO0iRbxf2aGQOK7ySQprSR28QnEaO0q5G7/gCIG80K0y7jHGx/62FbFLe0sRdcY=",
-            "Bz7XgKYP7Xy1kjUN61LKdq0MqtawGisYicGleQZfnF0=",
+            "0x91FDe64B7c4cE7248528B711E0Cac17240BE3c96",
+            "BD/4ktwELfQzo0q0319h6QFK6zLGvaz5cwa87n80kx96TPZEDqefgMDl7osbSxKYeq0iu4mHjgUdWyXlXQ3OiHQ=",
+            "IY+r0oQgFHaefvtSQkFSE+/eWazcFPrsd1i5SBACBRc=",
         ),
     ),
     # m/44'/60'/0'/0/54
@@ -821,9 +821,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x3C51149CD6BC0B04EA74ACF080CE3DE73132BA45",
-            "BCheGDENR2aWG2Jo5NrpCKQ+KMOp/j1oSZ4ZXpliZC2zVG/8rHuZpn6JhmwK/T4/o2SK7HOFPb0oBSzUEadUyGA=",
-            "5ZNHGMferBHT99WQlvO7aA/d+wZKAT2VJJz/sjHiXkk=",
+            "0xb1ac8A575FA33Fa176C1AE966c976c0F4dC3d8c3",
+            "BCDaJrJO1GFydYb5KuUviitAyUECXu2sfKpDHmI3qNSYJytLMp6v5+2DDXj6i5qa2rkbmT+KnCFGdllbIiF7eTE=",
+            "MneDKjtdGKCikSQzXPQIafAkzsQO2pnBzO1JPTrbRHs=",
         ),
     ),
     # m/44'/60'/0'/0/55
@@ -836,9 +836,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x1CFE260F78F1A42A0AA8F07B589D6A873F50A310",
-            "BDdT9IS+5A1I3f3twCK3iyacnewrMI8UUhDqs3qNr6L70RCjscvH4UVzISeXt7uARai0IL1lB1LjNOUO9mhLNJw=",
-            "vNpL95lrdhUcNoFF6J94HNAXCOIuLX8MaytkP8eSqpU=",
+            "0x53074b3553c63dF522C1881acCe05aF016b3c931",
+            "BJFsq/DkP9W8SXPtNC4bP5n/VgNAo7lCtQ/frGhln5eUkDdJ1LNS80lZlFajKNgaA1bd6QLHid1AZtqsRqd9+Q8=",
+            "LU3ioy9amCLx4MIsuqNDKMAI6TeSKMSZVmHCjOck1hA=",
         ),
     ),
     # m/44'/60'/0'/0/56
@@ -851,9 +851,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x4216BCA9B49CE3AC8654F9E82CA475BCE460E580",
-            "BBBgEEECbkH/4E5Wlz+pIEf+Mt6N34qBeUqHaIUU904EYVJIKfGHRMAnHrv3QpaosycHObsZoLUwfd0FU/y3deE=",
-            "iSss4HdzOs/EFacfJBPhnbnt3kbtNnTJJ9SF8+HBSHw=",
+            "0x164090d53e2a42e07Bf0bfB4Ba61876a71b18859",
+            "BOYspol03Fqlzrgg/cnQjrqBh3/RUW3TzCzOfa7TUPavRYL7P4B1C3mtL0aCmhEj0quc8R1G4MY6VJ067+ZamLo=",
+            "JAVg6soRNIxfCnC1XV0hIYJxtH6siot1qqnZngGMDkQ=",
         ),
     ),
     # m/44'/60'/0'/0/57
@@ -866,9 +866,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xBE607D5C78F5CD0B8109E544207FC147AD7A0B38",
-            "BJlyjK4s01ofg+nmCzR2V31/CQBwT/nthUl0FX2MD0tRZyExaJUQhuoHDGW6sEH/bmVvKvILPXpDBJBz0pYrv9o=",
-            "DATkmrrJbE+z22te27PgyjNXti3YFLjnwMsfhrYWUMs=",
+            "0xC3E1d84c8C97677F62A1e0cCbAd2466cfbDC004F",
+            "BF/rEv398tsU+8Mu5ZesDQKswH1TDt5KCRUz5U8X3Q4payA8zMRnPyjSByiQjDByP4p+LAjZ/HhwsZalyZXiSnY=",
+            "LvQkGxNmbNC/Q+iZsS6towhBhXoAiZkiL+lpwJ9Qp+g=",
         ),
     ),
     # m/44'/60'/0'/0/58
@@ -881,9 +881,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x3DB5050803A438D5DDF53998677FCFE237A55367",
-            "BBzSCJvFnEGBniFmhtv0NWvGgGrrcxT+nY1HOiT+iGvGe0cTZKHLCZeJz/s11afvXzCr1Mpb+q9a/pcdYNItLfQ=",
-            "U/R/a8yIs7AR9vaC9k8SbnCihcuFHBoZNaEc3yk2ir8=",
+            "0x67959a19c1269C033A1cc029CaFE9ce65Fd66977",
+            "BE6RStMTnAQbE89bfRha+p8ZC72rEG+zvA+K6AuUnOuZ7qWoE8pxKunNss/bqtnzKUqpGl8gCGmjC35UNYGGkqo=",
+            "HLnfK0NBoVAdl3fPdafSmwyuR//K0jGTq8mjem5jHdk=",
         ),
     ),
     # m/44'/60'/0'/0/59
@@ -896,9 +896,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x4756E559C868BC44E63CBF689ADDD73BAAAD570C",
-            "BJDGnEakIuJK9qOjqjjR9EVqdoBWqbasnlpeSqqyyoe/YNkv24weAlp9WiuukrzDqIwZjRNThL6KtF8niy5lHSI=",
-            "VXjqR/4lsnNWpaOTYh9wFcICnK+UbqnZfenFJqxI89s=",
+            "0xfb79574ec8510B054585ca6DF42E2532D69E4186",
+            "BDnOpkVlsWZ8Ua/jv2e9zRFz8SGBV47m/iqROkGSPpAlMuzlk8rGE1AS+XVF6XLkKB3XqzJztpzWEwGiNHGb6C0=",
+            "1u0qNWlUD0GTN7rns8FdRqEH7YDCdTPTNSEFS36Cu7E=",
         ),
     ),
     # m/44'/60'/0'/0/60
@@ -911,9 +911,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x1272D0FC2E9CA2371D44B8224C6B89FF1DCC0329",
-            "BGJR1TCHHVkWSrcDTFvSnG8DuCC9XmtHO2evn5qife0sQq0pQ9g1DRbSmUfZCFhA2d6JGgyqVchNR9jTlocxptI=",
-            "bytPvAp/zKfIeuvMR48Wt/n+7m1JNcRp1vENGnD7yqo=",
+            "0xBc39041833DB3743167d68d0bA80CBa4901a2868",
+            "BD1c4a/nfg6s3P75dX7T1QnXhNQzwYmi/TKetaHcveQ80SGBH78aqMhMxv745Zxr1yxxKCSkoLvsFHnu6jou9CQ=",
+            "h2Zud6MPHG43pQ3xFeqWzsEVfBwTRbnMHr8E+c+PfD4=",
         ),
     ),
     # m/44'/60'/0'/0/61
@@ -926,9 +926,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x62E14300C281666F864192E6136924B3532D9705",
-            "BC1IBK+r6oGRltrZ1eEvxnQnFiTpm/88xReC1TIMEXnX1ECRzlrWJIqHcunUtJvpi5OuCuaN1+vwg6K5bFQoJ44=",
-            "JgS1MO0aDl2fY4k1Xq3HcP0wcPnI1WTmZWS/vY1K5SM=",
+            "0xddfBF34d9637Ce86930B3379Ec1d386C3a35b95F",
+            "BKIlrm912yWq4E+wB3mFaIHLXHJDroGlGExsUggBJlHj9E9jr2qtF9mclh8P/FUCZxnUECaV/lNi5+CwxWeMpxo=",
+            "LzVTkYGX272Se09Klf+ZdSqSuWh63Edq9geWNBysJmk=",
         ),
     ),
     # m/44'/60'/0'/0/62
@@ -941,9 +941,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xCEE5E8FE208020F555B6A2899BA9653A258996BB",
-            "BPAncYGSnHpT1eDlLfv57m6GnJc4Wga1t1memA89QJeCJQv8p5ekcRmu4xhw7b8H1RYvakBSUdzQr6k6tW6lP5E=",
-            "e1AmD6I5HnlBayJW1VSIM2jBO+rFkOmX8yudaE3I/qM=",
+            "0x5e9f1Cb0Bd5943CD2D193cB8df2b587482A07E58",
+            "BHYw2u7a+jAE+Sp728ijimzn8wtbkLyXbnW7OrA8y7AwsNezgGynIM33fmur9VeSiCeuE0i1o3ltmqoASKf7OMc=",
+            "11lpGMSqfjPao7XzC7deS1MXVei9g2BRc4dh1AA54KQ=",
         ),
     ),
     # m/44'/60'/0'/0/63
@@ -956,9 +956,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x059966FEA5EB5A38E0FBCCB4F5DA70EFEBAABC2D",
-            "BFW4jWSyeMrzUXcGGAE5wT4tJBowSReNowsHjVm9hjy2eJjrBZL/h0y4Zig4347alQ4Vr+zv/YQD31wwAtBxx8w=",
-            "226NJDQJ1AIfkz4C2oDKgKjT9n9lIWzEXh3ho7Huv5w=",
+            "0xf0a0F114d70eC023ac7e1c043a5f9bDDE691fC9c",
+            "BHrbdQs05tk7sUjpa5B31eypw0EBsgyrHOEa5xIfGcXpZseVw/010dz0zON4rld5Vvu9FN+md9FmmK8Bm1MrW10=",
+            "uIDthAx38eMk6s9pY6eQ4gSXSspDMJnpEZQdisQXYKY=",
         ),
     ),
     # m/44'/60'/0'/0/64
@@ -971,9 +971,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x289DB0E96C332EC98944F065833B092A1B79D11A",
-            "BEbVIe3usKd9wqOAS3Fpv2JIjoqbj4V293aBlZDnAvt/UvprbPtXgcrDAFFjn9KrviM+j58yVQYf0LPM4+XYUVI=",
-            "tJ9L3kXl3zKY4TCrMxmXYbl+ebC7jS/OADYZhnzuoHc=",
+            "0xFB5aD3fE9cAf0C1d11a6E588e90d7AC8F2919F04",
+            "BEosMhzZ4HgAeg+GXE+S50M2gA/P3ilR+0Zj+Hgm8/4kkMmMR4fUWB+38WPvpqJxjGR+gmcXGNEu+s/rz4VTsOo=",
+            "uDnGYmmv2lXO4rcWyeCPuCWRKPtYhxy3nbtrC4AFbKA=",
         ),
     ),
     # m/44'/60'/0'/0/65
@@ -986,9 +986,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x1DE043FB7F96C71ABA43B8BB5228F81A9BCB7098",
-            "BFDdLIPIPQNeTzMjLyGLXlBzvkXwjGafzZiAxmI2nlO6rXu96u+yTQbYacYFgiYFNs9RRCmHF6DoxVJuGEtAyrw=",
-            "n7gYBmkUnreHY/E7YPjl7WCQCouA0UaixG7dPAcGR6o=",
+            "0x3E3A2C16F2FC6fDEc4Ea177f1DFa09d03cD3b5a2",
+            "BGthEykG1dMofmqMEJ3R4A6dfTs4jZS+eIHAT36ctmsHbMfyD1x05GXMkl7N/EvSGwn4KmA6d26hql72fLxmQC4=",
+            "DLEmt3sm04yZvdy6iZ+hWxjFtk9I0qEHX0aC7ArnQcA=",
         ),
     ),
     # m/44'/60'/0'/0/66
@@ -1001,9 +1001,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xB902402E4B411C1912C35E867280C0565D8ADB28",
-            "BBfXNWeyAG0ztTZpUH0kS6bs9WS0DWKYlq+LHTagSWkUUF3s4Za0XCw+rXI3qcTNoFMC+XIUndAEa2TiUS3rsVs=",
-            "zAf9qxM7PUzDHUoLZPse2L2/yrg07ZklwQ6POrrmVng=",
+            "0x83F2D35b467b2104DBdfb6fFc355B249C44EA061",
+            "BOeLAk9MRcPZuw8l7z3mFDnBOoksD4modTxu3xAeJDo0qI1OlRH8HguQ6xEDhtOsy3hReec0rDhiDVbIwuPC0LY=",
+            "1K5iy/UBNHkJ1ZnYxGrOOL3Lf0araddnVa8GmnC4OBc=",
         ),
     ),
     # m/44'/60'/0'/0/67
@@ -1016,9 +1016,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x443FF8247BBB337AC778DF18B0685863BB9D2B38",
-            "BNpdPKwiwKoZWhlalPuE119BWkn8P+gmpkVoNUGy7p7Qj83ox/Z7g5gJo0H/2rWIFcgmOrjYopAJfsFfH3IzjLY=",
-            "BoGLShgQ8Vdy1NvjIWq13X0f+qEUVW/5fUs9GAfGP+Q=",
+            "0x7B9a41F726729952f4DA24bC9d23C582Dc9b51Fe",
+            "BHIMZEw1LbqDMdMgyJvvKrD+lJomylqnAy1F7z1P/nJ7jk8/joNOc7q+2gFal/m8cuSNhQxLadkdPFo747rSm7o=",
+            "B3I04xw2jG/dpbBNfqORBeZb2eaeAjlBfwCu9IgjJV4=",
         ),
     ),
     # m/44'/60'/0'/0/68
@@ -1031,9 +1031,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x2B095F1161A86CBD5CE65CDD84F5822A667C6D58",
-            "BGoXUsnj2oVVUDjiv4X9ZWYT0vxlpLDwuMXEFPPWmKj0Yc+y6b8H8xunGi2NT4zaIR1rAtbPxFdEy3D5FQJtF/s=",
-            "J5g197y4rYFRvDKHjRQA6BPgR0+7PyXnMfq6zXZxh9I=",
+            "0x0F28Ab680ebeCFBC003B9Cf2742881C86DA45514",
+            "BBTBdQJrTFc1YwrXqKLbE9qzx0vfWHhLBFKvuNF1YKq/45XC3qh7g7m/rn0Ds7H3GnagY1GD7dpmnWosrWIn7pg=",
+            "4RliCZQ3VyH547z4ontF8Afs8jiDe69WHib5ow/40VU=",
         ),
     ),
     # m/44'/60'/0'/0/69
@@ -1046,9 +1046,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x962849FA8F321BBD079CEB0E84901CB39B320B44",
-            "BP+xxAkT61n+34Yh6Wc9GA+s/jFDi6JnBtiZ6c/9JojEs4IPmI2CJRA0HSKgvYKYFKr8YE0uw6S5XRzHFpqLPhQ=",
-            "0wqdF+OWcf50zZVuZoU2N4a8soZdX4ybUdK+FF5734A=",
+            "0xd86114705f4dbC7e3Fe620f3ef31EAb16c2CDf7C",
+            "BOPK0wefR1rKDNgXiXwCTdVOkBd6TGyK9pwXOFQHFLNEaeTFd7/U984Li6OVEvZxH4KyagO/Cod4riFSBhu+7Yo=",
+            "M2GSTUM01O0dUUu8ulrZfW4EKWyYG4ykagztI26psU8=",
         ),
     ),
     # m/44'/60'/0'/0/70
@@ -1061,9 +1061,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x19A0B944C5423F9A064582CC1D963AB194D0DBD2",
-            "BED2m+OAeqj2wVsGJ7tDIrHIxPLjm320jQQ81L9sOIQ93TjFFWqU7JpS40JssKV/PSoAKzll7hogkeLHKATj2JQ=",
-            "KkSm1KGPt8kZvthlrGA3GV1L4L89PptE2Kaqsv5nwjA=",
+            "0x52a7a83E89De907e6d17F3979920a5dE76531391",
+            "BEyT9D8knzgk6GRiZpRe7PaSISoPg2QUUv2rll6vFb0JR11DcXzoeLfd7CxA303mU0w3AoMPtvCkmqTdxTvhqvY=",
+            "h3A3tCgJuvYy6R5A/eOZk0cie6hRRTVExd2y0AXINJc=",
         ),
     ),
     # m/44'/60'/0'/0/71
@@ -1076,9 +1076,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x02FC67F4607983946825126D959818F25BCE07EA",
-            "BPuY8wj/IoTNXYZV8dQCGyYMZpSicq5/nFleHtQJLo5ShDMwsv3Wm4rY6Kdcm2jLmkkKQWbEfQZE+XnHZpvHfUA=",
-            "G50CMzo+a0klPXd2J0lgQr1L7I6MY5wrGxCyNlVz50Q=",
+            "0x84762a992316995462C5A49429130042E21Feb24",
+            "BH3yHW1fDuqGshGLcJ12BcMA2j/Sd/WM3pu0QsC/C3GR21M/yjwIyfPD654ii+mSElGnvfrvexbm7QoJcshRmco=",
+            "jAPlC3+CUYFV7gwvCsDKQVkfSRFwstMtXvFt2oSiiZ0=",
         ),
     ),
     # m/44'/60'/0'/0/72
@@ -1091,9 +1091,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x8ADDCA75D8BD4DF4FD025000AD33EA77E745F61F",
-            "BHtwMezL9KyWSCgfZxzGQkbYK91+dh4SHWAnRhjvngRNp9W9gryGV/Ez88Eu1fPgImZ6BvMjeF8xt+Yn8CLS0gc=",
-            "r8NFfPZCxXWHU/SYT6RSufrb0bNpTaJl/G3wWGMlW3I=",
+            "0x623b8Aed2828630c4f70f973aa5fDf16097a4626",
+            "BMvvSx0vLWRu+WPrP0W5TtLl+fd/dyZY7EVIaYFYiSCdoS9by13cIGqkYC7fbKNZXeNmXif6Ray7Rj+ukYwcCps=",
+            "tdBOUBlPOsAcraMHfZcWtmPuvgagFRIuewNy55iVQzM=",
         ),
     ),
     # m/44'/60'/0'/0/73
@@ -1106,9 +1106,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x9251EB895C72CFEAEB1D1E130187BAA7613C3FE5",
-            "BIoeiKedCZD7TXAr37gAfH6ovQpKQKdCIneReI2Cwe1qV8RgjdJr+Q+oQChDh26Sk4+SsCQKGNRhfnpbqpIBtTI=",
-            "pGNmJuaLsOCNSacvyVkMF+5zXHru5I/9dvDwkr1Ia5w=",
+            "0x05b34aD8BA4F8c611cF43ffD051013bD3BE3af55",
+            "BCkOZck2Lw0lA0f3NZ8DE2Zy+k48K4U9MxhHUnMbaUIF1QnymHECZUjJxzKAqLEPJSQDRS6iURhZEBDBmDMVqV4=",
+            "n/kXF1L7dJ3oHHV3lAaysAcssciKhsPhcLw33ehGYcg=",
         ),
     ),
     # m/44'/60'/0'/0/74
@@ -1121,9 +1121,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xE3A644897135CB796506D9F01DAC0516C60EB2D3",
-            "BBH8L/zjzeIY6KK4YG5RzAqSSIOlu+zJVzSGsBpPSUjpLDlvtASr/dMBztQhwS1f33DNwXclQ9C0MEApT2X7Qqk=",
-            "yE2a2lz9ifibAIdTHllv/eg69eJ/uIxudKzPOT+sYXQ=",
+            "0x956a76461c300E81f42dA53bA711F57b928E4E04",
+            "BNOparWj4wI0sg/JlVEBLbPhXMIuc/GYaVRY5iKeLUBChmD0ROA7YDeNr4tCplhqJPVXy2WqvSbm+OXtmgC/D1c=",
+            "W2hnkKjuVYnW7wmMbnZZCXGFxvQ9gTutJfNdpTAko24=",
         ),
     ),
     # m/44'/60'/0'/0/75
@@ -1136,9 +1136,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xD91CBC0B670CC5B1A57F5A09E1F02ED5224CC7F9",
-            "BK/OCoff/CaIpjBDOeaQCl4T3DuQncgv3qTD5LxWrnCYSD6enJX3kvPZU+l7l6ZFRaEjLPrr7zC9O8bcH97ePm4=",
-            "7Bi1/zQIqF8C3n8b2powYcfLNWzM0yKuU7l5Jjjqo00=",
+            "0x51C55970Ce0ae13166fD16DE5F58be2309563364",
+            "BAHkYpJhTnsbc0dK9FHlObeCXkJCRbJ6KOJJ8N1ik4q73y33vU844wJN7PSA+kF9FWruZ/iuMpGP0GHNybfgRDk=",
+            "F04qQ68HHathRQPq9l4nQerRcY11Uvp5Vf1LHh7QCu0=",
         ),
     ),
     # m/44'/60'/0'/0/76
@@ -1151,9 +1151,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x6211857A24A81FDBFA89049DDF204465D29D1247",
-            "BN0I6K8In8QHGeKIsMUbLuIQwXnEmGColeVf/xUDcXrPfJID0frbTdHQeFshUmOONGf5Y5oSPHvMHq4lwJgePWg=",
-            "CrOs+uxU4qDUFzd8HGKcKDxGedaHF+GLFBksQK2rdu0=",
+            "0x945021CE5C876e153f2D5d7204C4486e125bb52B",
+            "BO8uRzK/lq/pnQybgVDl63w/tzuch+CAO/g8CnzF9B3XYRVLMEaK3UaSVg8gQ97ORCgzoDzVBQIjUpL3s8nqWpU=",
+            "DeVBwmrAFCRO9yt69Vn6jG2PeXs8CYOnLHp/izHgD/4=",
         ),
     ),
     # m/44'/60'/0'/0/77
@@ -1166,9 +1166,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x9515376EDA51421510C6066B809B76F0E3FC7A9C",
-            "BOlEAuo1xqPNnQE6toyKEcwKxEXLd0uiat+w98meGDxmN/jyQgr40p/N1/vvfZwiftfncWFzE0YcJDezXbny0qE=",
-            "ShzQE3mcjx03/w3mToU+G5+N//UyPQ4aFK9jimmMxZ0=",
+            "0x6552400848Bd54Af0e0B076803F9c9fb711fAE18",
+            "BFIHzQJrhIzwM9+clKooCSarCf4ItkdOV+CpNhQtQE/wCanXl8k11HAJ1Nu2rHHQenWo9SG44rf1C0EQrvxcBoE=",
+            "MBk0zWZWbw6g3nfsfG9kQthLlIqCG7zONknjeb/NmfM=",
         ),
     ),
     # m/44'/60'/0'/0/78
@@ -1181,9 +1181,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x9283BBB26218A8A2970728251AB789220FE09C76",
-            "BG0wYr7mQg7W4z/Mp8GPDw6tOhHrO8cCcO9/yOFg/GXZMycYjhuyPfJklXXbqAMKPYLNUtNQvIeR85KsOggoVaA=",
-            "O6zdKDG0ocVTg8jdoKGrK+p3pJ5vJUFJHzN4GULXZas=",
+            "0x764e4d64090B545bB884B9Fd26cE734e362042B7",
+            "BAzSz9i4if3AbYZfZEu0+ODiEtN2nemU13QBpAt2bxg2uXT1GXCUqmFig7SOVx8wlUXQAfNYQ/X0P9SeVS6qNLI=",
+            "oAsX6R6qBEuCRBEVtAIzoAKPAX1/XIPFnO3/XFtcD+8=",
         ),
     ),
     # m/44'/60'/0'/0/79
@@ -1196,9 +1196,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x646184EB31B32CE398A95880227F8A5ED6F473D0",
-            "BHCd4d8XqZBB4E44h6rLTM4GPzxXvw+Uxt0LAWyNgLas+cZiqyxABSiNDASJrL2cuH0k6LfrMVVgnIOXVmkW6PQ=",
-            "4FszI74wiLXeTAcYXaLUJQkn8wPDLpaza3ZHFINNeJU=",
+            "0x429Fe9934A554EbB0d992f8dd0ef7CbbB8cdC48C",
+            "BHftZgkUkS4UybRT4R15vc1jrN7A+QYImvOkVXc6c/Rr6yMAwSR8k4sfDUPkyU1gKefhODpWkbTq/zIqV7bodvQ=",
+            "/b5/N8TkDVdEaVgfkiEChqSpT5b0Z7gtk1iyDlWpvX8=",
         ),
     ),
     # m/44'/60'/0'/0/80
@@ -1211,9 +1211,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xC025D5CA8E7241D3C64D9EFF4C7A01486E6D34C0",
-            "BEdsJ4sPoKvM75GMccwz6+BdGC9eFck/lrW3y6KK2vkzJvXAsbApAmuiaD6WppyiMJHOd2UxsGDAJi9nPbv1ebE=",
-            "NSqFSkS0Y/PoP1bmCIY1R/hyI17x0Zmz4+qgfuXj+WQ=",
+            "0xD8348cb61F78BF0BdaB6a6A224E8c939830CE7b3",
+            "BGmm4H2nCYN0SLPhn9Ah5FrE4YlP07asMEk1Re1+/2Vi1w7QvN10Hx3k3qG9C9AGDf5CcJwFNh+uubSVTeO0HI8=",
+            "Hu2arsXlnka1i/f8zzMHuDtAqmSUys5MNpjuu77Hr18=",
         ),
     ),
     # m/44'/60'/0'/0/81
@@ -1226,9 +1226,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xC62D28B44E212F6360C5E5EF830A21A854BF7169",
-            "BP2koiLMaPRCdjqmV03k3KKb5bUO6KziURweeXy87fxFAzOznatn1IjWwO2z318inYN4ZbXjbxHKm+Xm5T9WtY8=",
-            "OqBreWWJq3wYBGxHi0BnnldREoXJLzlneFnTPzup7BI=",
+            "0x66983f7EEb7346603Cd580a3c45EF3ceF1Ab58dd",
+            "BFETSiuEQ2KvYYh2YIuvdETm0b0xCjlREvUz2OkKIVtN8Yj7giz62AxTN58oRSr2CTdaK3yGqqWfR/qi/NfJ4tg=",
+            "B2NLrrEusdwaTRWzRlZvZcQtPurDCZ25O86cXRtdVXc=",
         ),
     ),
     # m/44'/60'/0'/0/82
@@ -1241,9 +1241,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xFF90F8F31692BB713C99871D78675029A34FE75B",
-            "BMoLz+2i6RQYju859/HesJkFeiFS0hIYX3n0tPIZQVW4hfvblgrOdqUyAdwLnYYd8bB0Kw8yTP2tZOP/YQuDHks=",
-            "WVyritZv/DHvJBGq7fkfVJbZJsgXZhONaQjuqmi5prw=",
+            "0x96cb80Ea07acC199f95f73D330E5026E8FE31b99",
+            "BEB62KHQ9NXUiPCkeubjI2Otr6R3gOi8WUgHYg0DzDeGGZc8Fl0RJy+CiMdHM+jgEyxmY2aFCFbDcD5ZMQawU5s=",
+            "6PAjislZLJ1KqKpEHMlBN9LJbmWLcFXzMxLSyiMu60g=",
         ),
     ),
     # m/44'/60'/0'/0/83
@@ -1256,9 +1256,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x21F31D4A546E55E55C6FE45D569DD9714732F85B",
-            "BKyAsx1nFw9XN+enOmr5U8SA3X/FX9DxmD0o78N3CywownW8cXfiyEwnOcpX7Kngh1xshG+qQZ62GhCO83RoDKE=",
-            "hR95u4hDtp5MGBKNuwc3gPxVgFmDwiO2k7vJaRSrKj8=",
+            "0x83D72E0eD72dA5467D4ca996e6E47A25Efb2F4C1",
+            "BFtp8knWIQmIADmTDfv5VaO6hegNQqen2teCHv6ENh2Djz81G9WqVMRxc6HILHjBKmRVnFdHBpLfwekb9puChUY=",
+            "MuBYmgmZXhOZBlU8EbULGE/htnkWxY+vdXC16J7Q7uE=",
         ),
     ),
     # m/44'/60'/0'/0/84
@@ -1271,9 +1271,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xE9B4A9C76ECFEAADF784C2A4B26C1228CC18A98E",
-            "BM344qpaWWaPpa7d5rVNclu+r0ne0tcI9I6zbZLHAvvwaaPm2RpMx9USR4iLTW9KhU8OA4LpB6dkmVYXKfRki2c=",
-            "WVr8nQ3Wb6AGiFEgiDVdBuhim3FctVgR6N0euOP7GK4=",
+            "0x76443cEBc18d86FFBA21bc26F537e2ba8a882555",
+            "BEtC9R1vduRQ1Jjkk8v6Pbuxmj03K/aE5VG935idUcf3uaW8llMMMuKsEneg9N4GwaTQKsKK0NcuJkvYQua5TSU=",
+            "IUERgXp4xT9v0ZwQnipO1h0xapv8YHdL9ztHfWjUZqw=",
         ),
     ),
     # m/44'/60'/0'/0/85
@@ -1286,9 +1286,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x028B3760FE39BF2D362F937B01A3A0EF2D0A712F",
-            "BDD6vvNJo4xA59AaJucpLU8hYjMxbHQoI4LiuyziaycyJ68ozJgfQPa9xtD5Njp33lQHj1hZNZMnvQa845owO5M=",
-            "uFE8523lv0U0gc2SQJ7RyHmlorgCKtlvc3QCCEojHxU=",
+            "0xf2cC85782B44f7828BA2a4d9Ea87Bec508B33357",
+            "BDWMv7J3CnaOKcBwkdbbYVnyQQVXMGtzGUnVi3SGm4touWgeu/B1UJMOCwFIvYfYo4hZjGGx22gND0wJz3cxbi8=",
+            "oINfE1epieYjKS7cKQ0pNtEDD2T5M4TAjtUt4q43kWc=",
         ),
     ),
     # m/44'/60'/0'/0/86
@@ -1301,9 +1301,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x90076093CB36C25469D8B4E9DEB0F1935F6D9B30",
-            "BEJ6AcGTb7YxzTAZ+lsTJVzVfCqMz4cyfDZ52c/yVgvOTDZrdg/c0TFLFjQGwY6TTzr0vHjr54nBDkSU6A5/oQw=",
-            "SGDNloJO3UmhFE3CYvK59ahFP2CFC4Q0H3oaDfrlZe8=",
+            "0xA58EC24FC1eb389717FB63b6e39c2933c1cFF684",
+            "BKkFTeHK+urG9UdVVCg17cy59DNpH1i2WCilQarghJ6HY+oND4EXbEHBQ8fbnRJszZfWMOinHc2kW2bPdiK+GD4=",
+            "Tc2Mv/+EOwdBg5zpxpaE41BjvaaYALn+y2IrrOMhLMM=",
         ),
     ),
     # m/44'/60'/0'/0/87
@@ -1316,9 +1316,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xEFD18F75E9887E965E803CC140DE42A7E8B0E262",
-            "BAXene8kCaKHHjtjqOik6HVPlSgv/lNMYJxX5ZmNSHsAoXi7/go1gXU6RcqvJSSpgqmGSmQjMqkitXNOvIhoPe8=",
-            "f6i5ZrylhWBf5/PV6i+fMSGScSGHs+jVXA30TnyWjQw=",
+            "0x1E7C89De5bB8E6E020dA89E255ADa29b2fdd24b1",
+            "BOKZBBA1OQtXW8TuSpkujLIp8jUyB8AToODdjQIpTgG2EEpB+w+qeu+Kjcgh8rzJiq2t8yA6Iqy3i5YEjxjWwhs=",
+            "+J4BZ4u8bJItJ7qeOl2kmFyZzl06tz7diprsqfk6SAQ=",
         ),
     ),
     # m/44'/60'/0'/0/88
@@ -1331,9 +1331,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x7E4E276012A03448F65AF5C263AA6B4C2CF784A3",
-            "BBdJ4yw8apG33bP+heALLyESeblnPBxiswH9oozXl9vc28zKTe5QywFFCpYRbnTTft5znIVwOx0p1C8JSc8/qEw=",
-            "HRu1I7LA8eccyW6KRQZwYWViUkMl6Ssvvy8GIwg1lqY=",
+            "0xE1a0CD85481F03a643Ef56DD45485C90bacA5Ed7",
+            "BEm0HQkbsZpiYVgTKTIdixkMfHP4Nmeknj2Gr2DHwyoyFsDobCvnNeM4TsCnWraPe7b9z2t6h9BgvZm5VfSGKFM=",
+            "r2OqImibunql8qcHlXTmXWhHs2Vrqa9GQXO02bJ3tpk=",
         ),
     ),
     # m/44'/60'/0'/0/89
@@ -1346,9 +1346,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xB88742110C46FA33199668DD3124FE35B6E2A3E4",
-            "BOrxVef+6e0+ov63PvITpEau7ApVWbdgBtMYFt/KcHIqteGdlrfd+pxmdhtd6vjjlsNRksdLvsE3PZbDTxKxbLo=",
-            "xttE+2fGEeJl6yq6VvJS4rbvMlvW7Vhc0UJw38igvYo=",
+            "0x82CE251D4Db35b434CD246D0762dff4A85dB73D8",
+            "BINn8ze6ER7vBPw9vN5COLOVatJvuWfLKHimk2tbTTLmIKghI94zmJwc103F1Qd9AN0eu1Yqc8jcB0FuaHRjVDQ=",
+            "Bt8I6L9/yqiIWdUo3JEYHG1+s9nDa3pDQe8bYTiSOLc=",
         ),
     ),
     # m/44'/60'/0'/0/90
@@ -1361,9 +1361,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xD54218E51F32904DBA529CA85925A41B3BF1EF98",
-            "BFj6khui45M5eskmku1e3Go1HImCF59Dus+L5B0lIaWAt2FPyTDYf5q+txtSIduqsN6ck59lTa3p7EiRWBc4YWY=",
-            "VlChlun/AGZvu4cUWaMmF2e2/4bkudVY0rxuyAWvbWM=",
+            "0x9815f14De23a864D878F857D6A9c40E4b71c38c9",
+            "BBEDwEEhISKLIGHnQxVFHTMd8xSQRP+fAlhZOTrRx4gjwtQppLc2jOikYmpykjz83i2Ua7q+ynHszYzK2HdyYhw=",
+            "zJgL86RrThCUKHgvjB96OVCX3+satU19g0InXz2RfAw=",
         ),
     ),
     # m/44'/60'/0'/0/91
@@ -1376,9 +1376,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x78ECFC4E52E57B8D817C96F0AA598E477A760834",
-            "BKCKqBEqTVAT+TBsHAxf3BqHc6KsH9a7YYJOYK0tNWPbbkdT0cJ7271BJw2t7PRhTyZpG7ZOAb7IE0eV3eXOL44=",
-            "agVyF6yVzXhUliM3NzymrNSeg9GWbZO5m13DgzHwKuk=",
+            "0x6bd9C38EA0d2D125Bb37EE8923077EB1311C0838",
+            "BBxZzKRtbrMLIqaNp2UVxbARLzcqsfeXnHwJCvchrX0k8RMsZDpwpZ+0/Hm+lm95TDNIxemnWGhF4Fnjav3BdiM=",
+            "H+aC1DfBYSNTRZgzB41jQCwDIwujQnTPBP1/xrJmpdw=",
         ),
     ),
     # m/44'/60'/0'/0/92
@@ -1391,9 +1391,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x52464509B59B2F8EA6E871FC29579F875EA4415B",
-            "BJJ+u+5AYAFay8dI0vUlIlSjB+8qUtfWeHENbolqWyYG41o6PYa8VMCeDB9XkZ0lSMEn8GVvymD0fwKAO1Z+IeA=",
-            "Xeg7PBQjlNTfFaDOJDE3VWjgHqI5MXeHa8T+XPNUZlg=",
+            "0xf13a16B8CD06037E0edD7f17FE2f26cDAeF9F11a",
+            "BOhxhQTFyg23rK+lG6y1zXdam1QpN2R/lWPjUFtV0gH/5EwX395gClw1lJIyL9OMbMsp3vh6k9tepQFJFDhJO0c=",
+            "3uJ5RX5fKzwVRXvpz2nvTQKVbYZcqPAqbwC7wedEx2o=",
         ),
     ),
     # m/44'/60'/0'/0/93
@@ -1406,9 +1406,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x5003B1BC888C9EE8A182555EBB71FB8F683A8765",
-            "BGyC7L9Dr7VL8b3optKG13J6B2xkCm9urmWRGprlLJiXXiRtErbJNszqv4jQvJySCVIiVQzwbAbQrJkptzInDPo=",
-            "4jXloEvl4QbcODN/d7az9Gs3RsISNtovBt6+PqKDXiE=",
+            "0x9da00a6A3a35Fc002a285de85Ac4083327A96a50",
+            "BNBt8L4IZNLYs0q0Ufag9qSdhkl1KR58aHJbBIDZNVr2JezQeKfAOzJ4ZW9ynABSRNiL5b+OTzwY1yj1XKfLlag=",
+            "Ufq6c/QW5Ik3s4n0yHfOY+PDx/K4xpDsBwDPuXgpeZY=",
         ),
     ),
     # m/44'/60'/0'/0/94
@@ -1421,9 +1421,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x0F2742C0DCE430BD6E73747806FF1FA36ABE9301",
-            "BM4q4K2Y2i5wYXpg8RlLP9lOva21Z6jYTo4m4Trhgo3F3FUJEpuc4qZ1/2ENtIyEGlWLIHUPxSATR6ASdMBQET8=",
-            "bSSsPRQxPwYHqIhTxf8aPKzDv3qOnx4cdY6BHWETKVc=",
+            "0x53c3A99F6FA910461c2bbe1AD4dEd24bBc1F0047",
+            "BDjMjcS/J5rGfzGpBKW+wqhmaOmHjg9lSb1Zgf+i/syGm2pas18550VqFC9E2TokVGU7N1jeEOvaE6Kobu7CSTM=",
+            "V8YFokCt9Na1rHPAjvT7NeMkcd21KgEQINqW0DSH6OU=",
         ),
     ),
     # m/44'/60'/0'/0/95
@@ -1436,9 +1436,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x1825B17323C0EBC45C2AF23B9B510BDE416D168E",
-            "BE6g2cEtJbBLeVOvf7tLjMsBnrWrMLNfXeKU9+GKRSGR/Wo0wikqbGwjySxhcgkUfxEr10Myi8LZ0qO8SOtZVHM=",
-            "3BEORaeFcR3RjqkyY7ypGHrer7nWfGhUgk2BldWL6JE=",
+            "0xC82f246AE9AA5547eE5DDCC60C91A8e3C9254Ea5",
+            "BFc2e0Mgyh/hsWvnCHhHdfdq0Q8snetRYqVXB0B1zk+yQTnHwi0xFofhN2+4NYxzdON1nVAIMvFjwfXSuWZ2NFI=",
+            "gFeCmF4jhyciv58EdKIwc1xKlgvPIrnfwjZrbqiQ0qE=",
         ),
     ),
     # m/44'/60'/0'/0/96
@@ -1451,9 +1451,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x96C013EEF18756E1D3DDC2D60FA834F6A7154FEE",
-            "BO9eYJE7Y87nXObkJ8IqIne4rWON6x+arfN0fKVQ+5kSxwyXc7r8aE9QJZHlYvSOYqxOjVKt1sZ5HR9N/tFLrTc=",
-            "pbNhWagT9NMA6Ni0o4qEEQ/M645UH/kV1KA1GZqb/BY=",
+            "0x8fD4dd171eCc1E78444E192023E65965c9914Bc3",
+            "BPGOEuNsUC5v4YPalxVODWX1en6fxZbDg5rDGwpw8nDV+6C4eJz5SDmvfIUN+ov1R31tHdTbMl5TdKMSEZ/kggA=",
+            "gl8YE/7ubSthBrCnQqaDDTp19PNaIvqQHvNCf+6betY=",
         ),
     ),
     # m/44'/60'/0'/0/97
@@ -1466,9 +1466,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x5CCD7089D517307230F666D91DDC9178AE39F0C2",
-            "BCknDs0tND/6+Td2zxrhaiASYhr+zpXmNgOGUvxRxx27/Li2Ypm9jGjfpC3ciO5y2wcabju0+Y29Y4FrbtsEBdk=",
-            "zUM8XI+9y6JsORLMSHzHdws7/H9ErstA7DqhBsAlGdk=",
+            "0x1F064F92cA6833FE86409D609527ACA5C8b5cB43",
+            "BDR7v1PQunhNc54KHjcEuiCTIu4bbfutzUvI5QbNG2rpyAVMWF2m9VSHX9CjuvFa4pIQnLzKgS9kOiGt/n+XZg==",
+            "CZ3FXrnM7kFznViJyWVs8mOYjJwzLgxCULFzCsl0ou0=",
         ),
     ),
     # m/44'/60'/0'/0/98
@@ -1481,9 +1481,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xDF2B7BBB733B341259EFC2085B730BDFA148DE5F",
-            "BHmv0zaYLnt1E2N/Y9wRa58P081GkKczdQMJQ49g2F6knxT6e4f01WJyfHuXBzs5MdLvL9/POojidm+uYq0j86M=",
-            "rqeazOJHo+YTSbThA4sh8GNLQRv0h8SMCgptHrJwjAg=",
+            "0xcD8D5477Bc1557545F2673110ee200B34599ffd0",
+            "BNWMNH5jYbE14ZACT55/1Foi50+CfbkSZzQjmh6fac+SB+pyeVOOsc95cdGSAetqQJCxQ6ummsYvz5mJ5TrIZIg=",
+            "2tpGDW2a1tF1wc5f8PbuYPusXq1MWlACK1akGlxGWU0=",
         ),
     ),
     # m/44'/60'/0'/0/99
@@ -1496,9 +1496,9 @@ PRE_FUNDED_ACCOUNTS = [
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x11A3B273AC889201A2A264DC112A8656965710E5",
-            "BEUv/xk/EVzUcsH7RqO89YcptMXwNfLO+Hje9yzHoxF1Wh84SohjLQ4lZN+jK0t6d1DKbLvfOpRI34mYPKXH0xk=",
-            "+IRJ1kJq09mnnghVtH/YYrgAJkALxZWWACOeNe+Pzg4=",
+            "0xf4095e845e78B0e0304b3E4c3D8708D8CF1FAAe0",
+            "BCGYs+ZferMDUfD+cPQ2QAHg8aCRUj5AT6BzNCUQn5Z94Si3IwoKF8kHt/5Q02h4bo97dKz2XX/HsxttQzmFaDU=",
+            "iZChZWSPnE+e7wXagmx6d4G1AftIg01cWxGJKP7vvvY=",
         ),
     ),
 ]
