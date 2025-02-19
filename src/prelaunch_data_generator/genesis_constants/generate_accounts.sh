@@ -23,10 +23,13 @@ polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}"
 
 # Generating CometBFT accounts (secp256k1).
 jq --compact-output '.[]' eth_accounts.json | while read -r account; do
+  eth_public_key=$(echo "${account}" | jq --raw-output '.ETHPublicKey' | sed 's/^0x/04/')
+  eth_public_key_base64=$(echo "${eth_public_key}" | xxd -r -p | base64 | tr -d '\n')
+
   eth_private_key=$(echo "${account}" | jq --raw-output '.ETHPrivateKey')
-  eth_public_key=$(echo "${account}" | jq --raw-output '.ETHPublicKey' | sed 's/^0x/04/' | xxd -r -p | base64 | tr -d '\n')
   eth_private_key_base64=$(echo "${eth_private_key}" | xxd -r -p | base64 | tr -d '\n')
-  echo "${account}" | jq --arg pub "${eth_public_key}" --arg priv "${eth_private_key_base64}" \
+
+  echo "${account}" | jq --arg pub "${eth_public_key_base64}" --arg priv "${eth_private_key_base64}" \
     '. + {CometBftAddress: .ETHAddress, CometBftPublicKey: $pub, CometBftPrivateKey: $priv}'
 done | jq --slurp '.' >eth_cometbft_accounts.json
 
