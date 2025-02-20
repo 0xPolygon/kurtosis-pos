@@ -14,14 +14,20 @@ def wait_for_l1_startup(plan, cl_rpc_url):
 
 
 def wait_for_l2_startup(plan, cl_api_url, cl_type):
+    # The url used to check if the L2 chain has started it the following:
+    # curl --silent $CL_RPC_URL/$endpoint | jq -r '.[$key1][$key2]'
+    # Ror example for heimdall (v1): curl --silent $CL_RPC_URL/bor/latest-span | jq -r '.result.span_id'
     endpoint = ""
-    json_path = ""
+    key1 = ""
+    key2 = ""
     if cl_type == constants.CL_TYPE.heimdall:
         endpoint = "bor/latest-span"
-        json_path = "result.span_id"
+        key1 = "result"
+        key2 = "span_id"
     elif cl_type == constants.CL_TYPE.heimdall_v2:
         endpoint = "bor/span/latest"
-        json_path = "span.id"
+        key1 = "span"
+        key2 = "id"
     else:
         fail(
             'Wrong CL type: "{}". Allowed values: "{}."'.format(
@@ -36,8 +42,20 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
         env_vars={
             "CL_RPC_URL": cl_api_url,
             "ENDPOINT": endpoint,
-            "JSON_PATH": json_path,
+            "KEY1": key1,
+            "KEY2": key2,
         },
-        run='while true; do sleep 5; echo "L2 Chain is starting up..."; if [ "$(curl -s $CL_RPC_URL/$ENDPOINT | jq --arg v "$JSON_PATH" --raw-output \'.[$v]\')" != "0" ]; then echo "✅ L2 Chain has started!"; break; fi; done',
+        run="\n".join(
+            [
+                "while true; do",
+                '  "echo L2 Chain is starting up..."',
+                '  span_id=$(curl --silent $CL_RPC_URL/$ENDPOINT | jq --arg k1 "KEY1" --arg k2 "KEY2" --raw-output \'.[$k1][$k2]\')',
+                '  echo "Current span id: $span_id"',
+                '  if [[ "$span_id" =~ ^[0-9]+$ ]] && [[ "$span_id" -ge "0" ]]; then',
+                '    echo "✅ L2 Chain has started!"',
+                "  fi",
+                "done",
+            ]
+        ),
         wait="5m",
     )
