@@ -3,13 +3,25 @@ constants = import_module("../package_io/constants.star")
 
 def wait_for_l1_startup(plan, cl_rpc_url):
     plan.run_sh(
-        name="wait-for-l1-startup",
-        description="Wait for L1 to start up - it can take up to 2 minutes",
+        name="wait-for-l1-consensus-startup",
+        description="Wait for L1 consensus to start up - it can take up to 2 minutes",
         env_vars={
             "CL_RPC_URL": cl_rpc_url,
         },
-        run="while true; do sleep 5; echo 'L1 Chain is starting up...'; if [ \"$(curl -s $CL_RPC_URL/eth/v1/beacon/headers/ | jq -r '.data[0].header.message.slot')\" != \"0\" ]; then echo '✅ L1 Chain has started!'; break; fi; done",
-        wait="300s",
+        run="while true; do sleep 5; echo 'L1 consensus is starting up...'; if [ \"$(curl -s $CL_RPC_URL/eth/v1/beacon/headers/ | jq -r '.data[0].header.message.slot')\" != \"0\" ]; then echo '✅ L1 consensus has started!'; break; fi; done",
+        wait="5m",
+    )
+
+    # wait for block 3 to avoid transaction indexing in progress errors
+    plan.run_sh(
+        name="wait-for-l1-execution-startup",
+        description="Wait for L1 execution to start up - it can take up to 2 minutes",
+        image="mslipper/deployment-utils:latest",
+        env_vars={
+            "CL_RPC_URL": cl_rpc_url,
+        },
+        run='while true; do sleep 5; current_head=$(cast bn --rpc-url=$L1_RPC_URL); echo "L1 execution is starting up..."; if [ "$current_head" -ge "3" ]; then echo "✅ L1 execution has started!"; break; fi; done',
+        wait="5m",
     )
 
 
@@ -38,6 +50,6 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
             "ENDPOINT": endpoint,
             "JSON_PATH": json_path,
         },
-        run="while true; do sleep 5; echo 'L2 Chain is starting up...'; if [ \"$(curl -s $CL_RPC_URL/bor/latest-span | jq -r '.result.span_id')\" != \"0\" ]; then echo '✅ L2 Chain has started!'; break; fi; done",
+        run='while true; do sleep 5; span_id=$(curl -s $CL_RPC_URL/bor/latest-span | jq -r ".result.span_id"); echo "L2 Chain is starting up..."; if [ "$span_id" -ge "0" ]; then echo "✅ L2 Chain has started!"; break; fi; done',
         wait="300s",
     )
