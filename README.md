@@ -252,8 +252,8 @@ polygon_pos_package:
 
       # The docker image that should be used for the CL's client database.
       # Leave blank to use the default image.
-      # Default: "rabbitmq:4.0.5"
-      cl_db_image: rabbitmq:4.0.5
+      # Default: "rabbitmq:4.0.6"
+      cl_db_image: rabbitmq:4.0.6
 
       # The log level string that this participant's CL client should log at.
       # Leave blank to use the default log level, info.
