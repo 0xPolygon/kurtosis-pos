@@ -224,7 +224,7 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
         pre_funded_accounts.PRE_FUNDED_ACCOUNTS,
     )
     l1_network_params = ethereum_args.get("network_params")
-    user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts", "")
+    user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts")
     if user_prefunded_accounts_str != "":
         user_prefunded_accounts = json.decode(user_prefunded_accounts_str)
         prefunded_accounts = prefunded_accounts | user_prefunded_accounts
