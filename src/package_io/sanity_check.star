@@ -92,7 +92,7 @@ def sanity_check_dev_args(plan, input_args):
             )
 
     # Validate values.
-    should_deploy_l1 = input_args.get("should_deploy_l1")
+    should_deploy_l1 = input_args.get("should_deploy_l1", True)
     should_deploy_matic_contracts = input_args.get(
         "should_deploy_matic_contracts", True
     )
