@@ -38,7 +38,10 @@ echo "CL_VALIDATORS_CONFIGS: ${CL_VALIDATORS_CONFIGS}"
 setup_validator() {
   local id="${1}"
   local execution_key="${2}"
-  local p2p_url="${3}"
+  local cometbft_address="${3}"
+  local cometbft_public_key="${4}"
+  local cometbft_private_key="${5}"
+  local p2p_url="${6}"
 
   # Generate the validator key (or consensus key) using the execution key.
   local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${id}"
@@ -56,10 +59,27 @@ setup_validator() {
     # Drop the temporary genesis.
     rm "${cl_validator_config_path}/config/genesis.json"
   elif [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
+    # Make sure all required directories exist
     mkdir -p "${cl_validator_config_path}/config"
-    polycli nodekey --private-key "${execution_key}" --key-type secp256k1 | jq >"${cl_validator_config_path}/config/priv_validator_key.json"
-    chmod 600 "${cl_validator_config_path}/config/priv_validator_key.json"
     mkdir -p "${cl_validator_config_path}/data"
+
+    # Create the validator key file
+    echo "{
+      \"address\": \"${cometbft_address#0x}\",
+      \"pub_key\": {
+        \"type\": \"cometbft/PubKeySecp256k1eth\",
+        \"value\": \"${cometbft_public_key}\"
+      },
+      \"priv_key\": {
+        \"type\": \"cometbft/PrivKeySecp256k1eth\",
+        \"value\": \"${cometbft_private_key}\"
+      }
+    }" | jq >"${cl_validator_config_path}/config/priv_validator_key.json"
+
+    # Set proper permissions
+    chmod 600 "${cl_validator_config_path}/config/priv_validator_key.json"
+
+    # Create validator state file
     echo '{"height":"0","round":0,"step":0}' | jq >"${cl_validator_config_path}/data/priv_validator_state.json"
   else
     echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
@@ -108,8 +128,8 @@ persistent_peers=""
 id=1
 IFS=';' read -ra validator_configs <<<"${CL_VALIDATORS_CONFIGS}"
 for config in "${validator_configs[@]}"; do
-  IFS=',' read -r execution_key p2p_url <<<"${config}"
-  setup_validator "${id}" "${execution_key}" "${p2p_url}"
+  IFS=',' read -r execution_key cometbft_address cometbft_public_key cometbft_private_key p2p_url <<<"${config}"
+  setup_validator "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}"
   ((id++))
 done
 

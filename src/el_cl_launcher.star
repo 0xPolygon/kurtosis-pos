@@ -195,8 +195,11 @@ def _prepare_network_data(participants):
                     )
 
                 # Generate the CL validator config.
-                cl_validator_config = "{},{}:{}".format(
+                cl_validator_config = "{},{},{},{},{}:{}".format(
                     validator_account.eth_tendermint.private_key,
+                    validator_account.cometbft.address,
+                    validator_account.cometbft.public_key,
+                    validator_account.cometbft.private_key,
                     cl_node_name,
                     cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
                 )
