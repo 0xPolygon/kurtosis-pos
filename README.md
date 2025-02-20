@@ -229,6 +229,7 @@ polygon_pos_package:
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - bor: "0xpolygon/bor:1.5.5"
+      # - bor-modified-for-heimdall-v2: "leovct/bor-modified-for-heimdall-v2:1724778"
       # - erigon: TBD
       el_image: 0xpolygon/bor:1.5.5
 
@@ -246,13 +247,13 @@ polygon_pos_package:
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - heimdall: "0xpolygon/heimdall:1.2.0"
-      # - heimdall-v2: "leovct/heimdall-v2:e0a87ca" (private image)
+      # - heimdall-v2: "leovct/heimdall-v2:22a3f1d" (private image)
       cl_image: 0xpolygon/heimdall:1.2.0
 
       # The docker image that should be used for the CL's client database.
       # Leave blank to use the default image.
-      # Default: "rabbitmq:4.0.5"
-      cl_db_image: rabbitmq:4.0.5
+      # Default: "rabbitmq:4.0.6"
+      cl_db_image: rabbitmq:4.0.6
 
       # The log level string that this participant's CL client should log at.
       # Leave blank to use the default log level, info.

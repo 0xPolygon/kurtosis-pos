@@ -122,7 +122,7 @@ jobs:
           yq --version
 
       - name: Get heimdall-v2 private image
-        run: docker pull leovct/heimdall-v2:e0a87ca
+        run: docker pull leovct/heimdall-v2:22a3f1d
         # This step will only execute if the necessary secrets are available, preventing failures
         # on pull requests from forked repositories.
         if: ${{ env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN }}
