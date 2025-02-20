@@ -8,7 +8,21 @@ def wait_for_l1_startup(plan, cl_rpc_url):
         env_vars={
             "CL_RPC_URL": cl_rpc_url,
         },
-        run="while true; do sleep 5; echo 'L1 Chain is starting up...'; if [ \"$(curl -s $CL_RPC_URL/eth/v1/beacon/headers/ | jq -r '.data[0].header.message.slot')\" != \"0\" ]; then echo '✅ L1 Chain has started!'; break; fi; done",
+        # run="while true; do sleep 5; echo 'L1 Chain is starting up...'; if [ \"$(curl -s $CL_RPC_URL/eth/v1/beacon/headers/ | jq -r '.data[0].header.message.slot')\" != \"0\" ]; then echo '✅ L1 Chain has started!'; break; fi; done",
+        run="\n".join(
+            [
+                "while true; do",
+                "  sleep 5;",
+                '  echo "L1 Chain is starting up...";',
+                '  slot=$(curl --silent $CL_RPC_URL/eth/v1/beacon/headers/ | jq -r ".data[0].header.message.slot");',
+                '  echo "Current slot: $slot";',
+                '  if [[ "$slot" =~ ^[0-9]+$ ]] && [[ "$slot" -ge "0" ]]; then',
+                '    echo "✅ L1 Chain has started!";',
+                "    break;",
+                "  fi;",
+                "done",
+            ]
+        ),
         wait="5m",
     )
 
@@ -48,12 +62,14 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
         run="\n".join(
             [
                 "while true; do",
-                '  "echo L2 Chain is starting up..."',
-                '  span_id=$(curl --silent $CL_RPC_URL/$ENDPOINT | jq --arg k1 "KEY1" --arg k2 "KEY2" --raw-output \'.[$k1][$k2]\')',
-                '  echo "Current span id: $span_id"',
+                "  sleep 5;",
+                '  echo "L2 Chain is starting up...";',
+                '  span_id=$(curl --silent $CL_RPC_URL/$ENDPOINT | jq --arg k1 "KEY1" --arg k2 "KEY2" --raw-output \'.[$k1][$k2]\');',
+                '  echo "Current span id: $span_id";',
                 '  if [[ "$span_id" =~ ^[0-9]+$ ]] && [[ "$span_id" -ge "0" ]]; then',
-                '    echo "✅ L2 Chain has started!"',
-                "  fi",
+                '    echo "✅ L2 Chain has started!";',
+                "    break;",
+                "  fi;",
                 "done",
             ]
         ),
