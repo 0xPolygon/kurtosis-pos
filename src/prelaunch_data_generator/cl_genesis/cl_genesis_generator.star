@@ -75,11 +75,9 @@ def generate_cl_genesis_data(
                     # contract addresses
                     "matic_token_address": contract_addresses.get("matic_token"),
                     "staking_manager_address": contract_addresses.get(
-                        "staking_manager", ""
+                        "staking_manager"
                     ),
-                    "slash_manager_address": contract_addresses.get(
-                        "slashing_manager", ""
-                    ),
+                    "slash_manager_address": contract_addresses.get("slashing_manager"),
                     "root_chain_address": contract_addresses.get("root_chain"),
                     "staking_info_address": contract_addresses.get("staking_info"),
                     "state_sender_address": contract_addresses.get("state_sender"),

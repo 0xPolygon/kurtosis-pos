@@ -26,12 +26,10 @@ def launch(
                 ),
                 data={
                     # Network params.
-                    "span_poll_interval": network_params.get(
-                        "cl_span_poll_interval", ""
-                    ),
-                    "checkpoint_poll_interval": network_params[
+                    "span_poll_interval": network_params.get("cl_span_poll_interval"),
+                    "checkpoint_poll_interval": network_params.get(
                         "cl_checkpoint_poll_interval"
-                    ],
+                    ),
                     # URLs.
                     "amqp_url": amqp_url,
                     "el_rpc_url": el_rpc_url,
