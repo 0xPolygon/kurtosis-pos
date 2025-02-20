@@ -39,5 +39,5 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
             "JSON_PATH": json_path,
         },
         run='while true; do sleep 5; echo "L2 Chain is starting up..."; if [ "$(curl -s $CL_RPC_URL/$ENDPOINT | jq --arg v "$JSON_PATH" --raw-output \'$v\')" != "0" ]; then echo "✅ L2 Chain has started!"; break; fi; done',
-        wait="300s",
+        wait="5m",
     )
