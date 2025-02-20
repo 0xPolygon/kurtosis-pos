@@ -65,7 +65,7 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
                 "while true; do",
                 "  sleep 5;",
                 '  echo "L2 Chain is starting up...";',
-                '  span_id=$(curl --silent $CL_RPC_URL/$ENDPOINT | jq --arg k1 "KEY1" --arg k2 "KEY2" --raw-output \'.[$k1][$k2]\');',
+                '  span_id=$(curl --silent $CL_RPC_URL/$ENDPOINT | jq --arg k1 "$KEY1" --arg k2 "$KEY2" --raw-output \'.[$k1][$k2]\');',
                 '  echo "Current span id: $span_id";',
                 '  if [[ "$span_id" =~ ^[0-9]+$ ]] && [[ "$span_id" -gt "0" ]]; then',
                 '    echo "✅ L2 Chain has started!";',
