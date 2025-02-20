@@ -18,10 +18,10 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
     json_path = ""
     if cl_type == constants.CL_TYPE.heimdall:
         endpoint = "bor/latest-span"
-        json_path = ".result.span_id"
+        json_path = "result.span_id"
     elif cl_type == constants.CL_TYPE.heimdall_v2:
         endpoint = "bor/span/latest"
-        json_path = ".span.id"
+        json_path = "span.id"
     else:
         fail(
             'Wrong CL type: "{}". Allowed values: "{}."'.format(
