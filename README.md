@@ -229,7 +229,7 @@ polygon_pos_package:
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - bor: "0xpolygon/bor:1.5.5"
-      # - erigon: TBD
+      # - erigon: "erigontech/erigon:v2.61.1"
       el_image: 0xpolygon/bor:1.5.5
 
       # The log level string that this participant's EL client should log at.
