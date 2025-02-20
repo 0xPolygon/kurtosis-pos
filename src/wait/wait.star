@@ -14,9 +14,9 @@ def wait_for_l1_startup(plan, cl_rpc_url):
                 "while true; do",
                 "  sleep 5;",
                 '  echo "L1 Chain is starting up...";',
-                '  slot=$(curl --silent $CL_RPC_URL/eth/v1/beacon/headers/ | jq -r ".data[0].header.message.slot");',
+                '  slot=$(curl --silent $CL_RPC_URL/eth/v1/beacon/headers/ | jq --raw-output ".data[0].header.message.slot");',
                 '  echo "Current slot: $slot";',
-                '  if [[ "$slot" =~ ^[0-9]+$ ]] && [[ "$slot" -ge "0" ]]; then',
+                '  if [[ "$slot" =~ ^[0-9]+$ ]] && [[ "$slot" -gt "0" ]]; then',
                 '    echo "✅ L1 Chain has started!";',
                 "    break;",
                 "  fi;",
@@ -30,7 +30,8 @@ def wait_for_l1_startup(plan, cl_rpc_url):
 def wait_for_l2_startup(plan, cl_api_url, cl_type):
     # The url used to check if the L2 chain has started it the following:
     # curl --silent $CL_RPC_URL/$endpoint | jq -r '.[$key1][$key2]'
-    # Ror example for heimdall (v1): curl --silent $CL_RPC_URL/bor/latest-span | jq -r '.result.span_id'
+    # For example for heimdall (v1):
+    # curl --silent $CL_RPC_URL/bor/latest-span | jq -r '.result.span_id'
     endpoint = ""
     key1 = ""
     key2 = ""
@@ -64,9 +65,9 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
                 "while true; do",
                 "  sleep 5;",
                 '  echo "L2 Chain is starting up...";',
-                '  span_id=$(curl --silent $CL_RPC_URL/$ENDPOINT | jq --arg k1 "KEY1" --arg k2 "KEY2" --raw-output \'.[$k1][$k2]\');',
+                '  span_id=$(curl --silent $CL_RPC_URL/$ENDPOINT | jq --arg k1 "KEY1" --arg k2 "KEY2" --raw-output ".[$k1][$k2]");',
                 '  echo "Current span id: $span_id";',
-                '  if [[ "$span_id" =~ ^[0-9]+$ ]] && [[ "$span_id" -ge "0" ]]; then',
+                '  if [[ "$span_id" =~ ^[0-9]+$ ]] && [[ "$span_id" -gt "0" ]]; then',
                 '    echo "✅ L2 Chain has started!";',
                 "    break;",
                 "  fi;",
