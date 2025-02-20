@@ -38,6 +38,6 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
             "ENDPOINT": endpoint,
             "JSON_PATH": json_path,
         },
-        run='while true; do sleep 5; span_id=$(curl -s $CL_RPC_URL/bor/latest-span | jq -r ".result.span_id"); echo "L2 Chain is starting up..."; if [ "$span_id" -ge "0" ]; then echo "✅ L2 Chain has started!"; break; fi; done',
+        run='while true; do sleep 5; echo "L2 Chain is starting up..."; if [ "$(curl -s $CL_RPC_URL/$ENDPOINT | jq -r ".result.span_id")" != "0" ]; then echo "✅ L2 Chain has started!"; break; fi; done',
         wait="300s",
     )
