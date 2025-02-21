@@ -9,15 +9,15 @@ def deploy_l1_contracts(
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
     contract_deployer_image = setup_images.get("contract_deployer")
-    contract_setup_script = _determine_contract_setup_script(contract_deployer_image)
-
-    validator_accounts_formatted = _format_validator_accounts(validator_accounts)
-
-    contracts_config_artifact = plan.upload_files(
-        src=CONTRACTS_CONFIG_FILE_PATH,
+    contract_deployer_config_filepath = _determine_contract_deployer_config_filepath(
+        contract_deployer_image
+    )
+    contract_deployer_config_artifact = plan.upload_files(
+        src=contract_deployer_config_filepath,
         name="matic-contracts-l1-deployer-config",
     )
 
+    validator_accounts_formatted = _format_validator_accounts(validator_accounts)
     return plan.run_sh(
         name="matic-contracts-l1-deployer",
         description="Deploying MATIC contracts to L1, initializing state and staking for each validator - it can take up to 5 minutes",
@@ -36,7 +36,7 @@ def deploy_l1_contracts(
             ),
         },
         files={
-            "/opt/data": contracts_config_artifact,
+            "/opt/data": contract_deployer_config_artifact,
         },
         store=[
             StoreSpec(
@@ -64,10 +64,11 @@ def deploy_l2_contracts_and_synchronise_l1_state(
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
     contract_deployer_image = setup_images.get("contract_deployer")
-    contract_setup_script = _determine_contract_setup_script(contract_deployer_image)
-
-    contracts_config_artifact = plan.upload_files(
-        src=CONTRACTS_CONFIG_FILE_PATH,
+    contract_deployer_config_filepath = _determine_contract_deployer_config_filepath(
+        contract_deployer_image
+    )
+    contract_deployer_config_artifact = plan.upload_files(
+        src=contract_deployer_config_filepath,
         name="matic-contracts-l2-deployer-config",
     )
 
@@ -83,7 +84,7 @@ def deploy_l2_contracts_and_synchronise_l1_state(
             "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
         },
         files={
-            "/opt/data": contracts_config_artifact,
+            "/opt/data": contract_deployer_config_artifact,
             "/opt/data/addresses": contract_addresses_artifact,
         },
         store=[
@@ -108,7 +109,7 @@ def _format_validator_accounts(accounts):
     )
 
 
-def _determine_contract_setup_script(contract_deployer_image):
+def _determine_contract_deployer_config_filepath(contract_deployer_image):
     # The contract deployer image follows the standard: leovct/pos-contract-deployer:<node-version>
     # where the version can either be "node-16" or "node-20".
     result = contract_deployer_image.split(":")
@@ -118,4 +119,13 @@ def _determine_contract_setup_script(contract_deployer_image):
                 contract_deployer_image
             )
         )
-    return result[1]
+
+    node_version = result[1]
+    supported_versions = ["node-16", "node-20"]
+    if node_version not in supported_versions:
+        fail(
+            'The contract deployer only supports "{}" but got: "{}"'.format(
+                supported_versions, node_version
+            )
+        )
+    return "{}/{}".format(CONTRACTS_CONFIG_FILE_PATH, node_version)
