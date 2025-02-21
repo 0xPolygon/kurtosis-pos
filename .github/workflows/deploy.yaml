@@ -68,17 +68,14 @@ jobs:
 
           echo
           echo "Getting the first state sync..."
-          heimdall_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
+          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           while true; do
-            response=$(curl --silent "${heimdall_api_url}/clerk/event-record/1" | jq)
-            err=$(echo "${response}" | jq 'has("error")')
-            if [[ "${err}" == "true" ]]; then
-                echo "❌ Unable to find the first state sync..."
-                echo "${response}"
-            else
-                echo "✅ First state sync found!"
-                echo "${response}"
+            state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
+            if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
+                echo "✅ A state sync just occured! State sync count: ${state_sync_count}"
                 exit
+            else
+                echo "No state sync occured yet... State sync count: ${state_sync_count}"
             fi
 
             echo "Waiting 5 seconds before next request..."
@@ -202,17 +199,19 @@ jobs:
 
           echo
           echo "Getting the first state sync..."
-          heimdall_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${cl_node_name} http)
+          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           while true; do
-            response=$(curl --silent "${heimdall_api_url}/clerk/event-record/1" | jq)
-            err=$(echo "${response}" | jq 'has("error")')
-            if [[ "${err}" == "true" ]]; then
-                echo "❌ Unable to find the first state sync..."
-                echo "${response}"
+            if [[ "${cl_type}" == "heimdall" ]]; then
+              state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
             else
-                echo "✅ First state sync found!"
-                echo "${response}"
+              state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.event_records | length')
+            fi
+
+            if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
+                echo "✅ A state sync just occured! State sync count: ${state_sync_count}"
                 exit
+            else
+                echo "No state sync occured yet... State sync count: ${state_sync_count}"
             fi
 
             echo "Waiting 5 seconds before next request..."
@@ -291,17 +290,14 @@ jobs:
 
           echo
           echo "Getting the first state sync..."
-          heimdall_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
+          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           while true; do
-            response=$(curl --silent "${heimdall_api_url}/clerk/event-record/1" | jq)
-            err=$(echo "${response}" | jq 'has("error")')
-            if [[ "${err}" == "true" ]]; then
-                echo "❌ Unable to find the first state sync..."
-                echo "${response}"
-            else
-                echo "✅ First state sync found!"
-                echo "${response}"
+            state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
+            if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
+                echo "✅ A state sync just occured! State sync count: ${state_sync_count}"
                 exit
+            else
+                echo "No state sync occured yet... State sync count: ${state_sync_count}"
             fi
 
             echo "Waiting 5 seconds before next request..."
@@ -370,17 +366,14 @@ jobs:
 
           echo
           echo "Getting the first state sync..."
-          heimdall_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
+          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           while true; do
-            response=$(curl --silent "${heimdall_api_url}/clerk/event-record/1" | jq)
-            err=$(echo "${response}" | jq 'has("error")')
-            if [[ "${err}" == "true" ]]; then
-                echo "❌ Unable to find the first state sync..."
-                echo "${response}"
-            else
-                echo "✅ First state sync found!"
-                echo "${response}"
+            state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
+            if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
+                echo "✅ A state sync just occured! State sync count: ${state_sync_count}"
                 exit
+            else
+                echo "No state sync occured yet... State sync count: ${state_sync_count}"
             fi
 
             echo "Waiting 5 seconds before next request..."
