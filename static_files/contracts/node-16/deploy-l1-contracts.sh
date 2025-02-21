@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Deploy MATIC contracts to L1, initialize state and stake for each validator.
+# Deploy MATIC contracts to L1, initialise state and stake for each validator.
 # For reference: https://github.com/maticnetwork/contracts/tree/v0.3.11/deploy-migrations
 
 # Setting EL chain id if needed.
