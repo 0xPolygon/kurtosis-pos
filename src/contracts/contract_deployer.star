@@ -48,7 +48,7 @@ def deploy_l1_contracts(
                 name="l2-validators-config",
             ),
         ],
-        run="bash /opt/data/{}/deploy-l1-contracts.sh".format(contract_setup_script),
+        run="bash /opt/data/deploy-l1-contracts.sh",
         wait="5m",
     )
 
@@ -93,7 +93,7 @@ def deploy_l2_contracts_and_synchronise_l1_state(
                 name="matic-contract-addresses",
             ),
         ],
-        run="bash /opt/data/{}/deploy-l2-contracts.sh".format(contract_setup_script),
+        run="bash /opt/data/deploy-l2-contracts.sh",
         wait="5m",
     )
 
