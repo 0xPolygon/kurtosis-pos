@@ -46,13 +46,13 @@ echo "Deploying Polygon PoS contracts to L1, draining StakeManager and initialis
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 export HEIMDALL_ID="${CL_CHAIN_ID}"
 
-forge script --rpc-url "${L1_RPC_URL}" --broadcast -vvvv \
+forge script --rpc-url "${L1_RPC_URL}" --broadcast \
   scripts/deployment-scripts/deployContracts.s.sol:DeploymentScript
 
-forge script --rpc-url "${L1_RPC_URL}" --broadcast -vvvv \
+forge script --rpc-url "${L1_RPC_URL}" --broadcast \
   scripts/deployment-scripts/drainStakeManager.s.sol:DrainStakeManagerDeployment
 
-forge script --rpc-url "${L1_RPC_URL}" --broadcast -vvvv \
+forge script --rpc-url "${L1_RPC_URL}" --broadcast \
   scripts/deployment-scripts/initializeState.s.sol:InitializeStateScript
 
 echo "Polygon PoS contracts deployed to L1:"
