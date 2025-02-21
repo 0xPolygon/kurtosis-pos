@@ -64,7 +64,7 @@ def run(plan, args):
         if len(l1.all_participants) < 1:
             fail("The L1 package did not start any participants.")
         l1_context = struct(
-            private_key=hex.normalise_hex_string(
+            private_key=hex.normalize(
                 l1.pre_funded_accounts[12].private_key
             ),  # Reserved for L2 contract deployers.
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
@@ -77,7 +77,7 @@ def run(plan, args):
     else:
         plan.print("Using an external l1")
         l1_context = struct(
-            private_key=hex.normalise_hex_string(dev_args.get("l1_private_key")),
+            private_key=hex.normalize(dev_args.get("l1_private_key")),
             rpc_url=dev_args.get("l1_rpc_url"),
         )
         l1_rpcs = {"external-l1": dev_args.get("l1_rpc_url")}
@@ -195,7 +195,7 @@ def run(plan, args):
         polygon_pos_args,
         l1_context.rpc_url,
         l2_rpc_url,
-        hex.normalise_hex_string(l2_network_params.get("admin_private_key")),
+        hex.normalize(l2_network_params.get("admin_private_key")),
         contract_addresses_artifact,
     )
 

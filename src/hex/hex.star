@@ -22,5 +22,5 @@ def int_to_hex(n):
     return "0x" + hex_string
 
 
-def normalise_hex_string(s):
+def normalize(s):
     return "0x" + s.removeprefix("0x")
