@@ -20,3 +20,7 @@ def int_to_hex(n):
             break
 
     return "0x" + hex_string
+
+
+def normalise_hex_string(s):
+    return "0x" + s.removeprefix("0x")
