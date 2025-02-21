@@ -156,7 +156,7 @@ matic_contract_addresses=$(kurtosis files inspect pos-devnet matic-contract-addr
 export DEPOSIT_MANAGER_PROXY_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.DepositManagerProxy')
 export ERC20_TOKEN_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.tokens.MaticToken')
 export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
-bash ./test/state_sync.sh
+bash ./test/send_state_sync.sh
 ```
 
 Monitor state syncs.
