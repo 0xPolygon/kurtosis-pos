@@ -12,8 +12,8 @@ EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/el/genesis.json"
 def generate_el_genesis_data(
     plan, polygon_pos_args, validator_config_artifact, admin_address
 ):
-    network_params = polygon_pos_args.get("network_params", {})
-    setup_images = polygon_pos_args.get("setup_images", {})
+    network_params = polygon_pos_args.get("network_params")
+    setup_images = polygon_pos_args.get("setup_images")
 
     # Generate a temporary EL genesis with an empty `alloc` field.
     el_genesis_temporary_artifact = plan.render_templates(
@@ -22,13 +22,13 @@ def generate_el_genesis_data(
             "genesis.json": struct(
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
-                    "el_chain_id": network_params.get("el_chain_id", ""),
+                    "el_chain_id": network_params.get("el_chain_id"),
                     "el_block_interval_seconds": network_params.get(
-                        "el_block_interval_seconds", ""
+                        "el_block_interval_seconds"
                     ),
-                    "el_sprint_duration": network_params.get("el_sprint_duration", ""),
+                    "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_gas_limit_hex": hex.int_to_hex(
-                        network_params.get("el_gas_limit", 0)
+                        network_params.get("el_gas_limit")
                     ),
                 },
             )
@@ -45,9 +45,9 @@ def generate_el_genesis_data(
         description="Generating L2 EL genesis",
         image=setup_images.get("el_genesis_builder"),
         env_vars={
-            "EL_CHAIN_ID": network_params.get("el_chain_id", ""),
+            "EL_CHAIN_ID": network_params.get("el_chain_id"),
             "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
-            "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
+            "CL_CHAIN_ID": network_params.get("cl_chain_id"),
             "DEFAULT_CL_CHAIN_ID": constants.DEFAULT_CL_CHAIN_ID,
             "ADMIN_ADDRESS": admin_address,
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
