@@ -42,17 +42,11 @@ if [[ -z "${L2_RPC_URL}" ]]; then
   echo "Error: L2_RPC_URL environment variable is not set"
   exit 1
 fi
-if [[ -z "${CL_CHAIN_ID}" ]]; then
-  echo "Error: CL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
 echo "L1_RPC_URL: ${L1_RPC_URL}"
 echo "L2_RPC_URL: ${L2_RPC_URL}"
-echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 
 echo "Deploying Polygon PoS contracts to L2..."
 export DEPLOYER_PRIVATE_KEY="0x${PRIVATE_KEY}"
-export HEIMDALL_ID="${CL_CHAIN_ID}"
 
 forge script -vvvv --rpc-url "${L2_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
   scripts/deployment-scripts/childContractDeployment.s.sol:ChildContractDeploymentScript
