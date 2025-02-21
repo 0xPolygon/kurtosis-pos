@@ -50,7 +50,6 @@ VALID_CLIENT_COMBINATIONS = {
 
 DEV_PARAMS = [
     "should_deploy_l1",  # boolean
-    "l1_private_key",
     "l1_rpc_url",
     "should_deploy_matic_contracts",  # boolean
     "l2_el_genesis_filepath",
@@ -99,12 +98,6 @@ def sanity_check_dev_args(plan, input_args):
     should_deploy_matic_contracts = input_args.get("should_deploy_matic_contracts")
 
     if not should_deploy_l1:
-        l1_private_key = input_args.get("l1_private_key")
-        if l1_private_key == "" and should_deploy_matic_contracts:
-            fail(
-                "`dev.l1_private_key` must be specified when `dev.should_deploy_l1` is set to false and `dev.should_deploy_matic_contracts` is set to true!"
-            )
-
         l1_rpc_url = input_args.get("l1_rpc_url")
         if l1_rpc_url == "":
             fail(

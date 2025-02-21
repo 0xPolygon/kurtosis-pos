@@ -165,7 +165,6 @@ Then, we will add the following parameters to the args file.
 dev:
   # Avoid re-deploying the L1 devnet.
   should_deploy_l1: false
-  l1_private_key: eaba42282ad33c8ef2524f07277c03a776d98ae19f581990ce75becb7cfa1c23 # Use this private key unless you've changed it.
   l1_rpc_url: http://el-1-geth-lighthouse:8545
 
   # Avoid re-deploying the MATIC contracts to L1 and re-generating the L2 CL and EL genesis files.
