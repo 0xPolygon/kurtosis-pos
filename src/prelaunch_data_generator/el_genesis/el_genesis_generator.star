@@ -1,5 +1,6 @@
 constants = import_module("../../package_io/constants.star")
 hex = import_module("../../hex/hex.star")
+math = import_module("../../math/math.star")
 
 
 EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
@@ -49,6 +50,9 @@ def generate_el_genesis_data(
             "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
             "DEFAULT_CL_CHAIN_ID": constants.DEFAULT_CL_CHAIN_ID,
             "ADMIN_ADDRESS": admin_address,
+            "ADMIN_BALANCE_WEI": hex.int_to_hex(
+                math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
+            ),
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
@@ -69,7 +73,7 @@ def generate_el_genesis_data(
                 "bash /opt/data/genesis-builder/genesis-builder.sh",
                 # Prefund the admin address.
                 "address=$(echo $ADMIN_ADDRESS | sed 's/^0x//')",
-                "jq --arg a $address '.alloc[$a] = {\"balance\": 0x33b2e3c9fd0803ce8000000}' /opt/genesis-contracts/genesis.json > /tmp/genesis.json",
+                "jq --arg a $address --arg b $ADMIN_BALANCE_WEI '.alloc[$a] = {\"balance\": $b}' /opt/genesis-contracts/genesis.json > /tmp/genesis.json",
                 "mv /tmp/genesis.json /opt/genesis-contracts/genesis.json",
                 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
                 "jq --arg key 'alloc' '. + {($key): input | .[$key]}' /opt/data/genesis/genesis.json /opt/genesis-contracts/genesis.json > /tmp/genesis.json",

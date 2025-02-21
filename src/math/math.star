@@ -10,3 +10,7 @@ def pow(base, exponent):
     for _ in range(exponent):
         result *= base
     return result
+
+
+def ether_to_wei(amount):
+    return amount * pow(10, 18)
