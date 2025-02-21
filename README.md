@@ -142,7 +142,7 @@ kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq
 In the same way, you might want to check the MATIC contract addresses on L1 and L2.
 
 ```bash
-kurtosis files inspect pos-devnet matic-contract-l1-l2-addresses contractAddresses.json | tail -n +2 | jq
+kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq
 ```
 
 ### Make Changes
