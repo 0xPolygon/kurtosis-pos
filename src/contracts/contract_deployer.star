@@ -91,7 +91,7 @@ def deploy_l2_contracts_and_synchronise_l1_state(
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="matic-contract-l1-l2-addresses",
+                name="matic-contract-addresses",
             ),
         ],
         run="bash /opt/data/{}/deploy-l2-contracts.sh".format(contract_setup_script),
