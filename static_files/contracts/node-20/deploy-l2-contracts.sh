@@ -46,13 +46,13 @@ echo "L1_RPC_URL: ${L1_RPC_URL}"
 echo "L2_RPC_URL: ${L2_RPC_URL}"
 
 echo "Deploying Polygon PoS contracts to L2..."
-export DEPLOYER_PRIVATE_KEY="0x${PRIVATE_KEY}"
+export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 
-forge script -vvvv --rpc-url "${L2_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+forge script --rpc-url "${L2_RPC_URL}" --broadcast -vvvv \
   scripts/deployment-scripts/childContractDeployment.s.sol:ChildContractDeploymentScript
 
 echo "Mapping L2 contracts to the registry on L1..."
-forge script -vvvv --rpc-url "${L1_RPC_URL}" --private-key "0x${PRIVATE_KEY}" --broadcast \
+forge script --rpc-url "${L1_RPC_URL}" --broadcast -vvvv \
   scripts/deployment-scripts/syncChildStateToRoot.s.sol:SyncChildStateToRootScript
 
 echo "Polygon PoS contracts deployed to L1:"
