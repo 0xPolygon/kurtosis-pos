@@ -12,3 +12,4 @@ network_params:
   preset: minimal
   seconds_per_slot: 1
   network_id: "3151908"
+  prefunded_accounts: '{"0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9": {"balance": "1000000000ETH"}}'
