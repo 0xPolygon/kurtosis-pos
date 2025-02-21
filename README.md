@@ -155,6 +155,7 @@ First, we will save the L2 CL and EL genesis files for later.
 mkdir -p ./tmp
 kurtosis files inspect pos-devnet l2-cl-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-cl-genesis.json
 kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-el-genesis.json
+kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq > ./tmp/matic-contract-addresses.json
 ```
 
 Then, we will add the following parameters to the args file.
@@ -171,6 +172,7 @@ dev:
   should_deploy_matic_contracts: false
   l2_cl_genesis_filepath: ./tmp/l2-cl-genesis.json
   l2_el_genesis_filepath: ./tmp/l2-el-genesis.json
+  matic_contract_addresses_filepath: ./tmp/matic-contract-addresses
 ```
 
 You can now run the package and it will only re-deploy the L2 participants. This will be much faster than a full deployment!
