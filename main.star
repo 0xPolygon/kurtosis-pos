@@ -125,7 +125,7 @@ def run(plan, args):
             plan,
             polygon_pos_args,
             validator_config_artifact,
-            l2_network_params.get("admin_private_key"),
+            l2_network_params.get("admin_address"),
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 1:
@@ -254,19 +254,21 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
     if preregistered_validator_keys_mnemonic != default_l2_mnemonic:
         fail("Using a different mnemonic is not supported for now.")
 
-    # Merge the user-specified prefunded accounts and the validator prefunded accounts.
-    prefunded_accounts = account_util.to_ethereum_pkg_prefunded_accounts(
-        pre_funded_accounts.PRE_FUNDED_ACCOUNTS,
-    )
+    # Merge the prefunded accounts (admin and validators) with the user-specified prefuned accounts.
+    user_prefunded_accounts = {}
     l1_network_params = ethereum_args.get("network_params", {})
     user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts", "")
     if user_prefunded_accounts_str != "":
         user_prefunded_accounts = json.decode(user_prefunded_accounts_str)
-        prefunded_accounts = prefunded_accounts | user_prefunded_accounts
+
+    prefunded_accounts = _merge_l1_prefunded_accounts(
+        l2_network_params.get("admin_address"), user_prefunded_accounts
+    )
     ethereum_args["network_params"] = l1_network_params | {
         "prefunded_accounts": prefunded_accounts
     }
 
+    # Deploy the ethereum package.
     l1 = ethereum_package.run(plan, ethereum_args)
     plan.print(l1)
     if len(l1.all_participants) < 1:
@@ -277,3 +279,21 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
     }
     wait.wait_for_startup(plan, l1_config_env_vars)
     return l1
+
+
+def _merge_l1_prefunded_accounts(admin_address, user_prefunded_accounts):
+    admin_prefunded_account = to_ethereum_pkg_prefunded_account(
+        l2_network_params.get("admin_address"), constants.ADMIN_BALANCE_ETH
+    )
+
+    validators_prefunded_accounts = {}
+    for a in pre_funded_accounts.PRE_FUNDED_ACCOUNTS:
+        validators_prefunded_accounts |= to_ethereum_pkg_prefunded_account(
+            a.eth_tendermint.address, constants.VALIDATORS_BALANCE_ETH
+        )
+
+    return (
+        admin_prefunded_account
+        | validators_prefunded_accounts
+        | user_prefunded_accounts
+    )
