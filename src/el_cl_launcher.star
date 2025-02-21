@@ -68,6 +68,7 @@ def launch(
     # Start each participant.
     participant_index = 0
     validator_index = 0
+    context = []
     for _, participant in enumerate(participants):
         for _ in range(participant.get("count", 1)):
             # Get the CL launcher.
@@ -99,6 +100,7 @@ def launch(
             )
 
             # If the participant is a validator, launch the CL node and it's dedicated AMQP server.
+            cl_context = {}
             if participant.get("is_validator", False):
                 rabbitmq_name = _generate_amqp_name(participant_index + 1)
                 rabbitmq_service = plan.add_service(
@@ -152,11 +154,20 @@ def launch(
                 network_data.el_static_nodes,
                 network_params.get("el_chain_id", ""),
             )
+            context.append(
+                struct(
+                    cl_context=cl_context,
+                    el_context=el_context,
+                )
+            )
 
             # Increment the indexes.
             participant_index += 1
             if participant.get("is_validator", False):
                 validator_index += 1
+
+    # Return the L2 context.
+    return context
 
 
 def _prepare_network_data(participants):
