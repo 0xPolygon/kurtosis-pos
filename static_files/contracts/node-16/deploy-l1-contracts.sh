@@ -28,7 +28,7 @@ fi
 
 echo "Configuring truffle..."
 # Copy the new truffle config.
-cp /opt/data/truffle-config.js /opt/contracts/truffle-config.js
+cp /opt/data/node-16/truffle-config.js /opt/contracts/truffle-config.js
 # Remove some of the test contracts from the migrations because they exceed the maximum contract code size.
 sed -i 's|^.*await deployer.deploy(StakeManagerTestable.*$|// &|' /opt/contracts/migrations/2_deploy_root_contracts.js
 

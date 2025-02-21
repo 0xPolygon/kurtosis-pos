@@ -28,7 +28,7 @@ fi
 
 echo "Configuring truffle..."
 # Copy the new truffle config.
-cp /opt/data/truffle-config.js /opt/contracts/truffle-config.js
+cp /opt/data/node-16/truffle-config.js /opt/contracts/truffle-config.js
 # Remove the condition that prevents running migrations on L2 networks that have different names than "bor".
 # https://github.com/maticnetwork/contracts/blob/mardizzone/node-16/migrations/5_deploy_child_contracts.js#L15C3-L17
 sed -i '15,17d' /opt/contracts/migrations/5_deploy_child_contracts.js
