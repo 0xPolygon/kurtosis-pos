@@ -286,7 +286,7 @@ def _merge_l1_prefunded_accounts(admin_address, l1_network_params):
         )
 
     user_prefunded_accounts = {}
-    user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts", "")
+    user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts")
     if user_prefunded_accounts_str != "":
         user_prefunded_accounts = json.decode(user_prefunded_accounts_str)
 
