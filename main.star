@@ -14,6 +14,7 @@ el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis_generator = import_module(
     "./src/prelaunch_data_generator/el_genesis/el_genesis_generator.star"
 )
+el_shared = import_module("./src/el/el_shared.star")
 input_parser = import_module("./src/package_io/input_parser.star")
 math = import_module("./src/math/math.star")
 pre_funded_accounts = import_module(
@@ -80,15 +81,19 @@ def run(plan, args):
         )
         l1_rpcs = {"external-l1": dev_args.get("l1_rpc_url", "")}
 
-    # Deploy MATIC contracts and generate the EL and CL genesis files if needed.
+    # Deploy MATIC contracts to L1 and generate the EL and CL genesis files if needed.
     # Otherwise, use the provided EL and CL genesis files.
     if dev_args.get("should_deploy_matic_contracts", True):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
 
         plan.print("Deploying MATIC contracts to L1 and staking for each validator")
-        result = contract_deployer.deploy_contracts(
-            plan, l1_context, polygon_pos_args, validator_accounts
+        result = contract_deployer.deploy_l1_contracts(
+            plan,
+            polygon_pos_args,
+            l1_context.rpc_url,
+            l1_context.private_key,
+            validator_accounts,
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 2:
@@ -117,7 +122,10 @@ def run(plan, args):
         l2_cl_genesis_artifact = result.files_artifacts[0]
 
         result = el_genesis_generator.generate_el_genesis_data(
-            plan, polygon_pos_args, validator_config_artifact
+            plan,
+            polygon_pos_args,
+            validator_config_artifact,
+            l2_network_params.get("admin_private_key"),
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 1:
@@ -148,6 +156,19 @@ def run(plan, args):
             },
         )
 
+        plan.print("Using matic contract addresses provided")
+        contract_addresses_artifact = plan.render_templates(
+            name="matic-contract-addresses",
+            config={
+                "contractAddresses.json": struct(
+                    template=read_file(
+                        src=dev_args.get("matic_contract_addresses_filepath", "")
+                    ),
+                    data={},
+                )
+            },
+        )
+
     # Deploy network participants.
     participants_count = math.sum([p.get("count", 1) for p in participants])
     plan.print(
@@ -155,7 +176,7 @@ def run(plan, args):
             participants_count, len(validator_accounts), participants
         )
     )
-    el_cl_launcher.launch(
+    l2_context = el_cl_launcher.launch(
         plan,
         participants,
         polygon_pos_args,
@@ -163,6 +184,18 @@ def run(plan, args):
         l2_cl_genesis_artifact,
         l1_context.rpc_url,
         devnet_cl_type,
+    )
+    l2_rpc_url = l2_context[0].el_context.ports[el_shared.EL_RPC_PORT_ID].url
+
+    # Deploy MATIC contracts to L2.
+    plan.print("Deploying MATIC contracts to L2 and synchronising state on L1")
+    result = contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
+        plan,
+        polygon_pos_args,
+        l1_context.rpc_url,
+        l2_rpc_url,
+        l2_network_params.get("admin_private_key"),
+        contract_addresses_artifact,
     )
 
     # Deploy additional services.

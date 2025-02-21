@@ -3,7 +3,9 @@ constants = import_module("../package_io/constants.star")
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 
-def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
+def deploy_l1_contracts(
+    plan, polygon_pos_args, l1_rpc_url, private_key, validator_accounts
+):
     network_params = polygon_pos_args.get("network_params", {})
     setup_images = polygon_pos_args.get("setup_images", {})
     contract_deployer_image = setup_images.get("contract_deployer")
@@ -13,16 +15,16 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
 
     contracts_config_artifact = plan.upload_files(
         src=CONTRACTS_CONFIG_FILE_PATH,
-        name="matic-contracts-deployer-config",
+        name="matic-contracts-l1-deployer-config",
     )
 
     return plan.run_sh(
-        name="matic-contracts-deployer",
-        description="Deploying MATIC contracts to L1 and staking for each validator - it can take up to 5 minutes",
+        name="matic-contracts-l1-deployer",
+        description="Deploying MATIC contracts to L1, initializing state and staking for each validator - it can take up to 5 minutes",
         image=contract_deployer_image,
         env_vars={
-            "PRIVATE_KEY": l1_context.private_key,
-            "L1_RPC_URL": l1_context.rpc_url,
+            "PRIVATE_KEY": private_key,
+            "L1_RPC_URL": l1_rpc_url,
             "EL_CHAIN_ID": network_params.get("el_chain_id", ""),
             "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
             "CL_CHAIN_ID": network_params.get("cl_chain_id", ""),
@@ -41,15 +43,59 @@ def deploy_contracts(plan, l1_context, polygon_pos_args, validator_accounts):
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="matic-contract-addresses",
+                name="matic-contract-l1-addresses",
             ),
             StoreSpec(
                 src="/opt/contracts/validators.js",
                 name="l2-validators-config",
             ),
         ],
-        run="bash /opt/data/setup-{}.sh".format(contract_setup_script),
-        wait="300s",  # 5min (default 180s - 3min)
+        run="bash /opt/data/{}/deploy-l1-contracts.sh".format(contract_setup_script),
+        wait="5m",
+    )
+
+
+def deploy_l2_contracts_and_synchronise_l1_state(
+    plan,
+    polygon_pos_args,
+    l1_rpc_url,
+    l2_rpc_url,
+    private_key,
+    contract_addresses_artifact,
+):
+    network_params = polygon_pos_args.get("network_params", {})
+    setup_images = polygon_pos_args.get("setup_images", {})
+    contract_deployer_image = setup_images.get("contract_deployer")
+    contract_setup_script = _determine_contract_setup_script(contract_deployer_image)
+
+    contracts_config_artifact = plan.upload_files(
+        src=CONTRACTS_CONFIG_FILE_PATH,
+        name="matic-contracts-l2-deployer-config",
+    )
+
+    return plan.run_sh(
+        name="matic-contracts-l2-deployer",
+        description="Deploying MATIC contracts to L2 and synchronising state on L1",
+        image=contract_deployer_image,
+        env_vars={
+            "PRIVATE_KEY": private_key,
+            "L1_RPC_URL": l1_rpc_url,
+            "L2_RPC_URL": l2_rpc_url,
+            "EL_CHAIN_ID": network_params.get("el_chain_id"),
+            "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
+        },
+        files={
+            "/opt/data": contracts_config_artifact,
+            "/opt/data/addresses": contract_addresses_artifact,
+        },
+        store=[
+            StoreSpec(
+                src="/opt/contracts/contractAddresses.json",
+                name="matic-contract-l1-l2-addresses",
+            ),
+        ],
+        run="bash /opt/data/{}/deploy-l2-contracts.sh".format(contract_setup_script),
+        wait="5m",
     )
 
 

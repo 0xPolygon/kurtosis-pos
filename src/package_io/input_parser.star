@@ -68,6 +68,10 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "validator_config_generator": DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE,
     },
     "network_params": {
+        # Admin account generated using `cast wallet new`.
+        "admin_address": "0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9",
+        "admin_private_key": "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea",
+        # Validators params.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount": 10000,  # in ether
         "validator_top_up_fee_amount": 2000,  # in ether

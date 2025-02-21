@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Deploy MATIC contracts to the root chain and stake for each validator.
+# Deploy MATIC contracts to L1, initialize state and stake for each validator.
 # For reference: https://github.com/maticnetwork/contracts/tree/v0.3.11/deploy-migrations
 
 # Setting EL chain id if needed.
@@ -32,7 +32,7 @@ cp /opt/data/truffle-config.js /opt/contracts/truffle-config.js
 # Remove some of the test contracts from the migrations because they exceed the maximum contract code size.
 sed -i 's|^.*await deployer.deploy(StakeManagerTestable.*$|// &|' /opt/contracts/migrations/2_deploy_root_contracts.js
 
-# Run the 4 first steps of the migrations.
+# Run the 4 first steps of the migration.
 if [[ -z "${PRIVATE_KEY}" ]]; then
   echo "Error: PRIVATE_KEY environment variable is not set"
   exit 1
@@ -48,10 +48,10 @@ fi
 echo "L1_RPC_URL: ${L1_RPC_URL}"
 echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 
-echo "Running the 4 first steps of the truffle migration..."
-truffle migrate --network development --f 1 --to 4 --compile-none
+echo "Deploying MATIC contracts to L1, draining StakeManager and initialising state..."
+truffle migrate --network l1 --f 1 --to 4 --compile-none
 
-echo "MATIC contracts deployed to the root chain:"
+echo "MATIC contracts deployed to L1:"
 cat /opt/contracts/contractAddresses.json
 echo
 
@@ -87,7 +87,7 @@ echo "Staking for each validator node..."
 IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
   IFS=',' read -r address eth_public_key <<<"${account}"
-  npm run truffle exec scripts/stake.js -- --network development "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}"
+  npm run truffle exec scripts/stake.js -- --network l1 "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}"
 
   # Update the validator config file.
   jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT}" --arg balance "${VALIDATOR_BALANCE}" \

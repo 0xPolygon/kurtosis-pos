@@ -7,19 +7,13 @@ chai.use(chaiAsPromised).should()
 
 var HDWalletProvider = require('@truffle/hdwallet-provider')
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY
-const MNEMONIC = {privateKeys: [PRIVATE_KEY]}
-
+const MNEMONIC = { privateKeys: [process.env.PRIVATE_KEY] }
 const L1_RPC_URL = process.env.L1_RPC_URL
-
-const API_KEY = process.env.API_KEY
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
+const L2_RPC_URL = process.env.L2_RPC_URL
 
 module.exports = {
-  // See <https://trufflesuite.com/docs/truffle/reference/configuration/>
-  // to customize your Truffle configuration!
   networks: {
-    development: {
+    l1: {
       provider: () =>
         new HDWalletProvider({
           ...MNEMONIC,
@@ -29,54 +23,14 @@ module.exports = {
       skipDryRun: true,
       gas: 0
     },
-    bor: {
+    l2: {
       provider: () =>
         new HDWalletProvider({
           ...MNEMONIC,
-          providerOrUrl: `http://localhost:8545`
+          providerOrUrl: L2_RPC_URL
         }),
       network_id: '*', // match any network
       gasPrice: '90000000000'
-    },
-    matic: {
-      provider: () =>
-        new HDWalletProvider({
-          ...MNEMONIC,
-          providerOrUrl: `https://rpc-mainnet.matic.network`
-        }),
-      network_id: '137',
-      gasPrice: '90000000000'
-    },
-    mumbai: {
-      provider: () =>
-        new HDWalletProvider({
-          ...MNEMONIC,
-          providerOrUrl: `https://rpc-mumbai.matic.today`
-        }),
-      network_id: '80001'
-    },
-    goerli: {
-      provider: function() {
-        return new HDWalletProvider({
-          ...MNEMONIC,
-          providerOrUrl: `https://goerli.infura.io/v3/${API_KEY}`
-        })
-      },
-      network_id: 5,
-      gas: 8000000,
-      gasPrice: 10000000000, // 10 gwei
-      skipDryRun: true
-    },
-    mainnet: {
-      provider: function() {
-        return new HDWalletProvider({
-          ...MNEMONIC,
-          providerOrUrl: `https://mainnet.infura.io/v3/${API_KEY}`
-        })
-      },
-      network_id: 1,
-      gas: 3000000,
-      gasPrice: '45000000000'
     }
   },
   compilers: {
@@ -102,11 +56,8 @@ module.exports = {
       showTimeSpent: true
     }
   },
-  plugins: ['solidity-coverage', 'truffle-plugin-verify', 'truffle-contract-size'],
+  plugins: ['solidity-coverage', 'truffle-contract-size'],
   verify: {
     preamble: 'Matic network contracts'
-  },
-  api_keys: {
-    etherscan: ETHERSCAN_API_KEY
   }
 }
