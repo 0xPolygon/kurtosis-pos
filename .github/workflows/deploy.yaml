@@ -199,7 +199,7 @@ jobs:
 
           echo
           echo "Getting the first state sync..."
-          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
+          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${cl_node_name} http)
           while true; do
             if [[ "${cl_type}" == "heimdall" ]]; then
               state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
