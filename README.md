@@ -164,35 +164,11 @@ Monitor state syncs.
 ```bash
 # heimdall-v1 devnet
 cl_api_url=$(kurtosis port print pos-devnet l2-cl-1-heimdall-bor-validator http)
-curl --silent "${cl_api_url}/clerk/event-record/1" | jq
+curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length'
 
 # heimdall-v2 devnet
-# TODO
-```
-
-At first, you will see that there is no state sync.
-
-```json
-{
-  "error": "{\"codespace\":\"sdk\",\"code\":1,\"message\":\"could not get state record; No record found\"}"
-}
-```
-
-But after a few seconds, you will notice that the first state sync occured.
-
-```json
-{
-  "height": "0",
-  "result": {
-    "id": 1,
-    "contract": "0xeafa0622b7f1a8d267cb920f9024f19d45aeb331",
-    "data": "0x000000000000000000000000f67b2acf1860ba7b150b61b1e23c74d899d280c50000000000000000000000008e1700577b7ae261753c67e1b93fe60dd3e205fa000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000001",
-    "tx_hash": "0xbefafc757ebf1a0cf0f5cea3e3ce2e2ddd25d87db64f7bd10f251f7616fe9c34",
-    "log_index": 2,
-    "bor_chain_id": "4927",
-    "record_time": "2025-02-21T21:53:09.557311672Z"
-  }
-}
+cl_api_url=$(kurtosis port print pos-devnet l2-cl-1-heimdall-v2-bor-modified-for-heimdall-v2-validator http)
+curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.event_records | length'
 ```
 
 ### Make Changes
