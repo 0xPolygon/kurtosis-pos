@@ -22,6 +22,7 @@ Optional features:
   - [Prerequisites](#prerequisites)
   - [Deploy](#deploy)
   - [Interact](#interact)
+  - [Test](#test)
   - [Make Changes](#make-changes)
   - [Tear Down](#tear-down)
 - [Configuration](#configuration)
@@ -143,6 +144,55 @@ In the same way, you might want to check the MATIC contract addresses on L1 and 
 
 ```bash
 kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq
+```
+
+### Test
+
+Trigger a state sync.
+
+```bash
+export L1_RPC_URL="http://$(kurtosis port print pos-devnet el-1-geth-lighthouse rpc)"
+matic_contract_addresses=$(kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq)
+export DEPOSIT_MANAGER_PROXY_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.DepositManagerProxy')
+export ERC20_TOKEN_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.tokens.MaticToken')
+export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
+bash ./test/state_sync.sh
+```
+
+Monitor state syncs.
+
+```bash
+# heimdall-v1 devnet
+cl_api_url=$(kurtosis port print pos-devnet l2-cl-1-heimdall-bor-validator http)
+curl --silent "${cl_api_url}/clerk/event-record/1" | jq
+
+# heimdall-v2 devnet
+# TODO
+```
+
+At first, you will see that there is no state sync.
+
+```json
+{
+  "error": "{\"codespace\":\"sdk\",\"code\":1,\"message\":\"could not get state record; No record found\"}"
+}
+```
+
+But after a few seconds, you will notice that the first state sync occured.
+
+```json
+{
+  "height": "0",
+  "result": {
+    "id": 1,
+    "contract": "0xeafa0622b7f1a8d267cb920f9024f19d45aeb331",
+    "data": "0x000000000000000000000000f67b2acf1860ba7b150b61b1e23c74d899d280c50000000000000000000000008e1700577b7ae261753c67e1b93fe60dd3e205fa000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000001",
+    "tx_hash": "0xbefafc757ebf1a0cf0f5cea3e3ce2e2ddd25d87db64f7bd10f251f7616fe9c34",
+    "log_index": 2,
+    "bor_chain_id": "4927",
+    "record_time": "2025-02-21T21:53:09.557311672Z"
+  }
+}
 ```
 
 ### Make Changes
