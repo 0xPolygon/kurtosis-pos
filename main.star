@@ -37,6 +37,9 @@ def run(plan, args):
     participants = polygon_pos_args.get("participants")
     validator_accounts = get_validator_accounts(participants)
     l2_network_params = polygon_pos_args.get("network_params")
+    admin_private_key = hex.normalize(
+        l2_network_params.get("admin_private_key")
+    )  # Used to deploy Polygon PoS contracts on both L1 and L2.
 
     # Determine the devnet CL type to be able to select the appropriate validator address format later.
     devnet_cl_type = participants[0].get("cl_type")
@@ -64,9 +67,7 @@ def run(plan, args):
         if len(l1.all_participants) < 1:
             fail("The L1 package did not start any participants.")
         l1_context = struct(
-            private_key=hex.normalize(
-                l1.pre_funded_accounts[12].private_key
-            ),  # Reserved for L2 contract deployers.
+            private_key=admin_private_key,
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
         )
         l1_rpcs = {}
@@ -77,7 +78,7 @@ def run(plan, args):
     else:
         plan.print("Using an external l1")
         l1_context = struct(
-            private_key=hex.normalize(dev_args.get("l1_private_key")),
+            private_key=admin_private_key,
             rpc_url=dev_args.get("l1_rpc_url"),
         )
         l1_rpcs = {"external-l1": dev_args.get("l1_rpc_url")}
@@ -93,7 +94,7 @@ def run(plan, args):
             plan,
             polygon_pos_args,
             l1_context.rpc_url,
-            l1_context.private_key,
+            admin_private_key,
             validator_accounts,
         )
         artifact_count = len(result.files_artifacts)
@@ -195,7 +196,7 @@ def run(plan, args):
         polygon_pos_args,
         l1_context.rpc_url,
         l2_rpc_url,
-        hex.normalize(l2_network_params.get("admin_private_key")),
+        admin_private_key,
         contract_addresses_artifact,
     )
 
