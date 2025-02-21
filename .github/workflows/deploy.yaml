@@ -70,7 +70,7 @@ jobs:
           echo "Getting the first state sync..."
           heimdall_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           while true; do
-            response=$(curl "${heimdall_api_url}/clerk/event-record/1" | jq)
+            response=$(curl --silent "${heimdall_api_url}/clerk/event-record/1" | jq)
             err=$(echo "${response}" | jq 'has("error")')
             if [[ "${err}" == "true" ]]; then
                 echo "❌ Unable to find the first state sync..."
@@ -204,7 +204,7 @@ jobs:
           echo "Getting the first state sync..."
           heimdall_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${cl_node_name} http)
           while true; do
-            response=$(curl "${heimdall_api_url}/clerk/event-record/1" | jq)
+            response=$(curl --silent "${heimdall_api_url}/clerk/event-record/1" | jq)
             err=$(echo "${response}" | jq 'has("error")')
             if [[ "${err}" == "true" ]]; then
                 echo "❌ Unable to find the first state sync..."
@@ -293,7 +293,7 @@ jobs:
           echo "Getting the first state sync..."
           heimdall_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           while true; do
-            response=$(curl "${heimdall_api_url}/clerk/event-record/1" | jq)
+            response=$(curl --silent "${heimdall_api_url}/clerk/event-record/1" | jq)
             err=$(echo "${response}" | jq 'has("error")')
             if [[ "${err}" == "true" ]]; then
                 echo "❌ Unable to find the first state sync..."
@@ -372,7 +372,7 @@ jobs:
           echo "Getting the first state sync..."
           heimdall_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           while true; do
-            response=$(curl "${heimdall_api_url}/clerk/event-record/1" | jq)
+            response=$(curl --silent "${heimdall_api_url}/clerk/event-record/1" | jq)
             err=$(echo "${response}" | jq 'has("error")')
             if [[ "${err}" == "true" ]]; then
                 echo "❌ Unable to find the first state sync..."
