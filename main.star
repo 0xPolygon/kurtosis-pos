@@ -89,7 +89,6 @@ def run(plan, args):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
 
-        plan.print("Deploying MATIC contracts to L1 and staking for each validator")
         result = contract_deployer.deploy_l1_contracts(
             plan,
             polygon_pos_args,
@@ -190,7 +189,6 @@ def run(plan, args):
     l2_rpc_url = l2_context[0].el_context.ports[el_shared.EL_RPC_PORT_ID].url
 
     # Deploy MATIC contracts to L2.
-    plan.print("Deploying MATIC contracts to L2 and synchronising state on L1")
     result = contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
         plan,
         polygon_pos_args,
