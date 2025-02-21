@@ -55,7 +55,7 @@ echo "L2_RPC_URL: ${L2_RPC_URL}"
 echo "Deploying MATIC contracts to L2..."
 truffle migrate --network l2 --f 5 --to 5 --compile-none
 
-echo "Map L2 contracts to the registry on L1..."
+echo "Mapping L2 contracts to the registry on L1..."
 truffle migrate --network l1 --f 6 --to 6 --compile-none
 
 echo "MATIC contracts deployed to L1 and L2:"
