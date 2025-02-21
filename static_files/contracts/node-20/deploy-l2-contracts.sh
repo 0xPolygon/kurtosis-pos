@@ -55,7 +55,7 @@ echo "Mapping L2 contracts to the registry on L1..."
 forge script --rpc-url "${L1_RPC_URL}" --broadcast -vvvv \
   scripts/deployment-scripts/syncChildStateToRoot.s.sol:SyncChildStateToRootScript
 
-echo "Polygon PoS contracts deployed to L1:"
+echo "Polygon PoS contracts deployed to L1 and L2:"
 cat contractAddresses.json
 echo
 
