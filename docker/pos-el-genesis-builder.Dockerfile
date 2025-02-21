@@ -18,6 +18,7 @@ LABEL author="devtools@polygon.technology"
 
 ENV DEFAULT_EL_CHAIN_ID="4927"
 ENV DEFAULT_CL_CHAIN_ID="heimdall-4927"
+ENV FOUNDRY_VERSION="stable"
 
 COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
 
@@ -28,6 +29,10 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && npm install --global truffle@5.11.5 \
+  && curl --silent --location --proto "=https" https://foundry.paradigm.xyz | bash \
+  && /root/.foundry/bin/foundryup --install ${FOUNDRY_VERSION} \
+  && ln -s /root/.foundry/bin/* /usr/local/bin/ \
+  && rm -fr /root/.foundry/versions/* \
   && git clone https://github.com/maticnetwork/genesis-contracts.git . \
   && git checkout 96a19dd \
   && git submodule init \
