@@ -29,6 +29,9 @@ else
   forge build
 fi
 
+echo "Copying contract addresses file..."
+cp /opt/data/addresses/contractAddresses.json /opt/pos-contracts/contractAddresses.json
+
 # Deploy Polygon PoS contracts on L1.
 if [[ -z "${PRIVATE_KEY}" ]]; then
   echo "Error: PRIVATE_KEY environment variable is not set"
