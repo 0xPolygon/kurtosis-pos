@@ -344,7 +344,24 @@ jobs:
         with:
           version: ${{ env.FOUNDRY_VERSION }}
 
-      - name: Run Starlark
+      - name: Run Starlark for the first time
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false --verbosity DETAILED .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Check devnet status
+        env:
+          ENCLAVE: ${{ env.ENCLAVE_NAME }}
+        run: bash scripts/discover.sh && bash scripts/monitor.sh
+
+      - name: Retrive CL/EL genesis and MATIC contract addresses
+        run: |
+          kurtosis files inspect pos-devnet l2-cl-genesis genesis.json | tail -n +2 | jq > .github/tests/cl-el-genesis//l2-cl-genesis.json
+          kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq > .github/tests/cl-el-genesis//l2-el-genesis.json
+          kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq > .github/tests/cl-el-genesis//matic-contract-addresses.json
+
+      - name: Run Starlark for the second time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false --verbosity DETAILED .
 
       - name: Inspect enclave
