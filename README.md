@@ -159,13 +159,13 @@ bash ./scripts/send_state_sync.sh
 Monitor state syncs.
 
 ```bash
-# heimdall-v1 devnet
-cl_api_url=$(kurtosis port print pos-devnet l2-cl-1-heimdall-bor-validator http)
-curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length'
-
-# heimdall-v2 devnet
-cl_api_url=$(kurtosis port print pos-devnet l2-cl-1-heimdall-v2-bor-modified-for-heimdall-v2-validator http)
-curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.event_records | length'
+export L1_RPC_URL="http://$(kurtosis port print pos-devnet el-1-geth-lighthouse rpc)"
+export L1_ROOT_CHAIN_PROXY_ADDRESS=$(kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.RootChainProxy')
+export L2_CL_API_URL=$(kurtosis port print pos-devnet l2-cl-1-heimdall-bor-validator http)
+export L2_CL_NODE_TYPE=heimdall
+export L2_EL_RPC_URL=$(kurtosis port print pos-devnet l2-el-1-bor-heimdall-validator rpc)
+export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
+bash ./scripts/check_state_sync_and_checkpoints.sh
 ```
 
 ### Make Changes
