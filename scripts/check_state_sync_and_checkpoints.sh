@@ -5,6 +5,14 @@ set -euo pipefail
 # Check that checkpoints occur on Bor and L1.
 
 # Define a few environment variables required to run the script.
+if [[ -z "${L1_RPC_URL}" ]]; then
+  echo "Error: L1_RPC_URL environment variable is not set."
+  exit 1
+fi
+if [[ -z "${L1_ROOT_CHAIN_PROXY_ADDRESS}" ]]; then
+  echo "Error: L1_ROOT_CHAIN_PROXY_ADDRESS environment variable is not set."
+  exit 1
+fi
 if [[ -z "${L2_CL_API_URL}" ]]; then
   echo "Error: CL_API_URL environment variable is not set."
   exit 1
@@ -25,20 +33,12 @@ if [[ -z "${L2_STATE_RECEIVER_ADDRESS}" ]]; then
   echo "Error: L2_STATE_RECEIVER_ADDRESS environment variable is not set."
   exit 1
 fi
-if [[ -z "${L1_RPC_URL}" ]]; then
-  echo "Error: L1_RPC_URL environment variable is not set."
-  exit 1
-fi
-if [[ -z "${L1_ROOT_CHAIN_PROXY_ADDRESS}" ]]; then
-  echo "Error: L1_ROOT_CHAIN_PROXY_ADDRESS environment variable is not set."
-  exit 1
-fi
+echo "L1_RPC_URL: ${L1_RPC_URL}"
+echo "L1_ROOT_CHAIN_PROXY_ADDRESS: ${L1_ROOT_CHAIN_PROXY_ADDRESS}"
 echo "L2_CL_API_URL: ${L2_CL_API_URL}"
 echo "L2_CL_NODE_TYPE: ${L2_CL_NODE_TYPE}"
 echo "L2_EL_RPC_URL: ${L2_EL_RPC_URL}"
 echo "L2_STATE_RECEIVER_ADDRESS: ${L2_STATE_RECEIVER_ADDRESS}"
-echo "L1_RPC_URL: ${L1_RPC_URL}"
-echo "L1_ROOT_CHAIN_PROXY_ADDRESS: ${L1_ROOT_CHAIN_PROXY_ADDRESS}"
 
 # Monitor state syncs on Heimdall.
 echo
