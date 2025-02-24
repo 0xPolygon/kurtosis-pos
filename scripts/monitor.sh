@@ -260,9 +260,9 @@ while true; do
   output+='}'
 
   # Display tables
-  echo "L1 Status:"
+  echo "L1 EL Status:"
   echo
-  echo -e "${output}" | jq --raw-output '(["Latest BN", "Latest Safe BN", "Latest Finalized BN"] | (., map(length*"-"))), (.l1_status | [.latest_bn, .safe_bn, .finalized_bn]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["Latest Height", "Safe Height", "Finalized Height"] | (., map(length*"-"))), (.l1_status | [.latest_bn, .safe_bn, .finalized_bn]) | @tsv' | column -ts $'\t'
 
   echo
   echo "L2 Status:"
