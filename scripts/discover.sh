@@ -28,21 +28,21 @@ if [[ "${l1_rpc_url}" == "" ]]; then
   echo "Error: Unable to get the L1 RPC URL... Is the L1 devnet deployed?"
   exit 1
 fi
-echo "Found."
+echo "Found: ${l1_rpc_url}"
 echo "${l1_rpc_url}" >${TMP_FOLDER}/${L1_RPC_FILE}
 echo "Saved at ${TMP_FOLDER}/${L1_RPC_FILE}"
 
 # Get L1 root chain proxy address.
 echo "Getting L1 root chain proxy address... "
 l1_root_chain_proxy_address="$(kurtosis files inspect "${ENCLAVE}" matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.RootChainProxy')"
-echo "Found."
+echo "Found: ${l1_root_chain_proxy_address}"
 echo "${l1_root_chain_proxy_address}" >${TMP_FOLDER}/${L1_ROOT_CHAIN_PROXY_ADDRESS}
 echo "Saved at ${TMP_FOLDER}/${L1_ROOT_CHAIN_PROXY_ADDRESS}"
 
 # Get L1 state sender address.
 echo "Getting L1 state sender address... "
 l1_state_sender_address="$(kurtosis files inspect "${ENCLAVE}" matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.StateSender')"
-echo "Found."
+echo "Found: ${l1_state_sender_address}"
 echo "${l1_state_sender_address}" >${TMP_FOLDER}/${L1_STATE_SENDER_ADDRESS}
 echo "Saved at ${TMP_FOLDER}/${L1_STATE_SENDER_ADDRESS}"
 
@@ -126,6 +126,6 @@ echo "Saved at ${TMP_FOLDER}/${L2_EL_RPCS_FILE}"
 # Get L2 state receiver address.
 echo "Getting L2 state receiver address... "
 l2_state_receiver_address="$(kurtosis files inspect "${ENCLAVE}" l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')"
-echo "Found."
+echo "Found: ${l2_state_receiver_address}"
 echo "${l2_state_receiver_address}" >${TMP_FOLDER}/${L2_STATE_RECEIVER_ADDRESS}
 echo "Saved at ${TMP_FOLDER}/${L2_STATE_RECEIVER_ADDRESS}"
