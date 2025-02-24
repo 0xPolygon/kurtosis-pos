@@ -7,9 +7,10 @@ set -euo pipefail
 TMP_FOLDER="tmp"
 mkdir -p "${TMP_FOLDER}"
 
-CL_RPCS_FILE="cl_rpcs.txt"
-CL_APIS_FILE="cl_apis.txt"
-EL_RPCS_FILE="el_rpcs.txt"
+L1_RPC_FILE="l1_rpc.txt"
+CL_RPCS_FILE="l2_cl_rpcs.txt"
+CL_APIS_FILE="l2_cl_apis.txt"
+EL_RPCS_FILE="l2_el_rpcs.txt"
 
 # Check the environment variables.
 if [[ -z "${ENCLAVE}" ]]; then
@@ -17,8 +18,19 @@ if [[ -z "${ENCLAVE}" ]]; then
   exit 1
 fi
 
-# Get CL rpc urls.
-echo -n "Getting CL RPC and API urls... "
+# Get L1 EL rpc url.
+echo -n "Getting L1 EL RPC url... "
+l1_rpc_url="http://$(kurtosis port print pos-devnet el-1-geth-lighthouse rpc)"
+if [[ "${l1_rpc_url}" == "" ]]; then
+  echo "Error: Unable to get the L1 RPC URL... Is the L1 devnet deployed?"
+  exit 1
+fi
+echo "Found."
+echo "${l1_rpc_url}" >${TMP_FOLDER}/${L1_RPC_FILE}
+echo "Saved at ${TMP_FOLDER}/${L1_RPC_FILE}"
+
+# Get L2 CL rpc urls.
+echo -n "Getting L2 CL RPC and API urls... "
 declare -a cl_services
 declare -a cl_rpc_urls
 declare -a cl_api_urls
@@ -46,8 +58,7 @@ if [ "${#cl_services[@]}" -ne "${#cl_api_urls[@]}" ]; then
   echo "Error: The numbers of CL services (${#cl_services[@]}) is not the same as the number of CL API URLs (${#cl_api_urls[@]})."
   exit 1
 fi
-
-echo "Found ${#cl_services[@]}."
+echo "Found ${#cl_services[@]} node."
 
 # Save CL services and urls to file.
 {
@@ -63,8 +74,8 @@ echo "Saved at ${TMP_FOLDER}/${CL_RPCS_FILE}"
 } >"${TMP_FOLDER}/${CL_APIS_FILE}"
 echo "Saved at ${TMP_FOLDER}/${CL_APIS_FILE}"
 
-# Get EL rpc urls.
-echo -n "Getting EL RPC urls... "
+# Get L2 EL rpc urls.
+echo -n "Getting L2 EL RPC urls... "
 declare -a el_services
 declare -a el_rpc_urls
 while IFS= read -r el_service; do
@@ -85,8 +96,7 @@ if [ "${#el_services[@]}" -ne "${#el_rpc_urls[@]}" ]; then
   echo "The numbers of EL services (${#el_services[@]}) is not the same as the number of EL RPC URLs (${#el_rpc_urls[@]})."
   exit 1
 fi
-
-echo "Found ${#el_services[@]}."
+echo "Found ${#el_services[@]} node."
 
 # Save EL services and urls to file.
 {

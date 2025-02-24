@@ -3,9 +3,9 @@ set -euo pipefail
 
 # Monitor the status of the devnet.
 TMP_FOLDER="tmp"
-CL_RPCS_FILE="cl_rpcs.txt"
-CL_APIS_FILE="cl_apis.txt"
-EL_RPCS_FILE="el_rpcs.txt"
+CL_RPCS_FILE="l2_cl_rpcs.txt"
+CL_APIS_FILE="l2_cl_apis.txt"
+EL_RPCS_FILE="l2_el_rpcs.txt"
 
 CHECK_RATE_SECONDS=10
 TIMEOUT_SECONDS=${TIMEOUT_SECONDS:-60}
