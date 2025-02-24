@@ -57,7 +57,7 @@ jobs:
           ENCLAVE: ${{ env.ENCLAVE_NAME }}
         run: bash scripts/discover.sh && bash scripts/monitor.sh
 
-      - name: Test state syncs
+      - name: Test state syncs and checkpoints
         run: |
           export L1_RPC_URL="http://$(kurtosis port print ${{ env.ENCLAVE_NAME }} el-1-geth-lighthouse rpc)"
           matic_contract_addresses=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq)
@@ -66,21 +66,12 @@ jobs:
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
 
-          echo
-          echo "Getting the first state sync..."
-          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
-          while true; do
-            state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
-            if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
-                echo "✅ A state sync just occured! State sync count: ${state_sync_count}"
-                exit
-            else
-                echo "No state sync occured yet... State sync count: ${state_sync_count}"
-            fi
-
-            echo "Waiting 5 seconds before next request..."
-            sleep 5
-          done
+          export L1_ROOT_CHAIN_PROXY_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.RootChainProxy')
+          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-modified-for-heimdall-v2-validator http)
+          export L2_CL_NODE_TYPE=heimdall-v2
+          export L2_EL_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-modified-for-heimdall-v2-heimdall-v2-validator rpc)
+          export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
+          bash ./scripts/check_state_sync_and_checkpoints
 
       - name: Dump enclave
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
@@ -175,7 +166,7 @@ jobs:
           fi
           bash scripts/monitor.sh
 
-      - name: Test state syncs
+      - name: Test state syncs and checkpoints
         run: |
           export L1_RPC_URL="http://$(kurtosis port print ${{ env.ENCLAVE_NAME }} el-1-geth-lighthouse rpc)"
           matic_contract_addresses=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq)
@@ -184,8 +175,6 @@ jobs:
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
 
-          echo
-          echo "Determining CL node name..."
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
           if [[ "${cl_type}" == "null" ]]; then
             cl_type="heimdall"
@@ -195,28 +184,14 @@ jobs:
             el_type="bor"
           fi
           cl_node_name="l2-cl-1-${cl_type}-${el_type}-validator"
-          echo "cl_node_name: ${cl_node_name}"
+          el_node_name="l2-el-1-${el_type}-${cl_type}-validator"
 
-          echo
-          echo "Getting the first state sync..."
-          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} ${cl_node_name} http)
-          while true; do
-            if [[ "${cl_type}" == "heimdall" ]]; then
-              state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
-            else
-              state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.event_records | length')
-            fi
-
-            if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
-                echo "✅ A state sync just occured! State sync count: ${state_sync_count}"
-                exit
-            else
-                echo "No state sync occured yet... State sync count: ${state_sync_count}"
-            fi
-
-            echo "Waiting 5 seconds before next request..."
-            sleep 5
-          done
+          export L1_ROOT_CHAIN_PROXY_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.RootChainProxy')
+          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} "${cl_node_name}" http)
+          export L2_CL_NODE_TYPE="${cl_type}"
+          export L2_EL_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} "${el_node_name}" rpc)
+          export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
+          bash ./scripts/check_state_sync_and_checkpoints
 
       - name: Dump enclave
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
@@ -279,7 +254,7 @@ jobs:
           ENCLAVE: ${{ env.ENCLAVE_NAME }}
         run: bash scripts/discover.sh && bash scripts/monitor.sh
 
-      - name: Test state syncs
+      - name: Test state syncs and checkpoints
         run: |
           export L1_RPC_URL="http://$(kurtosis port print ${{ env.ENCLAVE_NAME }} el-1-geth-lighthouse rpc)"
           matic_contract_addresses=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq)
@@ -288,21 +263,12 @@ jobs:
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
 
-          echo
-          echo "Getting the first state sync..."
-          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
-          while true; do
-            state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
-            if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
-                echo "✅ A state sync just occured! State sync count: ${state_sync_count}"
-                exit
-            else
-                echo "No state sync occured yet... State sync count: ${state_sync_count}"
-            fi
-
-            echo "Waiting 5 seconds before next request..."
-            sleep 5
-          done
+          export L1_ROOT_CHAIN_PROXY_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.RootChainProxy')
+          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-modified-for-heimdall-v2-validator http)
+          export L2_CL_NODE_TYPE=heimdall-v2
+          export L2_EL_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-modified-for-heimdall-v2-heimdall-v2-validator rpc)
+          export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
+          bash ./scripts/check_state_sync_and_checkpoints
 
       - name: Dump enclave
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
@@ -372,7 +338,7 @@ jobs:
           ENCLAVE: ${{ env.ENCLAVE_NAME }}
         run: bash scripts/discover.sh && bash scripts/monitor.sh
 
-      - name: Test state syncs
+      - name: Test state syncs and checkpoints
         run: |
           export L1_RPC_URL="http://$(kurtosis port print ${{ env.ENCLAVE_NAME }} el-1-geth-lighthouse rpc)"
           matic_contract_addresses=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq)
@@ -381,21 +347,12 @@ jobs:
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
 
-          echo
-          echo "Getting the first state sync..."
-          cl_api_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
-          while true; do
-            state_sync_count=$(curl --silent "${cl_api_url}/clerk/event-record/list" | jq '.result | length')
-            if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
-                echo "✅ A state sync just occured! State sync count: ${state_sync_count}"
-                exit
-            else
-                echo "No state sync occured yet... State sync count: ${state_sync_count}"
-            fi
-
-            echo "Waiting 5 seconds before next request..."
-            sleep 5
-          done
+          export L1_ROOT_CHAIN_PROXY_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.RootChainProxy')
+          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-modified-for-heimdall-v2-validator http)
+          export L2_CL_NODE_TYPE=heimdall-v2
+          export L2_EL_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-modified-for-heimdall-v2-heimdall-v2-validator rpc)
+          export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
+          bash ./scripts/check_state_sync_and_checkpoints
 
       - name: Dump enclave
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
