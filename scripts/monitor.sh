@@ -30,7 +30,8 @@ get_cl_status() {
     state_sync_count=$(curl --silent "${api_url}/clerk/event-record/list" | jq --raw-output '.result | length')
   fi
   checkpoint_count=$(curl --silent "${api_url}/checkpoints/count" | jq --raw-output '.ack_count')
-  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing} ${state_sync_count} ${checkpoint_count}"
+  milestone_count=$(curl --silent "${api_url}/milestone/count" | jq --raw-output '.count')
+  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing} ${state_sync_count} ${checkpoint_count}" "${milestone_count}"
 }
 
 get_el_status() {
@@ -106,7 +107,7 @@ while true; do
       api_url="${cl_api_urls[${i}]}"
 
       status=$(get_cl_status "${name}" "${rpc_url}" "${api_url}")
-      read -r peer_count height latest_block_hash state_sync_count checkpoint_count <<<"${status}"
+      read -r peer_count height latest_block_hash state_sync_count checkpoint_count milestone_count <<<"${status}"
 
       if ((peer_count < EXPECTED_MIN_CL_PEERS)); then
         echo "❌ ${name} has not enough peers... Number of peers: ${peer_count}, expected more than ${EXPECTED_MIN_CL_PEERS}!"
@@ -162,7 +163,7 @@ while true; do
     api_url="${cl_api_urls[${i}]}"
 
     status=$(get_cl_status "${name}" "${rpc_url}" "${api_url}")
-    read -r peer_count height latest_block_hash is_syncing state_sync_count checkpoint_count <<<"${status}"
+    read -r peer_count height latest_block_hash is_syncing state_sync_count checkpoint_count milestone_count <<<"${status}"
 
     peer_status="OK"
     if ((peer_count == 0)); then
@@ -185,7 +186,8 @@ while true; do
     output+='        "latestBlockHash": "'"${latest_block_hash}"'",'
     output+='        "isSyncing": '"${is_syncing}"','
     output+='        "stateSyncCount": '"${state_sync_count}"','
-    output+='        "checkpointCount": '"${checkpoint_count}"''
+    output+='        "checkpointCount": '"${checkpoint_count}"','
+    output+='        "milestoneCount": '"${milestone_count}"''
     output+='      }'
     if [[ "${i}" -lt $((${#cl_services[@]} - 1)) ]]; then
       output+=','
@@ -237,7 +239,7 @@ while true; do
   output+='  }'
   output+='}'
 
-  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing", "StateSyncCount", "CheckpointCount"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing, .stateSyncCount, .checkpointCount]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing", "StateSyncCount", "CheckpointCount", "MilestoneCount"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing, .stateSyncCount, .checkpointCount, .milestoneCount]) | @tsv' | column -ts $'\t'
 
   echo
   echo -e "${output}" | jq --raw-output '(["ID", "EL Name", "EL Peers", "EL Peers Status", "EL Height", "EL Height Status", "EL Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
