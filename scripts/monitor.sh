@@ -29,7 +29,7 @@ get_cl_status() {
   else
     state_sync_count=$(curl --silent "${api_url}/clerk/event-record/list" | jq --raw-output '.result | length')
   fi
-  checkpoint_count=$(curl --silent "${api_url}/checkpoints/count" | jq --raw-output '.ack_count')
+  checkpoint_count=$(curl --silent "${api_url}/checkpoints/list" | jq --raw-output '.checkpoint_list | length')
   milestone_count=$(curl --silent "${api_url}/milestone/count" | jq --raw-output '.count')
   echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing} ${state_sync_count} ${checkpoint_count}" "${milestone_count}"
 }
