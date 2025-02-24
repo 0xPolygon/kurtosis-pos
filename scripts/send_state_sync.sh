@@ -58,3 +58,7 @@ cast send --private-key "${private_key}" "${ERC20_TOKEN_ADDRESS}" "approve(addre
 echo
 echo "Depositing ERC20 to trigger a state sync..."
 cast send --private-key "${private_key}" "${DEPOSIT_MANAGER_PROXY_ADDRESS}" "depositERC20(address,uint)" "${ERC20_TOKEN_ADDRESS}" "${erc20_token_amount_to_bridge}"
+
+echo
+echo "Once the state sync has occured, check the account balance on L2 with this command..."
+echo "cast balance --rpc-url <L2_RPC_URL> --ether ${address}"
