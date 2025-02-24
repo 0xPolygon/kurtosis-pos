@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KURTOSIS_VERSION: "1.4.3"
-  FOUNDRY_VERSION: "v0.3.0"
+  KURTOSIS_VERSION: "1.5.0"
+  FOUNDRY_VERSION: stable
   ENCLAVE_NAME: pos
 
 jobs:
@@ -74,9 +74,11 @@ jobs:
           bash ./scripts/check_state_sync_and_checkpoints
 
       - name: Dump enclave
+        if: always()
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
 
       - name: Upload enclave dump
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: dump_run_without_args_${{ github.run_id }}
@@ -194,9 +196,11 @@ jobs:
           bash ./scripts/check_state_sync_and_checkpoints
 
       - name: Dump enclave
+        if: always()
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
 
       - name: Generate archive name
+        if: always()
         run: |
           file_name=$(basename "${{ matrix.file_name }}" ".yml")
           archive_name="dump_run_with_args_${file_name}_${{ github.run_id }}"
@@ -204,6 +208,7 @@ jobs:
           echo "Generated archive name: ${archive_name}"
 
       - name: Upload enclave dump
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARCHIVE_NAME }}
@@ -271,9 +276,11 @@ jobs:
           bash ./scripts/check_state_sync_and_checkpoints
 
       - name: Dump enclave
+        if: always()
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
 
       - name: Upload enclave dump
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: dump_run_with_external_l1_${{ github.run_id }}
@@ -355,9 +362,11 @@ jobs:
           bash ./scripts/check_state_sync_and_checkpoints
 
       - name: Dump enclave
+        if: always()
         run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
 
       - name: Upload enclave dump
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: dump_run_with_cl_el_genesis_${{ github.run_id }}
