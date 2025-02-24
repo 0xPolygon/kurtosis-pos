@@ -52,13 +52,15 @@ get_l2_cl_node_status() {
   sync_info=$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info | [.latest_block_height, .latest_block_hash, .catching_up] | @tsv')
   read -r height latest_block_hash is_syncing <<<"${sync_info}"
   if [[ "${name}" =~ "heimdall-v2" ]]; then
+    span=$(curl --silent "${api_url}/bor/span/latest" | jq --raw-output '.span.id')
     state_sync_count=$(curl --silent "${api_url}/clerk/event-record/list" | jq --raw-output '.event_records | length')
   else
+    span=$(curl --silent "${api_url}/bor/latest-span" | jq --raw-output '.height')
     state_sync_count=$(curl --silent "${api_url}/clerk/event-record/list" | jq --raw-output '.result | length')
   fi
   checkpoint_count=$(curl --silent "${api_url}/checkpoints/list" | jq --raw-output '.checkpoint_list | length')
   milestone_count=$(curl --silent "${api_url}/milestone/count" | jq --raw-output '.count')
-  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing} ${state_sync_count} ${checkpoint_count}" "${milestone_count}"
+  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing} ${span} ${state_sync_count} ${checkpoint_count}" "${milestone_count}"
 }
 
 get_l2_el_node_status() {
@@ -143,7 +145,7 @@ while true; do
       api_url="${cl_api_urls[${i}]}"
 
       status=$(get_l2_cl_node_status "${name}" "${rpc_url}" "${api_url}")
-      read -r peer_count height latest_block_hash state_sync_count checkpoint_count milestone_count <<<"${status}"
+      read -r peer_count height latest_block_hash is_syncing span state_sync_count checkpoint_count milestone_count <<<"${l2_cl_status}"
 
       if ((peer_count < EXPECTED_MIN_CL_PEERS)); then
         echo "❌ ${name} has not enough peers... Number of peers: ${peer_count}, expected more than ${EXPECTED_MIN_CL_PEERS}!"
@@ -217,7 +219,7 @@ while true; do
     api_url="${cl_api_urls[${i}]}"
 
     l2_cl_status=$(get_l2_cl_node_status "${name}" "${rpc_url}" "${api_url}")
-    read -r peer_count height latest_block_hash is_syncing state_sync_count checkpoint_count milestone_count <<<"${l2_cl_status}"
+    read -r peer_count height latest_block_hash is_syncing span state_sync_count checkpoint_count milestone_count <<<"${l2_cl_status}"
 
     peer_status="OK"
     if ((peer_count == 0)); then
@@ -238,6 +240,7 @@ while true; do
     output+='        "height": '"${height}"','
     output+='        "heightStatus": "'"${height_status}"'",'
     output+='        "latestBlockHash": "'"${latest_block_hash}"'",'
+    output+='        "span": '"${span}"','
     output+='        "isSyncing": '"${is_syncing}"','
     output+='        "stateSyncCount": '"${state_sync_count}"','
     output+='        "checkpointCount": '"${checkpoint_count}"','
@@ -306,7 +309,7 @@ while true; do
   echo
   echo "✅ L2 CL Nodes Statuses:"
   echo
-  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing", "State Sync Count", "Checkpoint Count", "Milestone Count"] | (., map(length*"-"))), (.l2_participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing, .stateSyncCount, .checkpointCount, .milestoneCount]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "CL Span Height", "Is Syncing", "State Sync Count", "Checkpoint Count", "Milestone Count"] | (., map(length*"-"))), (.l2_participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .span, .isSyncing, .stateSyncCount, .checkpointCount, .milestoneCount]) | @tsv' | column -ts $'\t'
 
   echo
   echo "⛏️  L2 EL Nodes Statuses:"
