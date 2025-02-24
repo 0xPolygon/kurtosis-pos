@@ -4,9 +4,12 @@ set -euo pipefail
 # Monitor the status of the devnet.
 TMP_FOLDER="tmp"
 L1_RPC_FILE="l1_rpc.txt"
+L1_ROOT_CHAIN_PROXY_ADDRESS="l1_root_chain_proxy.txt"
+L1_STATE_SENDER_ADDRESS="l1_state_sender.txt"
 L2_CL_RPCS_FILE="l2_cl_rpcs.txt"
 L2_CL_APIS_FILE="l2_cl_apis.txt"
 L2_EL_RPCS_FILE="l2_el_rpcs.txt"
+L2_STATE_RECEIVER_ADDRESS="l2_state_receiver.txt"
 
 CHECK_RATE_SECONDS=10
 TIMEOUT_SECONDS=${TIMEOUT_SECONDS:-60}
@@ -17,16 +20,30 @@ EXPECTED_MIN_EL_PEERS=${EXPECTED_MIN_EL_PEERS:-1}
 EXPECTED_MIN_CL_HEIGHT=${EXPECTED_MIN_CL_HEIGHT:-30}
 EXPECTED_MIN_EL_HEIGHT=${EXPECTED_MIN_EL_HEIGHT:-20}
 
-get_l1_status() {
+get_l1_chain_status() {
   rpc_url="$1"
-  local latest_bn safe_bn finalized_bn
+  root_chain_proxy_address="$2"
+  state_sender_address="$3"
+  local latest_bn safe_bn finalized_bn latest_checkpoint latest_state_id
   latest_bn=$(cast bn --rpc-url "${rpc_url}")
   safe_bn=$(cast bn --rpc-url "${rpc_url}" safe)
   finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized)
-  echo "${latest_bn} ${safe_bn} ${finalized_bn}"
+  latest_checkpoint=$(cast call --rpc-url "${rpc_url}" "${root_chain_proxy_address}" 'currentHeaderBlock()(uint)')
+  state_sender_address=$(cast call --rpc-url "${rpc_url}" "${state_sender_address}" 'counter()(uint)')
+  echo "${latest_bn} ${safe_bn} ${finalized_bn} ${latest_checkpoint}" "${state_sender_address}"
 }
 
-get_l2_cl_status() {
+get_l2_chain_status() {
+  rpc_url="$1"
+  state_receiver_address="$2"
+  local latest_bn finalized_bn latest_state_id
+  latest_bn=$(cast bn --rpc-url "${rpc_url}")
+  finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized)
+  latest_state_id=$(cast call --rpc-url "${rpc_url}" "${state_receiver_address}" "lastStateId()(uint)")
+  echo "${latest_bn} ${finalized_bn}" "${latest_state_id}"
+}
+
+get_l2_cl_node_status() {
   name="$1"
   rpc_url="$2"
   api_url="$3"
@@ -44,7 +61,7 @@ get_l2_cl_status() {
   echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing} ${state_sync_count} ${checkpoint_count}" "${milestone_count}"
 }
 
-get_l2_el_status() {
+get_l2_el_node_status() {
   rpc_url="$1"
   local peer_count height latest_block_hash
   # shellcheck disable=SC2116
@@ -60,6 +77,10 @@ get_l2_el_status() {
 
 # Load services and rpc urls from files.
 l1_rpc_url=$(cat ${TMP_FOLDER}/${L1_RPC_FILE})
+l1_root_chain_proxy_address=$(cat ${TMP_FOLDER}/${L1_ROOT_CHAIN_PROXY_ADDRESS})
+l1_state_sender_address=$(cat ${TMP_FOLDER}/${L1_STATE_SENDER_ADDRESS})
+l2_rpc_url=""
+l2_state_receiver_address=$(cat ${TMP_FOLDER}/${L2_STATE_RECEIVER_ADDRESS})
 
 declare -a cl_services cl_rpc_urls
 while IFS='=' read -r service rpc_url; do
@@ -84,6 +105,9 @@ declare -a el_services el_rpc_urls
 while IFS='=' read -r service rpc_url; do
   el_services+=("${service}")
   el_rpc_urls+=("${rpc_url}")
+  if [[ "${l2_rpc_url}" == "" ]]; then
+    l2_rpc_url="${rpc_url}"
+  fi
 done <"${TMP_FOLDER}/${L2_EL_RPCS_FILE}"
 if [ "${#el_services[@]}" -ne "${#el_rpc_urls[@]}" ]; then
   echo "The numbers of EL services (${#el_services[@]}) is not the same as the number of EL RPC URLs (${#el_rpc_urls[@]})."
@@ -118,7 +142,7 @@ while true; do
       rpc_url="${cl_rpc_urls[${i}]}"
       api_url="${cl_api_urls[${i}]}"
 
-      status=$(get_l2_cl_status "${name}" "${rpc_url}" "${api_url}")
+      status=$(get_l2_cl_node_status "${name}" "${rpc_url}" "${api_url}")
       read -r peer_count height latest_block_hash state_sync_count checkpoint_count milestone_count <<<"${status}"
 
       if ((peer_count < EXPECTED_MIN_CL_PEERS)); then
@@ -137,7 +161,7 @@ while true; do
       name="${el_services[${i}]}"
       rpc_url="${el_rpc_urls[${i}]}"
 
-      status=$(get_l2_el_status "${rpc_url}")
+      status=$(get_l2_el_node_status "${rpc_url}")
       read -r peer_count height latest_block_hash <<<"${status}"
 
       if ((peer_count < EXPECTED_MIN_EL_PEERS)); then
@@ -163,15 +187,25 @@ while true; do
   echo "Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
   echo
 
-  l1_status=$(get_l1_status "${l1_rpc_url}")
-  read -r latest_bn safe_bn finalized_bn <<<"${l1_status}"
+  l1_chain_status=$(get_l1_chain_status "${l1_rpc_url}" "${l1_root_chain_proxy_address}" "${l1_state_sender_address}")
+  read -r l1_latest_bn l1_safe_bn l1_finalized_bn l1_latest_checkpoint l1_latest_state_id <<<"${l1_chain_status}"
+
+  l2_chain_status=$(get_l2_chain_status "${l2_rpc_url}" "${l2_state_receiver_address}")
+  read -r l2_latest_bn l2_finalized_bn l2_latest_state_id <<<"${l2_chain_status}"
 
   output=""
   output+='{'
-  output+='  "l1_status": {'
-  output+='    "latest_bn": '"${latest_bn}"','
-  output+='    "safe_bn": '"${safe_bn}"','
-  output+='    "finalized_bn": '"${finalized_bn}"''
+  output+='  "l1_chain_status": {'
+  output+='    "latest_bn": '"${l1_latest_bn}"','
+  output+='    "safe_bn": '"${l1_safe_bn}"','
+  output+='    "finalized_bn": '"${l1_finalized_bn}"','
+  output+='    "latest_checkpoint": '"${l1_latest_checkpoint}"','
+  output+='    "latest_state_id": '"${l1_latest_state_id}"''
+  output+='  },'
+  output+='  "l2_chain_status": {'
+  output+='    "latest_bn": '"${l2_latest_bn}"','
+  output+='    "finalized_bn": '"${l2_finalized_bn}"','
+  output+='    "latest_state_id": '"${l2_latest_state_id}"''
   output+='  },'
   output+='  "l2_participants": {'
 
@@ -182,7 +216,7 @@ while true; do
     rpc_url="${cl_rpc_urls[${i}]}"
     api_url="${cl_api_urls[${i}]}"
 
-    l2_cl_status=$(get_l2_cl_status "${name}" "${rpc_url}" "${api_url}")
+    l2_cl_status=$(get_l2_cl_node_status "${name}" "${rpc_url}" "${api_url}")
     read -r peer_count height latest_block_hash is_syncing state_sync_count checkpoint_count milestone_count <<<"${l2_cl_status}"
 
     peer_status="OK"
@@ -224,7 +258,7 @@ while true; do
     name="${el_services[${i}]}"
     rpc_url="${el_rpc_urls[${i}]}"
 
-    l2_el_status=$(get_l2_el_status "${rpc_url}")
+    l2_el_status=$(get_l2_el_node_status "${rpc_url}")
     read -r peer_count height latest_block_hash is_syncing <<<"${l2_el_status}"
 
     peer_status="OK"
@@ -260,15 +294,22 @@ while true; do
   output+='}'
 
   # Display tables
-  echo "L1 EL Status:"
+  echo "🔗 L1 Chain Status:"
   echo
-  echo -e "${output}" | jq --raw-output '(["Latest Height", "Safe Height", "Finalized Height"] | (., map(length*"-"))), (.l1_status | [.latest_bn, .safe_bn, .finalized_bn]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["Latest Height", "Safe Height", "Finalized Height", "Latest Checkpoint", "Latest State ID (State Sender)"] | (., map(length*"-"))), (.l1_chain_status | [.latest_bn, .safe_bn, .finalized_bn, .latest_checkpoint, .latest_state_id]) | @tsv' | column -ts $'\t'
 
   echo
-  echo "L2 Status:"
+  echo "🔗 L2 Chain Status:"
   echo
-  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing", "StateSyncCount", "CheckpointCount", "MilestoneCount"] | (., map(length*"-"))), (.l2_participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing, .stateSyncCount, .checkpointCount, .milestoneCount]) | @tsv' | column -ts $'\t'
+  echo "${output}" | jq --raw-output '(["Latest Height", "Finalized Height", "Latest State ID (State Receiver)"] | (., map(length*"-"))), (.l2_chain_status | [.latest_bn, .finalized_bn, .latest_state_id]) | @tsv' | column -ts $'\t'
 
+  echo
+  echo "✅ L2 CL Nodes Statuses:"
+  echo
+  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing", "State Sync Count", "Checkpoint Count", "Milestone Count"] | (., map(length*"-"))), (.l2_participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing, .stateSyncCount, .checkpointCount, .milestoneCount]) | @tsv' | column -ts $'\t'
+
+  echo
+  echo "⛏️  L2 EL Nodes Statuses:"
   echo
   echo -e "${output}" | jq --raw-output '(["ID", "EL Name", "EL Peers", "EL Peers Status", "EL Height", "EL Height Status", "EL Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.l2_participants.el[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
 

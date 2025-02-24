@@ -8,9 +8,12 @@ TMP_FOLDER="tmp"
 mkdir -p "${TMP_FOLDER}"
 
 L1_RPC_FILE="l1_rpc.txt"
+L1_ROOT_CHAIN_PROXY_ADDRESS="l1_root_chain_proxy.txt"
+L1_STATE_SENDER_ADDRESS="l1_state_sender.txt"
 L2_CL_RPCS_FILE="l2_cl_rpcs.txt"
 L2_CL_APIS_FILE="l2_cl_apis.txt"
 L2_EL_RPCS_FILE="l2_el_rpcs.txt"
+L2_STATE_RECEIVER_ADDRESS="l2_state_receiver.txt"
 
 # Check the environment variables.
 if [[ -z "${ENCLAVE}" ]]; then
@@ -19,7 +22,7 @@ if [[ -z "${ENCLAVE}" ]]; then
 fi
 
 # Get L1 EL rpc url.
-echo -n "Getting L1 EL RPC url... "
+echo "Getting L1 EL RPC url... "
 l1_rpc_url="http://$(kurtosis port print "${ENCLAVE}" el-1-geth-lighthouse rpc)"
 if [[ "${l1_rpc_url}" == "" ]]; then
   echo "Error: Unable to get the L1 RPC URL... Is the L1 devnet deployed?"
@@ -29,8 +32,22 @@ echo "Found."
 echo "${l1_rpc_url}" >${TMP_FOLDER}/${L1_RPC_FILE}
 echo "Saved at ${TMP_FOLDER}/${L1_RPC_FILE}"
 
+# Get L1 root chain proxy address.
+echo "Getting L1 root chain proxy address... "
+l1_root_chain_proxy_address="$(kurtosis files inspect "${ENCLAVE}" matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.RootChainProxy')"
+echo "Found."
+echo "${l1_root_chain_proxy_address}" >${TMP_FOLDER}/${L1_ROOT_CHAIN_PROXY_ADDRESS}
+echo "Saved at ${TMP_FOLDER}/${L1_ROOT_CHAIN_PROXY_ADDRESS}"
+
+# Get L1 state sender address.
+echo "Getting L1 state sender address... "
+l1_state_sender_address="$(kurtosis files inspect "${ENCLAVE}" matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.StateSender')"
+echo "Found."
+echo "${l1_state_sender_address}" >${TMP_FOLDER}/${L1_STATE_SENDER_ADDRESS}
+echo "Saved at ${TMP_FOLDER}/${L1_STATE_SENDER_ADDRESS}"
+
 # Get L2 CL rpc urls.
-echo -n "Getting L2 CL RPC and API urls... "
+echo "Getting L2 CL RPC and API urls... "
 declare -a cl_services
 declare -a cl_rpc_urls
 declare -a cl_api_urls
@@ -75,7 +92,7 @@ echo "Saved at ${TMP_FOLDER}/${L2_CL_RPCS_FILE}"
 echo "Saved at ${TMP_FOLDER}/${L2_CL_APIS_FILE}"
 
 # Get L2 EL rpc urls.
-echo -n "Getting L2 EL RPC urls... "
+echo "Getting L2 EL RPC urls... "
 declare -a el_services
 declare -a el_rpc_urls
 while IFS= read -r el_service; do
@@ -105,3 +122,10 @@ echo "Found ${#el_services[@]} node."
   done
 } >"${TMP_FOLDER}/${L2_EL_RPCS_FILE}"
 echo "Saved at ${TMP_FOLDER}/${L2_EL_RPCS_FILE}"
+
+# Get L2 state receiver address.
+echo "Getting L2 state receiver address... "
+l2_state_receiver_address="$(kurtosis files inspect "${ENCLAVE}" l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')"
+echo "Found."
+echo "${l2_state_receiver_address}" >${TMP_FOLDER}/${L2_STATE_RECEIVER_ADDRESS}
+echo "Saved at ${TMP_FOLDER}/${L2_STATE_RECEIVER_ADDRESS}"
