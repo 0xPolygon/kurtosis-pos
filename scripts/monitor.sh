@@ -17,6 +17,15 @@ EXPECTED_MIN_EL_PEERS=${EXPECTED_MIN_EL_PEERS:-1}
 EXPECTED_MIN_CL_HEIGHT=${EXPECTED_MIN_CL_HEIGHT:-30}
 EXPECTED_MIN_EL_HEIGHT=${EXPECTED_MIN_EL_HEIGHT:-20}
 
+get_l1_status() {
+  rpc_url="$1"
+  local latest_bn safe_bn finalized_bn
+  latest_bn=$(cast bn --rpc-url "${rpc_url}")
+  safe_bn=$(cast bn --rpc-url "${rpc_url}" safe)
+  finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized)
+  echo "${latest_bn} ${safe_bn} ${finalized_bn}"
+}
+
 get_l2_cl_status() {
   name="$1"
   rpc_url="$2"
@@ -50,6 +59,8 @@ get_l2_el_status() {
 }
 
 # Load services and rpc urls from files.
+l1_rpc_url=$(cat ${TMP_FOLDER}/${L1_RPC_FILE})
+
 declare -a cl_services cl_rpc_urls
 while IFS='=' read -r service rpc_url; do
   cl_services+=("${service}")
@@ -152,9 +163,17 @@ while true; do
   echo "Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
   echo
 
+  l1_status=$(get_l1_status "${l1_rpc_url}")
+  read -r latest_bn safe_bn finalized_bn <<<"${l1_status}"
+
   output=""
   output+='{'
-  output+='  "participants": {'
+  output+='  "l1_status": {'
+  output+='    "latest_bn": '"${latest_bn}"','
+  output+='    "safe_bn": '"${safe_bn}"','
+  output+='    "finalized_bn": '"${finalized_bn}"''
+  output+='  },'
+  output+='  "l2_participants": {'
 
   # Loop through each CL service to get the status.
   output+='    "cl": ['
@@ -163,8 +182,8 @@ while true; do
     rpc_url="${cl_rpc_urls[${i}]}"
     api_url="${cl_api_urls[${i}]}"
 
-    status=$(get_l2_cl_status "${name}" "${rpc_url}" "${api_url}")
-    read -r peer_count height latest_block_hash is_syncing state_sync_count checkpoint_count milestone_count <<<"${status}"
+    l2_cl_status=$(get_l2_cl_status "${name}" "${rpc_url}" "${api_url}")
+    read -r peer_count height latest_block_hash is_syncing state_sync_count checkpoint_count milestone_count <<<"${l2_cl_status}"
 
     peer_status="OK"
     if ((peer_count == 0)); then
@@ -205,8 +224,8 @@ while true; do
     name="${el_services[${i}]}"
     rpc_url="${el_rpc_urls[${i}]}"
 
-    status=$(get_l2_el_status "${rpc_url}")
-    read -r peer_count height latest_block_hash is_syncing <<<"${status}"
+    l2_el_status=$(get_l2_el_status "${rpc_url}")
+    read -r peer_count height latest_block_hash is_syncing <<<"${l2_el_status}"
 
     peer_status="OK"
     if ((peer_count == 0)); then
@@ -240,10 +259,18 @@ while true; do
   output+='  }'
   output+='}'
 
-  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing", "StateSyncCount", "CheckpointCount", "MilestoneCount"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing, .stateSyncCount, .checkpointCount, .milestoneCount]) | @tsv' | column -ts $'\t'
+  # Display tables
+  echo "L1 Status:"
+  echo
+  echo -e "${output}" | jq --raw-output '(["Latest BN", "Latest Safe BN", "Latest Finalized BN"] | (., map(length*"-"))), (.l1_status | [.latest_bn, .safe_bn, .finalized_bn]) | @tsv' | column -ts $'\t'
 
   echo
-  echo -e "${output}" | jq --raw-output '(["ID", "EL Name", "EL Peers", "EL Peers Status", "EL Height", "EL Height Status", "EL Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
+  echo "L2 Status:"
+  echo
+  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing", "StateSyncCount", "CheckpointCount", "MilestoneCount"] | (., map(length*"-"))), (.l2_participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing, .stateSyncCount, .checkpointCount, .milestoneCount]) | @tsv' | column -ts $'\t'
+
+  echo
+  echo -e "${output}" | jq --raw-output '(["ID", "EL Name", "EL Peers", "EL Peers Status", "EL Height", "EL Height Status", "EL Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.l2_participants.el[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
 
   sleep "${CHECK_RATE_SECONDS}"
 done
