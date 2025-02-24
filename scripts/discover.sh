@@ -20,7 +20,7 @@ fi
 
 # Get L1 EL rpc url.
 echo -n "Getting L1 EL RPC url... "
-l1_rpc_url="http://$(kurtosis port print pos-devnet el-1-geth-lighthouse rpc)"
+l1_rpc_url="http://$(kurtosis port print "${ENCLAVE}" el-1-geth-lighthouse rpc)"
 if [[ "${l1_rpc_url}" == "" ]]; then
   echo "Error: Unable to get the L1 RPC URL... Is the L1 devnet deployed?"
   exit 1
