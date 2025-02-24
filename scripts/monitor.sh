@@ -119,8 +119,8 @@ fi
 # Monitor the status of the devnet.
 echo "Monitoring the status of the devnet..."
 echo "- Enclave: ${ENCLAVE}"
-echo "- Timeout: ${TIMEOUT_SECONDS}"
-echo "- Check rate: ${CHECK_RATE_SECONDS}"
+echo "- Timeout: ${TIMEOUT_SECONDS} seconds"
+echo "- Check rate: ${CHECK_RATE_SECONDS} seconds"
 
 declare -a previous_cl_heights previous_el_heights
 for ((i = 0; i < "${#el_services[@]}"; i++)); do
