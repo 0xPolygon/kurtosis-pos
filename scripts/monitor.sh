@@ -3,8 +3,9 @@ set -euo pipefail
 
 # Monitor the status of the devnet.
 TMP_FOLDER="tmp"
-CL_SERVICES_FILE="cl_services.txt"
-EL_SERVICES_FILE="el_services.txt"
+CL_RPCS_FILE="cl_rpcs.txt"
+CL_APIS_FILE="cl_apis.txt"
+EL_RPCS_FILE="el_rpcs.txt"
 
 CHECK_RATE_SECONDS=10
 TIMEOUT_SECONDS=${TIMEOUT_SECONDS:-60}
@@ -16,12 +17,20 @@ EXPECTED_MIN_CL_HEIGHT=${EXPECTED_MIN_CL_HEIGHT:-30}
 EXPECTED_MIN_EL_HEIGHT=${EXPECTED_MIN_EL_HEIGHT:-20}
 
 get_cl_status() {
-  rpc_url="$1"
+  name="$1"
+  rpc_url="$2"
+  api_url="$3"
   local peer_count height latest_block_hash
   peer_count=$(curl --silent "${rpc_url}/net_info" | jq '.result.peers | length')
   sync_info=$(curl --silent "${rpc_url}/status" | jq --raw-output '.result.sync_info | [.latest_block_height, .latest_block_hash, .catching_up] | @tsv')
   read -r height latest_block_hash is_syncing <<<"${sync_info}"
-  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing}"
+  if [[ "${name}" =~ "heimdall-v2" ]]; then
+    state_sync_count=$(curl --silent "${api_url}/clerk/event-record/list" | jq --raw-output '.event_records | length')
+  else
+    state_sync_count=$(curl --silent "${api_url}/clerk/event-record/list" | jq --raw-output '.result | length')
+  fi
+  checkpoint_count=$(curl --silent "${api_url}/checkpoints/count" | jq --raw-output '.ack_count')
+  echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing} ${state_sync_count} ${checkpoint_count}"
 }
 
 get_el_status() {
@@ -39,19 +48,34 @@ get_el_status() {
 }
 
 # Load services and rpc urls from files.
-mkdir -p "${TMP_FOLDER}"
-
 declare -a cl_services cl_rpc_urls
-while IFS='=' read -r service url; do
+while IFS='=' read -r service rpc_url; do
   cl_services+=("${service}")
-  cl_rpc_urls+=("${url}")
-done <"${TMP_FOLDER}/${CL_SERVICES_FILE}"
+  cl_rpc_urls+=("${rpc_url}")
+done <"${TMP_FOLDER}/${CL_RPCS_FILE}"
+if [ "${#cl_services[@]}" -ne "${#cl_rpc_urls[@]}" ]; then
+  echo "Error: The numbers of CL services (${#cl_services[@]}) is not the same as the number of CL RPC URLs (${#cl_rpc_urls[@]})."
+  exit 1
+fi
+
+declare -a cl_api_urls
+while IFS='=' read -r service api_url; do
+  cl_api_urls+=("${api_url}")
+done <"${TMP_FOLDER}/${CL_APIS_FILE}"
+if [ "${#cl_services[@]}" -ne "${#cl_api_urls[@]}" ]; then
+  echo "Error: The numbers of CL services (${#cl_services[@]}) is not the same as the number of CL API URLs (${#cl_api_urls[@]})."
+  exit 1
+fi
 
 declare -a el_services el_rpc_urls
-while IFS='=' read -r service url; do
+while IFS='=' read -r service rpc_url; do
   el_services+=("${service}")
-  el_rpc_urls+=("${url}")
-done <"${TMP_FOLDER}/${EL_SERVICES_FILE}"
+  el_rpc_urls+=("${rpc_url}")
+done <"${TMP_FOLDER}/${EL_RPCS_FILE}"
+if [ "${#el_services[@]}" -ne "${#el_rpc_urls[@]}" ]; then
+  echo "The numbers of EL services (${#el_services[@]}) is not the same as the number of EL RPC URLs (${#el_rpc_urls[@]})."
+  exit 1
+fi
 
 # Monitor the status of the devnet.
 echo "Monitoring the status of the devnet..."
@@ -79,9 +103,10 @@ while true; do
     for ((i = 0; i < "${#cl_services[@]}"; i++)); do
       name="${cl_services[${i}]}"
       rpc_url="${cl_rpc_urls[${i}]}"
+      api_url="${cl_api_urls[${i}]}"
 
-      status=$(get_cl_status "${rpc_url}")
-      read -r peer_count height latest_block_hash <<<"${status}"
+      status=$(get_cl_status "${name}" "${rpc_url}" "${api_url}")
+      read -r peer_count height latest_block_hash state_sync_count checkpoint_count <<<"${status}"
 
       if ((peer_count < EXPECTED_MIN_CL_PEERS)); then
         echo "❌ ${name} has not enough peers... Number of peers: ${peer_count}, expected more than ${EXPECTED_MIN_CL_PEERS}!"
@@ -134,9 +159,10 @@ while true; do
   for ((i = 0; i < "${#cl_services[@]}"; i++)); do
     name="${cl_services[${i}]}"
     rpc_url="${cl_rpc_urls[${i}]}"
+    api_url="${cl_api_urls[${i}]}"
 
-    status=$(get_cl_status "${rpc_url}")
-    read -r peer_count height latest_block_hash is_syncing <<<"${status}"
+    status=$(get_cl_status "${name}" "${rpc_url}" "${api_url}")
+    read -r peer_count height latest_block_hash is_syncing state_sync_count checkpoint_count <<<"${status}"
 
     peer_status="OK"
     if ((peer_count == 0)); then
@@ -157,7 +183,9 @@ while true; do
     output+='        "height": '"${height}"','
     output+='        "heightStatus": "'"${height_status}"'",'
     output+='        "latestBlockHash": "'"${latest_block_hash}"'",'
-    output+='        "isSyncing": '"${is_syncing}"''
+    output+='        "isSyncing": '"${is_syncing}"','
+    output+='        "stateSyncCount": '"${state_sync_count}"','
+    output+='        "checkpointCount": '"${checkpoint_count}"''
     output+='      }'
     if [[ "${i}" -lt $((${#cl_services[@]} - 1)) ]]; then
       output+=','
@@ -209,7 +237,7 @@ while true; do
   output+='  }'
   output+='}'
 
-  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["ID", "CL Name", "CL Peers", "CL Peers Status", "CL Height", "CL Height Status", "CL Latest Block Hash", "Is Syncing", "StateSyncCount", "CheckpointCount"] | (., map(length*"-"))), (.participants.cl[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing, .stateSyncCount, .checkpointCount]) | @tsv' | column -ts $'\t'
 
   echo
   echo -e "${output}" | jq --raw-output '(["ID", "EL Name", "EL Peers", "EL Peers Status", "EL Height", "EL Height Status", "EL Latest Block Hash", "Is Syncing"] | (., map(length*"-"))), (.participants.el[] | [.id, .name, .peers, .peersStatus, .height, .heightStatus, .latestBlockHash[:10], .isSyncing]) | @tsv' | column -ts $'\t'

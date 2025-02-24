@@ -2,13 +2,14 @@
 set -euo pipefail
 
 # Discover the different participants of a PoS devnet inside a Kurtosis enclave.
-# Get the different services names as well as the L1, L2 EL/CL rpc urls.
+# Get the different services names as well as L2 CL RPC/API and L2 EL RPC urls.
 
 TMP_FOLDER="tmp"
 mkdir -p "${TMP_FOLDER}"
 
-CL_SERVICES_FILE="cl_services.txt"
-EL_SERVICES_FILE="el_services.txt"
+CL_RPCS_FILE="cl_rpcs.txt"
+CL_APIS_FILE="cl_apis.txt"
+EL_RPCS_FILE="el_rpcs.txt"
 
 # Check the environment variables.
 if [[ -z "${ENCLAVE}" ]]; then
@@ -17,13 +18,16 @@ if [[ -z "${ENCLAVE}" ]]; then
 fi
 
 # Get CL rpc urls.
-echo -n "Getting CL rpc urls... "
+echo -n "Getting CL RPC and API urls... "
 declare -a cl_services
 declare -a cl_rpc_urls
+declare -a cl_api_urls
 while IFS= read -r cl_service; do
   cl_services+=("${cl_service}")
-  url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${cl_service}" rpc)
-  cl_rpc_urls+=("${url}")
+  rpc_url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${cl_service}" rpc)
+  api_url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${cl_service}" http)
+  cl_rpc_urls+=("${rpc_url}")
+  cl_api_urls+=("${api_url}")
 done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING |
   grep -E "l2-cl-[0-9]+-.*" |
   grep -v "rabbitmq" |
@@ -35,7 +39,11 @@ if [ "${#cl_services[@]}" -eq 0 ]; then
   exit 1
 fi
 if [ "${#cl_services[@]}" -ne "${#cl_rpc_urls[@]}" ]; then
-  echo "Error: The numbers of CL services is not the same as the number of CL RPC URLs."
+  echo "Error: The numbers of CL services (${#cl_services[@]}) is not the same as the number of CL RPC URLs (${#cl_rpc_urls[@]})."
+  exit 1
+fi
+if [ "${#cl_services[@]}" -ne "${#cl_api_urls[@]}" ]; then
+  echo "Error: The numbers of CL services (${#cl_services[@]}) is not the same as the number of CL API URLs (${#cl_api_urls[@]})."
   exit 1
 fi
 
@@ -46,17 +54,23 @@ echo "Found ${#cl_services[@]}."
   for i in "${!cl_services[@]}"; do
     echo "${cl_services[$i]}=${cl_rpc_urls[$i]}"
   done
-} >"${TMP_FOLDER}/${CL_SERVICES_FILE}"
-echo "Saved at ${TMP_FOLDER}/${CL_SERVICES_FILE}"
+} >"${TMP_FOLDER}/${CL_RPCS_FILE}"
+echo "Saved at ${TMP_FOLDER}/${CL_RPCS_FILE}"
+{
+  for i in "${!cl_services[@]}"; do
+    echo "${cl_services[$i]}=${cl_api_urls[$i]}"
+  done
+} >"${TMP_FOLDER}/${CL_APIS_FILE}"
+echo "Saved at ${TMP_FOLDER}/${CL_APIS_FILE}"
 
 # Get EL rpc urls.
-echo -n "Getting EL rpc urls... "
+echo -n "Getting EL RPC urls... "
 declare -a el_services
 declare -a el_rpc_urls
 while IFS= read -r el_service; do
   el_services+=("${el_service}")
-  url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${el_service}" rpc)
-  el_rpc_urls+=("${url}")
+  rpc_url=$(kurtosis --cli-log-level info port print "${ENCLAVE}" "${el_service}" rpc)
+  el_rpc_urls+=("${rpc_url}")
 done < <(kurtosis --cli-log-level info enclave inspect "${ENCLAVE}" --full-uuids | grep RUNNING |
   grep -E "l2-el-[0-9]+-.*-(validator|rpc)" |
   grep -v "config" |
@@ -68,7 +82,7 @@ if [ "${#el_services[@]}" -eq 0 ]; then
   exit 1
 fi
 if [ "${#el_services[@]}" -ne "${#el_rpc_urls[@]}" ]; then
-  echo "The numbers of EL services is not the same as the number of EL RPC URLs."
+  echo "The numbers of EL services (${#el_services[@]}) is not the same as the number of EL RPC URLs (${#el_rpc_urls[@]})."
   exit 1
 fi
 
@@ -79,6 +93,5 @@ echo "Found ${#el_services[@]}."
   for i in "${!el_services[@]}"; do
     echo "${el_services[$i]}=${el_rpc_urls[$i]}"
   done
-} >"${TMP_FOLDER}/${EL_SERVICES_FILE}"
-echo "Saved at ${TMP_FOLDER}/${EL_SERVICES_FILE}"
-echo
+} >"${TMP_FOLDER}/${EL_RPCS_FILE}"
+echo "Saved at ${TMP_FOLDER}/${EL_RPCS_FILE}"
