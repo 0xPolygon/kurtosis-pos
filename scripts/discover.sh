@@ -8,9 +8,9 @@ TMP_FOLDER="tmp"
 mkdir -p "${TMP_FOLDER}"
 
 L1_RPC_FILE="l1_rpc.txt"
-CL_RPCS_FILE="l2_cl_rpcs.txt"
-CL_APIS_FILE="l2_cl_apis.txt"
-EL_RPCS_FILE="l2_el_rpcs.txt"
+L2_CL_RPCS_FILE="l2_cl_rpcs.txt"
+L2_CL_APIS_FILE="l2_cl_apis.txt"
+L2_EL_RPCS_FILE="l2_el_rpcs.txt"
 
 # Check the environment variables.
 if [[ -z "${ENCLAVE}" ]]; then
@@ -65,14 +65,14 @@ echo "Found ${#cl_services[@]} node."
   for i in "${!cl_services[@]}"; do
     echo "${cl_services[$i]}=${cl_rpc_urls[$i]}"
   done
-} >"${TMP_FOLDER}/${CL_RPCS_FILE}"
-echo "Saved at ${TMP_FOLDER}/${CL_RPCS_FILE}"
+} >"${TMP_FOLDER}/${L2_CL_RPCS_FILE}"
+echo "Saved at ${TMP_FOLDER}/${L2_CL_RPCS_FILE}"
 {
   for i in "${!cl_services[@]}"; do
     echo "${cl_services[$i]}=${cl_api_urls[$i]}"
   done
-} >"${TMP_FOLDER}/${CL_APIS_FILE}"
-echo "Saved at ${TMP_FOLDER}/${CL_APIS_FILE}"
+} >"${TMP_FOLDER}/${L2_CL_APIS_FILE}"
+echo "Saved at ${TMP_FOLDER}/${L2_CL_APIS_FILE}"
 
 # Get L2 EL rpc urls.
 echo -n "Getting L2 EL RPC urls... "
@@ -103,5 +103,5 @@ echo "Found ${#el_services[@]} node."
   for i in "${!el_services[@]}"; do
     echo "${el_services[$i]}=${el_rpc_urls[$i]}"
   done
-} >"${TMP_FOLDER}/${EL_RPCS_FILE}"
-echo "Saved at ${TMP_FOLDER}/${EL_RPCS_FILE}"
+} >"${TMP_FOLDER}/${L2_EL_RPCS_FILE}"
+echo "Saved at ${TMP_FOLDER}/${L2_EL_RPCS_FILE}"

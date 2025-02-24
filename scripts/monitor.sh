@@ -3,9 +3,10 @@ set -euo pipefail
 
 # Monitor the status of the devnet.
 TMP_FOLDER="tmp"
-CL_RPCS_FILE="l2_cl_rpcs.txt"
-CL_APIS_FILE="l2_cl_apis.txt"
-EL_RPCS_FILE="l2_el_rpcs.txt"
+L1_RPC_FILE="l1_rpc.txt"
+L2_CL_RPCS_FILE="l2_cl_rpcs.txt"
+L2_CL_APIS_FILE="l2_cl_apis.txt"
+L2_EL_RPCS_FILE="l2_el_rpcs.txt"
 
 CHECK_RATE_SECONDS=10
 TIMEOUT_SECONDS=${TIMEOUT_SECONDS:-60}
@@ -16,7 +17,7 @@ EXPECTED_MIN_EL_PEERS=${EXPECTED_MIN_EL_PEERS:-1}
 EXPECTED_MIN_CL_HEIGHT=${EXPECTED_MIN_CL_HEIGHT:-30}
 EXPECTED_MIN_EL_HEIGHT=${EXPECTED_MIN_EL_HEIGHT:-20}
 
-get_cl_status() {
+get_l2_cl_status() {
   name="$1"
   rpc_url="$2"
   api_url="$3"
@@ -34,7 +35,7 @@ get_cl_status() {
   echo "${peer_count} ${height} ${latest_block_hash} ${is_syncing} ${state_sync_count} ${checkpoint_count}" "${milestone_count}"
 }
 
-get_el_status() {
+get_l2_el_status() {
   rpc_url="$1"
   local peer_count height latest_block_hash
   # shellcheck disable=SC2116
@@ -53,7 +54,7 @@ declare -a cl_services cl_rpc_urls
 while IFS='=' read -r service rpc_url; do
   cl_services+=("${service}")
   cl_rpc_urls+=("${rpc_url}")
-done <"${TMP_FOLDER}/${CL_RPCS_FILE}"
+done <"${TMP_FOLDER}/${L2_CL_RPCS_FILE}"
 if [ "${#cl_services[@]}" -ne "${#cl_rpc_urls[@]}" ]; then
   echo "Error: The numbers of CL services (${#cl_services[@]}) is not the same as the number of CL RPC URLs (${#cl_rpc_urls[@]})."
   exit 1
@@ -62,7 +63,7 @@ fi
 declare -a cl_api_urls
 while IFS='=' read -r service api_url; do
   cl_api_urls+=("${api_url}")
-done <"${TMP_FOLDER}/${CL_APIS_FILE}"
+done <"${TMP_FOLDER}/${L2_CL_APIS_FILE}"
 if [ "${#cl_services[@]}" -ne "${#cl_api_urls[@]}" ]; then
   echo "Error: The numbers of CL services (${#cl_services[@]}) is not the same as the number of CL API URLs (${#cl_api_urls[@]})."
   exit 1
@@ -72,7 +73,7 @@ declare -a el_services el_rpc_urls
 while IFS='=' read -r service rpc_url; do
   el_services+=("${service}")
   el_rpc_urls+=("${rpc_url}")
-done <"${TMP_FOLDER}/${EL_RPCS_FILE}"
+done <"${TMP_FOLDER}/${L2_EL_RPCS_FILE}"
 if [ "${#el_services[@]}" -ne "${#el_rpc_urls[@]}" ]; then
   echo "The numbers of EL services (${#el_services[@]}) is not the same as the number of EL RPC URLs (${#el_rpc_urls[@]})."
   exit 1
@@ -106,7 +107,7 @@ while true; do
       rpc_url="${cl_rpc_urls[${i}]}"
       api_url="${cl_api_urls[${i}]}"
 
-      status=$(get_cl_status "${name}" "${rpc_url}" "${api_url}")
+      status=$(get_l2_cl_status "${name}" "${rpc_url}" "${api_url}")
       read -r peer_count height latest_block_hash state_sync_count checkpoint_count milestone_count <<<"${status}"
 
       if ((peer_count < EXPECTED_MIN_CL_PEERS)); then
@@ -125,7 +126,7 @@ while true; do
       name="${el_services[${i}]}"
       rpc_url="${el_rpc_urls[${i}]}"
 
-      status=$(get_el_status "${rpc_url}")
+      status=$(get_l2_el_status "${rpc_url}")
       read -r peer_count height latest_block_hash <<<"${status}"
 
       if ((peer_count < EXPECTED_MIN_EL_PEERS)); then
@@ -162,7 +163,7 @@ while true; do
     rpc_url="${cl_rpc_urls[${i}]}"
     api_url="${cl_api_urls[${i}]}"
 
-    status=$(get_cl_status "${name}" "${rpc_url}" "${api_url}")
+    status=$(get_l2_cl_status "${name}" "${rpc_url}" "${api_url}")
     read -r peer_count height latest_block_hash is_syncing state_sync_count checkpoint_count milestone_count <<<"${status}"
 
     peer_status="OK"
@@ -204,7 +205,7 @@ while true; do
     name="${el_services[${i}]}"
     rpc_url="${el_rpc_urls[${i}]}"
 
-    status=$(get_el_status "${rpc_url}")
+    status=$(get_l2_el_status "${rpc_url}")
     read -r peer_count height latest_block_hash is_syncing <<<"${status}"
 
     peer_status="OK"
