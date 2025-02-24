@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Deploy MATIC contracts to the root chain and stake for each validator.
-# For reference: https://github.com/maticnetwork/contracts/tree/v0.3.11/deploy-migrations
+# Deploy Polygon PoS contracts to L1, initialise state and stake for each validator.
+# For reference: https://github.com/0xPolygon/pos-contracts/tree/arya/matic-cli/pos-1869
 
 # Setting EL chain id if needed.
 if [[ -z "${EL_CHAIN_ID}" ]]; then
@@ -22,17 +22,11 @@ else
   echo "Setting EL chain id since EL_CHAIN_ID is different than the default value..."
   npm run template:process -- --bor-chain-id "${EL_CHAIN_ID}"
 
-  echo "Re-compiling the MATIC contracts..."
-  truffle compile
+  echo "Re-compiling the Polygon PoS contracts..."
+  forge build
 fi
 
-echo "Configuring truffle..."
-# Copy the new truffle config.
-cp /opt/data/truffle-config.js /opt/contracts/truffle-config.js
-# Remove some of the test contracts from the migrations because they exceed the maximum contract code size.
-sed -i 's|^.*await deployer.deploy(StakeManagerTestable.*$|// &|' /opt/contracts/migrations/2_deploy_root_contracts.js
-
-# Run the 4 first steps of the migrations.
+# Deploy Polygon PoS contracts on L1.
 if [[ -z "${PRIVATE_KEY}" ]]; then
   echo "Error: PRIVATE_KEY environment variable is not set"
   exit 1
@@ -48,11 +42,21 @@ fi
 echo "L1_RPC_URL: ${L1_RPC_URL}"
 echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 
-echo "Running the 4 first steps of the truffle migration..."
-truffle migrate --network development --f 1 --to 4 --compile-none
+echo "Deploying Polygon PoS contracts to L1, draining StakeManager and initialising state..."
+export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
+export HEIMDALL_ID="${CL_CHAIN_ID}"
 
-echo "MATIC contracts deployed to the root chain:"
-cat /opt/contracts/contractAddresses.json
+forge script --rpc-url "${L1_RPC_URL}" --broadcast \
+  scripts/deployment-scripts/deployContracts.s.sol:DeploymentScript
+
+forge script --rpc-url "${L1_RPC_URL}" --broadcast \
+  scripts/deployment-scripts/drainStakeManager.s.sol:DrainStakeManagerDeployment
+
+forge script --rpc-url "${L1_RPC_URL}" --broadcast \
+  scripts/deployment-scripts/initializeState.s.sol:InitializeStateScript
+
+echo "Polygon PoS contracts deployed to L1:"
+cat contractAddresses.json
 echo
 
 # Stake for each validator.
@@ -87,7 +91,10 @@ echo "Staking for each validator node..."
 IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
   IFS=',' read -r address eth_public_key <<<"${account}"
-  npm run truffle exec scripts/stake.js -- --network development "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}"
+  forge script --rpc-url "${L1_RPC_URL}" --broadcast -vvvv \
+    scripts/matic-cli-scripts/stake.s.sol:MaticStake \
+    --sig "run(address,bytes,uint256,uint256)" \
+    "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}"
 
   # Update the validator config file.
   jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT}" --arg balance "${VALIDATOR_BALANCE}" \
@@ -97,3 +104,8 @@ for account in "${validator_accounts[@]}"; do
 done
 echo "exports = module.exports = $(<${validator_config_file})" >"${validator_config_file}"
 echo "Validators config created successfully."
+
+# Move files to /opt/contracts.
+mkdir -p /opt/contracts
+mv contractAddresses.json /opt/contracts
+mv "${validator_config_file}" /opt/contracts

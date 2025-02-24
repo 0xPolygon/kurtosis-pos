@@ -18,6 +18,8 @@ POLYGON_POS_PARAMS = {
         "validator_config_generator",
     ],
     "network_params": [
+        "admin_address",
+        "admin_private_key",
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount",
         "validator_top_up_fee_amount",
@@ -48,11 +50,11 @@ VALID_CLIENT_COMBINATIONS = {
 
 DEV_PARAMS = [
     "should_deploy_l1",  # boolean
-    "l1_private_key",
     "l1_rpc_url",
     "should_deploy_matic_contracts",  # boolean
     "l2_el_genesis_filepath",
     "l2_cl_genesis_filepath",
+    "matic_contract_addresses_filepath",
 ]
 
 
@@ -96,12 +98,6 @@ def sanity_check_dev_args(plan, input_args):
     should_deploy_matic_contracts = input_args.get("should_deploy_matic_contracts")
 
     if not should_deploy_l1:
-        l1_private_key = input_args.get("l1_private_key")
-        if l1_private_key == "" and should_deploy_matic_contracts:
-            fail(
-                "`dev.l1_private_key` must be specified when `dev.should_deploy_l1` is set to false and `dev.should_deploy_matic_contracts` is set to true!"
-            )
-
         l1_rpc_url = input_args.get("l1_rpc_url")
         if l1_rpc_url == "":
             fail(
@@ -119,6 +115,14 @@ def sanity_check_dev_args(plan, input_args):
         if l2_cl_genesis_filepath == "":
             fail(
                 "`dev.l2_cl_genesis_filepath` must be specified when `dev.should_deploy_matic_contracts` is set to false!"
+            )
+
+        matic_contract_addresses_filepath = input_args.get(
+            "matic_contract_addresses_filepath", ""
+        )
+        if matic_contract_addresses_filepath == "":
+            fail(
+                "`dev.matic_contract_addresses_filepath` must be specified when `dev.should_deploy_matic_contracts` is set to false!"
             )
 
 

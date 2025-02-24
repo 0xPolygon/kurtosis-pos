@@ -14,6 +14,8 @@ el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis_generator = import_module(
     "./src/prelaunch_data_generator/el_genesis/el_genesis_generator.star"
 )
+el_shared = import_module("./src/el/el_shared.star")
+hex = import_module("./src/hex/hex.star")
 input_parser = import_module("./src/package_io/input_parser.star")
 math = import_module("./src/math/math.star")
 pre_funded_accounts = import_module(
@@ -35,6 +37,9 @@ def run(plan, args):
     participants = polygon_pos_args.get("participants")
     validator_accounts = get_validator_accounts(participants)
     l2_network_params = polygon_pos_args.get("network_params")
+    admin_private_key = hex.normalize(
+        l2_network_params.get("admin_private_key")
+    )  # Used to deploy Polygon PoS contracts on both L1 and L2.
 
     # Determine the devnet CL type to be able to select the appropriate validator address format later.
     devnet_cl_type = participants[0].get("cl_type")
@@ -62,9 +67,7 @@ def run(plan, args):
         if len(l1.all_participants) < 1:
             fail("The L1 package did not start any participants.")
         l1_context = struct(
-            private_key=l1.pre_funded_accounts[
-                12
-            ].private_key,  # Reserved for L2 contract deployers.
+            private_key=admin_private_key,
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
         )
         l1_rpcs = {}
@@ -75,20 +78,23 @@ def run(plan, args):
     else:
         plan.print("Using an external l1")
         l1_context = struct(
-            private_key=dev_args.get("l1_private_key"),
+            private_key=admin_private_key,
             rpc_url=dev_args.get("l1_rpc_url"),
         )
         l1_rpcs = {"external-l1": dev_args.get("l1_rpc_url")}
 
-    # Deploy MATIC contracts and generate the EL and CL genesis files if needed.
+    # Deploy MATIC contracts to L1 and generate the EL and CL genesis files if needed.
     # Otherwise, use the provided EL and CL genesis files.
     if dev_args.get("should_deploy_matic_contracts"):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
 
-        plan.print("Deploying MATIC contracts to L1 and staking for each validator")
-        result = contract_deployer.deploy_contracts(
-            plan, l1_context, polygon_pos_args, validator_accounts
+        result = contract_deployer.deploy_l1_contracts(
+            plan,
+            polygon_pos_args,
+            l1_context.rpc_url,
+            admin_private_key,
+            validator_accounts,
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 2:
@@ -117,7 +123,10 @@ def run(plan, args):
         l2_cl_genesis_artifact = result.files_artifacts[0]
 
         result = el_genesis_generator.generate_el_genesis_data(
-            plan, polygon_pos_args, validator_config_artifact
+            plan,
+            polygon_pos_args,
+            validator_config_artifact,
+            l2_network_params.get("admin_address"),
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 1:
@@ -148,6 +157,19 @@ def run(plan, args):
             },
         )
 
+        plan.print("Using matic contract addresses provided")
+        contract_addresses_artifact = plan.render_templates(
+            name="matic-contract-addresses",
+            config={
+                "contractAddresses.json": struct(
+                    template=read_file(
+                        src=dev_args.get("matic_contract_addresses_filepath", "")
+                    ),
+                    data={},
+                )
+            },
+        )
+
     # Deploy network participants.
     participants_count = math.sum([p.get("count") for p in participants])
     plan.print(
@@ -155,7 +177,7 @@ def run(plan, args):
             participants_count, len(validator_accounts), participants
         )
     )
-    el_cl_launcher.launch(
+    l2_context = el_cl_launcher.launch(
         plan,
         participants,
         polygon_pos_args,
@@ -163,6 +185,17 @@ def run(plan, args):
         l2_cl_genesis_artifact,
         l1_context.rpc_url,
         devnet_cl_type,
+    )
+    l2_rpc_url = l2_context[0].el_context.ports[el_shared.EL_RPC_PORT_ID].url
+
+    # Deploy MATIC contracts to L2.
+    result = contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
+        plan,
+        polygon_pos_args,
+        l1_context.rpc_url,
+        l2_rpc_url,
+        admin_private_key,
+        contract_addresses_artifact,
     )
 
     # Deploy additional services.
@@ -219,19 +252,16 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
     if preregistered_validator_keys_mnemonic != default_l2_mnemonic:
         fail("Using a different mnemonic is not supported for now.")
 
-    # Merge the user-specified prefunded accounts and the validator prefunded accounts.
-    prefunded_accounts = account_util.to_ethereum_pkg_prefunded_accounts(
-        pre_funded_accounts.PRE_FUNDED_ACCOUNTS,
-    )
+    # Define prefunded accounts on L1.
     l1_network_params = ethereum_args.get("network_params")
-    user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts")
-    if user_prefunded_accounts_str != "":
-        user_prefunded_accounts = json.decode(user_prefunded_accounts_str)
-        prefunded_accounts = prefunded_accounts | user_prefunded_accounts
+    prefunded_accounts = _merge_l1_prefunded_accounts(
+        l2_network_params.get("admin_address"), l1_network_params
+    )
     ethereum_args["network_params"] = l1_network_params | {
         "prefunded_accounts": prefunded_accounts
     }
 
+    # Deploy the ethereum package.
     l1 = ethereum_package.run(plan, ethereum_args)
     plan.print(l1)
     if len(l1.all_participants) < 1:
@@ -241,3 +271,27 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
         plan, str(l1.all_participants[0].cl_context.beacon_http_url)
     )
     return l1
+
+
+def _merge_l1_prefunded_accounts(admin_address, l1_network_params):
+    # Merge the prefunded accounts (admin and validators) with the user-specified prefuned accounts.
+    admin_prefunded_account = account_util.to_ethereum_pkg_prefunded_account(
+        admin_address, constants.ADMIN_BALANCE_ETH
+    )
+
+    validators_prefunded_accounts = {}
+    for a in pre_funded_accounts.PRE_FUNDED_ACCOUNTS:
+        validators_prefunded_accounts |= account_util.to_ethereum_pkg_prefunded_account(
+            a.eth_tendermint.address, constants.VALIDATORS_BALANCE_ETH
+        )
+
+    user_prefunded_accounts = {}
+    user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts")
+    if user_prefunded_accounts_str != "":
+        user_prefunded_accounts = json.decode(user_prefunded_accounts_str)
+
+    return (
+        admin_prefunded_account
+        | validators_prefunded_accounts
+        | user_prefunded_accounts
+    )

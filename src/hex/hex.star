@@ -4,10 +4,9 @@ def int_to_hex(n):
 
     # Handle the conversion using a for loop.
     # We can use a fixed upper limit for the number of digits we expect
-    # For example, we can assume we're dealing with 16 hex digits (64 bits).
-    # Therefore, the maximum value that can be processed is 16^16 - 1,
-    # or approximately, 1152921504606846975.
-    hex_digits_upper_limit = 16
+    # For example, we can assume we're dealing with 32 hex digits (128 bits).
+    # This will allow for numbers up to 16^32 - 1.
+    hex_digits_upper_limit = 32
 
     hex_chars = "0123456789abcdef"
     hex_string = ""
@@ -21,3 +20,7 @@ def int_to_hex(n):
             break
 
     return "0x" + hex_string
+
+
+def normalize(s):
+    return "0x" + s.removeprefix("0x")

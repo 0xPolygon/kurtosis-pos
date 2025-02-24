@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Build MATIC child chain genesis.
+# Build MATIC chain genesis.
 # For reference: https://github.com/maticnetwork/genesis-contracts
 
 # Checking environment variables.

@@ -40,11 +40,5 @@ def get_cl_validator_account(validator, devnet_cl_type):
         )
 
 
-def to_ethereum_pkg_prefunded_accounts(validators):
-    ethereum_prefunded_accounts = {}
-    balance = "{}ETH".format(constants.VALIDATORS_BALANCE_ETH)
-    for validator in validators:
-        ethereum_prefunded_accounts[validator.eth_tendermint.address] = {
-            "balance": balance
-        }
-    return ethereum_prefunded_accounts
+def to_ethereum_pkg_prefunded_account(address, balance):
+    return {address: {"balance": "{}ETH".format(balance)}}
