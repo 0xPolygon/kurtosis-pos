@@ -31,7 +31,7 @@ get_l1_chain_status() {
   latest_checkpoint=$(cast call --rpc-url "${rpc_url}" "${root_chain_proxy_address}" 'currentHeaderBlock()(uint)')
   state_sender_address=$(cast call --rpc-url "${rpc_url}" "${state_sender_address}" 'counter()(uint)')
   # echo "${latest_bn} ${safe_bn} ${finalized_bn} ${latest_checkpoint} ${state_sender_address}"
-  echo "${latest_bn} ${safe_bn} ${latest_checkpoint} ${state_sender_address}"
+  echo "${latest_bn} ${latest_checkpoint} ${state_sender_address}"
 }
 
 get_l2_chain_status() {
@@ -192,16 +192,18 @@ while true; do
   echo
 
   l1_chain_status=$(get_l1_chain_status "${l1_rpc_url}" "${l1_root_chain_proxy_address}" "${l1_state_sender_address}")
-  read -r l1_latest_bn l1_safe_bn l1_finalized_bn l1_latest_checkpoint l1_latest_state_id <<<"${l1_chain_status}"
+  # read -r l1_latest_bn l1_safe_bn l1_finalized_bn l1_latest_checkpoint l1_latest_state_id <<<"${l1_chain_status}"
+  read -r l1_latest_bn l1_latest_checkpoint l1_latest_state_id <<<"${l1_chain_status}"
 
   l2_chain_status=$(get_l2_chain_status "${l2_rpc_url}" "${l2_state_receiver_address}")
-  read -r l2_latest_bn l2_finalized_bn l2_latest_state_id <<<"${l2_chain_status}"
+  # read -r l2_latest_bn l2_finalized_bn l2_latest_state_id <<<"${l2_chain_status}"
+  read -r l2_latest_bn l2_latest_state_id <<<"${l2_chain_status}"
 
   output=""
   output+='{'
   output+='  "l1_chain_status": {'
   output+='    "latest_bn": '"${l1_latest_bn}"','
-  output+='    "safe_bn": '"${l1_safe_bn}"','
+  # output+='    "safe_bn": '"${l1_safe_bn}"','
   # output+='    "finalized_bn": '"${l1_finalized_bn}"','
   output+='    "latest_checkpoint": '"${l1_latest_checkpoint}"','
   output+='    "latest_state_id": '"${l1_latest_state_id}"''
@@ -302,7 +304,7 @@ while true; do
   echo "🔗 L1 Chain Status:"
   echo
   # echo -e "${output}" | jq --raw-output '(["Latest Height", "Safe Height", "Finalized Height", "Latest Checkpoint", "Latest State ID (State Sender)"] | (., map(length*"-"))), (.l1_chain_status | [.latest_bn, .safe_bn, .finalized_bn, .latest_checkpoint, .latest_state_id]) | @tsv' | column -ts $'\t'
-  echo -e "${output}" | jq --raw-output '(["Latest Height", "Safe Height", "Latest Checkpoint", "Latest State ID (State Sender)"] | (., map(length*"-"))), (.l1_chain_status | [.latest_bn, .safe_bn, .latest_checkpoint, .latest_state_id]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["Latest Height", "Latest Checkpoint", "Latest State ID (State Sender)"] | (., map(length*"-"))), (.l1_chain_status | [.latest_bn, .latest_checkpoint, .latest_state_id]) | @tsv' | column -ts $'\t'
 
   echo
   echo "🔗 L2 Chain Status:"
