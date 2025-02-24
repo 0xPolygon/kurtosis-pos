@@ -26,11 +26,12 @@ get_l1_chain_status() {
   state_sender_address="$3"
   local latest_bn safe_bn finalized_bn latest_checkpoint latest_state_id
   latest_bn=$(cast bn --rpc-url "${rpc_url}")
-  safe_bn=$(cast bn --rpc-url "${rpc_url}" safe || echo 0)
-  finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized || echo 0)
+  safe_bn=$(cast bn --rpc-url "${rpc_url}" safe)
+  # finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized)
   latest_checkpoint=$(cast call --rpc-url "${rpc_url}" "${root_chain_proxy_address}" 'currentHeaderBlock()(uint)')
   state_sender_address=$(cast call --rpc-url "${rpc_url}" "${state_sender_address}" 'counter()(uint)')
-  echo "${latest_bn} ${safe_bn} ${finalized_bn} ${latest_checkpoint}" "${state_sender_address}"
+  # echo "${latest_bn} ${safe_bn} ${finalized_bn} ${latest_checkpoint} ${state_sender_address}"
+  echo "${latest_bn} ${safe_bn} ${latest_checkpoint} ${state_sender_address}"
 }
 
 get_l2_chain_status() {
@@ -38,9 +39,10 @@ get_l2_chain_status() {
   state_receiver_address="$2"
   local latest_bn finalized_bn latest_state_id
   latest_bn=$(cast bn --rpc-url "${rpc_url}")
-  finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized || echo 0)
+  # finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized)
   latest_state_id=$(cast call --rpc-url "${rpc_url}" "${state_receiver_address}" "lastStateId()(uint)")
-  echo "${latest_bn} ${finalized_bn}" "${latest_state_id}"
+  # echo "${latest_bn} ${finalized_bn} ${latest_state_id}"
+  echo "${latest_bn} ${latest_state_id}"
 }
 
 get_l2_cl_node_status() {
@@ -200,13 +202,13 @@ while true; do
   output+='  "l1_chain_status": {'
   output+='    "latest_bn": '"${l1_latest_bn}"','
   output+='    "safe_bn": '"${l1_safe_bn}"','
-  output+='    "finalized_bn": '"${l1_finalized_bn}"','
+  # output+='    "finalized_bn": '"${l1_finalized_bn}"','
   output+='    "latest_checkpoint": '"${l1_latest_checkpoint}"','
   output+='    "latest_state_id": '"${l1_latest_state_id}"''
   output+='  },'
   output+='  "l2_chain_status": {'
   output+='    "latest_bn": '"${l2_latest_bn}"','
-  output+='    "finalized_bn": '"${l2_finalized_bn}"','
+  # output+='    "finalized_bn": '"${l2_finalized_bn}"','
   output+='    "latest_state_id": '"${l2_latest_state_id}"''
   output+='  },'
   output+='  "l2_participants": {'
@@ -299,12 +301,14 @@ while true; do
   # Display tables
   echo "🔗 L1 Chain Status:"
   echo
-  echo -e "${output}" | jq --raw-output '(["Latest Height", "Safe Height", "Finalized Height", "Latest Checkpoint", "Latest State ID (State Sender)"] | (., map(length*"-"))), (.l1_chain_status | [.latest_bn, .safe_bn, .finalized_bn, .latest_checkpoint, .latest_state_id]) | @tsv' | column -ts $'\t'
+  # echo -e "${output}" | jq --raw-output '(["Latest Height", "Safe Height", "Finalized Height", "Latest Checkpoint", "Latest State ID (State Sender)"] | (., map(length*"-"))), (.l1_chain_status | [.latest_bn, .safe_bn, .finalized_bn, .latest_checkpoint, .latest_state_id]) | @tsv' | column -ts $'\t'
+  echo -e "${output}" | jq --raw-output '(["Latest Height", "Safe Height", "Latest Checkpoint", "Latest State ID (State Sender)"] | (., map(length*"-"))), (.l1_chain_status | [.latest_bn, .safe_bn, .latest_checkpoint, .latest_state_id]) | @tsv' | column -ts $'\t'
 
   echo
   echo "🔗 L2 Chain Status:"
   echo
-  echo "${output}" | jq --raw-output '(["Latest Height", "Finalized Height", "Latest State ID (State Receiver)"] | (., map(length*"-"))), (.l2_chain_status | [.latest_bn, .finalized_bn, .latest_state_id]) | @tsv' | column -ts $'\t'
+  # echo "${output}" | jq --raw-output '(["Latest Height", "Finalized Height", "Latest State ID (State Receiver)"] | (., map(length*"-"))), (.l2_chain_status | [.latest_bn, .finalized_bn, .latest_state_id]) | @tsv' | column -ts $'\t'
+  echo "${output}" | jq --raw-output '(["Latest Height", "Latest State ID (State Receiver)"] | (., map(length*"-"))), (.l2_chain_status | [.latest_bn, .latest_state_id]) | @tsv' | column -ts $'\t'
 
   echo
   echo "✅ L2 CL Nodes Statuses:"
