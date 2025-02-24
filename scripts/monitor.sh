@@ -26,8 +26,8 @@ get_l1_chain_status() {
   state_sender_address="$3"
   local latest_bn safe_bn finalized_bn latest_checkpoint latest_state_id
   latest_bn=$(cast bn --rpc-url "${rpc_url}")
-  safe_bn=$(cast bn --rpc-url "${rpc_url}" safe)
-  finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized)
+  safe_bn=$(cast bn --rpc-url "${rpc_url}" safe || echo 0)
+  finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized || echo 0)
   latest_checkpoint=$(cast call --rpc-url "${rpc_url}" "${root_chain_proxy_address}" 'currentHeaderBlock()(uint)')
   state_sender_address=$(cast call --rpc-url "${rpc_url}" "${state_sender_address}" 'counter()(uint)')
   echo "${latest_bn} ${safe_bn} ${finalized_bn} ${latest_checkpoint}" "${state_sender_address}"
@@ -38,7 +38,7 @@ get_l2_chain_status() {
   state_receiver_address="$2"
   local latest_bn finalized_bn latest_state_id
   latest_bn=$(cast bn --rpc-url "${rpc_url}")
-  finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized)
+  finalized_bn=$(cast bn --rpc-url "${rpc_url}" finalized || echo 0)
   latest_state_id=$(cast call --rpc-url "${rpc_url}" "${state_receiver_address}" "lastStateId()(uint)")
   echo "${latest_bn} ${finalized_bn}" "${latest_state_id}"
 }
