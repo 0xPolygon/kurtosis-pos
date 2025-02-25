@@ -9,8 +9,8 @@ if [[ -z "${L1_RPC_URL}" ]]; then
   echo "Error: L1_RPC_URL environment variable is not set"
   exit 1
 fi
-if [[ -z "${DEPOSIT_MANAGER_PROXY_ADDRESS}" ]]; then
-  echo "Error: DEPOSIT_MANAGER_PROXY_ADDRESS environment variable is not set"
+if [[ -z "${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}" ]]; then
+  echo "Error: L1_DEPOSIT_MANAGER_PROXY_ADDRESS environment variable is not set"
   exit 1
 fi
 if [[ -z "${ERC20_TOKEN_ADDRESS}" ]]; then
@@ -23,7 +23,7 @@ if [[ -z "${FUNDER_PRIVATE_KEY}" ]]; then
 fi
 echo "L1_RPC_URL: ${L1_RPC_URL}"
 export ETH_RPC_URL="${L1_RPC_URL}"
-echo "DEPOSIT_MANAGER_PROXY_ADDRESS: ${DEPOSIT_MANAGER_PROXY_ADDRESS}"
+echo "L1_DEPOSIT_MANAGER_PROXY_ADDRESS: ${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}"
 echo "ERC20_TOKEN_ADDRESS: ${ERC20_TOKEN_ADDRESS}"
 
 # Define some parameters for the test.
@@ -53,11 +53,11 @@ echo "- matic token: $(cast call "${ERC20_TOKEN_ADDRESS}" "balanceOf(address)(ui
 # Deposit ERC20 to trigger a state sync.
 echo
 echo "Approving the DepositManager to spend the tokens on behalf of the address..."
-cast send --private-key "${private_key}" "${ERC20_TOKEN_ADDRESS}" "approve(address,uint)" "${DEPOSIT_MANAGER_PROXY_ADDRESS}" "${erc20_token_amount_to_bridge}"
+cast send --private-key "${private_key}" "${ERC20_TOKEN_ADDRESS}" "approve(address,uint)" "${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}" "${erc20_token_amount_to_bridge}"
 
 echo
 echo "Depositing ERC20 to trigger a state sync..."
-cast send --private-key "${private_key}" "${DEPOSIT_MANAGER_PROXY_ADDRESS}" "depositERC20(address,uint)" "${ERC20_TOKEN_ADDRESS}" "${erc20_token_amount_to_bridge}"
+cast send --private-key "${private_key}" "${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}" "depositERC20(address,uint)" "${ERC20_TOKEN_ADDRESS}" "${erc20_token_amount_to_bridge}"
 
 echo
 echo "Once the state sync has occured, check the account balance on L2 with this command..."
