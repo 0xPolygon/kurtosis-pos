@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  KURTOSIS_VERSION: "1.5.0"
+  KURTOSIS_VERSION: "1.4.4"
   FOUNDRY_VERSION: stable
   ENCLAVE_NAME: pos
 
@@ -264,26 +264,12 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Retrive CL genesis
+      - name: Retrive CL and EL genesis files as well as MATIC contract addresses
         working-directory: .github/tests/cl-el-genesis
         run: |
           kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json | tail -n +2 | jq > l2-cl-genesis.json
-          echo "CL genesis:"
-          jq . l2-cl-genesis.json
-
-      - name: Retrive EL genesis
-        working-directory: .github/tests/cl-el-genesis
-        run: |
           kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq > l2-el-genesis.json
-          echo "EL genesis:"
-          jq . l2-el-genesis.json
-
-      - name: Retrive MATIC contract addresses
-        working-directory: .github/tests/cl-el-genesis
-        run: |
           kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq > matic-contract-addresses.json
-          echo "MATIC contract addresses:"
-          jq . matic-contract-addresses.json
 
       - name: Clean up the environment
         run: kurtosis clean --all
