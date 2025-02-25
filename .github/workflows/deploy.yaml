@@ -65,6 +65,7 @@ jobs:
           export ERC20_TOKEN_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.tokens.MaticToken')
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
+          echo
 
           export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           export L2_CL_NODE_TYPE=heimdall
@@ -175,6 +176,7 @@ jobs:
           export ERC20_TOKEN_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.tokens.MaticToken')
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
+          echo
 
           cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
           if [[ "${cl_type}" == "null" ]]; then
@@ -265,6 +267,7 @@ jobs:
           export ERC20_TOKEN_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.tokens.MaticToken')
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
+          echo
 
           export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           export L2_CL_NODE_TYPE=heimdall
@@ -333,6 +336,7 @@ jobs:
           export ERC20_TOKEN_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.tokens.MaticToken')
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
+          echo
 
           export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
           export L2_CL_NODE_TYPE=heimdall
