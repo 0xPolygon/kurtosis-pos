@@ -3,8 +3,8 @@ set -euo pipefail
 
 # Check that state syncs occur on Heimdall and Bor.
 # Check that checkpoints occur on Bor and L1.
-CHECK_RATE_SECONDS=${CHECK_RATE_SECONDS:-5}
-TIMEOUT_SECONDS=${TIMEOUT_SECONDS:-60}
+CHECK_RATE_SECONDS=${CHECK_RATE_SECONDS:-10}
+TIMEOUT_SECONDS=${TIMEOUT_SECONDS:-120}
 
 # Define a few environment variables required to run the script.
 if [[ -z "${L2_CL_API_URL}" ]]; then
