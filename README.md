@@ -162,11 +162,9 @@ bash ./scripts/send_state_sync.sh
 Monitor state syncs.
 
 ```bash
-export L1_RPC_URL="http://$(kurtosis port print pos-devnet el-1-geth-lighthouse rpc)"
-export L1_ROOT_CHAIN_PROXY_ADDRESS=$(kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq --raw-output '.root.RootChainProxy')
 export L2_CL_API_URL=$(kurtosis port print pos-devnet l2-cl-1-heimdall-bor-validator http)
 export L2_CL_NODE_TYPE=heimdall
-export L2_EL_RPC_URL=$(kurtosis port print pos-devnet l2-el-1-bor-heimdall-validator rpc)
+export L2_RPC_URL=$(kurtosis port print pos-devnet l2-el-1-bor-heimdall-validator rpc)
 export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
 bash ./scripts/check_state_sync.sh
 ```
