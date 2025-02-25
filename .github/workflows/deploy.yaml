@@ -66,9 +66,9 @@ jobs:
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
 
-          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-modified-for-heimdall-v2-validator http)
-          export L2_CL_NODE_TYPE=heimdall-v2
-          export L2_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-modified-for-heimdall-v2-heimdall-v2-validator rpc)
+          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
+          export L2_CL_NODE_TYPE=heimdall
+          export L2_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)
           export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
           bash ./scripts/check_state_sync.sh
 
@@ -266,9 +266,9 @@ jobs:
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
 
-          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-modified-for-heimdall-v2-validator http)
-          export L2_CL_NODE_TYPE=heimdall-v2
-          export L2_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-modified-for-heimdall-v2-heimdall-v2-validator rpc)
+          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
+          export L2_CL_NODE_TYPE=heimdall
+          export L2_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)
           export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
           bash ./scripts/check_state_sync.sh
 
@@ -334,9 +334,9 @@ jobs:
           export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
           bash ./scripts/send_state_sync.sh
 
-          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-modified-for-heimdall-v2-validator http)
-          export L2_CL_NODE_TYPE=heimdall-v2
-          export L2_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-modified-for-heimdall-v2-heimdall-v2-validator rpc)
+          export L2_CL_API_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator http)
+          export L2_CL_NODE_TYPE=heimdall
+          export L2_RPC_URL=$(kurtosis port print ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator rpc)
           export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
           bash ./scripts/check_state_sync.sh
 
