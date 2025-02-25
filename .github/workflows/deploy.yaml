@@ -47,7 +47,7 @@ jobs:
           version: ${{ env.FOUNDRY_VERSION }}
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false --verbosity DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -133,7 +133,7 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false --verbosity DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -203,10 +203,10 @@ jobs:
           version: ${{ env.FOUNDRY_VERSION }}
 
       - name: Deploy L1
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/tests/external-l1/ethereum.yml --verbosity DETAILED github.com/ethpandaops/ethereum-package@4.4.0
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/tests/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@4.4.0
 
       - name: Deploy L2
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/external-l1/polygon-pos-with-external-l1.yml --show-enclave-inspect=false --verbosity DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/external-l1/polygon-pos-with-external-l1.yml --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -258,8 +258,8 @@ jobs:
         with:
           version: ${{ env.FOUNDRY_VERSION }}
 
-      - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false --verbosity DETAILED .
+      - name: Run Starlark for the first time
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
