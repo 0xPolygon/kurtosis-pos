@@ -25,6 +25,7 @@ echo "L1_RPC_URL: ${L1_RPC_URL}"
 export ETH_RPC_URL="${L1_RPC_URL}"
 echo "L1_DEPOSIT_MANAGER_PROXY_ADDRESS: ${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}"
 echo "ERC20_TOKEN_ADDRESS: ${ERC20_TOKEN_ADDRESS}"
+echo "FUNDER_PRIVATE_KEY: ${FUNDER_PRIVATE_KEY}"
 
 # Define some parameters for the test.
 erc20_token_amount_to_bridge=20
@@ -34,31 +35,35 @@ echo
 echo "Setting up a new test account..."
 account=$(cast wallet new --json | jq '.[0]')
 echo "${account}"
-address=$(echo "${account}" | jq --raw-output '.address')
-private_key=$(echo "${account}" | jq --raw-output '.private_key')
+ADDRESS=$(echo "${account}" | jq --raw-output '.address')
+PRIVATE_KEY=$(echo "${account}" | jq --raw-output '.private_key')
 
 echo
 echo "Funding the test account with ether..."
-cast send --private-key "${FUNDER_PRIVATE_KEY}" --value 0.1ether "${address}"
+cast send --private-key "${FUNDER_PRIVATE_KEY}" --value 0.1ether "${ADDRESS}"
 
 echo
 echo "Funding the test account with some ERC20 tokens..."
-cast send --private-key "${FUNDER_PRIVATE_KEY}" "${ERC20_TOKEN_ADDRESS}" "transfer(address,uint)" "${address}" "${erc20_token_amount_to_bridge}"
+cast send --private-key "${FUNDER_PRIVATE_KEY}" "${ERC20_TOKEN_ADDRESS}" "transfer(address,uint)" "${ADDRESS}" "${erc20_token_amount_to_bridge}"
 
 echo
 echo "Checking test account balances..."
-echo "- ether: $(cast balance --ether "${address}")"
-echo "- matic token: $(cast call "${ERC20_TOKEN_ADDRESS}" "balanceOf(address)(uint)" "${address}")"
+echo "- ether: $(cast balance --ether "${ADDRESS}")"
+echo "- matic token: $(cast call "${ERC20_TOKEN_ADDRESS}" "balanceOf(address)(uint)" "${ADDRESS}")"
 
 # Deposit ERC20 to trigger a state sync.
 echo
-echo "Approving the DepositManager to spend the tokens on behalf of the address..."
-cast send --private-key "${private_key}" "${ERC20_TOKEN_ADDRESS}" "approve(address,uint)" "${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}" "${erc20_token_amount_to_bridge}"
+echo "✅ Approving the DepositManager contract to spend ERC20 tokens on our behalf..."
+cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
+  "${ERC20_TOKEN_ADDRESS}" \
+  "approve(address,uint)" "${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}" "${erc20_token_amount_to_bridge}"
 
 echo
-echo "Depositing ERC20 to trigger a state sync..."
-cast send --private-key "${private_key}" "${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}" "depositERC20(address,uint)" "${ERC20_TOKEN_ADDRESS}" "${erc20_token_amount_to_bridge}"
+echo "🚀 Depositing ERC20 to trigger a state sync..."
+cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
+  "${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}" \
+  "depositERC20(address,uint)" "${ERC20_TOKEN_ADDRESS}" "${erc20_token_amount_to_bridge}"
 
 echo
 echo "Once the state sync has occured, check the account balance on L2 with this command..."
-echo "cast balance --rpc-url <L2_RPC_URL> --ether ${address}"
+echo "cast balance --rpc-url <L2_RPC_URL> --ether ${ADDRESS}"
