@@ -44,8 +44,7 @@ while true; do
   # Check for timeout.
   current_time="$(date +%s)"
   if ((current_time - start_time >= TIMEOUT_SECONDS)); then
-    echo
-    echo "Timeout reached. Exiting monitor."
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ❌ Timeout reached."
     exit 1
   fi
 
@@ -59,13 +58,11 @@ while true; do
   fi
 
   if [[ "$state_sync_count" =~ ^[0-9]+$ ]] && [[ "$state_sync_count" -gt "0" ]]; then
-    echo "✅ A state sync occured! State sync count: ${state_sync_count}"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ A state sync occured! State sync count: ${state_sync_count}"
     break
-  else
-    echo "No state sync occured yet... State sync count: ${state_sync_count}"
   fi
 
-  echo "Waiting ${CHECK_RATE_SECONDS} seconds before next request..."
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] No state sync occured yet... State sync count: ${state_sync_count}. Waiting ${CHECK_RATE_SECONDS} seconds..."
   sleep "${CHECK_RATE_SECONDS}"
 done
 
@@ -76,19 +73,16 @@ while true; do
   # Check for timeout.
   current_time="$(date +%s)"
   if ((current_time - start_time >= TIMEOUT_SECONDS)); then
-    echo
-    echo "Timeout reached. Exiting monitor."
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ❌ Timeout reached."
     exit 1
   fi
 
   latest_state_id=$(cast call --rpc-url "${L2_RPC_URL}" "${L2_STATE_RECEIVER_ADDRESS}" "lastStateId()(uint)")
   if [[ "$latest_state_id" =~ ^[0-9]+$ ]] && [[ "$latest_state_id" -gt "0" ]]; then
-    echo "✅ A state sync was received! Latest state id: ${latest_state_id}"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ A state sync was received! Latest state id: ${latest_state_id}"
     break
-  else
-    echo "No state sync received yet... Latest state id: ${latest_state_id}"
   fi
 
-  echo "Waiting ${CHECK_RATE_SECONDS} seconds before next request..."
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] No state sync received yet... Latest state id: ${latest_state_id}. Waiting ${CHECK_RATE_SECONDS} seconds..."
   sleep "${CHECK_RATE_SECONDS}"
 done
