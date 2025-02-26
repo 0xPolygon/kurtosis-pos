@@ -78,18 +78,15 @@ To make sure the devnet is running correctly, you can use two of our handy scrip
 ```bash
 export ENCLAVE="pos-devnet"
 bash scripts/discover.sh
-bash scripts/status.sh
+bash scripts/monitor.sh
 ```
 
-If you want to format the result in a more readable way, you can use the following command.
+If you want to run the monitor only once, you can use the following command:
 
 ```bash
-result=$(bash scripts/status.sh)
-echo "${result}" | jq --raw-output '
-  (["Layer", "ID", "Name", "Peers", "Height", "Latest Block Hash", "Is Syncing"] | (., map(length*"-"))),
-  (.participants.cl[] | ["CL"] + [.id, .name, .peers, .height, .latestBlockHash[:10], .isSyncing]),
-  (.participants.el[] | ["EL"] + [.id, .name, .peers, .height, .latestBlockHash[:10], .isSyncing])
-  | @tsv' | column -ts $'\t'
+export TIMEOUT_SECONDS=1
+export CHECK_RATE_SECONDS=0
+bash scripts/monitor.sh
 ```
 
 A healthy devnet is characterized by CL and EL nodes that successfully establish peer connections and show consistent block production and finalization across both layers.
