@@ -53,7 +53,7 @@ def launch(
 
     # Prepare network data and generate validator configs.
     network_data = _prepare_network_data(participants)
-    cl_api_url = network_data.first_validator_cl_api_url
+    first_cl_api_url = network_data.first_validator_cl_api_url
     validator_config_artifacts = _generate_validator_config(
         plan,
         network_data.cl_validator_configs_str,
@@ -102,6 +102,7 @@ def launch(
 
             # If the participant is a validator, launch the CL node and it's dedicated AMQP server.
             cl_context = {}
+            cl_api_url = first_cl_api_url
             if participant.get("is_validator"):
                 rabbitmq_name = _generate_amqp_name(participant_index + 1)
                 rabbitmq_service = plan.add_service(
@@ -169,7 +170,9 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
-    wait.wait_for_l2_startup(plan, cl_api_url, network_data.first_validator_cl_type)
+    wait.wait_for_l2_startup(
+        plan, first_cl_api_url, network_data.first_validator_cl_type
+    )
 
     # Return the L2 context.
     return context
