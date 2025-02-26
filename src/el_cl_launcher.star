@@ -170,7 +170,9 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
-    wait.wait_for_l2_startup(plan, first_cl_api_url, network_data.first_validator_cl_type)
+    wait.wait_for_l2_startup(
+        plan, first_cl_api_url, network_data.first_validator_cl_type
+    )
 
     # Return the L2 context.
     return context
