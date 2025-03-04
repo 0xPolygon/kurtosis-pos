@@ -39,3 +39,26 @@ docker build \
   .
 docker push "leovct/pos-validator-config-generator:${tag}"
 ```
+
+## Bor modified for heimdall-v2
+
+Docker Hub:
+
+- [bor-modified-for-heimdall-v2](https://hub.docker.com/r/leovct/bor-modified-for-heimdall-v2)
+
+```bash
+# bor-modified-for-heimdall-v2
+git clone --branch raneet10/heimdallv2-changes git@github.com:maticnetwork/bor.git
+pushd bor
+tag="1724778" # 11/02/2025
+git checkout "${tag}"
+
+eval $(ssh-agent -s)
+ssh-add $HOME/.ssh/id_ed25519
+docker build \
+  --tag "leovct/bor-modified-for-heimdall-v2:${tag}" \
+  --file Dockerfile \
+  --ssh default=$SSH_AUTH_SOCK \
+  .
+docker push "leovct/bor-modified-for-heimdall-v2:${tag}"
+```
