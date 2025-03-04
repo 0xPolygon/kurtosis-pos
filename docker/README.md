@@ -29,7 +29,7 @@ docker push leovct/pos-el-genesis-builder:node-16
 
 ```bash
 heimdall_version="1.2.0"
-heimdall_v2_version="22a3f1d"
+heimdall_v2_version="0.1.3"
 tag="${heimdall_version}-${heimdall_v2_version}"
 docker build \
   --build-arg HEIMDALL_VERSION="${heimdall_version}" \
