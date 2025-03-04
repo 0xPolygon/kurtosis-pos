@@ -1,7 +1,7 @@
 ARG HEIMDALL_VERSION=1.2.0
 ARG HEIMDALL_V2_VERSION=e0a87ca
 FROM 0xpolygon/heimdall:${HEIMDALL_VERSION} AS heimdall
-FROM leovct/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
+FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
 FROM golang:1.22 AS polycli-builder
