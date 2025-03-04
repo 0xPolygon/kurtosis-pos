@@ -8,7 +8,7 @@ FROM golang:1.22 AS polycli-builder
 LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
 WORKDIR /opt/polygon-cli
-RUN git clone --branch "v0.1.69" https://github.com/maticnetwork/polygon-cli.git . \
+RUN git clone --branch "v0.1.74" https://github.com/maticnetwork/polygon-cli.git . \
   && make build
 
 
