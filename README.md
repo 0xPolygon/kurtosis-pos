@@ -337,7 +337,7 @@ polygon_pos_package:
     # The EL network id.
     # Default: "4927"
     # Note: it must be a string!
-    el_chain_id: ""
+    el_chain_id: "4927"
     # The number of seconds per block on the EL chain.
     # Default: 2
     el_block_interval_seconds: 2
