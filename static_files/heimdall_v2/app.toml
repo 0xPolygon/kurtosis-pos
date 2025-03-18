@@ -4,11 +4,6 @@
 
 # NOTE: This part of the config is similar to app.toml (heimdall-v1).
 
-# The minimum gas prices a validator is willing to accept for processing a
-# transaction. A transaction's fees must meet the minimum of any denomination
-# specified in this config (e.g. 0.25token1,0.0001token2).
-minimum-gas-prices = ""
-
 # HaltHeight contains a non-zero block height at which a node will gracefully
 # halt and shutdown that can be used to assist upgrades and testing.
 #
@@ -21,6 +16,11 @@ halt-height = 0
 #
 # Note: Commitment of state will be attempted on the corresponding block.
 halt-time = 0
+
+# The minimum gas prices a validator is willing to accept for processing a
+# transaction. A transaction's fees must meet the minimum of any denomination
+# specified in this config (e.g. 0.25token1,0.0001token2).
+minimum-gas-prices = ""
 
 # The maximum gas a query coming over rest/grpc may consume.
 # If this is set to zero, the query can consume an unbounded amount of gas.
@@ -65,7 +65,7 @@ index-events = []
 # IavlCacheSize set the size of the iavl tree cache (in number of nodes).
 iavl-cache-size = 781250
 
-# IAVLDisableFastNode enables or disables the fast node feature of IAVL. 
+# IAVLDisableFastNode enables or disables the fast node feature of IAVL.
 # Default is false.
 iavl-disable-fastnode = false
 
@@ -108,7 +108,7 @@ prometheus-retention-time = 0
 global-labels = []
 
 # MetricsSink defines the type of metrics sink to use.
-# mem = ""
+metrics-sink = ""
 
 # StatsdAddr defines the address of a statsd server to send metrics to.
 # Only utilized if MetricsSink is set to "statsd" or "dogstatsd".
@@ -128,7 +128,7 @@ datadog-hostname = ""
 enable = true
 
 # Swagger defines if swagger documentation should automatically be registered.
-swagger = false
+swagger = true
 
 # Address defines the API server to listen on.
 address = "tcp://0.0.0.0:{{.rest_api_port_number}}"
@@ -226,23 +226,29 @@ stop-node-on-err = true
 
 [mempool]
 # Setting max-txs to 0 will allow for a unbounded amount of transactions in the mempool.
-# Setting max_txs to negative 1 (-1) will disable transactions from being inserted into the mempool.
+# Setting max_txs to negative 1 (-1) will disable transactions from being inserted into the mempool (no-op mempool).
 # Setting max_txs to a positive number (> 0) will limit the number of transactions in the mempool, by the specified amount.
 #
 # Note, this configuration only applies to SDK built-in app-side mempool
 # implementations.
-max-txs = 5000
+max-txs = -1
 
 [custom]
 # NOTE: This part of the config is similar to heimdall-config.toml (heimdall-v1).
 
-##### RPC and REST config #####
+##### RPC and REST configs #####
 
 # AMQP endpoint.
 amqp_url = "{{.amqp_url}}"
 
 # RPC endpoint for the EL chain.
 bor_rpc_url = "{{.el_rpc_url}}"
+
+# GRPC flag for bor chain
+bor_grpc_flag = "true"
+
+# GRPC endpoint for bor chain
+bor_grpc_url = "http://0.0.0.0::{{.grpc_port_number}}"
 
 # RPC endpoint for the Ethereum chain.
 eth_rpc_url = "{{.l1_rpc_url}}"
