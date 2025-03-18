@@ -139,7 +139,7 @@
     },
     "topup": {
       "topup_sequences": [],
-      "dividend_accounts": []
+      "dividend_accounts": {{.dividend_accounts}}
     }
   },
   "consensus": {
