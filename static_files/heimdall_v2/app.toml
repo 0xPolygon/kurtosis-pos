@@ -231,7 +231,7 @@ stop-node-on-err = true
 #
 # Note, this configuration only applies to SDK built-in app-side mempool
 # implementations.
-max-txs = -1
+max-txs = 5000
 
 [custom]
 # NOTE: This part of the config is similar to heimdall-config.toml (heimdall-v1).
