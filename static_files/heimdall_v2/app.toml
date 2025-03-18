@@ -248,7 +248,7 @@ bor_rpc_url = "{{.el_rpc_url}}"
 bor_grpc_flag = "true"
 
 # GRPC endpoint for bor chain.
-bor_grpc_url = "0.0.0.0::{{.grpc_port_number}}"
+bor_grpc_url = "http://0.0.0.0:{{.grpc_port_number}}"
 
 # RPC endpoint for the Ethereum chain.
 eth_rpc_url = "{{.l1_rpc_url}}"
