@@ -4,7 +4,7 @@ FROM 0xpolygon/heimdall:${HEIMDALL_VERSION} AS heimdall
 FROM leovct/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
-FROM golang:1.22 AS polycli-builder
+FROM golang:1.23 AS polycli-builder
 LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
 WORKDIR /opt/polygon-cli
