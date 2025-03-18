@@ -244,10 +244,10 @@ amqp_url = "{{.amqp_url}}"
 # RPC endpoint for the EL chain.
 bor_rpc_url = "{{.el_rpc_url}}"
 
-# GRPC flag for bor chain
+# GRPC flag for bor chain.
 bor_grpc_flag = "true"
 
-# GRPC endpoint for bor chain
+# GRPC endpoint for bor chain.
 bor_grpc_url = "http://0.0.0.0::{{.grpc_port_number}}"
 
 # RPC endpoint for the Ethereum chain.
