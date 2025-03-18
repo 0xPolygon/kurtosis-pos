@@ -25,7 +25,7 @@ COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/local/bin/polycli
 COPY --from=polycli-builder /opt/polygon-cli/bindings /opt/bindings
 
 RUN apt-get update \
-  && apt-get install --yes --no-install-recommends jq \
+  && apt-get install --yes --no-install-recommends xxd jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && heimdalld init --home "${CL_CLIENT_CONFIG_PATH}" --chain-id "${DEFAULT_CL_CHAIN_ID}"
