@@ -2,7 +2,7 @@
 
 ## Client Images
 
-### Bor modified for heimdall v2
+### Bor Modified for Heimdall v2
 
 - [Docker Hub](https://hub.docker.com/r/leovct/bor-modified-for-heimdall-v2)
 
