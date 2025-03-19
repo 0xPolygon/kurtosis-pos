@@ -37,7 +37,7 @@ RUN apt-get update \
   && git checkout ${GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA} \
   # Delete the StateReceiver contract because it is based on solc 0.6.12 and the rest of the contracts
   # use solc 0.5.17. It is not important because it is not needed to generate the EL genesis.
-  && rm contracts/IStateReceiver.sol \
+  && rm contracts/StateReceiver.sol \
   && git submodule init \
   && git submodule update \
   && npm install \
