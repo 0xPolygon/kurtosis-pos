@@ -2,20 +2,6 @@
 
 ## Client Images
 
-### Heimdall V2
-
-- [Docker Hub](https://hub.docker.com/r/leovct/heimdall-v2)
-
-```bash
-git clone git@github.com:0xPolygon/heimdall-v2.git
-pushd heimdall-v2
-tag="6d34eaf" # 13/03/2025
-git checkout "${tag}"
-docker build --tag "leovct/heimdall-v2:${tag}" .
-docker push "leovct/heimdall-v2:${tag}"
-popd
-```
-
 ### Bor Modified for Heimdall v2
 
 - [Docker Hub](https://hub.docker.com/r/leovct/bor-modified-for-heimdall-v2)
@@ -61,7 +47,7 @@ docker push leovct/pos-el-genesis-builder:node-16
 
 ```bash
 heimdall_version="1.2.0" # 29/01/2025
-heimdall_v2_version="6d34eaf" ## 13/03/2025
+heimdall_v2_version="0.1.9" # 18/03/2025
 tag="${heimdall_version}-${heimdall_v2_version}"
 docker build \
   --build-arg HEIMDALL_VERSION="${heimdall_version}" \
