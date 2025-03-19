@@ -25,5 +25,5 @@ COPY --from=heimdall-v2 /usr/bin/heimdalld /usr/local/bin/heimdalld-v2
 COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/local/bin/polycli
 COPY --from=polycli-builder /opt/polygon-cli/bindings /opt/bindings
 
-RUN apk add --no-cache ca-certificates tini jq xxd \
+RUN apk add --no-cache ca-certificates bash jq tini xxd \
   && heimdalld init --home "${CL_CLIENT_CONFIG_PATH}" --chain-id "${DEFAULT_CL_CHAIN_ID}"
