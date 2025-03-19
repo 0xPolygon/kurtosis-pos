@@ -2,7 +2,12 @@ FROM node:20-bookworm
 LABEL description="Polygon PoS contracts deployment image (node-20)"
 LABEL author="devtools@polygon.technology"
 
+ENV FOUNDRY_VERSION="stable"
 ENV DEFAULT_EL_CHAIN_ID="4927"
+
+# 20/01/2025
+ENV POS_CONTRACTS_BRANCH="arya/matic-cli/pos-1869"
+ENV POS_CONTRACTS_TAG_OR_COMMIT_SHA="4a361e7"
 
 # Prepare Polygon PoS smart contracts for deployment by compiling them.
 # For reference: https://github.com/0xPolygon/pos-contracts
@@ -16,14 +21,14 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   # Install foundry (stable - 20/12/2024).
   && curl --silent --location --proto "=https" https://foundry.paradigm.xyz | bash \
-  && /root/.foundry/bin/foundryup --install "stable" \
+  && /root/.foundry/bin/foundryup --install ${FOUNDRY_VERSION} \
   && cp /root/.foundry/bin/* /usr/local/bin \
   # Prepare pos contracts.
-  && git clone --branch arya/matic-cli/pos-1869 https://github.com/0xPolygon/pos-contracts . \
-  && git checkout 4a361e7 \
+  && git clone --branch ${POS_CONTRACTS_BRANCH} https://github.com/0xPolygon/pos-contracts . \
+  && git checkout ${POS_CONTRACTS_TAG_OR_COMMIT_SHA} \
   # Remove [etherscan] section from foundry.toml
   && sed -i '/^\[etherscan\]/,/^$/d' foundry.toml \
   && npm install \
-  && npm run template:process -- --bor-chain-id "${DEFAULT_EL_CHAIN_ID}" \
+  && npm run template:process -- --bor-chain-id ${DEFAULT_EL_CHAIN_ID} \
   && npm run generate:interfaces \
   && forge build
