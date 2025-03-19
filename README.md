@@ -319,7 +319,7 @@ polygon_pos_package:
     validator_stake_amount_eth: 10000
     # The top up fee amount, in ether, for each validator.
     # Default: 2000
-    validator_top_up_fee_amount: 2000
+    validator_top_up_fee_amount_eth: 2000
 
     ## Consensus Layer parameters.
     # The CL network id.

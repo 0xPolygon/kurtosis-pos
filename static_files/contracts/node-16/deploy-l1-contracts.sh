@@ -68,8 +68,8 @@ if [[ -z "${VALIDATOR_STAKE_AMOUNT_WEI}" ]]; then
   echo "Error: VALIDATOR_STAKE_AMOUNT_WEI environment variable is not set"
   exit 1
 fi
-if [[ -z "${VALIDATOR_TOP_UP_FEE_AMOUNT}" ]]; then
-  echo "Error: VALIDATOR_TOP_UP_FEE_AMOUNT environment variable is not set"
+if [[ -z "${VALIDATOR_TOP_UP_FEE_AMOUNT_WEI}" ]]; then
+  echo "Error: VALIDATOR_TOP_UP_FEE_AMOUNT_WEI environment variable is not set"
   exit 1
 fi
 echo "VALIDATOR_ACCOUNTS: ${VALIDATOR_ACCOUNTS}"
@@ -77,7 +77,7 @@ echo "VALIDATOR_ACCOUNTS: ${VALIDATOR_ACCOUNTS}"
 # "<address_1>,<eth_public_key_1>;<address_2>,<eth_public_key_2>;..."
 echo "VALIDATOR_BALANCE: ${VALIDATOR_BALANCE}"
 echo "VALIDATOR_STAKE_AMOUNT_WEI: ${VALIDATOR_STAKE_AMOUNT_WEI}"
-echo "VALIDATOR_TOP_UP_FEE_AMOUNT: ${VALIDATOR_TOP_UP_FEE_AMOUNT}"
+echo "VALIDATOR_TOP_UP_FEE_AMOUNT_WEI: ${VALIDATOR_TOP_UP_FEE_AMOUNT_WEI}"
 
 # Create the validator config file.
 validator_config_file="validators.js"
@@ -87,7 +87,7 @@ echo "Staking for each validator node..."
 IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
   IFS=',' read -r address eth_public_key <<<"${account}"
-  npm run truffle exec scripts/stake.js -- --network l1 "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT_WEI}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}"
+  npm run truffle exec scripts/stake.js -- --network l1 "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT_WEI}" "${VALIDATOR_TOP_UP_FEE_AMOUNT_WEI}"
 
   # Update the validator config file.
   jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT_WEI}" --arg balance "${VALIDATOR_BALANCE}" \

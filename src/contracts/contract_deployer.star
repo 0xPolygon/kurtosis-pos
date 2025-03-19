@@ -34,8 +34,8 @@ def deploy_l1_contracts(
             "VALIDATOR_STAKE_AMOUNT_WEI": str(
                 math.ether_to_wei(network_params.get("validator_stake_amount_eth"))
             ),
-            "VALIDATOR_TOP_UP_FEE_AMOUNT": str(
-                network_params.get("validator_top_up_fee_amount")
+            "VALIDATOR_TOP_UP_FEE_AMOUNT_WEI": str(
+                math.ether_to_wei(network_params.get("validator_top_up_fee_amount_eth"))
             ),
         },
         files={

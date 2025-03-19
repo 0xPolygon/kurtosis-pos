@@ -75,7 +75,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         # Validators params.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount_eth": 10000,  # in ether
-        "validator_top_up_fee_amount": 2000,  # in ether
+        "validator_top_up_fee_amount_eth": 2000,  # in ether
         # CL network params.
         "cl_chain_id": constants.DEFAULT_CL_CHAIN_ID,
         "cl_span_poll_interval": "0m15s",
