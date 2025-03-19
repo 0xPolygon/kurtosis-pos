@@ -297,11 +297,11 @@ polygon_pos_package:
   # Images for contract deployment and configuration.
   setup_images:
     # Image used to deploy MATIC contracts to L1.
-    # Default: "leovct/pos-contract-deployer:node-16"
-    contract_deployer: leovct/pos-contract-deployer:node-16
+    # Default: "leovct/pos-contract-deployer-node-16:c4d8e12"
+    contract_deployer: leovct/pos-contract-deployer-node-16:c4d8e12
     # Image used to create the L2 EL genesis file.
-    # Default: "leovct/pos-el-genesis-builder:node-16"
-    el_genesis_builder: leovct/pos-el-genesis-builder:node-16
+    # Default: "leovct/pos-el-genesis-builder:96a19dd"
+    el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
     # Image used to generate L2 CL/EL validators configurations.
     # Default: "leovct/pos-validator-config-generator:1.2.0-0.1.9"
     validator_config_generator: leovct/pos-validator-config-generator:1.2.0-0.1.9
