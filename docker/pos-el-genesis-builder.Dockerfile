@@ -16,9 +16,9 @@ FROM node:16-bookworm
 LABEL description="MATIC (Polygon PoS) genesis builder image"
 LABEL author="devtools@polygon.technology"
 
-# 08/01/2025
+# 13/03/2025
 ARG GENESIS_CONTRACTS_BRANCH="master"
-ARG GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="96a19dd"
+ARG GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="244bc6a"
 
 ENV TRUFFLE_VERSION="5.11.5"
 ENV DEFAULT_EL_CHAIN_ID="4927"

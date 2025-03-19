@@ -2,9 +2,9 @@ FROM node:20-bookworm
 LABEL description="Polygon PoS contracts deployment image (node-20)"
 LABEL author="devtools@polygon.technology"
 
-# 20/01/2025
+# 19/02/2025
 ARG POS_CONTRACTS_BRANCH="arya/matic-cli/pos-1869"
-ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="4a361e7"
+ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="1871a41"
 
 ENV FOUNDRY_VERSION="stable"
 ENV DEFAULT_EL_CHAIN_ID="4927"

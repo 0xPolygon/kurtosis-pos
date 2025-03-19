@@ -45,7 +45,7 @@ docker push "${image_name}"
 
 ```bash
 pos_contracts_branch="arya/matic-cli/pos-1869"
-pos_contracts_commit_sha="4a361e7" # 20/01/2025
+pos_contracts_commit_sha="1871a41" # 19/02/2025
 image_name="leovct/pos-contract-deployer-node-20:${pos_contracts_commit_sha}"
 docker build \
   --build-arg POS_CONTRACTS_BRANCH="${pos_contracts_branch}" \
@@ -62,7 +62,7 @@ docker push "${image_name}"
 
 ```bash
 genesis_contracts_branch="master"
-genesis_contracts_commit_sha="96a19dd" # 08/01/2025
+genesis_contracts_commit_sha="244bc6a" # 13/03/2025
 image_name="leovct/pos-el-genesis-builder:${genesis_contracts_commit_sha}"
 docker build \
   --build-arg GENESIS_CONTRACTS_BRANCH="${genesis_contracts_branch}" \
