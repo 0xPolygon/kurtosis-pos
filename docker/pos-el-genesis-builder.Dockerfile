@@ -16,13 +16,13 @@ FROM node:16-bookworm
 LABEL description="MATIC (Polygon PoS) genesis builder image"
 LABEL author="devtools@polygon.technology"
 
+# 08/01/2025
+ARG GENESIS_CONTRACTS_BRANCH="master"
+ARG GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="96a19dd"
+
 ENV TRUFFLE_VERSION="5.11.5"
 ENV DEFAULT_EL_CHAIN_ID="4927"
 ENV DEFAULT_CL_CHAIN_ID="heimdall-4927"
-
-# 08/01/2025
-ENV GENESIS_CONTRACTS_BRANCH="master"
-ENV GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="96a19dd"
 
 COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
 

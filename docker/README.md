@@ -7,12 +7,14 @@
 - [Docker Hub](https://hub.docker.com/r/leovct/bor-modified-for-heimdall-v2)
 
 ```bash
-git clone --branch heimdall-v2 git@github.com:maticnetwork/bor.git
+bor_branch="heimdall-v2"
+bor_commit_sha="32e26a4" # 18/03/2025
+image_name="leovct/bor-modified-for-heimdall-v2:${bor_commit_sha}"
+git clone --branch "${bor_branch}" git@github.com:maticnetwork/bor.git
 pushd bor
-tag="32e26a4" # 18/03/2025
-git checkout "${tag}"
-docker build --tag "leovct/bor-modified-for-heimdall-v2:${tag}" .
-docker push "leovct/bor-modified-for-heimdall-v2:${tag}"
+git checkout "${bor_commit_sha}"
+docker build --tag "${image_name}" .
+docker push "${image_name}"
 popd
 ```
 
@@ -20,16 +22,38 @@ popd
 
 ### Polygon PoS Contract Deployer
 
-- [Docker Hub](https://hub.docker.com/r/leovct/pos-contract-deployer)
+#### Node 16
+
+- [Docker Hub](https://hub.docker.com/r/leovct/pos-contract-deployer-node-16)
 
 ```bash
-# node-16
-docker build --tag leovct/pos-contract-deployer:node-16 --file pos-contract-deployer-node-16.Dockerfile .
-docker push leovct/pos-contract-deployer:node-16
+matic_contracts_branch="mardizzone/node-16"
+matic_contracts_commit_sha="c4d8e12" # 06/12/2023
+image_name="leovct/pos-contract-deployer-node-16:${matic_contracts_commit_sha}"
+docker build \
+  --build-arg MATIC_CONTRACTS_BRANCH="${matic_contracts_branch}" \
+  --build-arg MATIC_CONTRACTS_TAG_OR_COMMIT_SHA="${matic_contracts_commit_sha}" \
+  --tag "${image_name}" \
+  --file pos-contract-deployer-node-16.Dockerfile \
+  .
+docker push "${image_name}"
+```
 
-# node-20
-docker build --tag leovct/pos-contract-deployer:node-20 --file pos-contract-deployer-node-20.Dockerfile .
-docker push leovct/pos-contract-deployer:node-20
+#### Node 20
+
+- [Docker Hub](https://hub.docker.com/r/leovct/pos-contract-deployer-node-20)
+
+```bash
+pos_contracts_branch="arya/matic-cli/pos-1869"
+pos_contracts_commit_sha="4a361e7" # 20/01/2025
+image_name="leovct/pos-contract-deployer-node-20:${pos_contracts_commit_sha}"
+docker build \
+  --build-arg POS_CONTRACTS_BRANCH="${pos_contracts_branch}" \
+  --build-arg POS_CONTRACTS_TAG_OR_COMMIT_SHA="${pos_contracts_commit_sha}" \
+  --tag "${image_name}" \
+  --file pos-contract-deployer-node-20.Dockerfile \
+  .
+docker push "${image_name}"
 ```
 
 ### Polygon PoS EL Genesis Builder
@@ -37,8 +61,16 @@ docker push leovct/pos-contract-deployer:node-20
 - [Docker Hub](https://hub.docker.com/r/leovct/pos-el-genesis-builder)
 
 ```bash
-docker build --tag leovct/pos-el-genesis-builder:node-16 --file pos-el-genesis-builder.Dockerfile .
-docker push leovct/pos-el-genesis-builder:node-16
+genesis_contracts_branch="master"
+genesis_contracts_commit_sha="96a19dd" # 08/01/2025
+image_name="leovct/pos-el-genesis-builder:${genesis_contracts_commit_sha}"
+docker build \
+  --build-arg GENESIS_CONTRACTS_BRANCH="${genesis_contracts_branch}" \
+  --build-arg GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="${genesis_contracts_commit_sha}" \
+  --tag "${image_name}" \
+  --file pos-el-genesis-builder.Dockerfile \
+  .
+docker push "${image_name}"
 ```
 
 ### Polygon PoS Validator Config Generator
@@ -48,12 +80,12 @@ docker push leovct/pos-el-genesis-builder:node-16
 ```bash
 heimdall_version="1.2.0" # 29/01/2025
 heimdall_v2_version="0.1.9" # 18/03/2025
-tag="${heimdall_version}-${heimdall_v2_version}"
+image_name="leovct/pos-validator-config-generator:${heimdall_version}-${heimdall_v2_version}"
 docker build \
   --build-arg HEIMDALL_VERSION="${heimdall_version}" \
   --build-arg HEIMDALL_V2_VERSION="${heimdall_v2_version}" \
-  --tag "leovct/pos-validator-config-generator:${tag}" \
+  --tag "${image_name}" \
   --file pos-validator-config-generator.Dockerfile \
   .
-docker push "leovct/pos-validator-config-generator:${tag}"
+docker push "${image_name}"
 ```
