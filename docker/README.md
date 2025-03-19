@@ -9,7 +9,7 @@
 ```bash
 git clone git@github.com:0xPolygon/heimdall-v2.git
 pushd heimdall-v2
-tag="6d34eaf" # 13/02/2025
+tag="6d34eaf" # 13/03/2025
 git checkout "${tag}"
 docker build --tag "leovct/heimdall-v2:${tag}" .
 docker push "leovct/heimdall-v2:${tag}"
@@ -23,7 +23,7 @@ popd
 ```bash
 git clone --branch raneet10/heimdallv2-changes git@github.com:maticnetwork/bor.git
 pushd bor
-tag="186deec" # 18/02/2025
+tag="1724778" # 11/02/2025
 git checkout "${tag}"
 docker build --tag "leovct/bor-modified-for-heimdall-v2:${tag}" .
 docker push "leovct/bor-modified-for-heimdall-v2:${tag}"
@@ -61,7 +61,7 @@ docker push leovct/pos-el-genesis-builder:node-16
 
 ```bash
 heimdall_version="1.2.0" # 29/01/2025
-heimdall_v2_version="6d34eaf" ## 13/02/2025
+heimdall_v2_version="6d34eaf" ## 13/03/2025
 tag="${heimdall_version}-${heimdall_v2_version}"
 docker build \
   --build-arg HEIMDALL_VERSION="${heimdall_version}" \
