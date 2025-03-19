@@ -4,17 +4,17 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer:node-16"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:node-16"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.0-22a3f1d"  # Based on 0xpolygon/heimdall:1.2.0 and leovct/heimdall-v2:22a3f1d.
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.0-6d34eaf"  # Based on 0xpolygon/heimdall:1.2.0 and leovct/heimdall-v2:6d34eaf.
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:2.0.0",
-    constants.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor-modified-for-heimdall-v2:1724778",  # There is no official image yet.
+    constants.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor-modified-for-heimdall-v2:32e26a4",  # There is no official image yet.
     constants.EL_TYPE.erigon: "erigontech/erigon:v2.61.0",
 }
 
 DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.2.0",
-    constants.CL_TYPE.heimdall_v2: "leovct/heimdall-v2:22a3f1d",  # There is no official image yet.
+    constants.CL_TYPE.heimdall_v2: "leovct/heimdall-v2:6d34eaf",  # There is no official image yet.
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.0.6"

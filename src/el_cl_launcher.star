@@ -80,6 +80,12 @@ def launch(
                         cl_type, ",".join(cl_launchers.keys())
                     )
                 )
+            if cl_type != devnet_cl_type:
+                fail(
+                    'Node CL type: "{}" is different from the devnet CL type: "{}".'.format(
+                        cl_type, devnet_cl_type
+                    )
+                )
             cl_node_name = _generate_cl_node_name(participant, participant_index + 1)
             cl_launch_method = cl_launchers[cl_type]["launch_method"]
 

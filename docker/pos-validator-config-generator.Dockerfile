@@ -1,14 +1,14 @@
 ARG HEIMDALL_VERSION=1.2.0
-ARG HEIMDALL_V2_VERSION=e0a87ca
+ARG HEIMDALL_V2_VERSION=6d34eaf
 FROM 0xpolygon/heimdall:${HEIMDALL_VERSION} AS heimdall
 FROM leovct/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
-FROM golang:1.22 AS polycli-builder
+FROM golang:1.23 AS polycli-builder
 LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
 WORKDIR /opt/polygon-cli
-RUN git clone --branch "v0.1.69" https://github.com/maticnetwork/polygon-cli.git . \
+RUN git clone --branch "v0.1.75" https://github.com/maticnetwork/polygon-cli.git . \
   && make build
 
 
@@ -25,7 +25,7 @@ COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/local/bin/polycli
 COPY --from=polycli-builder /opt/polygon-cli/bindings /opt/bindings
 
 RUN apt-get update \
-  && apt-get install --yes --no-install-recommends jq \
+  && apt-get install --yes --no-install-recommends xxd jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && heimdalld init --home "${CL_CLIENT_CONFIG_PATH}" --chain-id "${DEFAULT_CL_CHAIN_ID}"
