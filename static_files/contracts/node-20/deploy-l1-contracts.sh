@@ -68,8 +68,8 @@ if [[ -z "${VALIDATOR_BALANCE}" ]]; then
   echo "Error: VALIDATOR_BALANCE environment variable is not set"
   exit 1
 fi
-if [[ -z "${VALIDATOR_STAKE_AMOUNT}" ]]; then
-  echo "Error: VALIDATOR_STAKE_AMOUNT environment variable is not set"
+if [[ -z "${VALIDATOR_STAKE_AMOUNT_WEI}" ]]; then
+  echo "Error: VALIDATOR_STAKE_AMOUNT_WEI environment variable is not set"
   exit 1
 fi
 if [[ -z "${VALIDATOR_TOP_UP_FEE_AMOUNT}" ]]; then
@@ -80,7 +80,7 @@ echo "VALIDATOR_ACCOUNTS: ${VALIDATOR_ACCOUNTS}"
 # Note: VALIDATOR_ACCOUNTS is expected to follow this exact pattern:
 # "<address_1>,<eth_public_key_1>;<address_2>,<eth_public_key_2>;..."
 echo "VALIDATOR_BALANCE: ${VALIDATOR_BALANCE}"
-echo "VALIDATOR_STAKE_AMOUNT: ${VALIDATOR_STAKE_AMOUNT}"
+echo "VALIDATOR_STAKE_AMOUNT_WEI: ${VALIDATOR_STAKE_AMOUNT_WEI}"
 echo "VALIDATOR_TOP_UP_FEE_AMOUNT: ${VALIDATOR_TOP_UP_FEE_AMOUNT}"
 
 # Create the validator config file.
@@ -94,10 +94,10 @@ for account in "${validator_accounts[@]}"; do
   forge script --rpc-url "${L1_RPC_URL}" --broadcast -vvvv \
     scripts/matic-cli-scripts/stake.s.sol:MaticStake \
     --sig "run(address,bytes,uint256,uint256)" \
-    "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}"
+    "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT_WEI}" "${VALIDATOR_TOP_UP_FEE_AMOUNT}"
 
   # Update the validator config file.
-  jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT}" --arg balance "${VALIDATOR_BALANCE}" \
+  jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT_WEI}" --arg balance "${VALIDATOR_BALANCE}" \
     '. += [{"address": $address, "stake": ($stake | tonumber), "balance": ($balance | tonumber)}]' \
     "${validator_config_file}" >"${validator_config_file}.tmp"
   mv "${validator_config_file}.tmp" "${validator_config_file}"

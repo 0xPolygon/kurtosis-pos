@@ -21,7 +21,7 @@ POLYGON_POS_PARAMS = {
         "admin_address",
         "admin_private_key",
         "preregistered_validator_keys_mnemonic",
-        "validator_stake_amount",
+        "validator_stake_amount_eth",
         "validator_top_up_fee_amount",
         "cl_chain_id",
         "cl_span_poll_interval",

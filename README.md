@@ -316,7 +316,7 @@ polygon_pos_package:
     preregistered_validator_keys_mnemonic: sibling lend brave explain wait orbit mom alcohol disorder message grace sun
     # The amount of ether to stake for each validator.
     # Default: 10000
-    validator_stake_amount: 10000
+    validator_stake_amount_eth: 10000
     # The top up fee amount, in ether, for each validator.
     # Default: 2000
     validator_top_up_fee_amount: 2000
