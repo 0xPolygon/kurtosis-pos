@@ -21,9 +21,9 @@ popd
 - [Docker Hub](https://hub.docker.com/r/leovct/bor-modified-for-heimdall-v2)
 
 ```bash
-git clone --branch raneet10/heimdallv2-changes git@github.com:maticnetwork/bor.git
+git clone --branch heimdall-v2 git@github.com:maticnetwork/bor.git
 pushd bor
-tag="1724778" # 11/02/2025
+tag="32e26a4" # 18/03/2025
 git checkout "${tag}"
 docker build --tag "leovct/bor-modified-for-heimdall-v2:${tag}" .
 docker push "leovct/bor-modified-for-heimdall-v2:${tag}"
