@@ -7,7 +7,7 @@ Here are the commands to generate such accounts.
 First, start a docker container that contains the different utils such as `polycli`, `jq` and `heimdallcli`.
 
 ```bash
-docker run -it --rm --volume "$(pwd):/tmp" --workdir /tmp leovct/pos-validator-config-generator:1.2.0-0.1.9
+docker run -it --rm --volume "$(pwd):/tmp" --workdir /tmp leovct/pos-validator-config-generator:1.2.0-0.1.9 bash
 ```
 
 Inside the docker container, execute the following script to generate the accounts.
@@ -17,7 +17,7 @@ In this example, we are going to generate 20 accounts using the following mnemon
 Please be aware that the process may take some time; the more accounts that need to be generated, the longer it will take!
 
 ```bash
-export ACCOUNTS_NUMBER=100
+export ACCOUNTS_NUMBER=1000
 export MNEMONIC="sibling lend brave explain wait orbit mom alcohol disorder message grace sun"
 bash generate_accounts.sh
 ```
