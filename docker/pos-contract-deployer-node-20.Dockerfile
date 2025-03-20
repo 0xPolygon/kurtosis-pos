@@ -16,7 +16,7 @@ ENV DEFAULT_EL_CHAIN_ID="4927"
 # 2105474802501958000
 WORKDIR /opt/pos-contracts
 RUN apt-get update \
-  && apt-get install --yes --no-install-recommends jq \
+  && apt-get install --no-install-recommends --yes jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   # Install foundry (stable - 20/12/2024).
