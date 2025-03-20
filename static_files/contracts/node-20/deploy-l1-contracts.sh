@@ -59,7 +59,7 @@ forge script --rpc-url "${L1_RPC_URL}" --broadcast \
   scripts/deployment-scripts/initializeState.s.sol:InitializeStateScript
 
 mkdir -p /opt/contracts
-mv contractAddresses.json /opt/contracts
+cp contractAddresses.json /opt/contracts
 
 if [[ -s "${CONTRACT_ADDRESSES_FILE}" ]]; then
   echo "Polygon PoS contracts deployed to L1:"
