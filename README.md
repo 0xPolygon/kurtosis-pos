@@ -250,10 +250,10 @@ polygon_pos_package:
       # The docker image that should be used for the EL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
-      # - bor: "0xpolygon/bor:2.0.0"
+      # - bor: "0xpolygon/bor:2.0.1"
       # - bor-modified-for-heimdall-v2: "leovct/bor-modified-for-heimdall-v2:32e26a4"
-      # - erigon: TBD
-      el_image: 0xpolygon/bor:2.0.0
+      # - erigon: "erigontech/erigon:v2.61.3"
+      el_image: 0xpolygon/bor:2.0.1
 
       # The log level string that this participant's EL client should log at.
       # Leave blank to use the default log level, info.
