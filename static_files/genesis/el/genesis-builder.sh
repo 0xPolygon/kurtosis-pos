@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Build MATIC chain genesis.
+# Build L2 EL genesis file.
 # For reference: https://github.com/maticnetwork/genesis-contracts
 
 EL_GENESIS_ALLOC_FILE="/opt/genesis-contracts/genesis.json"
@@ -65,18 +65,18 @@ fi
 # Prefund the admin address.
 admin_address=$(echo "${ADMIN_ADDRESS}" | sed 's/^0x//')
 jq --arg a "${admin_address}" --arg b "${ADMIN_BALANCE_WEI}" \
-  '.alloc[$a] = {\"balance\": $b}' "${EL_GENESIS_ALLOC_FILE}" >/tmp/genesis.json
-mv /tmp/genesis.json "${EL_GENESIS_ALLOC_FILE}"
+  '.alloc[$a] = {\"balance\": $b}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
 jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
-  "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" >/tmp/genesis.json
-mv /tmp/genesis.json "${EL_GENESIS_FILE}"
+  "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+mv tmp.json "${EL_GENESIS_FILE}"
 
 # Add the current timestamp to the EL genesis.
 timestamp=$(printf "0x%x" $(date +%s))
-jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > /tmp/genesis.json
-mv /tmp/genesis.json "${EL_GENESIS_FILE}"
+jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
+mv tmp.json "${EL_GENESIS_FILE}"
 
 if [[ -s "${EL_GENESIS_FILE}" ]]; then
   echo "L2 EL genesis:"
