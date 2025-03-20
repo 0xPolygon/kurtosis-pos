@@ -4,7 +4,7 @@ math = import_module("../../math/math.star")
 
 
 EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/genesis/el/genesis-builder.sh"
+    "../../../static_files/genesis/el/el-genesis-builder.sh"
 )
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/el/genesis.json"
 
@@ -67,5 +67,5 @@ def generate_el_genesis_data(
                 name="l2-el-genesis",
             ),
         ],
-        run="bash /opt/data/genesis-builder/genesis-builder.sh",
+        run="bash /opt/data/genesis-builder/el-genesis-builder.sh",
     )

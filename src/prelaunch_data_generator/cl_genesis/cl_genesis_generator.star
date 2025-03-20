@@ -4,7 +4,7 @@ contract_util = import_module("../../contracts/util.star")
 
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/genesis/cl/genesis-builder.sh"
+    "../../../static_files/genesis/cl/cl-genesis-builder.sh"
 )
 CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
 HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
@@ -110,7 +110,7 @@ def generate_cl_genesis_data(
                 name="l2-cl-genesis",
             ),
         ],
-        run="bash /opt/data/genesis-builder/genesis-builder.sh",
+        run="bash /opt/data/genesis-builder/cl-genesis-builder.sh",
     )
 
 
