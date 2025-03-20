@@ -3,6 +3,9 @@ constants = import_module("../../package_io/constants.star")
 contract_util = import_module("../../contracts/util.star")
 
 
+CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
+    "../../../static_files/genesis/cl/genesis-builder.sh"
+)
 CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
 HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
     constants.CL_TYPE.heimdall: "heimdall-genesis.json",
@@ -90,11 +93,16 @@ def generate_cl_genesis_data(
     # The template that Kurtosis generates is not a valid json thus if you want to check the content
     # of the file artifact, Kurtosis will render an empty file... This is a hack to format the file
     # with jq and get a working artifact.
+    cl_genesis_builder_script_artifact = plan.upload_files(
+        src=CL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
+        name="l2-cl-genesis-builder-config",
+    )
     return plan.run_sh(
         name="l2-cl-genesis-generator",
         description="Generating L2 CL genesis",
         files={
             "/opt/data/genesis": cl_genesis_temporary_artifact,
+            "/opt/data/genesis-builder": cl_genesis_builder_script_artifact,
         },
         store=[
             StoreSpec(
@@ -102,20 +110,7 @@ def generate_cl_genesis_data(
                 name="l2-cl-genesis",
             ),
         ],
-        run="&&".join(
-            [
-                # Generate the L2 CL genesis.
-                "jq . /opt/data/genesis/genesis-tmp.json > /opt/data/genesis/genesis.json",
-                # Add the current date to the CL genesis.
-                # 2025-01-31T22:51:08.000000000Z
-                'date=$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ" | tr -d "\n")',
-                "date=${date}000000000Z",
-                "jq --arg d \"$date\" '.genesis_time = $d' /opt/data/genesis/genesis.json > tmp.json",
-                "mv tmp.json /opt/data/genesis/genesis.json",
-                # Print the final CL genesis.
-                "cat /opt/data/genesis/genesis.json",
-            ]
-        ),
+        run="bash /opt/data/genesis-builder/genesis-builder.sh",
     )
 
 
