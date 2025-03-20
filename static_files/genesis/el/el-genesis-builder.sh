@@ -65,7 +65,7 @@ fi
 # Prefund the admin address.
 admin_address=$(echo "${ADMIN_ADDRESS}" | sed 's/^0x//')
 jq --arg a "${admin_address}" --arg b "${ADMIN_BALANCE_WEI}" \
-  '.alloc[$a] = {\"balance\": $b}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+  '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
