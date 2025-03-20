@@ -4,6 +4,9 @@ set -euxo pipefail
 # Deploy MATIC contracts to L1, initialise state and stake for each validator.
 # For reference: https://github.com/maticnetwork/contracts/tree/v0.3.11/deploy-migrations
 
+CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
+VALIDATORS_CONFIG_FILE="/opt/contracts/validators.js"
+
 # Setting EL chain id if needed.
 if [[ -z "${EL_CHAIN_ID}" ]]; then
   echo "Error: EL_CHAIN_ID environment variable is not set"
@@ -51,9 +54,13 @@ echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 echo "Deploying MATIC contracts to L1, draining StakeManager and initialising state..."
 truffle migrate --network l1 --f 1 --to 4 --compile-none
 
-echo "MATIC contracts deployed to L1:"
-cat /opt/contracts/contractAddresses.json
-echo
+if [[ -s "${CONTRACT_ADDRESSES_FILE}" ]]; then
+  echo "MATIC contracts deployed to L1:"
+  cat "${CONTRACT_ADDRESSES_FILE}"
+  echo
+else
+  echo "Error: ${CONTRACT_ADDRESSES_FILE} does not exist or is empty."
+fi
 
 # Stake for each validator.
 if [[ -z "${VALIDATOR_ACCOUNTS}" ]]; then
@@ -80,8 +87,7 @@ echo "VALIDATOR_STAKE_AMOUNT_WEI: ${VALIDATOR_STAKE_AMOUNT_WEI}"
 echo "VALIDATOR_TOP_UP_FEE_AMOUNT_WEI: ${VALIDATOR_TOP_UP_FEE_AMOUNT_WEI}"
 
 # Create the validator config file.
-validator_config_file="validators.js"
-jq -n '[]' >"${validator_config_file}"
+jq -n '[]' >"${VALIDATORS_CONFIG_FILE}"
 
 echo "Staking for each validator node..."
 IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
@@ -92,8 +98,13 @@ for account in "${validator_accounts[@]}"; do
   # Update the validator config file.
   jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT_WEI}" --arg balance "${VALIDATOR_BALANCE}" \
     '. += [{"address": $address, "stake": ($stake | tonumber), "balance": ($balance | tonumber)}]' \
-    "${validator_config_file}" >"${validator_config_file}.tmp"
-  mv "${validator_config_file}.tmp" "${validator_config_file}"
+    "${VALIDATORS_CONFIG_FILE}" >"${VALIDATORS_CONFIG_FILE}.tmp"
+  mv "${VALIDATORS_CONFIG_FILE}.tmp" "${VALIDATORS_CONFIG_FILE}"
 done
-echo "exports = module.exports = $(<${validator_config_file})" >"${validator_config_file}"
-echo "Validators config created successfully."
+echo "exports = module.exports = $(<${VALIDATORS_CONFIG_FILE})" >"${VALIDATORS_CONFIG_FILE}"
+
+if [[ -s "${VALIDATORS_CONFIG_FILE}" ]]; then
+  echo "Validators config created successfully."
+else
+  echo "Error: ${VALIDATORS_CONFIG_FILE} does not exist or is empty."
+fi
