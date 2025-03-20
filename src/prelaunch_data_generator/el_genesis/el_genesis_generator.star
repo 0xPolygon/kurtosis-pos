@@ -67,23 +67,5 @@ def generate_el_genesis_data(
                 name="l2-el-genesis",
             ),
         ],
-        run="&&".join(
-            [
-                # Generate the L2 EL genesis alloc field.
-                "bash /opt/data/genesis-builder/genesis-builder.sh",
-                # Prefund the admin address.
-                "address=$(echo $ADMIN_ADDRESS | sed 's/^0x//')",
-                "jq --arg a $address --arg b $ADMIN_BALANCE_WEI '.alloc[$a] = {\"balance\": $b}' /opt/genesis-contracts/genesis.json > /tmp/genesis.json",
-                "mv /tmp/genesis.json /opt/genesis-contracts/genesis.json",
-                # Add the alloc field to the temporary EL genesis to create the final EL genesis.
-                "jq --arg key 'alloc' '. + {($key): input | .[$key]}' /opt/data/genesis/genesis.json /opt/genesis-contracts/genesis.json > /tmp/genesis.json",
-                "mv /tmp/genesis.json /opt/data/genesis/genesis.json",
-                # Add the current timestamp to the EL genesis.
-                'timestamp=$(printf "0x%x" $(date +%s))',
-                "jq --arg t \"$timestamp\" '.timestamp = $t' /opt/data/genesis/genesis.json > /tmp/genesis.json",
-                "mv /tmp/genesis.json /opt/data/genesis/genesis.json",
-                # Print the final EL genesis.
-                "cat /opt/data/genesis/genesis.json",
-            ]
-        ),
+        run="bash /opt/data/genesis-builder/genesis-builder.sh",
     )
