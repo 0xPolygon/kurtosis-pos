@@ -40,6 +40,8 @@ RUN apt-get update \
   && rm contracts/StateReceiver.sol \
   # Remove the use of solc-select inside generate-genesis.js as it is not needed.
   && sed -i 's/solc-select use ${solcVersion} \&\& //' generate-genesis.js \
+  # Remove the compilation of the StateReceiver contract.
+  && sed -i '/\[/{N;N;N;N;/borStateReceiverContract/{N;d;};}' generate-genesis.js \
   && git submodule init \
   && git submodule update \
   && npm install \
