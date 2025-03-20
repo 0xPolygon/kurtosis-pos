@@ -2,6 +2,11 @@ FROM node:16-bookworm
 LABEL description="Polygon PoS contracts deployment image (node-16)"
 LABEL author="devtools@polygon.technology"
 
+# 06/12/2023
+ARG MATIC_CONTRACTS_BRANCH="mardizzone/node-16"
+ARG MATIC_CONTRACTS_TAG_OR_COMMIT_SHA="c4d8e12"
+
+ENV TRUFFLE_VERSION="5.11.5"
 ENV DEFAULT_EL_CHAIN_ID="4927"
 
 # Prepare MATIC smart contracts for deployment by compiling them.
@@ -14,9 +19,9 @@ RUN apt-get update \
   && apt-get install --yes --no-install-recommends jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
-  && npm install --global truffle@5.11.5 \
-  && git clone --branch mardizzone/node-16 https://github.com/maticnetwork/contracts.git . \
-  && git checkout c4d8e12 \
+  && npm install --global truffle@${TRUFFLE_VERSION} \
+  && git clone --branch ${MATIC_CONTRACTS_BRANCH} https://github.com/maticnetwork/contracts.git . \
+  && git checkout ${MATIC_CONTRACTS_TAG_OR_COMMIT_SHA} \
   && npm install \
-  && npm run template:process -- --bor-chain-id "${DEFAULT_EL_CHAIN_ID}" \
+  && npm run template:process -- --bor-chain-id ${DEFAULT_EL_CHAIN_ID} \
   && truffle compile

@@ -110,17 +110,21 @@ def _format_validator_accounts(accounts):
 
 
 def _determine_contract_deployer_config_filepath(contract_deployer_image):
-    # The contract deployer image follows the standard: leovct/pos-contract-deployer:<node-version>
-    # where the version can either be "node-16" or "node-20".
-    result = contract_deployer_image.split(":")
+    # The contract deployer image follows the standard: leovct/pos-contract-deployer-<node-version>:<tag>
+    # where the node version can either be "node-16" or "node-20".
+    result = contract_deployer_image.removeprefix(
+        "leovct/pos-contract-deployer-"
+    ).split(
+        ":"
+    )  # ["<node-version>", "tag"]
     if len(result) != 2:
         fail(
-            'The contract deployer image does not follow the standard "leovct/pos-contract-deployer:<node-version>": {}'.format(
+            'The contract deployer image does not follow the standard "leovct/pos-contract-deployer-<node-version>:<tag>": {}'.format(
                 contract_deployer_image
             )
         )
 
-    node_version = result[1]
+    node_version = result[0]
     supported_versions = ["node-16", "node-20"]
     if node_version not in supported_versions:
         fail(
