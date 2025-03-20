@@ -4,7 +4,7 @@ LABEL author="devtools@polygon.technology"
 
 WORKDIR /opt/solidity
 RUN apt-get update \
-  && apt-get install --no-install-recommends --yes cmake libboost-all-dev z3 cvc4 git gcc g++ \
+  && apt-get install --yes cmake cvc4 gcc g++ git libboost-all-dev z3 \
   && git clone --branch v0.5.17 --depth 1 https://github.com/ethereum/solidity.git . \
   && mkdir build \
   && cd build \
