@@ -12,7 +12,7 @@ jq . /opt/data/genesis/genesis-tmp.json >"${CL_GENESIS_FILE}"
 # Add the current date to the CL genesis.
 # 2025-01-31T22:51:08.000000000Z
 date=$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ" | tr -d "\n")
-date=${date}000000000Z
+date="${date}000000000Z"
 jq --arg d "${date}" '.genesis_time = $d' "${CL_GENESIS_FILE}" >tmp.json
 mv tmp.json "${CL_GENESIS_FILE}"
 
