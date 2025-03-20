@@ -31,6 +31,8 @@ ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star@f5ce159aec728898e3deb827f6b921f8ecfc527f"
 GRAFANA_PACKAGE = "github.com/kurtosis-tech/grafana-package/main.star@cc66468b167d16c0fc7153980be5b67550be01be"
 
+BADOURALIX_CURL_JQ_IMAGE = "badouralix/curl-jq@sha256:64199ae83353c69f80bb4618764431cbc993957f4db72eded37bdcecb1561196"  # 2025/02/15
+
 DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
 DEFAULT_EL_CHAIN_ID = "4927"
 DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".

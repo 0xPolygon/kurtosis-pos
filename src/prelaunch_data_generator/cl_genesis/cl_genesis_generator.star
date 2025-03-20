@@ -100,6 +100,7 @@ def generate_cl_genesis_data(
     return plan.run_sh(
         name="l2-cl-genesis-generator",
         description="Generating L2 CL genesis",
+        image=constants.BADOURALIX_CURL_JQ_IMAGE,
         files={
             "/opt/data/genesis": cl_genesis_temporary_artifact,
             "/opt/data/genesis-builder": cl_genesis_builder_script_artifact,
@@ -110,7 +111,7 @@ def generate_cl_genesis_data(
                 name="l2-cl-genesis",
             ),
         ],
-        run="bash /opt/data/genesis-builder/cl-genesis-builder.sh",
+        run="sh /opt/data/genesis-builder/cl-genesis-builder.sh",
     )
 
 

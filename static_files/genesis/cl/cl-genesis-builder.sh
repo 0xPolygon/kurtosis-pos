@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
-set -euxo pipefail
+#!/usr/bin/env sh
+# The shebang was changed from bash to sh for compatibility with the badouralix/curl-jq image.
+set -eux
 
 # Build L2 CL genesis file.
 
@@ -15,7 +16,7 @@ date=${date}000000000Z
 jq --arg d "${date}" '.genesis_time = $d' "${CL_GENESIS_FILE}" >tmp.json
 mv tmp.json "${CL_GENESIS_FILE}"
 
-if [[ -s "${CL_GENESIS_FILE}" ]]; then
+if [ -s "${CL_GENESIS_FILE}" ]; then
   echo "L2 CL genesis:"
   cat "${CL_GENESIS_FILE}"
 else
