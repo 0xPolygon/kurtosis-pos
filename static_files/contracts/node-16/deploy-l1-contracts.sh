@@ -71,20 +71,20 @@ if [[ -z "${VALIDATOR_BALANCE}" ]]; then
   echo "Error: VALIDATOR_BALANCE environment variable is not set"
   exit 1
 fi
-if [[ -z "${VALIDATOR_STAKE_AMOUNT_WEI}" ]]; then
-  echo "Error: VALIDATOR_STAKE_AMOUNT_WEI environment variable is not set"
+if [[ -z "${VALIDATOR_STAKE_AMOUNT_ETH}" ]]; then
+  echo "Error: VALIDATOR_STAKE_AMOUNT_ETH environment variable is not set"
   exit 1
 fi
-if [[ -z "${VALIDATOR_TOP_UP_FEE_AMOUNT_WEI}" ]]; then
-  echo "Error: VALIDATOR_TOP_UP_FEE_AMOUNT_WEI environment variable is not set"
+if [[ -z "${VALIDATOR_TOP_UP_FEE_AMOUNT_ETH}" ]]; then
+  echo "Error: VALIDATOR_TOP_UP_FEE_AMOUNT_ETH environment variable is not set"
   exit 1
 fi
 echo "VALIDATOR_ACCOUNTS: ${VALIDATOR_ACCOUNTS}"
 # Note: VALIDATOR_ACCOUNTS is expected to follow this exact pattern:
 # "<address_1>,<eth_public_key_1>;<address_2>,<eth_public_key_2>;..."
 echo "VALIDATOR_BALANCE: ${VALIDATOR_BALANCE}"
-echo "VALIDATOR_STAKE_AMOUNT_WEI: ${VALIDATOR_STAKE_AMOUNT_WEI}"
-echo "VALIDATOR_TOP_UP_FEE_AMOUNT_WEI: ${VALIDATOR_TOP_UP_FEE_AMOUNT_WEI}"
+echo "VALIDATOR_STAKE_AMOUNT_ETH: ${VALIDATOR_STAKE_AMOUNT_ETH}"
+echo "VALIDATOR_TOP_UP_FEE_AMOUNT_ETH: ${VALIDATOR_TOP_UP_FEE_AMOUNT_ETH}"
 
 # Create the validator config file.
 jq -n '[]' >"${VALIDATORS_CONFIG_FILE}"
@@ -93,10 +93,10 @@ echo "Staking for each validator node..."
 IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
   IFS=',' read -r address eth_public_key <<<"${account}"
-  npm run truffle exec scripts/stake.js -- --network l1 "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT_WEI}" "${VALIDATOR_TOP_UP_FEE_AMOUNT_WEI}"
+  npm run truffle exec scripts/stake.js -- --network l1 "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT_ETH}" "${VALIDATOR_TOP_UP_FEE_AMOUNT_ETH}"
 
   # Update the validator config file.
-  jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT_WEI}" --arg balance "${VALIDATOR_BALANCE}" \
+  jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT_ETH}" --arg balance "${VALIDATOR_BALANCE}" \
     '. += [{"address": $address, "stake": ($stake | tonumber), "balance": ($balance | tonumber)}]' \
     "${VALIDATORS_CONFIG_FILE}" >"${VALIDATORS_CONFIG_FILE}.tmp"
   mv "${VALIDATORS_CONFIG_FILE}.tmp" "${VALIDATORS_CONFIG_FILE}"

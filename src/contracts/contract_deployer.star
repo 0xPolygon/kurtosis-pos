@@ -1,5 +1,4 @@
 constants = import_module("../package_io/constants.star")
-math = import_module("../math/math.star")
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
@@ -31,11 +30,11 @@ def deploy_l1_contracts(
             "CL_CHAIN_ID": network_params.get("cl_chain_id"),
             "VALIDATOR_ACCOUNTS": validator_accounts_formatted,
             "VALIDATOR_BALANCE": str(constants.VALIDATORS_BALANCE_ETH),
-            "VALIDATOR_STAKE_AMOUNT_WEI": str(
-                math.ether_to_wei(network_params.get("validator_stake_amount_eth"))
+            "VALIDATOR_STAKE_AMOUNT_ETH": str(
+                network_params.get("validator_stake_amount_eth")
             ),
-            "VALIDATOR_TOP_UP_FEE_AMOUNT_WEI": str(
-                math.ether_to_wei(network_params.get("validator_top_up_fee_amount_eth"))
+            "VALIDATOR_TOP_UP_FEE_AMOUNT_ETH": str(
+                network_params.get("validator_top_up_fee_amount_eth")
             ),
         },
         files={
