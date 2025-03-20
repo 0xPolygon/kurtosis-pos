@@ -115,6 +115,7 @@ echo "exports = module.exports = $(<${VALIDATORS_CONFIG_FILE})" >"${VALIDATORS_C
 
 if [[ -s "${VALIDATORS_CONFIG_FILE}" ]]; then
   echo "Validators config created successfully."
+  cat "${VALIDATORS_CONFIG_FILE}"
 else
   echo "Error: ${VALIDATORS_CONFIG_FILE} does not exist or is empty."
 fi
