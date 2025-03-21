@@ -2,7 +2,6 @@ FROM node:16-bookworm
 LABEL description="Polygon PoS contracts deployment image (node-16)"
 LABEL author="devtools@polygon.technology"
 
-# 06/12/2023
 ARG MATIC_CONTRACTS_BRANCH="mardizzone/node-16"
 ARG MATIC_CONTRACTS_TAG_OR_COMMIT_SHA="c4d8e12"
 

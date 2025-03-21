@@ -16,9 +16,8 @@ FROM node:16-bookworm
 LABEL description="MATIC (Polygon PoS) EL genesis builder image"
 LABEL author="devtools@polygon.technology"
 
-# 13/03/2025
 ARG GENESIS_CONTRACTS_BRANCH="master"
-ARG GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="244bc6a"
+ARG GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="96a19dd"
 
 ENV TRUFFLE_VERSION="5.11.5"
 ENV DEFAULT_EL_CHAIN_ID="4927"
@@ -35,13 +34,6 @@ RUN apt-get update \
   && npm install --global truffle@${TRUFFLE_VERSION} \
   && git clone --branch ${GENESIS_CONTRACTS_BRANCH} https://github.com/maticnetwork/genesis-contracts.git . \
   && git checkout ${GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA} \
-  # Delete the StateReceiver contract because it is based on solc 0.6.12 and the rest of the contracts
-  # use solc 0.5.17. It is not important because it is not needed to generate the EL genesis.
-  && rm contracts/StateReceiver.sol \
-  # Remove the use of solc-select inside generate-genesis.js as it is not needed.
-  && sed -i 's/solc-select use ${solcVersion} \&\& //' generate-genesis.js \
-  # Remove the compilation of the StateReceiver contract.
-  && sed -i '/\[/{N;N;N;N;/borStateReceiverContract/{N;d;};}' generate-genesis.js \
   && git submodule init \
   && git submodule update \
   && npm install \
