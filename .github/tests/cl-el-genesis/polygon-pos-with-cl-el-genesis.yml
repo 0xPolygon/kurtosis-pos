@@ -1,3 +1,9 @@
+polygon_pos_package:
+  setup_images:
+    # Custom image that includes a fix to the syncChildStateToRoot deployment script to avoid
+    # failures when deploying L2 contracts a second time.
+    contract_deployer: leovct/pos-contract-deployer-node-20:1b16c4b
+
 dev:
   should_deploy_l1: false
   l1_rpc_url: http://el-1-geth-lighthouse:8545
