@@ -4,7 +4,7 @@ math = import_module("../../math/math.star")
 
 
 EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/genesis/el/genesis-builder.sh"
+    "../../../static_files/genesis/el/el-genesis-builder.sh"
 )
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/el/genesis.json"
 
@@ -38,7 +38,7 @@ def generate_el_genesis_data(
     # Generate the alloc field of the EL genesis and return the final EL genesis.
     el_genesis_builder_script_artifact = plan.upload_files(
         src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
-        name="l2-genesis-builder-config",
+        name="l2-el-genesis-builder-config",
     )
     return plan.run_sh(
         name="l2-el-genesis-generator",
@@ -67,23 +67,5 @@ def generate_el_genesis_data(
                 name="l2-el-genesis",
             ),
         ],
-        run="&&".join(
-            [
-                # Generate the L2 EL genesis alloc field.
-                "bash /opt/data/genesis-builder/genesis-builder.sh",
-                # Prefund the admin address.
-                "address=$(echo $ADMIN_ADDRESS | sed 's/^0x//')",
-                "jq --arg a $address --arg b $ADMIN_BALANCE_WEI '.alloc[$a] = {\"balance\": $b}' /opt/genesis-contracts/genesis.json > /tmp/genesis.json",
-                "mv /tmp/genesis.json /opt/genesis-contracts/genesis.json",
-                # Add the alloc field to the temporary EL genesis to create the final EL genesis.
-                "jq --arg key 'alloc' '. + {($key): input | .[$key]}' /opt/data/genesis/genesis.json /opt/genesis-contracts/genesis.json > /tmp/genesis.json",
-                "mv /tmp/genesis.json /opt/data/genesis/genesis.json",
-                # Add the current timestamp to the EL genesis.
-                'timestamp=$(printf "0x%x" $(date +%s))',
-                "jq --arg t \"$timestamp\" '.timestamp = $t' /opt/data/genesis/genesis.json > /tmp/genesis.json",
-                "mv /tmp/genesis.json /opt/data/genesis/genesis.json",
-                # Print the final EL genesis.
-                "cat /opt/data/genesis/genesis.json",
-            ]
-        ),
+        run="bash /opt/data/genesis-builder/el-genesis-builder.sh",
     )

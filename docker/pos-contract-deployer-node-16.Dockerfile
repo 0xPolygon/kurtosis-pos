@@ -2,7 +2,6 @@ FROM node:16-bookworm
 LABEL description="Polygon PoS contracts deployment image (node-16)"
 LABEL author="devtools@polygon.technology"
 
-# 06/12/2023
 ARG MATIC_CONTRACTS_BRANCH="mardizzone/node-16"
 ARG MATIC_CONTRACTS_TAG_OR_COMMIT_SHA="c4d8e12"
 
@@ -16,7 +15,7 @@ ENV DEFAULT_EL_CHAIN_ID="4927"
 # 2105474802501958000
 WORKDIR /opt/contracts
 RUN apt-get update \
-  && apt-get install --yes --no-install-recommends jq \
+  && apt-get install --no-install-recommends --yes jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && npm install --global truffle@${TRUFFLE_VERSION} \

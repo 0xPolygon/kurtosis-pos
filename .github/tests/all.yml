@@ -34,8 +34,8 @@ polygon_pos_package:
   network_params:
     ## Validators parameters.
     preregistered_validator_keys_mnemonic: sibling lend brave explain wait orbit mom alcohol disorder message grace sun
-    validator_stake_amount: 10000
-    validator_top_up_fee_amount: 2000
+    validator_stake_amount_eth: 10000
+    validator_top_up_fee_amount_eth: 2000
     ## Consensus Layer parameters
     cl_chain_id: heimdall-4927
     cl_span_poll_interval: 0m15s
