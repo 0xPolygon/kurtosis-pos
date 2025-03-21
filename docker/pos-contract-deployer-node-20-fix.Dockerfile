@@ -7,7 +7,7 @@ LABEL author="devtools@polygon.technology"
 # It includes a fix to the syncChildStateToRoot deployment script to avoid failures when deploying
 # L2 contracts a second time.
 ARG POS_CONTRACTS_BRANCH="fix/update-child-chain-and-state-sender-with-same-values"
-ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="faf2f62"
+ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="1b16c4b"
 
 ENV FOUNDRY_VERSION="stable"
 ENV DEFAULT_EL_CHAIN_ID="4927"
