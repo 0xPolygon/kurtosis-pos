@@ -56,6 +56,14 @@ docker build \
 docker push "${image_name}"
 ```
 
+Custom image that includes a fix to the syncChildStateToRoot deployment script to avoid failures when deploying L2 contracts a second time.
+
+```bash
+image_name="leovct/pos-contract-deployer-node-20:faf2f62"
+docker build --tag "${image_name}" --file pos-contract-deployer-node-20-fix.Dockerfile .
+docker push "${image_name}"
+```
+
 ### Polygon PoS EL Genesis Builder
 
 - [Docker Hub](https://hub.docker.com/r/leovct/pos-el-genesis-builder)
