@@ -2,7 +2,7 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-16:c4d8e12"
+DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:1871a41"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
 DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.0-0.1.9"  # Based on 0xpolygon/heimdall:1.2.0 and 0xpolygon/heimdall-v2:0.1.9.
 
