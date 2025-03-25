@@ -118,9 +118,11 @@ def get_metrics_jobs(plan, l2_participants):
 
 
 def get_l2_config(plan, l2_participants):
-    rpcs = {p.el_context.node_name: p.el_context.rpc_http_url for p in l2_participants}
+    rpcs = {
+        p.el_context.service_name: p.el_context.rpc_http_url for p in l2_participants
+    }
     heimdall_urls = {
-        p.cl_context.node_name: {
+        p.cl_context.service_name: {
             "heimdall": p.cl_context.api_url,
             "tendermint": p.cl_context.rpc_url,
         }

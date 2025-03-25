@@ -147,7 +147,7 @@ def launch(
                     rabbitmq_url,
                 )
                 cl_context = cl_context_module.new_cl_context(
-                    node_name=cl_node_name,
+                    service_name=cl_node_name,
                     api_url=cl_service.ports[cl_shared.CL_REST_API_PORT_ID].url,
                     rpc_url=cl_service.ports[cl_shared.CL_RPC_PORT_ID].url,
                     metrics_url=cl_service.ports[cl_shared.CL_METRICS_PORT_ID].url,
@@ -171,7 +171,7 @@ def launch(
                 network_params.get("el_chain_id"),
             )
             el_context = el_context_module.new_el_context(
-                node_name=el_node_name,
+                service_name=el_node_name,
                 rpc_http_url=el_service.ports[el_shared.EL_RPC_PORT_ID].url,
                 ws_url=el_service.ports[el_shared.EL_WS_PORT_ID].url,
                 metrics_url=el_service.ports[el_shared.EL_METRICS_PORT_ID].url,
