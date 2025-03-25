@@ -149,6 +149,7 @@ def launch(
                 cl_context = cl_context_module.new_cl_context(
                     node_name=cl_node_name,
                     api_url=cl_service.ports[cl_shared.CL_REST_API_PORT_ID].url,
+                    rpc_url=cl_service.ports[cl_share.CL_RPC_PORT_ID].url,
                 )
 
             # Launch the EL node.
