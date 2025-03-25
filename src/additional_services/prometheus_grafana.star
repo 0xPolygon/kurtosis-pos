@@ -57,7 +57,6 @@ def launch_panoptichain(
             "tendermint": p.cl_context.rpc_url,
         }
         for p in l2_participants
-        if p.cl_context
     }
 
     panoptichain_config_artifact = plan.render_templates(
