@@ -1,10 +1,13 @@
 bor = import_module("./el/bor/bor_launcher.star")
+cl_context_module = import_module("./cl/cl_context.star")
 cl_shared = import_module("./cl/cl_shared.star")
 constants = import_module("./package_io/constants.star")
+el_context_module = import_module("./el/el_context.star")
 el_shared = import_module("./el/el_shared.star")
 erigon = import_module("./el/erigon/erigon_launcher.star")
 heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
 heimdall_v2 = import_module("./cl/heimdall_v2/heimdall_v2_launcher.star")
+participant_module = import_module("./participant.star")
 pre_funded_accounts = import_module(
     "./prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
 )
@@ -69,7 +72,7 @@ def launch(
     # Start each participant.
     participant_index = 0
     validator_index = 0
-    context = []
+    all_participants = []
     for _, participant in enumerate(participants):
         for _ in range(participant.get("count")):
             # Get the CL launcher.
@@ -131,7 +134,7 @@ def launch(
                     rabbitmq_amqp_port.number,
                 )
 
-                cl_context = cl_launch_method(
+                cl_service = cl_launch_method(
                     plan,
                     cl_node_name,
                     participant,
@@ -143,7 +146,10 @@ def launch(
                     "http://{}:{}".format(el_node_name, el_shared.EL_RPC_PORT_NUMBER),
                     rabbitmq_url,
                 )
-                cl_api_url = cl_context.ports[cl_shared.CL_REST_API_PORT_ID].url
+                cl_context = cl_context_module.new_cl_context(
+                    node_name=cl_node_name,
+                    api_url=cl_service.ports[cl_shared.CL_REST_API_PORT_ID].url,
+                )
 
             # Launch the EL node.
             el_validator_config_artifact = (
@@ -151,7 +157,7 @@ def launch(
                 if participant.get("is_validator")
                 else None
             )
-            el_context = el_launch_method(
+            el_service = el_launch_method(
                 plan,
                 el_node_name,
                 participant,
@@ -162,8 +168,17 @@ def launch(
                 network_data.el_static_nodes,
                 network_params.get("el_chain_id"),
             )
-            context.append(
-                struct(
+            el_context = el_context_module.new_el_context(
+                node_name=el_node_name,
+                rpc_http_url=el_service.ports[el_shared.EL_RPC_PORT_ID].url,
+                ws_url=el_service.ports[el_shared.EL_WS_PORT_ID].url,
+            )
+
+            # Add the node to the all_participants array.
+            all_participants.append(
+                participant_module.new_participant(
+                    cl_type=participant.get("cl_type"),
+                    el_type=participant.get("el_type"),
                     cl_context=cl_context,
                     el_context=el_context,
                 )
@@ -180,8 +195,8 @@ def launch(
         plan, first_cl_api_url, network_data.first_validator_cl_type
     )
 
-    # Return the L2 context.
-    return context
+    # Return the L2 participants and their context.
+    return all_participants
 
 
 def _prepare_network_data(participants):

@@ -173,7 +173,7 @@ def run(plan, args):
             participants_count, len(validator_accounts), participants
         )
     )
-    l2_context = el_cl_launcher.launch(
+    l2_participants = el_cl_launcher.launch(
         plan,
         participants,
         polygon_pos_args,
@@ -182,14 +182,13 @@ def run(plan, args):
         l1_context.rpc_url,
         devnet_cl_type,
     )
-    l2_rpc_url = l2_context[0].el_context.ports[el_shared.EL_RPC_PORT_ID].url
 
     # Deploy MATIC contracts to L2.
     result = contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
         plan,
         polygon_pos_args,
         l1_context.rpc_url,
-        l2_rpc_url,
+        l2_participants[0].el_context.rpc_http_url,
         admin_private_key,
         contract_addresses_artifact,
     )
