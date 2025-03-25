@@ -76,14 +76,22 @@ def generate_cl_genesis_data(
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,
                     # contract addresses
-                    "matic_token_address": contract_addresses.get("matic_token"),
-                    "staking_manager_address": contract_addresses.get(
-                        "staking_manager"
+                    "l1_matic_token_address": contract_addresses.get("l1_matic_token"),
+                    "l1_stake_manager_proxy_address": contract_addresses.get(
+                        "l1_stake_manager_proxy"
                     ),
-                    "slash_manager_address": contract_addresses.get("slashing_manager"),
-                    "root_chain_address": contract_addresses.get("root_chain"),
-                    "staking_info_address": contract_addresses.get("staking_info"),
-                    "state_sender_address": contract_addresses.get("state_sender"),
+                    "l1_slashing_manager_address": contract_addresses.get(
+                        "l1_slashing_manager"
+                    ),
+                    "l1_root_chain_proxy_address": contract_addresses.get(
+                        "l1_root_chain_proxy"
+                    ),
+                    "l1_staking_info_address": contract_addresses.get(
+                        "l1_staking_info"
+                    ),
+                    "l1_state_sender_address": contract_addresses.get(
+                        "l1_state_sender"
+                    ),
                 }
                 | cl_type_specific_data,
             ),
