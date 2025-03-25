@@ -98,8 +98,8 @@ def launch_panoptichain(
     )
 
 
-def launch_prometheus(plan, l1_participants, l2_participants):
-    metrics_jobs = generate_metrics_jobs(l1_participants, l2_participants)
+def launch_prometheus(plan, l2_participants):
+    metrics_jobs = generate_metrics_jobs(l2_participants)
     return import_module(constants.PROMETHEUS_PACKAGE).run(
         plan,
         metrics_jobs,
@@ -115,21 +115,10 @@ def launch_prometheus(plan, l1_participants, l2_participants):
     )
 
 
-def generate_metrics_jobs(l1_participants, l2_participants):
+def generate_metrics_jobs(l2_participants):
     metrics_paths = ["/metrics", "/debug/metrics/prometheus"]
     unique_metrics_jobs = {}
     metrics_jobs = []
-
-    for service_name, rpc_port in l1_participants:
-        for m in metrics_paths:
-            job_key = (service_name, m)
-            if job_key not in unique_metrics_jobs:
-                unique_metrics_jobs[job_key] = {
-                    "Name": service_name + m,
-                    "Endpoint": context.metrics_url.removeprefix("http://"),
-                    "MetricsPath": m,
-                }
-                metrics_jobs.append(unique_metrics_jobs[job_key])
 
     for p in l2_participants:
         for context in [p.cl_context, p.el_context]:
