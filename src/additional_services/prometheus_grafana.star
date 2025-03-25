@@ -17,7 +17,7 @@ def launch(
     l2_el_genesis_artifact,
     contract_addresses_artifact,
 ):
-    launch_panoptichain(
+    panoptichain_url = launch_panoptichain(
         plan,
         l1_context,
         l1_chain_id,
@@ -26,7 +26,7 @@ def launch(
         l2_el_genesis_artifact,
         contract_addresses_artifact,
     )
-    prometheus_url = launch_prometheus(plan, l2_participants)
+    prometheus_url = launch_prometheus(plan, l2_participants, panoptichain_url)
     launch_grafana(plan, prometheus_url)
 
 
@@ -86,7 +86,7 @@ def launch_panoptichain(
         },
     )
 
-    plan.add_service(
+    service = plan.add_service(
         name="panoptichain",
         config=ServiceConfig(
             image=PANOPTICHAIN_IMAGE,
@@ -96,10 +96,11 @@ def launch_panoptichain(
             files={"/etc/panoptichain": panoptichain_config_artifact},
         ),
     )
+    return service.ports["metrics"].url
 
 
-def launch_prometheus(plan, l2_participants):
-    metrics_jobs = generate_metrics_jobs(l2_participants)
+def launch_prometheus(plan, l2_participants, panoptichain_url):
+    metrics_jobs = generate_metrics_jobs(l2_participants, panoptichain_url)
     return import_module(constants.PROMETHEUS_PACKAGE).run(
         plan,
         metrics_jobs,
@@ -115,9 +116,15 @@ def launch_prometheus(plan, l2_participants):
     )
 
 
-def generate_metrics_jobs(l2_participants):
+def generate_metrics_jobs(l2_participants, panoptichain_url):
     unique_metrics_jobs = {}
-    metrics_jobs = []
+    metrics_jobs = [
+        {
+            "Name": "panoptichain",
+            "Endpoint": panoptichain_url.removeprefix("http://"),
+            "MetricsPath": "/metrics",
+        }
+    ]
     for p in l2_participants:
         for context in [p.cl_context, p.el_context]:
             if context.service_name not in unique_metrics_jobs:
