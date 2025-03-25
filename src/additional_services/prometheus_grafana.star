@@ -106,7 +106,9 @@ def launch_panoptichain(
                     "l1_chain_id": l1_chain_id,
                     "l2_chain_id": l2_chain_id,
                     "checkpoint_address": contract_addresses.get("l1_root_chain_proxy"),
-                    "state_sync_sender_address": contract_addresses.get("l1_state_sender"),
+                    "state_sync_sender_address": contract_addresses.get(
+                        "l1_state_sender"
+                    ),
                     "state_sync_receiver_address": state_receiver_contract_address,
                     "heimdall_urls": l2_config.heimdall_urls,
                 },
