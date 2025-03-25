@@ -213,6 +213,8 @@ def run(plan, args):
                 constants.DEFAULT_L1_CHAIN_ID,
                 participants,
                 constants.DEFAULT_EL_CHAIN_ID,
+                l2_el_genesis_artifact,
+                contract_addresses_artifact,
             )
         elif svc == constants.ADDITIONAL_SERVICES.tx_spammer:
             tx_spammer.launch(plan)

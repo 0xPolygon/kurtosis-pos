@@ -14,6 +14,8 @@ def launch(
     l1_chain_id,
     l2_participants,
     l2_chain_id,
+    l2_el_genesis_artifact,
+    contract_addresses_artifact,
 ):
     launch_panoptichain(
         plan,
@@ -21,10 +23,11 @@ def launch(
         l1_chain_id,
         l2_participants,
         l2_chain_id,
+        l2_el_genesis_artifact,
+        contract_addresses_artifact,
     )
 
     metrics_jobs = get_metrics_jobs(plan)
-
     prometheus_url = import_module(constants.PROMETHEUS_PACKAGE).run(
         plan,
         metrics_jobs,
@@ -42,7 +45,6 @@ def launch(
     grafana_dashboards_files_artifact = plan.upload_files(
         src=GRAFANA_DASHBOARDS, name="grafana-dashboards"
     )
-
     import_module(constants.GRAFANA_PACKAGE).run(
         plan,
         prometheus_url,
@@ -58,15 +60,12 @@ def launch_panoptichain(
     l1_chain_id,
     l2_participants,
     l2_chain_id,
+    l2_el_genesis_artifact,
+    contract_addresses_artifact,
 ):
-    contract_addresses_artifact = plan.get_files_artifact(
-        name="matic-contract-addresses"
-    )
     contract_addresses = contract_util.read_contract_addresses(
         plan, contract_addresses_artifact
     )
-
-    l2_el_genesis_artifact = plan.get_files_artifact(name="l2-el-genesis")
     state_receiver_contract_address = (
         contract_util.read_state_receiver_contract_address(plan, l2_el_genesis_artifact)
     )
@@ -104,66 +103,30 @@ def launch_panoptichain(
     )
 
 
-def get_metrics_jobs(plan):
-    metrics_jobs = []
-    for service in plan.get_services():
-        if "metrics" not in service.ports:
-            continue
-
-        metrics_paths = ["/metrics", "/debug/metrics/prometheus"]
-
-        for metrics_path in metrics_paths:
-            metrics_jobs.append(
-                {
-                    "Name": service.name + metrics_path,
-                    "Endpoint": "{0}:{1}".format(
-                        service.ip_address, service.ports["metrics"].number
-                    ),
-                    "MetricsPath": metrics_path,
-                }
-            )
-
-    return metrics_jobs
+def get_metrics_jobs(plan, l2_participants):
+    metrics_paths = ["/metrics", "/debug/metrics/prometheus"]
+    return [
+        {
+            "Name": context.service_name + metrics_path,
+            "Endpoint": context.metrics_url,
+            "MetricsPath": metrics_path,
+        }
+        for p in l2_participants
+        for context in [p.cl_context, p.el_context]
+        for metrics_path in metrics_paths
+    ]
 
 
-def get_l2_config(plan, participants):
-    rpcs = {}
-    heimdall_urls = {}
-
-    participant_index = 0
-    validator_index = 0
-
-    for participant in participants:
-        for _ in range(participant.get("count")):
-            el_node_name = el_cl_launcher._generate_el_node_name(
-                participant, participant_index + 1
-            )
-            el_service = plan.get_service(name=el_node_name)
-
-            rpcs[el_node_name] = "http://{}:{}".format(
-                el_service.ip_address, el_service.ports["rpc"].number
-            )
-
-            participant_index += 1
-            if not participant.get("is_validator"):
-                continue
-
-            cl_node_name = el_cl_launcher._generate_cl_node_name(
-                participant, validator_index + 1
-            )
-            cl_service = plan.get_service(name=cl_node_name)
-
-            heimdall_urls[cl_node_name] = struct(
-                tendermint="http://{}:{}".format(
-                    cl_service.ip_address, cl_service.ports["rpc"].number
-                ),
-                heimdall="http://{}:{}".format(
-                    cl_service.ip_address, cl_service.ports["http"].number
-                ),
-            )
-
-            validator_index += 1
-
+def get_l2_config(plan, l2_participants):
+    rpcs = {p.el_context.node_name: p.el_context.rpc_http_url for p in l2_participants}
+    heimdall_urls = {
+        p.cl_context.node_name: {
+            "heimdall": p.cl_context.api_url,
+            "tendermint": p.cl_context.rpc_url,
+        }
+        for p in l2_participants
+        if p.cl_context
+    }
     return struct(
         rpcs=rpcs,
         heimdall_urls=heimdall_urls,
