@@ -207,8 +207,6 @@ observers:
   - "trusted_batch"
   - "uncles"
   - "validator_wallet_balance"
-  - "zkevm_batches"
-  - "rollup_manager"
   - "span"
 
 # Networks allows you to define custom networks. If defined here, you can use it
