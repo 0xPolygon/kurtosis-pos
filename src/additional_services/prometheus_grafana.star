@@ -26,32 +26,8 @@ def launch(
         l2_el_genesis_artifact,
         contract_addresses_artifact,
     )
-
-    metrics_jobs = get_metrics_jobs(plan)
-    prometheus_url = import_module(constants.PROMETHEUS_PACKAGE).run(
-        plan,
-        metrics_jobs,
-        name="prometheus",
-        min_cpu=10,
-        max_cpu=1000,
-        min_memory=128,
-        max_memory=2048,
-        node_selectors=None,
-        storage_tsdb_retention_time="1d",
-        storage_tsdb_retention_size="512MB",
-        image=PROMETHEUS_IMAGE,
-    )
-
-    grafana_dashboards_files_artifact = plan.upload_files(
-        src=GRAFANA_DASHBOARDS, name="grafana-dashboards"
-    )
-    import_module(constants.GRAFANA_PACKAGE).run(
-        plan,
-        prometheus_url,
-        name="grafana",
-        grafana_version=GRAFANA_VERSION,
-        grafana_dashboards_files_artifact=grafana_dashboards_files_artifact,
-    )
+    prometheus_url = launch_prometheus(plan)
+    launch_grafana(plan, prometheus_url)
 
 
 def launch_panoptichain(
@@ -63,6 +39,7 @@ def launch_panoptichain(
     l2_el_genesis_artifact,
     contract_addresses_artifact,
 ):
+    # Retrieve contract addresses.
     contract_addresses = contract_util.read_contract_addresses(
         plan, contract_addresses_artifact
     )
@@ -70,7 +47,18 @@ def launch_panoptichain(
         contract_util.read_state_receiver_contract_address(plan, l2_el_genesis_artifact)
     )
 
-    l2_config = get_l2_config(plan, l2_participants)
+    # Retrieve L2 EL and CL urls.
+    l2_el_rpcs = {
+        p.el_context.service_name: p.el_context.rpc_http_url for p in l2_participants
+    }
+    l2_cl_urls = {
+        p.cl_context.service_name: {
+            "heimdall": p.cl_context.api_url,
+            "tendermint": p.cl_context.rpc_url,
+        }
+        for p in l2_participants
+        if p.cl_context
+    }
 
     panoptichain_config_artifact = plan.render_templates(
         name="panoptichain-config",
@@ -78,14 +66,14 @@ def launch_panoptichain(
             "config.yml": struct(
                 template=read_file(src="../../static_files/panoptichain/config.yml"),
                 data={
-                    "l1_rpcs": l1_rpcs,
-                    "l2_rpcs": l2_config.rpcs,
                     "l1_chain_id": l1_chain_id,
                     "l2_chain_id": l2_chain_id,
+                    "l1_rpcs": l1_rpcs,
+                    "l2_rpcs": l2_el_rpcs,
+                    "heimdall_urls": l2_cl_urls,
                     "checkpoint_address": contract_addresses.get("root_chain"),
                     "state_sync_sender_address": contract_addresses.get("state_sender"),
                     "state_sync_receiver_address": state_receiver_contract_address,
-                    "heimdall_urls": l2_config.heimdall_urls,
                 },
             )
         },
@@ -103,9 +91,9 @@ def launch_panoptichain(
     )
 
 
-def get_metrics_jobs(plan, l2_participants):
+def launch_prometheus(plan):
     metrics_paths = ["/metrics", "/debug/metrics/prometheus"]
-    return [
+    metrics_jobs = [
         {
             "Name": context.service_name + metrics_path,
             "Endpoint": context.metrics_url,
@@ -116,20 +104,29 @@ def get_metrics_jobs(plan, l2_participants):
         for metrics_path in metrics_paths
     ]
 
+    return import_module(constants.PROMETHEUS_PACKAGE).run(
+        plan,
+        metrics_jobs,
+        name="prometheus",
+        min_cpu=10,
+        max_cpu=1000,
+        min_memory=128,
+        max_memory=2048,
+        node_selectors=None,
+        storage_tsdb_retention_time="1d",
+        storage_tsdb_retention_size="512MB",
+        image=PROMETHEUS_IMAGE,
+    )
 
-def get_l2_config(plan, l2_participants):
-    rpcs = {
-        p.el_context.service_name: p.el_context.rpc_http_url for p in l2_participants
-    }
-    heimdall_urls = {
-        p.cl_context.service_name: {
-            "heimdall": p.cl_context.api_url,
-            "tendermint": p.cl_context.rpc_url,
-        }
-        for p in l2_participants
-        if p.cl_context
-    }
-    return struct(
-        rpcs=rpcs,
-        heimdall_urls=heimdall_urls,
+
+def launch_grafana(plan, prometheus_url):
+    grafana_dashboards_files_artifact = plan.upload_files(
+        src=GRAFANA_DASHBOARDS, name="grafana-dashboards"
+    )
+    import_module(constants.GRAFANA_PACKAGE).run(
+        plan,
+        prometheus_url,
+        name="grafana",
+        grafana_version=GRAFANA_VERSION,
+        grafana_dashboards_files_artifact=grafana_dashboards_files_artifact,
     )
