@@ -3,9 +3,13 @@ contract_util = import_module("../contracts/util.star")
 el_cl_launcher = import_module("../el_cl_launcher.star")
 
 PROMETHEUS_IMAGE = "prom/prometheus:v3.2.1"
+
 GRAFANA_VERSION = "11.5.3"
 GRAFANA_DASHBOARDS = "../../static_files/grafana/dashboards"
+
 PANOPTICHAIN_IMAGE = "ghcr.io/0xpolygon/panoptichain:v1.2.3"
+PANOPTICHAIN_PORT = 9090
+PANOPTICHAIN_METRICS_PATH = "/metrics"
 
 
 def launch(
@@ -81,6 +85,8 @@ def launch_panoptichain(
                     "checkpoint_address": contract_addresses.get("root_chain"),
                     "state_sync_sender_address": contract_addresses.get("state_sender"),
                     "state_sync_receiver_address": state_receiver_contract_address,
+                    "panoptichain_port": PANOPTICHAIN_PORT,
+                    "panoptichain_metrics_path": PANOPTICHAIN_METRICS_PATH,
                 },
             )
         },
@@ -91,7 +97,7 @@ def launch_panoptichain(
         config=ServiceConfig(
             image=PANOPTICHAIN_IMAGE,
             ports={
-                "metrics": PortSpec(9090, application_protocol="http"),
+                "metrics": PortSpec(PANOPTICHAIN_PORT, application_protocol="http"),
             },
             files={"/etc/panoptichain": panoptichain_config_artifact},
         ),
@@ -122,7 +128,7 @@ def generate_metrics_jobs(l2_participants, panoptichain_url):
         {
             "Name": "panoptichain",
             "Endpoint": panoptichain_url.removeprefix("http://"),
-            "MetricsPath": "/metrics",
+            "MetricsPath": PANOPTICHAIN_METRICS_PATH,
         }
     ]
     for p in l2_participants:
