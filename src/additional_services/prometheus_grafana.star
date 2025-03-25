@@ -8,6 +8,50 @@ GRAFANA_DASHBOARDS = "../../static_files/grafana/dashboards"
 PANOPTICHAIN_IMAGE = "ghcr.io/0xpolygon/panoptichain:v1.2.2"  # https://github.com/0xPolygon/panoptichain/releases
 
 
+def launch(
+    plan,
+    l1_participants,
+    l1_chain_id,
+    l2_participants,
+    l2_chain_id,
+):
+    launch_panoptichain(
+        plan,
+        l1_participants,
+        l1_chain_id,
+        l2_participants,
+        l2_chain_id,
+    )
+
+    metrics_jobs = get_metrics_jobs(plan)
+
+    prometheus_url = import_module(constants.PROMETHEUS_PACKAGE).run(
+        plan,
+        metrics_jobs,
+        name="prometheus",
+        min_cpu=10,
+        max_cpu=1000,
+        min_memory=128,
+        max_memory=2048,
+        node_selectors=None,
+        storage_tsdb_retention_time="1d",
+        storage_tsdb_retention_size="512MB",
+        image=PROMETHEUS_IMAGE,
+    )
+
+    grafana_dashboards_files_artifact = plan.upload_files(
+        src=GRAFANA_DASHBOARDS, name="grafana-dashboards"
+    )
+
+    import_module(constants.GRAFANA_PACKAGE).run(
+        plan,
+        prometheus_url,
+        name="grafana",
+        grafana_version=GRAFANA_VERSION,
+        grafana_dashboards_files_artifact=grafana_dashboards_files_artifact,
+    )
+
+
 def get_metrics_jobs(plan):
     metrics_jobs = []
     for service in plan.get_services():
@@ -123,48 +167,4 @@ def launch_panoptichain(
             },
             files={"/etc/panoptichain": panoptichain_config_artifact},
         ),
-    )
-
-
-def launch(
-    plan,
-    l1_participants,
-    l1_chain_id,
-    l2_participants,
-    l2_chain_id,
-):
-    launch_panoptichain(
-        plan,
-        l1_participants,
-        l1_chain_id,
-        l2_participants,
-        l2_chain_id,
-    )
-
-    metrics_jobs = get_metrics_jobs(plan)
-
-    prometheus_url = import_module(constants.PROMETHEUS_PACKAGE).run(
-        plan,
-        metrics_jobs,
-        name="prometheus",
-        min_cpu=10,
-        max_cpu=1000,
-        min_memory=128,
-        max_memory=2048,
-        node_selectors=None,
-        storage_tsdb_retention_time="1d",
-        storage_tsdb_retention_size="512MB",
-        image=PROMETHEUS_IMAGE,
-    )
-
-    grafana_dashboards_files_artifact = plan.upload_files(
-        src=GRAFANA_DASHBOARDS, name="grafana-dashboards"
-    )
-
-    import_module(constants.GRAFANA_PACKAGE).run(
-        plan,
-        prometheus_url,
-        name="grafana",
-        grafana_version=GRAFANA_VERSION,
-        grafana_dashboards_files_artifact=grafana_dashboards_files_artifact,
     )
