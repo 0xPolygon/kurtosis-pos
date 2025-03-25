@@ -26,7 +26,7 @@ def launch(
         l2_el_genesis_artifact,
         contract_addresses_artifact,
     )
-    prometheus_url = launch_prometheus(plan)
+    prometheus_url = launch_prometheus(plan, l2_participants)
     launch_grafana(plan, prometheus_url)
 
 
@@ -91,7 +91,7 @@ def launch_panoptichain(
     )
 
 
-def launch_prometheus(plan):
+def launch_prometheus(plan, l2_participants):
     metrics_paths = ["/metrics", "/debug/metrics/prometheus"]
     metrics_jobs = [
         {
