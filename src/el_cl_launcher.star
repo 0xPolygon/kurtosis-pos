@@ -56,7 +56,6 @@ def launch(
 
     # Prepare network data and generate validator configs.
     network_data = _prepare_network_data(participants)
-    first_cl_api_url = network_data.first_validator_cl_api_url
     validator_config_artifacts = _generate_validator_config(
         plan,
         network_data.cl_validator_configs_str,
@@ -73,6 +72,7 @@ def launch(
     participant_index = 0
     validator_index = 0
     all_participants = []
+    first_cl_context = None
     for _, participant in enumerate(participants):
         for _ in range(participant.get("count")):
             # Get the CL launcher.
@@ -111,7 +111,6 @@ def launch(
 
             # If the participant is a validator, launch the CL node and it's dedicated AMQP server.
             cl_context = {}
-            cl_api_url = first_cl_api_url
             if participant.get("is_validator"):
                 rabbitmq_name = _generate_amqp_name(participant_index + 1)
                 rabbitmq_service = plan.add_service(
@@ -152,6 +151,8 @@ def launch(
                     rpc_url=cl_service.ports[cl_shared.CL_RPC_PORT_ID].url,
                     metrics_url=cl_service.ports[cl_shared.CL_METRICS_PORT_ID].url,
                 )
+                if first_cl_context is None:
+                    first_cl_context = cl_context
 
             # Launch the EL node.
             el_validator_config_artifact = (
@@ -165,7 +166,7 @@ def launch(
                 participant,
                 el_genesis_artifact,
                 el_validator_config_artifact,
-                cl_api_url,
+                first_cl_context.api_url,
                 pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index],
                 network_data.el_static_nodes,
                 network_params.get("el_chain_id"),
@@ -182,7 +183,7 @@ def launch(
                 participant_module.new_participant(
                     cl_type=participant.get("cl_type"),
                     el_type=participant.get("el_type"),
-                    cl_context=cl_context,
+                    cl_context=cl_context or first_cl_context,
                     el_context=el_context,
                 )
             )
@@ -194,19 +195,13 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
-    wait.wait_for_l2_startup(
-        plan, first_cl_api_url, network_data.first_validator_cl_type
-    )
+    wait.wait_for_l2_startup(plan, first_cl_context.api_url, devnet_cl_type)
 
     # Return the L2 participants and their context.
     return all_participants
 
 
 def _prepare_network_data(participants):
-    # The API url of the first validator's CL node.
-    first_validator_cl_api_url = ""
-    # The type of the first validator's CL node.
-    first_validator_cl_type = ""
     # An array of strings containing validator configurations.
     # Each string should follow the format: "<private_key>,<p2p_url>".
     cl_validator_configs = []
@@ -231,14 +226,6 @@ def _prepare_network_data(participants):
                 validator_account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[
                     participant_index
                 ]
-
-                # Determine the url of the API of the first validator's CL node.
-                if not first_validator_cl_api_url:
-                    first_validator_cl_api_url = "http://{}:{}".format(
-                        cl_node_name,
-                        cl_shared.CL_REST_API_PORT_NUMBER,
-                    )
-                    first_validator_cl_type = participant.get("cl_type")
 
                 # Generate the CL validator config.
                 cl_validator_config = "{},{},{},{},{}:{}".format(
@@ -284,8 +271,6 @@ def _prepare_network_data(participants):
             participant_index += 1
 
     return struct(
-        first_validator_cl_api_url=first_validator_cl_api_url,
-        first_validator_cl_type=first_validator_cl_type,
         cl_validator_configs_str=";".join(cl_validator_configs),
         cl_validator_keystores=cl_validator_keystores,
         el_validator_keystores=el_validator_keystores,
