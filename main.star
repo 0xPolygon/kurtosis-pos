@@ -95,11 +95,11 @@ def run(plan, args):
         artifact_count = len(result.files_artifacts)
         if artifact_count != 2:
             fail(
-                "The contract deployer should have generated 2 artifacts, got {}.".format(
+                "The L1 contract deployer should have generated 2 artifacts, got {}.".format(
                     artifact_count
                 )
             )
-        contract_addresses_artifact = result.files_artifacts[0]
+        l1_contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
 
         result = cl_genesis_generator.generate_cl_genesis_data(
@@ -107,7 +107,7 @@ def run(plan, args):
             polygon_pos_args,
             devnet_cl_type,
             validator_accounts,
-            contract_addresses_artifact,
+            l1_contract_addresses_artifact,
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 1:
@@ -154,7 +154,7 @@ def run(plan, args):
         )
 
         plan.print("Using matic contract addresses provided")
-        contract_addresses_artifact = plan.render_templates(
+        l1_contract_addresses_artifact = plan.render_templates(
             name="matic-contract-addresses",
             config={
                 "contractAddresses.json": struct(
@@ -190,8 +190,16 @@ def run(plan, args):
         l1_context.rpc_url,
         l2_participants[0].el_context.rpc_http_url,
         admin_private_key,
-        contract_addresses_artifact,
+        l1_contract_addresses_artifact,
     )
+    artifact_count = len(result.files_artifacts)
+    if artifact_count != 1:
+        fail(
+            "The L2 contract deployer should have generated 1 artifact, got {}.".format(
+                artifact_count
+            )
+        )
+    contract_addresses_artifact = result.files_artifacts[0]
 
     # Deploy additional services.
     additional_services = polygon_pos_args.get("additional_services")
