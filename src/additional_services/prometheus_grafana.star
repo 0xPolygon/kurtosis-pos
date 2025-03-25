@@ -42,10 +42,10 @@ def launch_panoptichain(
     # Retrive L1 rpc urls.
     l1_rpcs = {}
     if l1_context.all_participants:
-        for p in l1.all_participants:
+        for p in l1_context.all_participants:
             l1_rpcs[p.el_context.service_name] = p.el_context.rpc_http_url
     else:
-        l1_rpcs = {"external-l1": dev_args.get("l1_rpc_url")}
+        l1_rpcs = {"external-l1": l1_context.rpc_url}
 
     # Retrieve L2 EL and CL urls.
     l2_el_rpcs = {
