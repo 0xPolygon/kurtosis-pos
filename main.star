@@ -211,7 +211,7 @@ def run(plan, args):
                 plan,
                 l1_rpcs,
                 constants.DEFAULT_L1_CHAIN_ID,
-                participants,
+                l2_participants,
                 constants.DEFAULT_EL_CHAIN_ID,
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
