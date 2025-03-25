@@ -91,18 +91,7 @@ def launch_panoptichain(
 
 
 def launch_prometheus(plan, l2_participants):
-    metrics_paths = ["/metrics", "/debug/metrics/prometheus"]
-    metrics_jobs = [
-        {
-            "Name": context.service_name + metrics_path,
-            "Endpoint": "http://{}:{}".format(context.ip_addr, context.metrics_port),
-            "MetricsPath": metrics_path,
-        }
-        for p in l2_participants
-        for context in [p.cl_context, p.el_context]
-        for metrics_path in metrics_paths
-    ]
-
+    metrics_jobs = generate_metrics_jobs(l2_participants)
     return import_module(constants.PROMETHEUS_PACKAGE).run(
         plan,
         metrics_jobs,
@@ -116,6 +105,26 @@ def launch_prometheus(plan, l2_participants):
         storage_tsdb_retention_size="512MB",
         image=PROMETHEUS_IMAGE,
     )
+
+
+def generate_metrics_jobs(l2_participants):
+    metrics_paths = ["/metrics", "/debug/metrics/prometheus"]
+    unique_metrics_jobs = {}
+    metrics_jobs = []
+
+    for p in l2_participants:
+        for context in [p.cl_context, p.el_context]:
+            for m in metrics_paths:
+                job_key = (context.service_name, m)
+                if job_key not in unique_metrics_jobs:
+                    unique_metrics_jobs[job_key] = {
+                        "Name": context.service_name + m,
+                        "Endpoint": context.metrics_url.removeprefix("http://"),
+                        "MetricsPath": m,
+                    }
+                    metrics_jobs.append(unique_metrics_jobs[job_key])
+
+    return metrics_jobs
 
 
 def launch_grafana(plan, prometheus_url):
