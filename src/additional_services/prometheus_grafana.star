@@ -95,7 +95,7 @@ def launch_prometheus(plan, l2_participants):
     metrics_jobs = [
         {
             "Name": context.service_name + metrics_path,
-            "Endpoint": context.metrics_url,
+            "Endpoint": "http://{}:{}".format(context.ip_addr, context.metrics_port),
             "MetricsPath": metrics_path,
         }
         for p in l2_participants
