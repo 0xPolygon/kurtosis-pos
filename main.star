@@ -65,19 +65,15 @@ def run(plan, args):
         l1_context = struct(
             private_key=admin_private_key,
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
+            all_participants=l1.all_participants,
         )
-        l1_rpcs = {}
-        for participant in l1.all_participants:
-            l1_rpcs[
-                participant.el_context.service_name
-            ] = participant.el_context.rpc_http_url
     else:
         plan.print("Using an external l1")
         l1_context = struct(
             private_key=admin_private_key,
             rpc_url=dev_args.get("l1_rpc_url"),
+            all_participants=None,
         )
-        l1_rpcs = {"external-l1": dev_args.get("l1_rpc_url")}
 
     # Deploy MATIC contracts to L1 and generate the EL and CL genesis files if needed.
     # Otherwise, use the provided EL and CL genesis files.
@@ -209,7 +205,7 @@ def run(plan, args):
         elif svc == constants.ADDITIONAL_SERVICES.prometheus_grafana:
             prometheus_grafana.launch(
                 plan,
-                l1_rpcs,
+                l1_context,
                 constants.DEFAULT_L1_CHAIN_ID,
                 l2_participants,
                 constants.DEFAULT_EL_CHAIN_ID,
