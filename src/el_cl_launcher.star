@@ -155,7 +155,7 @@ def launch(
                     rpc_url=cl_service.ports[cl_shared.CL_RPC_PORT_ID].url,
                     metrics_url=cl_service.ports[cl_shared.CL_METRICS_PORT_ID].url,
                 )
-                if first_cl_context is None:
+                if not first_cl_context:
                     first_cl_context = cl_context
 
             # Launch the EL node.
