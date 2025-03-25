@@ -147,6 +147,10 @@ def launch(
                 )
                 cl_context = cl_context_module.new_cl_context(
                     service_name=cl_node_name,
+                    ip_addr=cl_service.ip_address,
+                    api_port=cl_shared.CL_REST_API_PORT_NUMBER,
+                    rpc_port=cl_shared.CL_RPC_PORT_NUMBER,
+                    metrics_port=cl_shared.CL_METRICS_PORT_NUMBER,
                     api_url=cl_service.ports[cl_shared.CL_REST_API_PORT_ID].url,
                     rpc_url=cl_service.ports[cl_shared.CL_RPC_PORT_ID].url,
                     metrics_url=cl_service.ports[cl_shared.CL_METRICS_PORT_ID].url,
@@ -173,6 +177,10 @@ def launch(
             )
             el_context = el_context_module.new_el_context(
                 service_name=el_node_name,
+                ip_addr=el_service.ip_address,
+                rpc_port=el_shared.EL_RPC_PORT_NUMBER,
+                ws_port=el_shared.EL_WS_PORT_NUMBER,
+                metrics_port=el_shared.EL_METRICS_PORT_NUMBER,
                 rpc_http_url=el_service.ports[el_shared.EL_RPC_PORT_ID].url,
                 ws_url=el_service.ports[el_shared.EL_WS_PORT_ID].url,
                 metrics_url=el_service.ports[el_shared.EL_METRICS_PORT_ID].url,
