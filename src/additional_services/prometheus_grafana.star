@@ -116,22 +116,17 @@ def launch_prometheus(plan, l2_participants):
 
 
 def generate_metrics_jobs(l2_participants):
-    metrics_paths = ["/metrics", "/debug/metrics/prometheus"]
     unique_metrics_jobs = {}
     metrics_jobs = []
-
     for p in l2_participants:
         for context in [p.cl_context, p.el_context]:
-            for m in metrics_paths:
-                job_key = (context.service_name, m)
-                if job_key not in unique_metrics_jobs:
-                    unique_metrics_jobs[job_key] = {
-                        "Name": context.service_name + m,
-                        "Endpoint": context.metrics_url.removeprefix("http://"),
-                        "MetricsPath": m,
-                    }
-                    metrics_jobs.append(unique_metrics_jobs[job_key])
-
+            if context.service_name not in unique_metrics_jobs:
+                unique_metrics_jobs[context.service_name] = {
+                    "Name": context.service_name,
+                    "Endpoint": context.metrics_url.removeprefix("http://"),
+                    "MetricsPath": "/debug/metrics/prometheus",
+                }
+                metrics_jobs.append(unique_metrics_jobs[context.service_name])
     return metrics_jobs
 
 
