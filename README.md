@@ -187,6 +187,7 @@ dev:
   # Avoid re-deploying the L1 devnet.
   should_deploy_l1: false
   l1_rpc_url: http://el-1-geth-lighthouse:8545
+  l1_chain_id: "3151908"
 
   # Avoid re-deploying the MATIC contracts to L1 and re-generating the L2 CL and EL genesis files.
   should_deploy_matic_contracts: false
