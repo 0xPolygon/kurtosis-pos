@@ -60,9 +60,9 @@
         "chain_params": {
           "bor_chain_id": "{{.el_chain_id}}",
           "matic_token_address": "{{.matic_token_address}}",
-          "staking_manager_address": "{{.staking_manager_address}}",
-          "slash_manager_address": "{{.slash_manager_address}}",
-          "root_chain_address": "{{.root_chain_address}}",
+          "staking_manager_address": "{{.stake_manager_address}}",
+          "slash_manager_address": "{{.slashing_manager_address}}",
+          "root_chain_address": "{{.root_chain_proxy_address}}",
           "staking_info_address": "{{.staking_info_address}}",
           "state_sender_address": "{{.state_sender_address}}",
           "state_receiver_address": "0x0000000000000000000000000000000000001001",

@@ -64,11 +64,20 @@ def launch_panoptichain(
     }
 
     # Retrieve contract addresses.
-    contract_addresses = contract_util.read_contract_addresses(
-        plan, contract_addresses_artifact
+    l1_root_chain_proxy_address = contract_util.get_address(
+        plan,
+        contract_name="l1_root_chain_proxy",
+        contract_addresses_artifact=contract_addresses_artifact,
     )
-    state_receiver_contract_address = (
-        contract_util.read_state_receiver_contract_address(plan, l2_el_genesis_artifact)
+    l1_state_sender_address = contract_util.get_address(
+        plan,
+        contract_name="l1_state_sender",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
+    l2_state_receiver_address = contract_util.get_address(
+        plan,
+        contract_name="l2_state_receiver",
+        l2_el_genesis_artifact=l2_el_genesis_artifact,
     )
 
     panoptichain_config_artifact = plan.render_templates(
@@ -82,9 +91,9 @@ def launch_panoptichain(
                     "l1_rpcs": l1_rpcs,
                     "l2_rpcs": l2_el_rpcs,
                     "heimdall_urls": l2_cl_urls,
-                    "checkpoint_address": contract_addresses.get("root_chain"),
-                    "state_sync_sender_address": contract_addresses.get("state_sender"),
-                    "state_sync_receiver_address": state_receiver_contract_address,
+                    "checkpoint_address": l1_root_chain_proxy_address,
+                    "state_sync_sender_address": l1_state_sender_address,
+                    "state_sync_receiver_address": l2_state_receiver_address,
                     "panoptichain_port": PANOPTICHAIN_PORT,
                     "panoptichain_metrics_path": PANOPTICHAIN_METRICS_PATH,
                 },
