@@ -65,19 +65,15 @@ def run(plan, args):
         l1_context = struct(
             private_key=admin_private_key,
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
+            all_participants=l1.all_participants,
         )
-        l1_rpcs = {}
-        for participant in l1.all_participants:
-            l1_rpcs[
-                participant.el_context.service_name
-            ] = participant.el_context.rpc_http_url
     else:
         plan.print("Using an external l1")
         l1_context = struct(
             private_key=admin_private_key,
             rpc_url=dev_args.get("l1_rpc_url"),
+            all_participants=None,
         )
-        l1_rpcs = {"external-l1": dev_args.get("l1_rpc_url")}
 
     # Deploy MATIC contracts to L1 and generate the EL and CL genesis files if needed.
     # Otherwise, use the provided EL and CL genesis files.
@@ -95,11 +91,11 @@ def run(plan, args):
         artifact_count = len(result.files_artifacts)
         if artifact_count != 2:
             fail(
-                "The contract deployer should have generated 2 artifacts, got {}.".format(
+                "The L1 contract deployer should have generated 2 artifacts, got {}.".format(
                     artifact_count
                 )
             )
-        contract_addresses_artifact = result.files_artifacts[0]
+        l1_contract_addresses_artifact = result.files_artifacts[0]
         validator_config_artifact = result.files_artifacts[1]
 
         result = cl_genesis_generator.generate_cl_genesis_data(
@@ -107,7 +103,7 @@ def run(plan, args):
             polygon_pos_args,
             devnet_cl_type,
             validator_accounts,
-            contract_addresses_artifact,
+            l1_contract_addresses_artifact,
         )
         artifact_count = len(result.files_artifacts)
         if artifact_count != 1:
@@ -154,7 +150,7 @@ def run(plan, args):
         )
 
         plan.print("Using matic contract addresses provided")
-        contract_addresses_artifact = plan.render_templates(
+        l1_contract_addresses_artifact = plan.render_templates(
             name="matic-contract-addresses",
             config={
                 "contractAddresses.json": struct(
@@ -173,7 +169,7 @@ def run(plan, args):
             participants_count, len(validator_accounts), participants
         )
     )
-    l2_context = el_cl_launcher.launch(
+    l2_participants = el_cl_launcher.launch(
         plan,
         participants,
         polygon_pos_args,
@@ -182,17 +178,24 @@ def run(plan, args):
         l1_context.rpc_url,
         devnet_cl_type,
     )
-    l2_rpc_url = l2_context[0].el_context.ports[el_shared.EL_RPC_PORT_ID].url
 
     # Deploy MATIC contracts to L2.
     result = contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
         plan,
         polygon_pos_args,
         l1_context.rpc_url,
-        l2_rpc_url,
+        l2_participants[0].el_context.rpc_http_url,
         admin_private_key,
-        contract_addresses_artifact,
+        l1_contract_addresses_artifact,
     )
+    artifact_count = len(result.files_artifacts)
+    if artifact_count != 1:
+        fail(
+            "The L2 contract deployer should have generated 1 artifact, got {}.".format(
+                artifact_count
+            )
+        )
+    contract_addresses_artifact = result.files_artifacts[0]
 
     # Deploy additional services.
     additional_services = polygon_pos_args.get("additional_services")
@@ -202,10 +205,12 @@ def run(plan, args):
         elif svc == constants.ADDITIONAL_SERVICES.prometheus_grafana:
             prometheus_grafana.launch(
                 plan,
-                l1_rpcs,
+                l1_context,
                 constants.DEFAULT_L1_CHAIN_ID,
-                participants,
+                l2_participants,
                 constants.DEFAULT_EL_CHAIN_ID,
+                l2_el_genesis_artifact,
+                contract_addresses_artifact,
             )
         elif svc == constants.ADDITIONAL_SERVICES.tx_spammer:
             tx_spammer.launch(plan)
