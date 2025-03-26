@@ -209,9 +209,8 @@ def run(plan, args):
             prometheus_grafana.launch(
                 plan,
                 l1_context,
-                l1_context.chain_id,
                 l2_participants,
-                l2_network_params.get("el_chain_id"),
+                l2_network_params,
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
@@ -219,8 +218,8 @@ def run(plan, args):
             test_runner.launch(
                 plan,
                 l1_context,
-                l2_network_params,
                 l2_participants,
+                l2_network_params,
                 devnet_cl_type,
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,

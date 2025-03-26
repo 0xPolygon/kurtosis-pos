@@ -4,8 +4,8 @@ TEST_RUNNER_IMAGE = "e2e:test"  # TODO: Update the image name.
 def launch(
     plan,
     l1_context,
-    l2_network_params,
     l2_participants,
+    l2_network_params,
     devnet_cl_type,
     l2_el_genesis_artifact,
     contract_addresses_artifact,
