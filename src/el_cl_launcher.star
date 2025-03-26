@@ -185,6 +185,7 @@ def launch(
                     el_type=participant.get("el_type"),
                     cl_context=cl_context or first_cl_context,
                     el_context=el_context,
+                    is_validator=participant.get("is_validator"),
                 )
             )
 
