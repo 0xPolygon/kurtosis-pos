@@ -216,7 +216,15 @@ def run(plan, args):
                 contract_addresses_artifact,
             )
         elif svc == constants.ADDITIONAL_SERVICES.test_runner:
-            test_runner.launch(plan)
+            test_runner.launch(
+                plan,
+                l1_context,
+                l2_network_params,
+                l2_participants,
+                devnet_cl_type,
+                l2_el_genesis_artifact,
+                contract_addresses_artifact,
+            )
         else:
             fail("Invalid additional service: %s" % (svc))
 
