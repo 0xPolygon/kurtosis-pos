@@ -35,7 +35,7 @@ def launch(
             env_vars={
                 "ADDRESS": l2_network_params.get("admin_address"),
                 "PRIVATE_KEY": l2_network_params.get("admin_private_key"),
-                "L2_CL_NODE_TYPE": devnet_cl_type,
+                "L2_CL_NODE_TYPE": l2_context.devnet_cl_type,
                 # RPC Urls.
                 "L1_RPC_URL": l1_context.rpc_url,
                 "L2_RPC_URL": l2_rpc_url,
