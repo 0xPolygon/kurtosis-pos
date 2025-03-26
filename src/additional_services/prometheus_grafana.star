@@ -17,7 +17,7 @@ def launch(
     l1_context,
     l1_chain_id,
     l2_participants,
-    l2_chain_id,
+    l2_el_chain_id,
     l2_el_genesis_artifact,
     contract_addresses_artifact,
 ):
@@ -26,7 +26,7 @@ def launch(
         l1_context,
         l1_chain_id,
         l2_participants,
-        l2_chain_id,
+        l2_el_chain_id,
         l2_el_genesis_artifact,
         contract_addresses_artifact,
     )
@@ -39,7 +39,7 @@ def launch_panoptichain(
     l1_context,
     l1_chain_id,
     l2_participants,
-    l2_chain_id,
+    l2_el_chain_id,
     l2_el_genesis_artifact,
     contract_addresses_artifact,
 ):
@@ -87,7 +87,7 @@ def launch_panoptichain(
                 template=read_file(src="../../static_files/panoptichain/config.yml"),
                 data={
                     "l1_chain_id": l1_chain_id,
-                    "l2_chain_id": l2_chain_id,
+                    "l2_chain_id": l2_el_chain_id,
                     "l1_rpcs": l1_rpcs,
                     "l2_rpcs": l2_el_rpcs,
                     "heimdall_urls": l2_cl_urls,

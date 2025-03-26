@@ -64,6 +64,7 @@ def run(plan, args):
         if len(l1.all_participants) < 1:
             fail("The L1 package did not start any participants.")
         l1_context = struct(
+            chain_id=l1.network_id,
             private_key=admin_private_key,
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
             all_participants=l1.all_participants,
@@ -71,6 +72,7 @@ def run(plan, args):
     else:
         plan.print("Using an external l1")
         l1_context = struct(
+            chain_id=dev_args.get("l1_chain_id"),
             private_key=admin_private_key,
             rpc_url=dev_args.get("l1_rpc_url"),
             all_participants=None,
@@ -207,9 +209,9 @@ def run(plan, args):
             prometheus_grafana.launch(
                 plan,
                 l1_context,
-                constants.DEFAULT_L1_CHAIN_ID,
+                l1_context.chain_id,
                 l2_participants,
-                constants.DEFAULT_EL_CHAIN_ID,
+                l2_network_params.get("el_chain_id"),
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
