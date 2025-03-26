@@ -10,7 +10,7 @@ runner:
 
 http:
   # The port panoptichain will run on.
-  port: 9090
+  port: {{.panoptichain_port}}
 
   # The address panoptichain will run on. You may want to change this to
   # "0.0.0.0" or "" if running in a container.
@@ -18,7 +18,7 @@ http:
 
   # The path where you can see the Prometheus metrics. Using the values above,
   # you'll be able to see the raw metrics at http://localhost:9090/metrics
-  path: "/metrics"
+  path: {{.panoptichain_metrics_path}}
 
 # Providers are the main components that are fetching data. They handle all
 # state storage and requests to data sources. There are currently five types of
@@ -207,8 +207,6 @@ observers:
   - "trusted_batch"
   - "uncles"
   - "validator_wallet_balance"
-  - "zkevm_batches"
-  - "rollup_manager"
   - "span"
 
 # Networks allows you to define custom networks. If defined here, you can use it

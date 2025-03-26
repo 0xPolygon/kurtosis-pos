@@ -28,7 +28,7 @@ polygon_pos_package:
       cl_type: heimdall
       is_validator: false
   setup_images:
-    contract_deployer: leovct/pos-contract-deployer-node-20:1871a41
+    contract_deployer: leovct/pos-contract-deployer-node-20:1b16c4b
     el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
     validator_config_generator: leovct/pos-validator-config-generator:1.2.0-0.1.9
   network_params:
