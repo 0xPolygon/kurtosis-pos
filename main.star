@@ -22,6 +22,8 @@ test_runner = import_module("./src/additional_services/test_runner.star")
 wait = import_module("./src/wait/wait.star")
 constants = import_module("./src/package_io/constants.star")
 
+ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
+
 
 def run(plan, args):
     # Parse L1, L2 and dev input args.
@@ -263,7 +265,7 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
     }
 
     # Deploy the ethereum package.
-    l1 = import_module(constants.ETHEREUM_PACKAGE).run(plan, ethereum_args)
+    l1 = import_module(ETHEREUM_PACKAGE).run(plan, ethereum_args)
     plan.print(l1)
     if len(l1.all_participants) < 1:
         fail("The L1 package did not start any participants.")
