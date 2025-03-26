@@ -5,12 +5,12 @@ blockscout = import_module("./src/additional_services/blockscout.star")
 cl_genesis_generator = import_module(
     "./src/prelaunch_data_generator/cl_genesis/cl_genesis_generator.star"
 )
+constants = import_module("./src/package_io/constants.star")
 contract_deployer = import_module("./src/contracts/contract_deployer.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis_generator = import_module(
     "./src/prelaunch_data_generator/el_genesis/el_genesis_generator.star"
 )
-el_shared = import_module("./src/el/el_shared.star")
 hex = import_module("./src/hex/hex.star")
 input_parser = import_module("./src/package_io/input_parser.star")
 math = import_module("./src/math/math.star")
@@ -20,7 +20,6 @@ pre_funded_accounts = import_module(
 prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
 test_runner = import_module("./src/additional_services/test_runner.star")
 wait = import_module("./src/wait/wait.star")
-constants = import_module("./src/package_io/constants.star")
 
 ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 
