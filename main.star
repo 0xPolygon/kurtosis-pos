@@ -18,7 +18,7 @@ pre_funded_accounts = import_module(
     "./src/prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
 )
 prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
-tx_spammer = import_module("./src/additional_services/tx_spammer.star")
+test_runner = import_module("./src/additional_services/test_runner.star")
 wait = import_module("./src/wait/wait.star")
 constants = import_module("./src/package_io/constants.star")
 
@@ -212,8 +212,8 @@ def run(plan, args):
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
-        elif svc == constants.ADDITIONAL_SERVICES.tx_spammer:
-            tx_spammer.launch(plan)
+        elif svc == constants.ADDITIONAL_SERVICES.test_runner:
+            test_runner.launch(plan)
         else:
             fail("Invalid additional service: %s" % (svc))
 

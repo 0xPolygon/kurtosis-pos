@@ -358,6 +358,6 @@ polygon_pos_package:
     # - blockscout
     # A monitoring stack composed of Prometheus and Grafana (will be supported soon).
     - prometheus_grafana
-    # A transaction spammer to send fake transactions to the network (will be supported soon).
-    # - tx_spammer
+    # A test runner built on top of the agglayer/e2e repository (https://github.com/agglayer/e2e).
+    # - test_runner
 ```
