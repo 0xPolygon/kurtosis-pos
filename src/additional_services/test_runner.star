@@ -1,3 +1,5 @@
+contract_util = import_module("../contracts/util.star")
+
 TEST_RUNNER_IMAGE = "e2e:test"  # TODO: Update the image name.
 
 
