@@ -358,6 +358,6 @@ polygon_pos_package:
     # - blockscout
     # A monitoring stack composed of Prometheus and Grafana (will be supported soon).
     - prometheus_grafana
-    # A test runner built on top of the agglayer/e2e repository (https://github.com/agglayer/e2e).
+    # A test runner based on the agglayer/e2e repository (https://github.com/agglayer/e2e).
     # - test_runner
 ```
