@@ -52,7 +52,7 @@ def get_address(
         contract_name in ROOT_CONTRACTS_MAPPING
         or contract_name in CHILD_CONTRACTS_MAPPING
     ):
-        if contract_addresses_artifact is None:
+        if not contract_addresses_artifact:
             fail(
                 "contract_addresses_artifact is required for contract '{}'.".format(
                     contract_name
@@ -62,7 +62,7 @@ def get_address(
         file_path = "/opt/contracts/contractAddresses.json"
         artifact = contract_addresses_artifact
     elif contract_name in L2_GENESIS_CONTRACTS_MAPPING:
-        if l2_el_genesis_artifact is None:
+        if not l2_el_genesis_artifact:
             fail(
                 "l2_el_genesis_artifact is required for contract '{}'.".format(
                     contract_name
