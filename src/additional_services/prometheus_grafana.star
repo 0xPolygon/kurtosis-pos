@@ -84,17 +84,25 @@ def launch_panoptichain(
     contract_addresses_artifact = plan.get_files_artifact(
         name="matic-contract-addresses"
     )
-    contract_addresses = contract_util.read_contract_addresses(
-        plan, contract_addresses_artifact
+    l1_root_chain_proxy_address = contract_util.get_address(
+        plan,
+        contract_name="l1_root_chain_proxy",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
+    l1_state_sender_address = contract_util.get_address(
+        plan,
+        contract_name="l1_state_sender",
+        contract_addresses_artifact=contract_addresses_artifact,
     )
 
     l2_el_genesis_artifact = plan.get_files_artifact(name="l2-el-genesis")
-    state_receiver_contract_address = (
-        contract_util.read_state_receiver_contract_address(plan, l2_el_genesis_artifact)
+    l2_state_receiver_address = contract_util.get_address(
+        plan,
+        contract_name="l2_state_receiver",
+        l2_el_genesis_artifact=l2_el_genesis_artifact,
     )
 
     l2_config = get_l2_config(plan, l2_participants)
-
     panoptichain_config_artifact = plan.render_templates(
         name="panoptichain-config",
         config={
@@ -105,11 +113,9 @@ def launch_panoptichain(
                     "l2_rpcs": l2_config.rpcs,
                     "l1_chain_id": l1_chain_id,
                     "l2_chain_id": l2_chain_id,
-                    "checkpoint_address": contract_addresses.get("l1_root_chain_proxy"),
-                    "state_sync_sender_address": contract_addresses.get(
-                        "l1_state_sender"
-                    ),
-                    "state_sync_receiver_address": state_receiver_contract_address,
+                    "checkpoint_address": l1_root_chain_proxy_address,
+                    "state_sync_sender_address": l1_state_sender_address,
+                    "state_sync_receiver_address": l2_state_receiver_address,
                     "heimdall_urls": l2_config.heimdall_urls,
                 },
             )

@@ -54,8 +54,35 @@ def generate_cl_genesis_data(
         }
 
     el_span_duration = network_params.get("el_span_duration")
-    contract_addresses = contract_util.read_contract_addresses(
-        plan, contract_addresses_artifact
+    l1_matic_token_address = contract_util.get_address(
+        plan,
+        contract_name="l1_matic_token",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
+    l1_stake_manager_proxy_address = contract_util.get_address(
+        plan,
+        contract_name="l1_stake_manager_proxy",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
+    l1_slashing_manager_address = contract_util.get_address(
+        plan,
+        contract_name="l1_slashing_manager",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
+    l1_root_chain_proxy_address = contract_util.get_address(
+        plan,
+        contract_name="l1_root_chain_proxy",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
+    l1_staking_info_address = contract_util.get_address(
+        plan,
+        contract_name="l1_staking_info",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
+    l1_state_sender_address = contract_util.get_address(
+        plan,
+        contract_name="l1_state_sender",
+        contract_addresses_artifact=contract_addresses_artifact,
     )
 
     cl_genesis_temporary_artifact = plan.render_templates(
@@ -76,22 +103,12 @@ def generate_cl_genesis_data(
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,
                     # contract addresses
-                    "l1_matic_token_address": contract_addresses.get("l1_matic_token"),
-                    "l1_stake_manager_proxy_address": contract_addresses.get(
-                        "l1_stake_manager_proxy"
-                    ),
-                    "l1_slashing_manager_address": contract_addresses.get(
-                        "l1_slashing_manager"
-                    ),
-                    "l1_root_chain_proxy_address": contract_addresses.get(
-                        "l1_root_chain_proxy"
-                    ),
-                    "l1_staking_info_address": contract_addresses.get(
-                        "l1_staking_info"
-                    ),
-                    "l1_state_sender_address": contract_addresses.get(
-                        "l1_state_sender"
-                    ),
+                    "l1_matic_token_address": l1_matic_token_address,
+                    "l1_stake_manager_proxy_address": l1_stake_manager_proxy_address,
+                    "l1_slashing_manager_address": l1_slashing_manager_address,
+                    "l1_root_chain_proxy_address": l1_root_chain_proxy_address,
+                    "l1_staking_info_address": l1_staking_info_address,
+                    "l1_state_sender_address": l1_state_sender_address,
                 }
                 | cl_type_specific_data,
             ),
