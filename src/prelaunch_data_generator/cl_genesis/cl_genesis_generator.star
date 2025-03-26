@@ -103,12 +103,12 @@ def generate_cl_genesis_data(
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,
                     # contract addresses
-                    "l1_matic_token_address": l1_matic_token_address,
-                    "l1_stake_manager_proxy_address": l1_stake_manager_proxy_address,
-                    "l1_slashing_manager_address": l1_slashing_manager_address,
-                    "l1_root_chain_proxy_address": l1_root_chain_proxy_address,
-                    "l1_staking_info_address": l1_staking_info_address,
-                    "l1_state_sender_address": l1_state_sender_address,
+                    "matic_token_address": l1_matic_token_address,
+                    "stake_manager_address": l1_stake_manager_proxy_address,
+                    "slashing_manager_address": l1_slashing_manager_address,
+                    "root_chain_proxy_address": l1_root_chain_proxy_address,
+                    "staking_info_address": l1_staking_info_address,
+                    "state_sender_address": l1_state_sender_address,
                 }
                 | cl_type_specific_data,
             ),
