@@ -4,12 +4,12 @@
 
 ### Bor Modified for Heimdall v2
 
-- [Docker Hub](https://hub.docker.com/r/leovct/bor-modified-for-heimdall-v2)
+- [Docker Hub](https://hub.docker.com/r/leovct/bor)
 
 ```bash
 bor_branch="heimdall-v2"
-bor_commit_sha="32e26a4" # 2025/03/18
-image_name="leovct/bor-modified-for-heimdall-v2:${bor_commit_sha}"
+bor_commit_sha="1a6957c" # 2025/03/27
+image_name="leovct/bor:${bor_commit_sha}"
 git clone --branch "${bor_branch}" git@github.com:maticnetwork/bor.git
 pushd bor
 git checkout "${bor_commit_sha}"
