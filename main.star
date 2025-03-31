@@ -78,7 +78,7 @@ def run(plan, args):
             image="ghcr.io/foundry-rs/foundry:stable",
             run="cast to-dec $(cast rpc eth_chainId --rpc-url ${L1_RPC_URL} | sed 's/\"//g')",
             env_vars={
-                L1_RPC_URL: l1_rpc_url,
+                "L1_RPC_URL": l1_rpc_url,
             },
         )
         l1_context = struct(
