@@ -44,8 +44,8 @@ docker push "${image_name}"
 - [Docker Hub](https://hub.docker.com/r/leovct/pos-contract-deployer-node-20)
 
 ```bash
-pos_contracts_branch="arya/matic-cli/pos-1869"
-pos_contracts_commit_sha="1871a41" # 2025/02/19
+pos_contracts_branch="anvil-pos"
+pos_contracts_commit_sha="ed58f8a" # 2025/03/27
 image_name="leovct/pos-contract-deployer-node-20:${pos_contracts_commit_sha}"
 docker build \
   --build-arg POS_CONTRACTS_BRANCH="${pos_contracts_branch}" \
@@ -53,14 +53,6 @@ docker build \
   --tag "${image_name}" \
   --file pos-contract-deployer-node-20.Dockerfile \
   .
-docker push "${image_name}"
-```
-
-Custom image that includes a fix to the syncChildStateToRoot deployment script to avoid failures when deploying L2 contracts a second time.
-
-```bash
-image_name="leovct/pos-contract-deployer-node-20:1b16c4b"
-docker build --tag "${image_name}" --file pos-contract-deployer-node-20-fix.Dockerfile .
 docker push "${image_name}"
 ```
 
