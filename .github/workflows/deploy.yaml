@@ -88,24 +88,31 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      file_path_matrix: ${{ steps.set-matrix.outputs.file_path_matrix }}
+      file_name_matrix: ${{ steps.set-matrix.outputs.file_name_matrix }}
     steps:
       - uses: actions/checkout@v4
 
       - id: set-matrix
         run: |
-          files=$(ls -R ./.github/tests/*.yml)
-          matrix=$(echo "$files" | jq -R -s -c 'split("\n")[:-1]')
-          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+          file_paths=$(ls -R ./.github/tests/*.yml)
+
+          file_path_matrix=$(echo "${file_paths}" | jq -R -s -c 'split("\n")[:-1]')
+          echo "file_path_matrix=${file_path_matrix}" >> $GITHUB_OUTPUT
+
+          file_name_matrix=$(echo "${file_paths}" | xargs -n 1 basename -s ".yml" | jq -R -s -c 'split("\n")[:-1]')
+          echo "file_name_matrix=${file_name_matrix}" >> $GITHUB_OUTPUT
 
   run-with-args:
     needs: list-ymls
+    name: run-with-args (${{ matrix.file_name }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        file_name: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
+        file_path: ${{ fromJson(needs.list-ymls.outputs.file_path_matrix) }}
+        file_name: ${{ fromJson(needs.list-ymls.outputs.file_name_matrix) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -140,7 +147,7 @@ jobs:
           yq --version
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_name }} --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_path }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -152,8 +159,7 @@ jobs:
           bash scripts/discover.sh
 
           # If the devnet only contains one validator, don't check the peer count.
-          file_name=$(basename "${{ matrix.file_name }}" ".yml")
-          if [[ "${file_name}" =~ .*"single-validator" ]]; then
+          if [[ "${{ matrix.file_name }}" =~ .*"single-validator" ]]; then
             export EXPECTED_MIN_CL_PEERS=0
             export EXPECTED_MIN_EL_PEERS=0
           fi
@@ -169,11 +175,11 @@ jobs:
           bash ./scripts/send_state_sync.sh
           echo
 
-          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_name }})
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file_path }})
           if [[ "${cl_type}" == "null" ]]; then
             cl_type="heimdall"
           fi
-          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_name }})
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file_path }})
           if [[ "${el_type}" == "null" ]]; then
             el_type="bor"
           fi
@@ -193,8 +199,7 @@ jobs:
       - name: Generate archive name
         if: always()
         run: |
-          file_name=$(basename "${{ matrix.file_name }}" ".yml")
-          archive_name="dump_run_with_args_${file_name}_${{ github.run_id }}"
+          archive_name="dump_run_with_args_${{ matrix.file_name }}_${{ github.run_id }}"
           echo "ARCHIVE_NAME=${archive_name}" >> "$GITHUB_ENV"
           echo "Generated archive name: ${archive_name}"
 
