@@ -71,10 +71,20 @@ def run(plan, args):
         )
     else:
         plan.print("Using an external l1")
+        l1_rpc_url = dev_args.get("l1_rpc_url")
+        l1_chain_id = plan.run_sh(
+            name="l1-chain-id-getter",
+            description="Getting external L1 chain id",
+            image="ghcr.io/foundry-rs/foundry:stable",
+            run="cast to-dec $(cast rpc eth_chainId --rpc-url ${L1_RPC_URL} | sed 's/\"//g')",
+            env_vars={
+                L1_RPC_URL: l1_rpc_url,
+            },
+        )
         l1_context = struct(
-            chain_id=dev_args.get("l1_chain_id"),
+            chain_id=l1_chain_id,
             private_key=admin_private_key,
-            rpc_url=dev_args.get("l1_rpc_url"),
+            rpc_url=l1_rpc_url,
             all_participants=None,
         )
 
