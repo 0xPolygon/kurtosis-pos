@@ -3,8 +3,8 @@ contract_util = import_module("../contracts/util.star")
 PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star@f5ce159aec728898e3deb827f6b921f8ecfc527f"
 PROMETHEUS_IMAGE = "prom/prometheus:v3.2.1"
 
-GRAFANA_PACKAGE = "github.com/kurtosis-tech/grafana-package/main.star@cc66468b167d16c0fc7153980be5b67550be01be"
-GRAFANA_VERSION = "11.5.3"
+GRAFANA_PACKAGE = "github.com/kurtosis-tech/grafana-package/main.star@c8ff0b52d25deb0bc4ec95971dcf25b2fca11287"
+GRAFANA_IMAGE = "grafana/grafana:11.6.0"
 GRAFANA_DASHBOARDS = "../../static_files/grafana/dashboards"
 
 PANOPTICHAIN_IMAGE = "ghcr.io/0xpolygon/panoptichain:v1.2.3"
@@ -157,6 +157,6 @@ def launch_grafana(plan, prometheus_url):
         plan,
         prometheus_url,
         name="grafana",
-        grafana_version=GRAFANA_VERSION,
+        image=GRAFANA_IMAGE,
         grafana_dashboards_files_artifact=grafana_dashboards_files_artifact,
     )
