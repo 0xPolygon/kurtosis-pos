@@ -102,7 +102,7 @@ jobs:
 
   run-with-args:
     needs: list-ymls
-    name: run-with-${{ matrix.name }}
+    name: run-with-${{ matrix.file.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -143,7 +143,7 @@ jobs:
           yq --version
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.path }} --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file.path }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -155,7 +155,7 @@ jobs:
           bash scripts/discover.sh
 
           # If the devnet only contains one validator, don't check the peer count.
-          if [[ "${{ matrix.name }}" =~ .*"single-validator" ]]; then
+          if [[ "${{ matrix.file.name }}" =~ .*"single-validator" ]]; then
             export EXPECTED_MIN_CL_PEERS=0
             export EXPECTED_MIN_EL_PEERS=0
           fi
@@ -171,11 +171,11 @@ jobs:
           bash ./scripts/send_state_sync.sh
           echo
 
-          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.path }})
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ matrix.file.path }})
           if [[ "${cl_type}" == "null" ]]; then
             cl_type="heimdall"
           fi
-          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.path }})
+          el_type=$(yq --raw-output '.polygon_pos_package.participants[0].el_type' ${{ matrix.file.path }})
           if [[ "${el_type}" == "null" ]]; then
             el_type="bor"
           fi
@@ -195,7 +195,7 @@ jobs:
       - name: Generate archive name
         if: always()
         run: |
-          archive_name="dump_run_with_args_${{ matrix.name }}_${{ github.run_id }}"
+          archive_name="dump_run_with_args_${{ matrix.file.name }}_${{ github.run_id }}"
           echo "ARCHIVE_NAME=${archive_name}" >> "$GITHUB_ENV"
           echo "Generated archive name: ${archive_name}"
 
