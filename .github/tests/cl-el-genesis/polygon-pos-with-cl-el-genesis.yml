@@ -1,7 +1,3 @@
-polygon_pos_package:
-  setup_images:
-    contract_deployer: leovct/pos-contract-deployer-node-20:1b16c4b
-
 dev:
   should_deploy_l1: false
   l1_rpc_url: http://el-1-geth-lighthouse:8545

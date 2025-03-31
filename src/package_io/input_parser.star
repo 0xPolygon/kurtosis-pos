@@ -2,13 +2,13 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:1b16c4b"
+DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:ed58f8a"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
 DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.0-0.1.9"  # Based on 0xpolygon/heimdall:1.2.0 and 0xpolygon/heimdall-v2:0.1.9.
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:2.0.1",
-    constants.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor-modified-for-heimdall-v2:32e26a4",  # There is no official image yet.
+    constants.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor:1a6957c",  # There is no official image yet.
     constants.EL_TYPE.erigon: "erigontech/erigon:v2.61.3",
 }
 
