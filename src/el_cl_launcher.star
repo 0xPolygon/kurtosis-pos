@@ -283,7 +283,7 @@ def _generate_enode_url(participant, eth_public_key, el_node_name):
     return "enode://{}@{}:{}?discport=0".format(
         eth_public_key,
         el_node_name,
-        bor.BOR_DISCOVERY_PORT_NUMBER,
+        el_shared.EL_DISCOVERY_PORT_NUMBER,
     )
 
 

@@ -26,6 +26,7 @@ nat = "none"
 
 # MINER
 mine = {{.is_validator}}
+port = {{.discovery_port_number}}
 {{if .is_validator}}
 "miner.etherbase" = "{{.address}}"
 "miner.sigfile" = "{{.config_folder_path}}/nodekey"
