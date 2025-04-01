@@ -90,6 +90,7 @@ def get_address(
         )
 
     result = plan.run_sh(
+        name="{}-address-reader".format(contract_name),
         description="Reading '{}' contract address".format(contract_name),
         files={
             "/opt/contracts": artifact,
