@@ -5,6 +5,7 @@ blockscout = import_module("./src/additional_services/blockscout.star")
 cl_genesis_generator = import_module(
     "./src/prelaunch_data_generator/cl_genesis/cl_genesis_generator.star"
 )
+constants = import_module("./src/package_io/constants.star")
 contract_deployer = import_module("./src/contracts/contract_deployer.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis_generator = import_module(
@@ -20,7 +21,8 @@ pre_funded_accounts = import_module(
 prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
 tx_spammer = import_module("./src/additional_services/tx_spammer.star")
 wait = import_module("./src/wait/wait.star")
-constants = import_module("./src/package_io/constants.star")
+
+ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 
 
 def run(plan, args):
@@ -272,7 +274,7 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
     }
 
     # Deploy the ethereum package.
-    l1 = import_module(constants.ETHEREUM_PACKAGE).run(plan, ethereum_args)
+    l1 = import_module(ETHEREUM_PACKAGE).run(plan, ethereum_args)
     plan.print(l1)
     if len(l1.all_participants) < 1:
         fail("The L1 package did not start any participants.")
