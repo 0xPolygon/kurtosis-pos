@@ -256,7 +256,7 @@ def _validate_participant(p):
 def validate_cl_environment(cl_environment, participants):
     devnet_cl_type = participants[0].get("cl_type")
 
-    if cl_environment != "":
+    if cl_environment:
         if devnet_cl_type != constants.CL_TYPE.heimdall:
             fail(
                 'Only heimdall (v1) supports the CL environment but found "{}" devnet CL type.'.format(
