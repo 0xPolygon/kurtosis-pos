@@ -61,15 +61,27 @@ def run(plan, args):
         if len(l1.all_participants) < 1:
             fail("The L1 package did not start any participants.")
         l1_context = struct(
+            chain_id=l1.network_id,
             private_key=admin_private_key,
             rpc_url=l1.all_participants[0].el_context.rpc_http_url,
             all_participants=l1.all_participants,
         )
     else:
         plan.print("Using an external l1")
+        l1_rpc_url = dev_args.get("l1_rpc_url")
+        l1_chain_id = plan.run_sh(
+            name="l1-chain-id-reader",
+            description="Reading external L1 chain id from the RPC",
+            image="ghcr.io/foundry-rs/foundry:stable",
+            run="cast to-dec $(cast rpc eth_chainId --rpc-url ${L1_RPC_URL} | sed 's/\"//g')",
+            env_vars={
+                "L1_RPC_URL": l1_rpc_url,
+            },
+        )
         l1_context = struct(
+            chain_id=l1_chain_id,
             private_key=admin_private_key,
-            rpc_url=dev_args.get("l1_rpc_url"),
+            rpc_url=l1_rpc_url,
             all_participants=None,
         )
 
@@ -204,7 +216,6 @@ def run(plan, args):
             prometheus_grafana.launch(
                 plan,
                 l1_context,
-                constants.DEFAULT_L1_CHAIN_ID,
                 l2_participants,
                 constants.DEFAULT_EL_CHAIN_ID,
                 l2_el_genesis_artifact,

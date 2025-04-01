@@ -15,7 +15,6 @@ PANOPTICHAIN_METRICS_PATH = "/metrics"
 def launch(
     plan,
     l1_context,
-    l1_chain_id,
     l2_participants,
     l2_chain_id,
     l2_el_genesis_artifact,
@@ -24,7 +23,6 @@ def launch(
     panoptichain_url = launch_panoptichain(
         plan,
         l1_context,
-        l1_chain_id,
         l2_participants,
         l2_chain_id,
         l2_el_genesis_artifact,
@@ -37,7 +35,6 @@ def launch(
 def launch_panoptichain(
     plan,
     l1_context,
-    l1_chain_id,
     l2_participants,
     l2_chain_id,
     l2_el_genesis_artifact,
@@ -86,7 +83,7 @@ def launch_panoptichain(
             "config.yml": struct(
                 template=read_file(src="../../static_files/panoptichain/config.yml"),
                 data={
-                    "l1_chain_id": l1_chain_id,
+                    "l1_chain_id": l1_context.chain_id,
                     "l2_chain_id": l2_chain_id,
                     "l1_rpcs": l1_rpcs,
                     "l2_rpcs": l2_el_rpcs,
