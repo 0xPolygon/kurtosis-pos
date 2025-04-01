@@ -48,14 +48,14 @@ def launch(
                 ),
                 data={
                     # Network params.
+                    "chain_type": network_params.get(
+                        "cl_chain_type",
+                    ),
                     "span_poll_interval": network_params.get(
                         "cl_span_poll_interval", ""
                     ),
-                    "checkpoint_poll_interval": network_params[
+                    "checkpoint_poll_interval": network_params.get(
                         "cl_checkpoint_poll_interval"
-                    ],
-                    "chain_type": network_params.get(
-                        "cl_chain_type", "mainnet"
                     ),
                     # URLs.
                     "amqp_url": amqp_url,
