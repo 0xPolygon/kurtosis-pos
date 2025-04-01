@@ -35,6 +35,7 @@ POLYGON_POS_PARAMS = {
     "additional_services": [
         "blockscout",
         "prometheus_grafana",
+        "test_runner",
         "tx_spammer",
     ],
 }

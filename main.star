@@ -18,6 +18,7 @@ pre_funded_accounts = import_module(
     "./src/prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
 )
 prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
+test_runner = import_module("./src/additional_services/test_runner.star")
 tx_spammer = import_module("./src/additional_services/tx_spammer.star")
 wait = import_module("./src/wait/wait.star")
 constants = import_module("./src/package_io/constants.star")
@@ -207,6 +208,14 @@ def run(plan, args):
                 constants.DEFAULT_L1_CHAIN_ID,
                 l2_participants,
                 constants.DEFAULT_EL_CHAIN_ID,
+                l2_el_genesis_artifact,
+                contract_addresses_artifact,
+            )
+        elif svc == constants.ADDITIONAL_SERVICES.test_runner:
+            test_runner.launch(
+                l1_context,
+                l2_context,
+                l2_network_params,
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
