@@ -25,9 +25,11 @@ nat = "none"
 "ws.port" = {{.ws_port_number}}
 
 # MINER
-mine = true
+mine = {{.is_validator}}
+{{if .is_validator}}
 "miner.etherbase" = "{{.address}}"
 "miner.sigfile" = "{{.config_folder_path}}/nodekey"
+{{end}}
 
 # Metrics
 "metrics.addr" = "0.0.0.0"
