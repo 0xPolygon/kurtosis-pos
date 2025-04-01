@@ -19,7 +19,7 @@ polygon_pos_package:
       el_image: 0xpolygon/bor:2.0.1
       el_log_level: info
       cl_type: heimdall
-      cl_image: 0xpolygon/heimdall:1.2.0
+      cl_image: 0xpolygon/heimdall:1.2.2
       cl_db_image: rabbitmq:4.0.6
       cl_log_level: info
       is_validator: true
