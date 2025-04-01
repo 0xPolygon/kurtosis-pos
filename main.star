@@ -29,6 +29,7 @@ def run(plan, args):
     ethereum_args = args.get("ethereum_package")
     polygon_pos_args = args.get("polygon_pos_package")
     dev_args = args.get("dev")
+    devnet_cl_type = args.get("devnet_cl_type")
 
     participants = polygon_pos_args.get("participants")
     validator_accounts = get_validator_accounts(participants)
@@ -36,9 +37,6 @@ def run(plan, args):
     admin_private_key = hex.normalize(
         l2_network_params.get("admin_private_key")
     )  # Used to deploy Polygon PoS contracts on both L1 and L2.
-
-    # Determine the devnet CL type to be able to select the appropriate validator address format later.
-    devnet_cl_type = participants[0].get("cl_type")
 
     # Deploy a local L1 if needed.
     # Otherwise, use the provided rpc url.

@@ -43,10 +43,10 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
 DEFAULT_POLYGON_POS_PARTICIPANT = {
     "el_type": constants.EL_TYPE.bor,
     "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
-    "el_log_level": "info",
+    "el_log_level": constants.LOG_LEVEL.info,
     "cl_type": constants.CL_TYPE.heimdall,
     "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
-    "cl_log_level": "info",
+    "cl_log_level": constants.LOG_LEVEL.info,
     "cl_db_image": DEFAULT_CL_DB_IMAGE,
     "is_validator": True,
     "count": 1,
@@ -104,7 +104,9 @@ def input_parser(plan, input_args):
 
     plan.print("Parsing the L2 input args")
     polygon_pos_input_args = input_args.get("polygon_pos_package", {})
-    polygon_pos_args = _parse_polygon_pos_args(plan, polygon_pos_input_args)
+    (polygon_pos_args, devnet_cl_type) = _parse_polygon_pos_args(
+        plan, polygon_pos_input_args
+    )
     plan.print("L2 input args parsed: {}".format(str(polygon_pos_args)))
 
     plan.print("Parsing the dev input args")
@@ -116,6 +118,7 @@ def input_parser(plan, input_args):
         "ethereum_package": ethereum_args,
         "polygon_pos_package": polygon_pos_args,
         "dev": dev_args,
+        "devnet_cl_type": devnet_cl_type,
     }
 
 
@@ -145,6 +148,7 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     participants = polygon_pos_args.get("participants", [])
     result["participants"] = _parse_participants(participants)
+    devnet_cl_type = _get_devnet_cl_type(result["participants"])
 
     setup_images = polygon_pos_args.get("setup_images", {})
     result["setup_images"] = _parse_setup_images(setup_images)
@@ -157,7 +161,7 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     # Sanity check and return the result.
     sanity_check.sanity_check_polygon_args(plan, result)
-    return _sort_dict_by_values(result)
+    return (_sort_dict_by_values(result), devnet_cl_type)
 
 
 def _parse_dev_args(plan, dev_args):
@@ -234,6 +238,11 @@ def _parse_participants(participants):
 
     # Sort each participant dictionary and return the result
     return [_sort_dict_by_values(p) for p in participants_with_defaults]
+
+
+def _get_devnet_cl_type(participants):
+    # Determine the devnet CL type to be able to select the appropriate validator address format later.
+    return participants[0].get("cl_type")
 
 
 def _parse_setup_images(setup_images):
