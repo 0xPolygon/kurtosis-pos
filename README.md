@@ -303,8 +303,8 @@ polygon_pos_package:
     # Default: "leovct/pos-el-genesis-builder:96a19dd"
     el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
     # Image used to generate L2 CL/EL validators configurations.
-    # Default: "leovct/pos-validator-config-generator:1.2.0-0.1.9"
-    validator_config_generator: leovct/pos-validator-config-generator:1.2.0-0.1.9
+    # Default: "leovct/pos-validator-config-generator:1.2.2-0.1.9"
+    validator_config_generator: leovct/pos-validator-config-generator:1.2.2-0.1.9
 
   # L2 network parameters.
   network_params:
