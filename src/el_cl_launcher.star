@@ -139,7 +139,7 @@ def launch(
                     validator_config_artifacts.cl_configs[validator_index],
                     cl_node_ids,
                     l1_rpc_url,
-                    "http://{}:{}".format(el_node_name, el_shared.EL_RPC_PORT_NUMBER),
+                    "http://{}:{}".format(el_node_name, el_shared.RPC_PORT_NUMBER),
                     rabbitmq_url,
                 )
                 cl_context = cl_context_module.new_context(
@@ -170,9 +170,9 @@ def launch(
             )
             el_context = el_context_module.new_context(
                 service_name=el_node_name,
-                rpc_http_url=el_service.ports[el_shared.EL_RPC_PORT_ID].url,
-                ws_url=el_service.ports[el_shared.EL_WS_PORT_ID].url,
-                metrics_url=el_service.ports[el_shared.EL_METRICS_PORT_ID].url,
+                rpc_http_url=el_service.ports[el_shared.RPC_PORT_ID].url,
+                ws_url=el_service.ports[el_shared.WS_PORT_ID].url,
+                metrics_url=el_service.ports[el_shared.METRICS_PORT_ID].url,
             )
 
             # Add the node to the all_participants array.
