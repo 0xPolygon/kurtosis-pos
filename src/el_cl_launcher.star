@@ -144,9 +144,9 @@ def launch(
                 )
                 cl_context = cl_context_module.new_context(
                     service_name=cl_node_name,
-                    api_url=cl_service.ports[cl_shared.CL_REST_API_PORT_ID].url,
-                    rpc_url=cl_service.ports[cl_shared.CL_RPC_PORT_ID].url,
-                    metrics_url=cl_service.ports[cl_shared.CL_METRICS_PORT_ID].url,
+                    api_url=cl_service.ports[cl_shared.REST_API_PORT_ID].url,
+                    rpc_url=cl_service.ports[cl_shared.RPC_PORT_ID].url,
+                    metrics_url=cl_service.ports[cl_shared.METRICS_PORT_ID].url,
                 )
                 if not first_cl_context:
                     first_cl_context = cl_context
@@ -232,7 +232,7 @@ def _prepare_network_data(participants):
                     validator_account.cometbft.public_key,
                     validator_account.cometbft.private_key,
                     cl_node_name,
-                    cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
+                    cl_shared.NODE_LISTEN_PORT_NUMBER,
                 )
                 cl_validator_configs.append(cl_validator_config)
 
