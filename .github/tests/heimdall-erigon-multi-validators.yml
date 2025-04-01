@@ -10,12 +10,13 @@ polygon_pos_package:
 
     # rpcs
     - cl_type: heimdall
-      el_type: bor
+      el_type: erigon
       is_validator: false
       count: 2
-    # There is an issue with erigon rpcs.
-    # https://github.com/0xPolygon/kurtosis-polygon-pos/issues/26
     # - cl_type: heimdall
-    #   el_type: erigon
+    #   el_type: bor
     #   is_validator: false
     #   count: 2
+
+  network_params:
+    cl_environment: local
