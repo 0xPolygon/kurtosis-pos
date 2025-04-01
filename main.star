@@ -179,7 +179,7 @@ def run(plan, args):
             participants_count, len(validator_accounts), participants
         )
     )
-    l2_participants = el_cl_launcher.launch(
+    l2_context = el_cl_launcher.launch(
         plan,
         participants,
         polygon_pos_args,
@@ -188,13 +188,14 @@ def run(plan, args):
         l1_context.rpc_url,
         devnet_cl_type,
     )
+    l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
 
     # Deploy MATIC contracts to L2.
     result = contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
         plan,
         polygon_pos_args,
         l1_context.rpc_url,
-        l2_participants[0].el_context.rpc_http_url,
+        l2_rpc_url,
         admin_private_key,
         l1_contract_addresses_artifact,
     )
@@ -216,8 +217,7 @@ def run(plan, args):
             prometheus_grafana.launch(
                 plan,
                 l1_context,
-                l2_participants,
-                constants.DEFAULT_EL_CHAIN_ID,
+                l2_context,
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
