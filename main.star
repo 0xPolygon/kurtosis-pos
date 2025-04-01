@@ -226,6 +226,7 @@ def run(plan, args):
             )
         elif svc == constants.ADDITIONAL_SERVICES.test_runner:
             test_runner.launch(
+                plan,
                 l1_context,
                 l2_context,
                 l2_network_params,
