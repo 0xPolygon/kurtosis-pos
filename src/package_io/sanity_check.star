@@ -40,14 +40,23 @@ POLYGON_POS_PARAMS = {
     ],
 }
 
+VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
+VALID_EL_CLIENTS = [constants.EL_TYPE.bor, constants.EL_TYPE.erigon]
 VALID_CLIENT_COMBINATIONS = {
     constants.CL_TYPE.heimdall: [
         constants.EL_TYPE.bor,
-        constants.EL_TYPE.bor_modified_for_heimdall_v2,
         constants.EL_TYPE.erigon,
     ],
-    constants.CL_TYPE.heimdall_v2: [constants.EL_TYPE.bor_modified_for_heimdall_v2],
+    constants.CL_TYPE.heimdall_v2: [constants.EL_TYPE.bor],
 }
+
+VALID_LOG_LEVELS = [
+    constants.LOG_LEVEL.error,
+    constants.LOG_LEVEL.warn,
+    constants.LOG_LEVEL.info,
+    constants.LOG_LEVEL.debug,
+    constants.LOG_LEVEL.trace,
+]
 
 VALID_CL_ENVIRONMENTS = [
     constants.CL_ENVIRONMENT.mainnet,
@@ -195,18 +204,8 @@ def validate_chain_ids(cl_chain_id, el_chain_id):
 
 
 def _validate_participant(p):
-    _validate_str(
-        p, "cl_type", [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
-    )
-    _validate_str(
-        p,
-        "el_type",
-        [
-            constants.EL_TYPE.bor,
-            constants.EL_TYPE.bor_modified_for_heimdall_v2,
-            constants.EL_TYPE.erigon,
-        ],
-    )
+    _validate_str(p, "cl_type", VALID_CL_CLIENTS)
+    _validate_str(p, "el_type", VALID_EL_CLIENTS)
 
     # Validate client combination.
     cl_type = p.get("cl_type")
@@ -222,15 +221,8 @@ def _validate_participant(p):
     else:
         fail('The CL client "{}" has no valid client combination.'.format(cl_type))
 
-    log_levels = [
-        constants.LOG_LEVEL.error,
-        constants.LOG_LEVEL.warn,
-        constants.LOG_LEVEL.info,
-        constants.LOG_LEVEL.debug,
-        constants.LOG_LEVEL.trace,
-    ]
-    _validate_str(p, "cl_log_level", log_levels)
-    _validate_str(p, "el_log_level", log_levels)
+    _validate_str(p, "cl_log_level", VALID_LOG_LEVELS)
+    _validate_str(p, "el_log_level", VALID_LOG_LEVELS)
 
     # Heimdall (v1) only supports "error", "info", "debug" or "none" log levels.
     # ERROR: Failed to parse default log level (pair *:trace, list *:trace): Expected either "info", "debug", "error" or "none" level, given trace

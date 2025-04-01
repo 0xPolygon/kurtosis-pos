@@ -37,9 +37,6 @@ def launch(
         "bor": {
             "launch_method": bor.launch,
         },
-        "bor-modified-for-heimdall-v2": {
-            "launch_method": bor.launch,
-        },
         "erigon": {
             "launch_method": erigon.launch,
         },

@@ -244,14 +244,14 @@ polygon_pos_package:
   participants:
     - ## Execution Layer (EL) specific flags.
       # The type of EL client that should be started.
-      # Valid values are: "bor", "bor-modified-for-heimdall-v2", "erigon"
+      # Valid values are: "bor", "erigon"
       el_type: bor
 
       # The docker image that should be used for the EL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - bor: "0xpolygon/bor:2.0.1"
-      # - bor-modified-for-heimdall-v2: "leovct/bor:1a6957c"
+      # - bor modified for heimdall-v2: "leovct/bor:1a6957c"
       # - erigon: "erigontech/erigon:v2.61.3"
       el_image: 0xpolygon/bor:2.0.1
 
@@ -268,9 +268,9 @@ polygon_pos_package:
       # The docker image that should be used for the CL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
-      # - heimdall: "0xpolygon/heimdall:1.2.0"
+      # - heimdall: "0xpolygon/heimdall:1.2.2"
       # - heimdall-v2: "0xpolygon/heimdall-v2:0.1.9"
-      cl_image: 0xpolygon/heimdall:1.2.0
+      cl_image: 0xpolygon/heimdall:1.2.2
 
       # The docker image that should be used for the CL's client database.
       # Leave blank to use the default image.
@@ -303,8 +303,8 @@ polygon_pos_package:
     # Default: "leovct/pos-el-genesis-builder:96a19dd"
     el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
     # Image used to generate L2 CL/EL validators configurations.
-    # Default: "leovct/pos-validator-config-generator:1.2.0-0.1.9"
-    validator_config_generator: leovct/pos-validator-config-generator:1.2.0-0.1.9
+    # Default: "leovct/pos-validator-config-generator:1.2.2-0.1.9"
+    validator_config_generator: leovct/pos-validator-config-generator:1.2.2-0.1.9
 
   # L2 network parameters.
   network_params:

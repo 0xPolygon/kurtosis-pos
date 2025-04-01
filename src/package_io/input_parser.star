@@ -4,7 +4,7 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:ed58f8a"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.0-0.1.9"  # Based on 0xpolygon/heimdall:1.2.0 and 0xpolygon/heimdall-v2:0.1.9.
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.2-0.1.9"  # Based on 0xpolygon/heimdall:1.2.2 and 0xpolygon/heimdall-v2:0.1.9.
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:2.0.1",
@@ -13,7 +13,7 @@ DEFAULT_EL_IMAGES = {
 }
 
 DEFAULT_CL_IMAGES = {
-    constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.2.0",
+    constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.2.2",
     constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.1.9",
 }
 
@@ -43,10 +43,10 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
 DEFAULT_POLYGON_POS_PARTICIPANT = {
     "el_type": constants.EL_TYPE.bor,
     "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
-    "el_log_level": "info",
+    "el_log_level": constants.LOG_LEVEL.info,
     "cl_type": constants.CL_TYPE.heimdall,
     "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
-    "cl_log_level": "info",
+    "cl_log_level": constants.LOG_LEVEL.info,
     "cl_db_image": DEFAULT_CL_DB_IMAGE,
     "is_validator": True,
     "count": 1,
@@ -104,7 +104,9 @@ def input_parser(plan, input_args):
 
     plan.print("Parsing the L2 input args")
     polygon_pos_input_args = input_args.get("polygon_pos_package", {})
-    polygon_pos_args = _parse_polygon_pos_args(plan, polygon_pos_input_args)
+    (polygon_pos_args, devnet_cl_type) = _parse_polygon_pos_args(
+        plan, polygon_pos_input_args
+    )
     plan.print("L2 input args parsed: {}".format(str(polygon_pos_args)))
 
     plan.print("Parsing the dev input args")
@@ -116,6 +118,7 @@ def input_parser(plan, input_args):
         "ethereum_package": ethereum_args,
         "polygon_pos_package": polygon_pos_args,
         "dev": dev_args,
+        "devnet_cl_type": devnet_cl_type,
     }
 
 
@@ -145,6 +148,7 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     participants = polygon_pos_args.get("participants", [])
     result["participants"] = _parse_participants(participants)
+    devnet_cl_type = _get_devnet_cl_type(result["participants"])
 
     setup_images = polygon_pos_args.get("setup_images", {})
     result["setup_images"] = _parse_setup_images(setup_images)
@@ -157,7 +161,7 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     # Sanity check and return the result.
     sanity_check.sanity_check_polygon_args(plan, result)
-    return _sort_dict_by_values(result)
+    return (_sort_dict_by_values(result), devnet_cl_type)
 
 
 def _parse_dev_args(plan, dev_args):
@@ -191,19 +195,6 @@ def _parse_participants(participants):
         # Create a mutable copy of participant.
         p = dict(p)
 
-        # Set default EL image based on `el_type` if provided.
-        el_type = p.get("el_type", "")
-        el_image = p.get("el_image", "")
-        if el_type and not el_image:
-            if el_type == constants.EL_TYPE.bor:
-                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
-            if el_type == constants.EL_TYPE.bor_modified_for_heimdall_v2:
-                p["el_image"] = DEFAULT_EL_IMAGES[
-                    constants.EL_TYPE.bor_modified_for_heimdall_v2
-                ]
-            elif el_type == constants.EL_TYPE.erigon:
-                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.erigon]
-
         # Set default CL image based on `cl_type` if provided
         cl_type = p.get("cl_type", "")
         cl_image = p.get("cl_image", "")
@@ -212,6 +203,26 @@ def _parse_participants(participants):
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall]
             elif cl_type == constants.CL_TYPE.heimdall_v2:
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2]
+            else:
+                fail("Invalid CL client type: '{}'.".format(cl_type))
+
+        # Set default EL image based on `el_type` if provided.
+        el_type = p.get("el_type", "")
+        el_image = p.get("el_image", "")
+        if el_type and not el_image:
+            if el_type == constants.EL_TYPE.bor:
+                if cl_type == constants.CL_TYPE.heimdall:
+                    p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
+                elif cl_type == constants.CL_TYPE.heimdall_v2:
+                    p["el_image"] = DEFAULT_EL_IMAGES[
+                        constants.EL_TYPE.bor_modified_for_heimdall_v2
+                    ]
+                else:
+                    fail("Invalid CL client type: '{}'.".format(cl_type))
+            elif el_type == constants.EL_TYPE.erigon:
+                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.erigon]
+            else:
+                fail("Invalid EL client type: '{}'.".format(el_type))
 
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
@@ -234,6 +245,11 @@ def _parse_participants(participants):
 
     # Sort each participant dictionary and return the result
     return [_sort_dict_by_values(p) for p in participants_with_defaults]
+
+
+def _get_devnet_cl_type(participants):
+    # Determine the devnet CL type to be able to select the appropriate validator address format later.
+    return participants[0].get("cl_type")
 
 
 def _parse_setup_images(setup_images):
