@@ -22,20 +22,20 @@ def launch(
     panoptichain_url = launch_panoptichain(
         plan,
         l1_context,
-        l2_participants,
-        l2_chain_id,
+        l2_context,
         l2_el_genesis_artifact,
         contract_addresses_artifact,
     )
-    prometheus_url = launch_prometheus(plan, l2_participants, panoptichain_url)
+    prometheus_url = launch_prometheus(
+        plan, l2_context.all_participants, panoptichain_url
+    )
     launch_grafana(plan, prometheus_url)
 
 
 def launch_panoptichain(
     plan,
     l1_context,
-    l2_participants,
-    l2_chain_id,
+    l2_context,
     l2_el_genesis_artifact,
     contract_addresses_artifact,
 ):
