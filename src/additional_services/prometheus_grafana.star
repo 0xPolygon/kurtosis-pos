@@ -157,6 +157,6 @@ def launch_grafana(plan, prometheus_url):
         plan,
         prometheus_url,
         name="grafana",
-        grafana_version=GRAFANA_VERSION,
+        image=GRAFANA_IMAGE,
         grafana_dashboards_files_artifact=grafana_dashboards_files_artifact,
     )
