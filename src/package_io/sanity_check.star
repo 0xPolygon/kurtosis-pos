@@ -24,7 +24,7 @@ POLYGON_POS_PARAMS = {
         "validator_stake_amount_eth",
         "validator_top_up_fee_amount_eth",
         "cl_chain_id",
-        "cl_chain_type",
+        "cl_environment",
         "cl_span_poll_interval",
         "cl_checkpoint_poll_interval",
         "el_chain_id",
@@ -48,6 +48,12 @@ VALID_CLIENT_COMBINATIONS = {
     ],
     constants.CL_TYPE.heimdall_v2: [constants.EL_TYPE.bor_modified_for_heimdall_v2],
 }
+
+VALID_CL_ENVIRONMENTS = [
+    constants.CL_ENVIRONMENT.mainnet,
+    constants.CL_ENVIRONMENT.mumbai,
+    constants.CL_ENVIRONMENT.local,
+]
 
 DEV_PARAMS = [
     "should_deploy_l1",  # boolean
@@ -85,8 +91,8 @@ def sanity_check_polygon_args(plan, input_args):
     for p in participants:
         _validate_participant(p)
 
-    cl_chain_type = network_params.get("cl_chain_type")
-    validate_cl_chain_type(cl_chain_type, participants)
+    cl_environment = network_params.get("cl_environment")
+    validate_cl_environment(cl_environment, participants)
 
     plan.print("Sanity check passed")
 
@@ -187,6 +193,7 @@ def validate_chain_ids(cl_chain_id, el_chain_id):
             )
         )
 
+
 def _validate_participant(p):
     _validate_str(
         p, "cl_type", [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
@@ -244,12 +251,25 @@ def _validate_participant(p):
     _validate_strictly_positive_int(p, "count")
 
 
-# The CL chain type is only used in Heimdall (v1) templates to specify the height for applying
+# The CL environment is only used in Heimdall (v1) templates to specify the height for applying
 # specific selection algorithms, span overrides, or hardforks. It also determines the default seeds.
-def validate_cl_chain_type(cl_chain_type, participants):
+def validate_cl_environment(cl_environment, participants):
     devnet_cl_type = participants[0].get("cl_type")
-    if cl_chain_type != "" && devnet_cl_type != constants.CL_TYPE.heimdall:
-        fail("Only heimdall (v1) supports the `cl_chain_type` but found `{}` devnet CL type.".format(devnet_cl_type))
+
+    if cl_environment != "":
+        if devnet_cl_type != constants.CL_TYPE.heimdall:
+            fail(
+                'Only heimdall (v1) supports the CL environment but found "{}" devnet CL type.'.format(
+                    devnet_cl_type
+                )
+            )
+
+        if cl_environment not in VALID_CL_ENVIRONMENTS:
+            fail(
+                'Invalid CL environment: "{}". Allowed values: {}.'.format(
+                    cl_environment, VALID_CL_ENVIRONMENTS
+                )
+            )
 
 
 def _validate_str(input, attribute, allowed_values):

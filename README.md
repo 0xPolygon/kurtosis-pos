@@ -332,9 +332,9 @@ polygon_pos_package:
     # The checkpoint pool interval on the CL chain.
     # Default: "1m0s"
     cl_checkpoint_poll_interval: 1m0s
-    # The CL chain type.
+    # The CL environment.
     # Default: "mainnet"
-    cl_chain_type: mainnet
+    cl_environment: mainnet
 
     ## Execution Layer parameters.
     # The EL network id.

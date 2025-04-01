@@ -7,4 +7,4 @@ polygon_pos_package:
       el_log_level: trace
       is_validator: true
   network_params:
-    cl_chain_type: local
+    cl_environment: local

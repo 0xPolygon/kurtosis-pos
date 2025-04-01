@@ -48,8 +48,8 @@ def launch(
                 ),
                 data={
                     # Network params.
-                    "chain_type": network_params.get(
-                        "cl_chain_type",
+                    "environment": network_params.get(
+                        "cl_environment",
                     ),
                     "span_poll_interval": network_params.get(
                         "cl_span_poll_interval", ""
