@@ -150,7 +150,7 @@ Trigger a state sync using the [agglayer/e2e](https://github.com/agglayer/e2e) r
 ```bash
 git clone https://github.com/agglayer/e2e.git
 pushd e2e
-bats --filter-tags pos,state-sync --recursive tests/
+bats --filter-tags pos,bridge,matic,pol --recursive tests/
 ```
 
 ### Make Changes

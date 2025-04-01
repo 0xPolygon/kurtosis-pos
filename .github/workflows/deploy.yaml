@@ -58,7 +58,7 @@ jobs:
         run: bash scripts/discover.sh && bash scripts/monitor.sh
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,state-sync --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
@@ -149,7 +149,7 @@ jobs:
           bash scripts/monitor.sh
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,state-sync --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
@@ -215,7 +215,7 @@ jobs:
         run: bash scripts/discover.sh && bash scripts/monitor.sh
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,state-sync --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
@@ -295,7 +295,7 @@ jobs:
         run: bash scripts/discover.sh && bash scripts/monitor.sh
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,state-sync --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
