@@ -244,14 +244,14 @@ polygon_pos_package:
   participants:
     - ## Execution Layer (EL) specific flags.
       # The type of EL client that should be started.
-      # Valid values are: "bor", "bor-modified-for-heimdall-v2", "erigon"
+      # Valid values are: "bor", "erigon"
       el_type: bor
 
       # The docker image that should be used for the EL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - bor: "0xpolygon/bor:2.0.1"
-      # - bor-modified-for-heimdall-v2: "leovct/bor:1a6957c"
+      # - bor modified for heimdall-v2: "leovct/bor:1a6957c"
       # - erigon: "erigontech/erigon:v2.61.3"
       el_image: 0xpolygon/bor:2.0.1
 

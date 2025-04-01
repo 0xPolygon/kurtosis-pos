@@ -195,19 +195,6 @@ def _parse_participants(participants):
         # Create a mutable copy of participant.
         p = dict(p)
 
-        # Set default EL image based on `el_type` if provided.
-        el_type = p.get("el_type", "")
-        el_image = p.get("el_image", "")
-        if el_type and not el_image:
-            if el_type == constants.EL_TYPE.bor:
-                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
-            if el_type == constants.EL_TYPE.bor_modified_for_heimdall_v2:
-                p["el_image"] = DEFAULT_EL_IMAGES[
-                    constants.EL_TYPE.bor_modified_for_heimdall_v2
-                ]
-            elif el_type == constants.EL_TYPE.erigon:
-                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.erigon]
-
         # Set default CL image based on `cl_type` if provided
         cl_type = p.get("cl_type", "")
         cl_image = p.get("cl_image", "")
@@ -216,6 +203,26 @@ def _parse_participants(participants):
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall]
             elif cl_type == constants.CL_TYPE.heimdall_v2:
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2]
+            else:
+                fail("Invalid CL client type: '{}'.".format(cl_type))
+
+        # Set default EL image based on `el_type` if provided.
+        el_type = p.get("el_type", "")
+        el_image = p.get("el_image", "")
+        if el_type and not el_image:
+            if el_type == constants.EL_TYPE.bor:
+                if cl_type == constants.CL_TYPE.heimdall:
+                    p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
+                elif cl_type == constants.CL_TYPE.heimdall_v2:
+                    p["el_image"] = DEFAULT_EL_IMAGES[
+                        constants.EL_TYPE.bor_modified_for_heimdall_v2
+                    ]
+                else:
+                    fail("Invalid CL client type: '{}'.".format(cl_type))
+            elif el_type == constants.EL_TYPE.erigon:
+                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.erigon]
+            else:
+                fail("Invalid EL client type: '{}'.".format(el_type))
 
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
