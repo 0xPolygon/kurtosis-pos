@@ -36,10 +36,10 @@ def launch(
                     "log_level": participant.get("cl_log_level"),
                     "persistent_peers": cl_node_ids,
                     # Port numbers.
-                    "proxy_app_port_number": cl_shared.CL_PROXY_LISTEN_PORT_NUMBER,
-                    "tendermint_rpc_port_number": cl_shared.CL_RPC_PORT_NUMBER,
-                    "p2p_listen_port_number": cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
-                    "metrics_port_number": cl_shared.CL_METRICS_PORT_NUMBER,
+                    "proxy_app_port_number": cl_shared.PROXY_LISTEN_PORT_NUMBER,
+                    "tendermint_rpc_port_number": cl_shared.RPC_PORT_NUMBER,
+                    "p2p_listen_port_number": cl_shared.NODE_LISTEN_PORT_NUMBER,
+                    "metrics_port_number": cl_shared.METRICS_PORT_NUMBER,
                 },
             ),
             "heimdall-config.toml": struct(
@@ -62,8 +62,8 @@ def launch(
                     "el_rpc_url": el_rpc_url,
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
-                    "rest_api_port_number": cl_shared.CL_REST_API_PORT_NUMBER,
-                    "tendermint_rpc_port_number": cl_shared.CL_RPC_PORT_NUMBER,
+                    "rest_api_port_number": cl_shared.REST_API_PORT_NUMBER,
+                    "tendermint_rpc_port_number": cl_shared.RPC_PORT_NUMBER,
                 },
             ),
         },
@@ -74,31 +74,31 @@ def launch(
         config=ServiceConfig(
             image=participant.get("cl_image"),
             ports={
-                cl_shared.CL_REST_API_PORT_ID: PortSpec(
-                    number=cl_shared.CL_REST_API_PORT_NUMBER,
+                cl_shared.REST_API_PORT_ID: PortSpec(
+                    number=cl_shared.REST_API_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                cl_shared.CL_GRPC_PORT_ID: PortSpec(
-                    number=cl_shared.CL_GRPC_PORT_NUMBER,
+                cl_shared.GRPC_PORT_ID: PortSpec(
+                    number=cl_shared.GRPC_PORT_NUMBER,
                     application_protocol="grpc",
                 ),
-                cl_shared.CL_NODE_LISTEN_PORT_ID: PortSpec(
-                    number=cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
+                cl_shared.NODE_LISTEN_PORT_ID: PortSpec(
+                    number=cl_shared.NODE_LISTEN_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                cl_shared.CL_RPC_PORT_ID: PortSpec(
-                    number=cl_shared.CL_RPC_PORT_NUMBER,
+                cl_shared.RPC_PORT_ID: PortSpec(
+                    number=cl_shared.RPC_PORT_NUMBER,
                     application_protocol="http",
                     wait=None,  # Disable the check for this port.
                 ),
-                cl_shared.CL_METRICS_PORT_ID: PortSpec(
-                    number=cl_shared.CL_METRICS_PORT_NUMBER,
+                cl_shared.METRICS_PORT_ID: PortSpec(
+                    number=cl_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
                 ),
             },
             files={
                 "{}/config".format(
-                    cl_shared.CL_CONFIG_FOLDER_PATH
+                    cl_shared.CONFIG_FOLDER_PATH
                 ): heimdall_node_config_artifacts,
                 "/opt/data/genesis": cl_genesis_artifact,
                 "/opt/data/config": cl_validator_config_artifact,
@@ -109,15 +109,15 @@ def launch(
                     [
                         # Copy CL validator config inside heimdall config folder.
                         "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
-                            cl_shared.CL_CONFIG_FOLDER_PATH
+                            cl_shared.CONFIG_FOLDER_PATH
                         ),
-                        "mkdir {}/data".format(cl_shared.CL_CONFIG_FOLDER_PATH),
+                        "mkdir {}/data".format(cl_shared.CONFIG_FOLDER_PATH),
                         "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
-                            cl_shared.CL_CONFIG_FOLDER_PATH
+                            cl_shared.CONFIG_FOLDER_PATH
                         ),
                         # Start heimdall.
                         "heimdalld start --all --bridge --rest-server --home {}".format(
-                            cl_shared.CL_CONFIG_FOLDER_PATH
+                            cl_shared.CONFIG_FOLDER_PATH
                         ),
                     ]
                 )

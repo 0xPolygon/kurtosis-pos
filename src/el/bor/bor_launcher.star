@@ -41,10 +41,10 @@ def launch(
                     # network params
                     "static_nodes": str(el_static_nodes),
                     # ports
-                    "rpc_port_number": el_shared.EL_RPC_PORT_NUMBER,
-                    "ws_port_number": el_shared.EL_WS_PORT_NUMBER,
+                    "rpc_port_number": el_shared.RPC_PORT_NUMBER,
+                    "ws_port_number": el_shared.WS_PORT_NUMBER,
                     "discovery_port_number": el_shared.EL_DISCOVERY_PORT_NUMBER,
-                    "metrics_port_number": el_shared.EL_METRICS_PORT_NUMBER,
+                    "metrics_port_number": el_shared.METRICS_PORT_NUMBER,
                 },
             ),
         },
@@ -86,13 +86,13 @@ def launch(
             image=participant.get("el_image"),
             # All port checks are disabled, see the comment above.
             ports={
-                el_shared.EL_RPC_PORT_ID: PortSpec(
-                    number=el_shared.EL_RPC_PORT_NUMBER,
+                el_shared.RPC_PORT_ID: PortSpec(
+                    number=el_shared.RPC_PORT_NUMBER,
                     application_protocol="http",
                     wait=None,
                 ),
-                el_shared.EL_WS_PORT_ID: PortSpec(
-                    number=el_shared.EL_WS_PORT_NUMBER,
+                el_shared.WS_PORT_ID: PortSpec(
+                    number=el_shared.WS_PORT_NUMBER,
                     application_protocol="ws",
                     wait=None,
                 ),
@@ -101,8 +101,8 @@ def launch(
                     application_protocol="http",
                     wait=None,
                 ),
-                el_shared.EL_METRICS_PORT_ID: PortSpec(
-                    number=el_shared.EL_METRICS_PORT_NUMBER,
+                el_shared.METRICS_PORT_ID: PortSpec(
+                    number=el_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
                     wait=None,
                 ),

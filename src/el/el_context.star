@@ -1,4 +1,4 @@
-def new_el_context(
+def new_context(
     service_name,
     rpc_http_url,
     ws_url,
