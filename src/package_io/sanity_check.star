@@ -33,10 +33,8 @@ POLYGON_POS_PARAMS = {
         "el_gas_limit",
     ],
     "additional_services": [
-        "blockscout",
-        "prometheus_grafana",
-        "test_runner",
-        "tx_spammer",
+        getattr(ADDITIONAL_SERVICES, field)
+        for field in dir(constants.ADDITIONAL_SERVICES)
     ],
 }
 
