@@ -1,12 +1,12 @@
-bor = import_module("./el/bor/bor_launcher.star")
+bor_launcher = import_module("./el/bor/launcher.star")
 cl_context_module = import_module("./cl/context.star")
 cl_shared = import_module("./cl/shared.star")
 constants = import_module("./package_io/constants.star")
 el_context_module = import_module("./el/context.star")
 el_shared = import_module("./el/shared.star")
-erigon = import_module("./el/erigon/erigon_launcher.star")
-heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
-heimdall_v2 = import_module("./cl/heimdall_v2/heimdall_v2_launcher.star")
+erigon_launcher = import_module("./el/erigon/launcher.star")
+heimdall_launcher = import_module("./cl/heimdall/launcher.star")
+heimdall_v2_launcher = import_module("./cl/heimdall_v2/launcher.star")
 participant_module = import_module("./participant.star")
 pre_funded_accounts = import_module(
     "./prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
@@ -35,19 +35,19 @@ def launch(
 
     el_launchers = {
         "bor": {
-            "launch_method": bor.launch,
+            "launch_method": bor_launcher.launch,
         },
         "erigon": {
-            "launch_method": erigon.launch,
+            "launch_method": erigon_launcher.launch,
         },
     }
 
     cl_launchers = {
         "heimdall": {
-            "launch_method": heimdall.launch,
+            "launch_method": heimdall_launcher.launch,
         },
         "heimdall-v2": {
-            "launch_method": heimdall_v2.launch,
+            "launch_method": heimdall_v2_launcher.launch,
         },
     }
 
