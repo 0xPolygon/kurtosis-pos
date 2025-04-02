@@ -117,7 +117,7 @@ def input_parser(plan, input_args):
     dev_args = _parse_dev_args(plan, dev_input_args)
     plan.print("Dev input args parsed: {}".format(str(dev_args)))
 
-    return (ethereum_args, polygon_pos_input_args, dev_args, devnet_cl_type)
+    return (ethereum_args, polygon_pos_args, dev_args, devnet_cl_type)
 
 
 def _parse_ethereum_args(plan, ethereum_args):

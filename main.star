@@ -26,7 +26,7 @@ def run(plan, args):
     # Parse input arguments.
     (
         ethereum_args,
-        polygon_pos_input_args,
+        polygon_pos_args,
         dev_args,
         devnet_cl_type,
     ) = input_parser.input_parser(plan, args)
