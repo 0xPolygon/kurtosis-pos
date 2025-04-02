@@ -139,14 +139,14 @@ def launch(
                     validator_config_artifacts.cl_configs[validator_index],
                     cl_node_ids,
                     l1_rpc_url,
-                    "http://{}:{}".format(el_node_name, el_shared.EL_RPC_PORT_NUMBER),
+                    "http://{}:{}".format(el_node_name, el_shared.RPC_PORT_NUMBER),
                     rabbitmq_url,
                 )
-                cl_context = cl_context_module.new_cl_context(
+                cl_context = cl_context_module.new_context(
                     service_name=cl_node_name,
-                    api_url=cl_service.ports[cl_shared.CL_REST_API_PORT_ID].url,
-                    rpc_url=cl_service.ports[cl_shared.CL_RPC_PORT_ID].url,
-                    metrics_url=cl_service.ports[cl_shared.CL_METRICS_PORT_ID].url,
+                    api_url=cl_service.ports[cl_shared.REST_API_PORT_ID].url,
+                    rpc_url=cl_service.ports[cl_shared.RPC_PORT_ID].url,
+                    metrics_url=cl_service.ports[cl_shared.METRICS_PORT_ID].url,
                 )
                 if not first_cl_context:
                     first_cl_context = cl_context
@@ -168,11 +168,11 @@ def launch(
                 network_data.el_static_nodes,
                 network_params.get("el_chain_id"),
             )
-            el_context = el_context_module.new_el_context(
+            el_context = el_context_module.new_context(
                 service_name=el_node_name,
-                rpc_http_url=el_service.ports[el_shared.EL_RPC_PORT_ID].url,
-                ws_url=el_service.ports[el_shared.EL_WS_PORT_ID].url,
-                metrics_url=el_service.ports[el_shared.EL_METRICS_PORT_ID].url,
+                rpc_http_url=el_service.ports[el_shared.RPC_PORT_ID].url,
+                ws_url=el_service.ports[el_shared.WS_PORT_ID].url,
+                metrics_url=el_service.ports[el_shared.METRICS_PORT_ID].url,
             )
 
             # Add the node to the all_participants array.
@@ -236,7 +236,7 @@ def _prepare_network_data(participants):
                     validator_account.cometbft.public_key,
                     validator_account.cometbft.private_key,
                     cl_node_name,
-                    cl_shared.CL_NODE_LISTEN_PORT_NUMBER,
+                    cl_shared.NODE_LISTEN_PORT_NUMBER,
                 )
                 cl_validator_configs.append(cl_validator_config)
 
