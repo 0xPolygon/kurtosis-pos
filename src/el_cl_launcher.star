@@ -195,8 +195,12 @@ def launch(
     # The first producer should have committed a span.
     wait.wait_for_l2_startup(plan, first_cl_context.api_url, devnet_cl_type)
 
-    # Return the L2 participants and their context.
-    return all_participants
+    # Return the L2 context.
+    return struct(
+        el_chain_id=network_params.get("el_chain_id"),
+        devnet_cl_type=devnet_cl_type,
+        all_participants=all_participants,
+    )
 
 
 def _prepare_network_data(participants):
@@ -340,6 +344,7 @@ def _generate_validator_config(
 
 def _read_cl_persistent_peers(plan, cl_persistent_peers_artifact):
     result = plan.run_sh(
+        name="cl-validator-node-ids-reader",
         description="Reading CL validator node ids",
         files={
             "/opt/data": cl_persistent_peers_artifact,
