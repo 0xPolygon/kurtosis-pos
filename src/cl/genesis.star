@@ -4,12 +4,12 @@ contract_util = import_module("../../contracts/util.star")
 
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/cl/genesis/cl-genesis-builder.sh"
+    "../../../static_files/cl/genesis/builder.sh"
 )
 CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/cl/genesis/"
 HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
-    constants.CL_TYPE.heimdall: "heimdall-genesis.json",
-    constants.CL_TYPE.heimdall_v2: "heimdall-v2-genesis.json",
+    constants.CL_TYPE.heimdall: "heimdall.json",
+    constants.CL_TYPE.heimdall_v2: "heimdall-v2.json",
 }
 
 
@@ -135,7 +135,7 @@ def generate(
                 name="l2-cl-genesis",
             ),
         ],
-        run="sh /opt/data/genesis-builder/cl-genesis-builder.sh",
+        run="sh /opt/data/genesis-builder/builder.sh",
     )
     artifact_count = len(result.files_artifacts)
     if artifact_count != 1:

@@ -327,7 +327,7 @@ def _generate_validator_config(
                 name="l2-cl-persistent-peers",
             )
         ],
-        run="bash /opt/data/validator_setup.sh",
+        run="bash /opt/data/setup.sh",
     )
     # Artifacts are ordered to match the `StoreSpec` definitions.
     n = len(result.files_artifacts) // 2  # Assuming equal number of cl and el configs.
