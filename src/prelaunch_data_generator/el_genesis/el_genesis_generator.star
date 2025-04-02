@@ -40,7 +40,7 @@ def generate_el_genesis_data(
         src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
         name="l2-el-genesis-builder-config",
     )
-    return plan.run_sh(
+    result = plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
         image=setup_images.get("el_genesis_builder"),
@@ -69,3 +69,12 @@ def generate_el_genesis_data(
         ],
         run="bash /opt/data/genesis-builder/el-genesis-builder.sh",
     )
+    artifact_count = len(result.files_artifacts)
+    if artifact_count != 1:
+        fail(
+            "The EL genesis generator should have generated 1 artifact, got {}.".format(
+                artifact_count
+            )
+        )
+    l2_el_genesis_artifact = result.files_artifacts[0]
+    return l2_el_genesis_artifact

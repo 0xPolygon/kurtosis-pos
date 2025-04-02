@@ -28,18 +28,17 @@ ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 
 def run(plan, args):
     # Parse L1, L2 and dev input args.
-    args = input_parser.input_parser(plan, args)
-    ethereum_args = args.get("ethereum_package")
-    polygon_pos_args = args.get("polygon_pos_package")
-    dev_args = args.get("dev")
-    devnet_cl_type = args.get("devnet_cl_type")
+    (
+        ethereum_args,
+        polygon_pos_input_args,
+        dev_args,
+        devnet_cl_type,
+    ) = input_parser.input_parser(plan, args)
 
     participants = polygon_pos_args.get("participants")
     validator_accounts = get_validator_accounts(participants)
     l2_network_params = polygon_pos_args.get("network_params")
-    admin_private_key = hex.normalize(
-        l2_network_params.get("admin_private_key")
-    )  # Used to deploy Polygon PoS contracts on both L1 and L2.
+    admin_private_key = hex.normalize(l2_network_params.get("admin_private_key"))
 
     # Deploy a local L1 if needed.
     # Otherwise, use the provided rpc url.
@@ -93,54 +92,30 @@ def run(plan, args):
     if dev_args.get("should_deploy_matic_contracts"):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
-
-        result = contract_deployer.deploy_l1_contracts(
+        (
+            l1_contract_addresses_artifact,
+            validator_config_artifact,
+        ) = contract_deployer.deploy_l1_contracts(
             plan,
             polygon_pos_args,
             l1_context.rpc_url,
             admin_private_key,
             validator_accounts,
         )
-        artifact_count = len(result.files_artifacts)
-        if artifact_count != 2:
-            fail(
-                "The L1 contract deployer should have generated 2 artifacts, got {}.".format(
-                    artifact_count
-                )
-            )
-        l1_contract_addresses_artifact = result.files_artifacts[0]
-        validator_config_artifact = result.files_artifacts[1]
 
-        result = cl_genesis_generator.generate_cl_genesis_data(
+        l2_cl_genesis_artifact = cl_genesis_generator.generate_cl_genesis_data(
             plan,
             polygon_pos_args,
             devnet_cl_type,
             validator_accounts,
             l1_contract_addresses_artifact,
         )
-        artifact_count = len(result.files_artifacts)
-        if artifact_count != 1:
-            fail(
-                "The CL genesis generator should have generated 1 artifact, got {}.".format(
-                    artifact_count
-                )
-            )
-        l2_cl_genesis_artifact = result.files_artifacts[0]
-
-        result = el_genesis_generator.generate_el_genesis_data(
+        l2_el_genesis_artifact = el_genesis_generator.generate_el_genesis_data(
             plan,
             polygon_pos_args,
             validator_config_artifact,
             l2_network_params.get("admin_address"),
         )
-        artifact_count = len(result.files_artifacts)
-        if artifact_count != 1:
-            fail(
-                "The EL genesis generator should have generated 1 artifact, got {}.".format(
-                    artifact_count
-                )
-            )
-        l2_el_genesis_artifact = result.files_artifacts[0]
     else:
         plan.print("Using L2 EL/CL genesis provided")
         l2_el_genesis_artifact = plan.render_templates(
@@ -194,22 +169,16 @@ def run(plan, args):
     l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
 
     # Deploy MATIC contracts to L2.
-    result = contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
-        plan,
-        polygon_pos_args,
-        l1_context.rpc_url,
-        l2_rpc_url,
-        admin_private_key,
-        l1_contract_addresses_artifact,
-    )
-    artifact_count = len(result.files_artifacts)
-    if artifact_count != 1:
-        fail(
-            "The L2 contract deployer should have generated 1 artifact, got {}.".format(
-                artifact_count
-            )
+    contract_addresses_artifact = (
+        contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
+            plan,
+            polygon_pos_args,
+            l1_context.rpc_url,
+            l2_rpc_url,
+            admin_private_key,
+            l1_contract_addresses_artifact,
         )
-    contract_addresses_artifact = result.files_artifacts[0]
+    )
 
     # Deploy additional services.
     additional_services = polygon_pos_args.get("additional_services")

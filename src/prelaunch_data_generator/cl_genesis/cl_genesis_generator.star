@@ -122,7 +122,7 @@ def generate_cl_genesis_data(
         src=CL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
         name="l2-cl-genesis-builder-config",
     )
-    return plan.run_sh(
+    result = plan.run_sh(
         name="l2-cl-genesis-generator",
         description="Generating L2 CL genesis",
         files={
@@ -137,6 +137,15 @@ def generate_cl_genesis_data(
         ],
         run="sh /opt/data/genesis-builder/cl-genesis-builder.sh",
     )
+    artifact_count = len(result.files_artifacts)
+    if artifact_count != 1:
+        fail(
+            "The CL genesis generator should have generated 1 artifact, got {}.".format(
+                artifact_count
+            )
+        )
+    l2_cl_genesis_artifact = result.files_artifacts[0]
+    return l2_cl_genesis_artifact
 
 
 def _get_heimdall_validator_data(validator_accounts):
