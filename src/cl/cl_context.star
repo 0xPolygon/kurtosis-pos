@@ -1,4 +1,4 @@
-def new_cl_context(
+def new_context(
     service_name,
     api_url,
     rpc_url,
