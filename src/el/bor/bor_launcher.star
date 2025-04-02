@@ -1,4 +1,4 @@
-el_shared = import_module("../el_shared.star")
+el_shared = import_module("../shared.star")
 
 
 # Port identifiers and numbers.

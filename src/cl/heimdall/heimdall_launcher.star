@@ -1,4 +1,4 @@
-cl_shared = import_module("../cl_shared.star")
+cl_shared = import_module("../shared.star")
 
 
 # The folder where the heimdall templates are stored in the repository.

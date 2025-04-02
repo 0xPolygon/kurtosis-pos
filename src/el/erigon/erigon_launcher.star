@@ -1,4 +1,4 @@
-el_shared = import_module("../el_shared.star")
+el_shared = import_module("../shared.star")
 
 
 # The folder where the erigon template config is stored in the repository.
