@@ -8,7 +8,7 @@ erigon_launcher = import_module("./el/erigon/launcher.star")
 heimdall_launcher = import_module("./cl/heimdall/launcher.star")
 heimdall_v2_launcher = import_module("./cl/heimdall_v2/launcher.star")
 participant_module = import_module("./participant.star")
-pre_funded_accounts = import_module("./pre_funded_accounts/accounts.star")
+prefunded_accounts = import_module("./prefunded_accounts/accounts.star")
 wait = import_module("./wait/wait.star")
 
 
@@ -162,7 +162,7 @@ def launch(
                 el_genesis_artifact,
                 el_validator_config_artifact,
                 first_cl_context.api_url,
-                pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index],
+                prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index],
                 network_data.el_static_nodes,
                 network_params.get("el_chain_id"),
             )
@@ -223,7 +223,7 @@ def _prepare_network_data(participants):
                 el_node_name = _generate_el_node_name(
                     participant, participant_index + 1
                 )
-                validator_account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[
+                validator_account = prefunded_accounts.PREFUNDED_ACCOUNTS[
                     participant_index
                 ]
 
@@ -282,7 +282,7 @@ def _generate_enode_url(participant, eth_public_key, el_node_name):
     return "enode://{}@{}:{}?discport=0".format(
         eth_public_key,
         el_node_name,
-        bor.BOR_DISCOVERY_PORT_NUMBER,
+        bor_launcher.BOR_DISCOVERY_PORT_NUMBER,
     )
 
 

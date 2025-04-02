@@ -40,5 +40,5 @@ def get_cl_validator_account(validator, devnet_cl_type):
         )
 
 
-def to_ethereum_pkg_pre_funded_account(address, balance):
+def to_ethereum_pkg_prefunded_account(address, balance):
     return {address: {"balance": "{}ETH".format(balance)}}

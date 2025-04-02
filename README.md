@@ -298,7 +298,7 @@ polygon_pos_package:
     ## Validators parameters.
     # This mnemonic will be used to create keystores for CL/EL validators.
     # Note that validators accounts are prefunded to make the validator setup easier and faster.
-    # Take a look at src/pre_funded_accounts/README.md
+    # Take a look at src/prefunded_accounts/README.md
     # Default: "sibling lend brave explain wait orbit mom alcohol disorder message grace sun"
     preregistered_validator_keys_mnemonic: sibling lend brave explain wait orbit mom alcohol disorder message grace sun
     # The amount of ether to stake for each validator.
