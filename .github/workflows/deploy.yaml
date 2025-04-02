@@ -148,21 +148,26 @@ jobs:
           fi
           bash scripts/monitor.sh
 
-      - name: Test state syncs
+      - name: Check if test runner is deployed
+        id: check-test-runner
         run: |
+          # The test runner is deployed by default.
+          test_runner_deployed=true
+
           # Verify if additional services are defined and ensure the test runner is deployed.
-          # If the test runner is not deployed, skip the state sync test.
           additional_services=$(yq '.polygon_pos_package.additional_services' ${{ matrix.file.path }})
           if [[ "${additional_services}" != "null" ]]; then
             is_test_runner_deployed=$(yq '.polygon_pos_package.additional_services | contains(["test_runner"])' ${{ matrix.file.path }})
             if [[ "${is_test_runner_deployed}" != "true" ]]; then
-              echo "Skipping state sync test as the test runner is not deployed in the environment."
-              exit
+              test_runner_deployed=false
             fi
           fi
 
-          # Proceed with the state sync test as the test runner is deployed by default.
-          kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+          echo "test_runner_deployed=${test_runner_deployed}" >> $GITHUB_OUTPUT
+
+      - name: Test state syncs
+        if: steps.check-test-runner.outputs.test_runner_deployed == 'true'
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
