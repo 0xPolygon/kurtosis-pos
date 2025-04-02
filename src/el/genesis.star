@@ -9,7 +9,7 @@ EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/el/genesis.json"
 
 
-def generate_genesis(plan, polygon_pos_args, validator_config_artifact, admin_address):
+def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
 

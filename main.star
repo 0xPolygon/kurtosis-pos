@@ -2,15 +2,11 @@ account_util = import_module(
     "./src/prelaunch_data_generator/genesis_constants/account.star"
 )
 blockscout = import_module("./src/additional_services/blockscout.star")
-cl_genesis_generator = import_module(
-    "./src/prelaunch_data_generator/cl_genesis/generator.star"
-)
+cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/package_io/constants.star")
 contract_deployer = import_module("./src/contracts/contract_deployer.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
-el_genesis_generator = import_module(
-    "./src/prelaunch_data_generator/el_genesis/generator.star"
-)
+el_genesis = import_module("./src/el/genesis.star")
 el_shared = import_module("./src/el/el_shared.star")
 hex = import_module("./src/hex/hex.star")
 input_parser = import_module("./src/package_io/input_parser.star")
@@ -104,14 +100,14 @@ def run(plan, args):
             validator_accounts,
         )
 
-        l2_cl_genesis_artifact = cl_genesis_generator.generate_genesis(
+        l2_cl_genesis_artifact = cl_genesis.generate(
             plan,
             polygon_pos_args,
             devnet_cl_type,
             validator_accounts,
             l1_contract_addresses_artifact,
         )
-        l2_el_genesis_artifact = el_genesis_generator.generate_genesis(
+        l2_el_genesis_artifact = el_genesis.generate(
             plan,
             polygon_pos_args,
             validator_config_artifact,
