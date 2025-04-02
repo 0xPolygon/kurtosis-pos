@@ -34,7 +34,7 @@ docker build \
   --build-arg MATIC_CONTRACTS_BRANCH="${matic_contracts_branch}" \
   --build-arg MATIC_CONTRACTS_TAG_OR_COMMIT_SHA="${matic_contracts_commit_sha}" \
   --tag "${image_name}" \
-  --file pos-contract-deployer-node-16.Dockerfile \
+  --file pos-contract-deployer/node-16.Dockerfile \
   .
 docker push "${image_name}"
 ```
@@ -51,7 +51,7 @@ docker build \
   --build-arg POS_CONTRACTS_BRANCH="${pos_contracts_branch}" \
   --build-arg POS_CONTRACTS_TAG_OR_COMMIT_SHA="${pos_contracts_commit_sha}" \
   --tag "${image_name}" \
-  --file pos-contract-deployer-node-20.Dockerfile \
+  --file pos-contract-deployer/node-20.Dockerfile \
   .
 docker push "${image_name}"
 ```
