@@ -13,7 +13,7 @@ HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
 }
 
 
-def generate_cl_genesis_data(
+def generate_genesis(
     plan,
     polygon_pos_args,
     devnet_cl_type,

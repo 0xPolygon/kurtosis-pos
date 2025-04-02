@@ -3,13 +3,13 @@ account_util = import_module(
 )
 blockscout = import_module("./src/additional_services/blockscout.star")
 cl_genesis_generator = import_module(
-    "./src/prelaunch_data_generator/cl_genesis/cl_genesis_generator.star"
+    "./src/prelaunch_data_generator/cl_genesis/generator.star"
 )
 constants = import_module("./src/package_io/constants.star")
 contract_deployer = import_module("./src/contracts/contract_deployer.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis_generator = import_module(
-    "./src/prelaunch_data_generator/el_genesis/el_genesis_generator.star"
+    "./src/prelaunch_data_generator/el_genesis/generator.star"
 )
 el_shared = import_module("./src/el/el_shared.star")
 hex = import_module("./src/hex/hex.star")
@@ -27,7 +27,6 @@ ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 
 
 def run(plan, args):
-    # Parse L1, L2 and dev input args.
     (
         ethereum_args,
         polygon_pos_input_args,
@@ -92,6 +91,7 @@ def run(plan, args):
     if dev_args.get("should_deploy_matic_contracts"):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
+
         (
             l1_contract_addresses_artifact,
             validator_config_artifact,
@@ -103,14 +103,14 @@ def run(plan, args):
             validator_accounts,
         )
 
-        l2_cl_genesis_artifact = cl_genesis_generator.generate_cl_genesis_data(
+        l2_cl_genesis_artifact = cl_genesis_generator.generate_genesis(
             plan,
             polygon_pos_args,
             devnet_cl_type,
             validator_accounts,
             l1_contract_addresses_artifact,
         )
-        l2_el_genesis_artifact = el_genesis_generator.generate_el_genesis_data(
+        l2_el_genesis_artifact = el_genesis_generator.generate_genesis(
             plan,
             polygon_pos_args,
             validator_config_artifact,
