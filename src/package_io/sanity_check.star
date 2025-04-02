@@ -33,7 +33,7 @@ POLYGON_POS_PARAMS = {
         "el_gas_limit",
     ],
     "additional_services": [
-        getattr(ADDITIONAL_SERVICES, field)
+        getattr(constants.ADDITIONAL_SERVICES, field)
         for field in dir(constants.ADDITIONAL_SERVICES)
     ],
 }
