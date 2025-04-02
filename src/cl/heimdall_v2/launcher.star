@@ -2,7 +2,7 @@ cl_shared = import_module("../shared.star")
 
 
 # The folder where the heimdall templates are stored in the repository.
-HEIMDALL_TEMPLATES_FOLDER_PATH = "../../../static_files/heimdall_v2"
+HEIMDALL_TEMPLATES_FOLDER_PATH = "../../../static_files/cl/heimdall_v2"
 
 
 def launch(

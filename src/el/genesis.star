@@ -4,9 +4,9 @@ math = import_module("../../math/math.star")
 
 
 EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/genesis/el/el-genesis-builder.sh"
+    "../../../static_files/el/genesis/el-genesis-builder.sh"
 )
-EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/genesis/el/genesis.json"
+EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/el/genesis/genesis.json"
 
 
 def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):

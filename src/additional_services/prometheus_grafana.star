@@ -5,7 +5,7 @@ PROMETHEUS_IMAGE = "prom/prometheus:v3.2.1"
 
 GRAFANA_PACKAGE = "github.com/kurtosis-tech/grafana-package/main.star@c8ff0b52d25deb0bc4ec95971dcf25b2fca11287"
 GRAFANA_IMAGE = "grafana/grafana:11.6.0"
-GRAFANA_DASHBOARDS = "../../static_files/grafana/dashboards"
+GRAFANA_DASHBOARDS = "../../static_files/additional_services/grafana/dashboards"
 
 PANOPTICHAIN_IMAGE = "ghcr.io/0xpolygon/panoptichain:v1.2.3"
 PANOPTICHAIN_PORT = 9090
@@ -81,7 +81,9 @@ def launch_panoptichain(
         name="panoptichain-config",
         config={
             "config.yml": struct(
-                template=read_file(src="../../static_files/panoptichain/config.yml"),
+                template=read_file(
+                    src="../../static_files/additional_services/panoptichain/config.yml"
+                ),
                 data={
                     "l1_chain_id": l1_context.chain_id,
                     "l2_chain_id": l2_context.el_chain_id,

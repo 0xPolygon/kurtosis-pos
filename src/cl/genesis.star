@@ -4,9 +4,9 @@ contract_util = import_module("../../contracts/util.star")
 
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/genesis/cl/cl-genesis-builder.sh"
+    "../../../static_files/cl/genesis/cl-genesis-builder.sh"
 )
-CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
+CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/cl/genesis/"
 HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
     constants.CL_TYPE.heimdall: "heimdall-genesis.json",
     constants.CL_TYPE.heimdall_v2: "heimdall-v2-genesis.json",
