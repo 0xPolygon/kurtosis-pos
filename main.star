@@ -27,6 +27,7 @@ ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@4.4.0"
 
 
 def run(plan, args):
+    # Parse input arguments.
     (
         ethereum_args,
         polygon_pos_input_args,
