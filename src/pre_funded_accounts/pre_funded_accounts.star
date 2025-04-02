@@ -1,4 +1,4 @@
-account = import_module("./account.star")
+account = import_module("../account/account.star")
 
 PRE_FUNDED_ACCOUNTS = [
     # m/44'/60'/0'/0/0

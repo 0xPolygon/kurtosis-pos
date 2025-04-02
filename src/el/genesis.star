@@ -1,10 +1,10 @@
-constants = import_module("../../package_io/constants.star")
-hex = import_module("../../hex/hex.star")
-math = import_module("../../math/math.star")
+constants = import_module("../package_io/constants.star")
+hex = import_module("../hex/hex.star")
+math = import_module("../math/math.star")
 
 
-EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../../static_files/el/genesis/builder.sh"
-EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/el/genesis/genesis.json"
+EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"
+EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 
 
 def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
