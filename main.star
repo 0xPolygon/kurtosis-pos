@@ -1,6 +1,4 @@
-account_util = import_module(
-    "./src/prelaunch_data_generator/genesis_constants/account.star"
-)
+account_util = import_module("./src/pre_funded_accounts/account.star")
 blockscout = import_module("./src/additional_services/blockscout.star")
 cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/package_io/constants.star")
@@ -12,7 +10,7 @@ hex = import_module("./src/hex/hex.star")
 input_parser = import_module("./src/package_io/input_parser.star")
 math = import_module("./src/math/math.star")
 pre_funded_accounts = import_module(
-    "./src/prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
+    "./src/pre_funded_accounts/pre_funded_accounts.star"
 )
 prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
 test_runner = import_module("./src/additional_services/test_runner.star")
@@ -49,11 +47,11 @@ def run(plan, args):
             ethereum_args,
             l2_network_params.get("preregistered_validator_keys_mnemonic"),
         )
-        prefunded_accounts_count = len(l1.pre_funded_accounts)
-        if prefunded_accounts_count < 13:
+        pre_funded_accounts_count = len(l1.pre_funded_accounts)
+        if pre_funded_accounts_count < 13:
             fail(
                 "The L1 package did not prefund enough accounts. Expected at least 13 accounts but got {}".format(
-                    prefunded_accounts_count
+                    pre_funded_accounts_count
                 )
             )
         if len(l1.all_participants) < 1:
@@ -206,20 +204,20 @@ def run(plan, args):
 
 
 def get_validator_accounts(participants):
-    prefunded_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
+    pre_funded_accounts = pre_funded_accounts.PRE_FUNDED_ACCOUNTS
 
     validator_accounts = []
     participant_index = 0
     for participant in participants:
         for _ in range(participant.get("count")):
             if participant.get("is_validator"):
-                if participant_index >= len(prefunded_accounts):
+                if participant_index >= len(pre_funded_accounts):
                     fail(
                         "Having more than {} validators is not supported for now.".format(
-                            len(prefunded_accounts)
+                            len(pre_funded_accounts)
                         )
                     )
-                account = prefunded_accounts[participant_index]
+                account = pre_funded_accounts[participant_index]
                 validator_accounts.append(account)
             # Increment the participant index.
             participant_index += 1
@@ -242,11 +240,11 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
 
     # Define prefunded accounts on L1.
     l1_network_params = ethereum_args.get("network_params")
-    prefunded_accounts = _merge_l1_prefunded_accounts(
+    pre_funded_accounts = _merge_l1_pre_funded_accounts(
         l2_network_params.get("admin_address"), l1_network_params
     )
     ethereum_args["network_params"] = l1_network_params | {
-        "prefunded_accounts": prefunded_accounts
+        "pre_funded_accounts": pre_funded_accounts
     }
 
     # Deploy the ethereum package.
@@ -261,25 +259,27 @@ def deploy_local_l1(plan, ethereum_args, preregistered_validator_keys_mnemonic):
     return l1
 
 
-def _merge_l1_prefunded_accounts(admin_address, l1_network_params):
+def _merge_l1_pre_funded_accounts(admin_address, l1_network_params):
     # Merge the prefunded accounts (admin and validators) with the user-specified prefuned accounts.
-    admin_prefunded_account = account_util.to_ethereum_pkg_prefunded_account(
+    admin_pre_funded_account = account_util.to_ethereum_pkg_pre_funded_account(
         admin_address, constants.ADMIN_BALANCE_ETH
     )
 
-    validators_prefunded_accounts = {}
+    validators_pre_funded_accounts = {}
     for a in pre_funded_accounts.PRE_FUNDED_ACCOUNTS:
-        validators_prefunded_accounts |= account_util.to_ethereum_pkg_prefunded_account(
-            a.eth_tendermint.address, constants.VALIDATORS_BALANCE_ETH
+        validators_pre_funded_accounts |= (
+            account_util.to_ethereum_pkg_pre_funded_account(
+                a.eth_tendermint.address, constants.VALIDATORS_BALANCE_ETH
+            )
         )
 
-    user_prefunded_accounts = {}
-    user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts")
-    if user_prefunded_accounts_str != "":
-        user_prefunded_accounts = json.decode(user_prefunded_accounts_str)
+    user_pre_funded_accounts = {}
+    user_pre_funded_accounts_str = l1_network_params.get("pre_funded_accounts")
+    if user_pre_funded_accounts_str != "":
+        user_pre_funded_accounts = json.decode(user_pre_funded_accounts_str)
 
     return (
-        admin_prefunded_account
-        | validators_prefunded_accounts
-        | user_prefunded_accounts
+        admin_pre_funded_account
+        | validators_pre_funded_accounts
+        | user_pre_funded_accounts
     )

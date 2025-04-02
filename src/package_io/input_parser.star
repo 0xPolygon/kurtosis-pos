@@ -36,7 +36,7 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
         "preset": "minimal",
         "seconds_per_slot": 1,
         "network_id": constants.DEFAULT_L1_CHAIN_ID,
-        "prefunded_accounts": "",
+        "pre_funded_accounts": "",
     },
 }
 
