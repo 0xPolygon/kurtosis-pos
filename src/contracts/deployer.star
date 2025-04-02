@@ -18,7 +18,7 @@ def deploy_l1_contracts(
     )
 
     validator_accounts_formatted = _format_validator_accounts(validator_accounts)
-    return plan.run_sh(
+    result = plan.run_sh(
         name="matic-contracts-l1-deployer",
         description="Deploying MATIC contracts to L1, initializing state and staking for each validator - it can take up to 5 minutes",
         image=contract_deployer_image,
@@ -53,6 +53,16 @@ def deploy_l1_contracts(
         run="bash /opt/data/deploy-l1-contracts.sh",
         wait="5m",
     )
+    artifact_count = len(result.files_artifacts)
+    if artifact_count != 2:
+        fail(
+            "The L1 contract deployer should have generated 2 artifacts, got {}.".format(
+                artifact_count
+            )
+        )
+    l1_contract_addresses_artifact = result.files_artifacts[0]
+    validator_config_artifact = result.files_artifacts[1]
+    return (l1_contract_addresses_artifact, validator_config_artifact)
 
 
 def deploy_l2_contracts_and_synchronise_l1_state(
@@ -74,7 +84,7 @@ def deploy_l2_contracts_and_synchronise_l1_state(
         name="matic-contracts-l2-deployer-config",
     )
 
-    return plan.run_sh(
+    result = plan.run_sh(
         name="matic-contracts-l2-deployer",
         description="Deploying MATIC contracts to L2 and synchronising state on L1",
         image=contract_deployer_image,
@@ -98,6 +108,15 @@ def deploy_l2_contracts_and_synchronise_l1_state(
         run="bash /opt/data/deploy-l2-contracts.sh",
         wait="5m",
     )
+    artifact_count = len(result.files_artifacts)
+    if artifact_count != 1:
+        fail(
+            "The L2 contract deployer should have generated 1 artifact, got {}.".format(
+                artifact_count
+            )
+        )
+    contract_addresses_artifact = result.files_artifacts[0]
+    return contract_addresses_artifact
 
 
 def _format_validator_accounts(accounts):

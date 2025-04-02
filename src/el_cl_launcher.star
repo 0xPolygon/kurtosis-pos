@@ -1,16 +1,14 @@
-bor = import_module("./el/bor/bor_launcher.star")
-cl_context_module = import_module("./cl/cl_context.star")
-cl_shared = import_module("./cl/cl_shared.star")
+bor_launcher = import_module("./el/bor/launcher.star")
+cl_context_module = import_module("./cl/context.star")
+cl_shared = import_module("./cl/shared.star")
 constants = import_module("./package_io/constants.star")
-el_context_module = import_module("./el/el_context.star")
-el_shared = import_module("./el/el_shared.star")
-erigon = import_module("./el/erigon/erigon_launcher.star")
-heimdall = import_module("./cl/heimdall/heimdall_launcher.star")
-heimdall_v2 = import_module("./cl/heimdall_v2/heimdall_v2_launcher.star")
+el_context_module = import_module("./el/context.star")
+el_shared = import_module("./el/shared.star")
+erigon_launcher = import_module("./el/erigon/launcher.star")
+heimdall_launcher = import_module("./cl/heimdall/launcher.star")
+heimdall_v2_launcher = import_module("./cl/heimdall_v2/launcher.star")
 participant_module = import_module("./participant.star")
-pre_funded_accounts = import_module(
-    "./prelaunch_data_generator/genesis_constants/pre_funded_accounts.star"
-)
+prefunded_accounts = import_module("./prefunded_accounts/accounts.star")
 wait = import_module("./wait/wait.star")
 
 
@@ -35,19 +33,19 @@ def launch(
 
     el_launchers = {
         "bor": {
-            "launch_method": bor.launch,
+            "launch_method": bor_launcher.launch,
         },
         "erigon": {
-            "launch_method": erigon.launch,
+            "launch_method": erigon_launcher.launch,
         },
     }
 
     cl_launchers = {
         "heimdall": {
-            "launch_method": heimdall.launch,
+            "launch_method": heimdall_launcher.launch,
         },
         "heimdall-v2": {
-            "launch_method": heimdall_v2.launch,
+            "launch_method": heimdall_v2_launcher.launch,
         },
     }
 
@@ -164,7 +162,7 @@ def launch(
                 el_genesis_artifact,
                 el_validator_config_artifact,
                 first_cl_context.api_url,
-                pre_funded_accounts.PRE_FUNDED_ACCOUNTS[participant_index],
+                prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index],
                 network_data.el_static_nodes,
                 network_params.get("el_chain_id"),
             )
@@ -225,7 +223,7 @@ def _prepare_network_data(participants):
                 el_node_name = _generate_el_node_name(
                     participant, participant_index + 1
                 )
-                validator_account = pre_funded_accounts.PRE_FUNDED_ACCOUNTS[
+                validator_account = prefunded_accounts.PREFUNDED_ACCOUNTS[
                     participant_index
                 ]
 
@@ -284,7 +282,7 @@ def _generate_enode_url(participant, eth_public_key, el_node_name):
     return "enode://{}@{}:{}?discport=0".format(
         eth_public_key,
         el_node_name,
-        bor.BOR_DISCOVERY_PORT_NUMBER,
+        bor_launcher.BOR_DISCOVERY_PORT_NUMBER,
     )
 
 
@@ -327,7 +325,7 @@ def _generate_validator_config(
                 name="l2-cl-persistent-peers",
             )
         ],
-        run="bash /opt/data/validator_setup.sh",
+        run="bash /opt/data/setup.sh",
     )
     # Artifacts are ordered to match the `StoreSpec` definitions.
     n = len(result.files_artifacts) // 2  # Assuming equal number of cl and el configs.

@@ -70,6 +70,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     },
     "network_params": {
         # Admin account generated using `cast wallet new`.
+        # This private key is used to deploy Polygon PoS contracts on both L1 and L2.
         "admin_address": "0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9",
         "admin_private_key": "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea",
         # Validators params.
@@ -116,12 +117,7 @@ def input_parser(plan, input_args):
     dev_args = _parse_dev_args(plan, dev_input_args)
     plan.print("Dev input args parsed: {}".format(str(dev_args)))
 
-    return {
-        "ethereum_package": ethereum_args,
-        "polygon_pos_package": polygon_pos_args,
-        "dev": dev_args,
-        "devnet_cl_type": devnet_cl_type,
-    }
+    return (ethereum_args, polygon_pos_args, dev_args, devnet_cl_type)
 
 
 def _parse_ethereum_args(plan, ethereum_args):

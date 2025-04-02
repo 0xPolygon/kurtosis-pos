@@ -1,19 +1,17 @@
-account_util = import_module("../genesis_constants/account.star")
-constants = import_module("../../package_io/constants.star")
-contract_util = import_module("../../contracts/util.star")
+account_util = import_module("../account/account.star")
+constants = import_module("../package_io/constants.star")
+contract_util = import_module("../contracts/util.star")
 
 
-CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/genesis/cl/cl-genesis-builder.sh"
-)
-CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/genesis/cl/"
+CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/cl/genesis/builder.sh"
+CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../static_files/cl/genesis/"
 HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
-    constants.CL_TYPE.heimdall: "heimdall-genesis.json",
-    constants.CL_TYPE.heimdall_v2: "heimdall-v2-genesis.json",
+    constants.CL_TYPE.heimdall: "heimdall.json",
+    constants.CL_TYPE.heimdall_v2: "heimdall-v2.json",
 }
 
 
-def generate_cl_genesis_data(
+def generate(
     plan,
     polygon_pos_args,
     devnet_cl_type,
@@ -122,7 +120,7 @@ def generate_cl_genesis_data(
         src=CL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
         name="l2-cl-genesis-builder-config",
     )
-    return plan.run_sh(
+    result = plan.run_sh(
         name="l2-cl-genesis-generator",
         description="Generating L2 CL genesis",
         files={
@@ -135,8 +133,17 @@ def generate_cl_genesis_data(
                 name="l2-cl-genesis",
             ),
         ],
-        run="sh /opt/data/genesis-builder/cl-genesis-builder.sh",
+        run="sh /opt/data/genesis-builder/builder.sh",
     )
+    artifact_count = len(result.files_artifacts)
+    if artifact_count != 1:
+        fail(
+            "The CL genesis generator should have generated 1 artifact, got {}.".format(
+                artifact_count
+            )
+        )
+    l2_cl_genesis_artifact = result.files_artifacts[0]
+    return l2_cl_genesis_artifact
 
 
 def _get_heimdall_validator_data(validator_accounts):

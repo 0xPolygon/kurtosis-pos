@@ -1,4 +1,4 @@
-el_shared = import_module("../el_shared.star")
+el_shared = import_module("../shared.star")
 
 
 # Port identifiers and numbers.
@@ -7,7 +7,7 @@ BOR_DISCOVERY_PORT_NUMBER = 30303
 
 
 # The folder where the bor template config is stored in the repository.
-BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/bor/config.toml"
+BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/el/bor/config.toml"
 
 # The folder where bor configs are stored inside the service.
 BOR_CONFIG_FOLDER_PATH = "/etc/bor"

@@ -1,8 +1,8 @@
-el_shared = import_module("../el_shared.star")
+el_shared = import_module("../shared.star")
 
 
 # The folder where the erigon template config is stored in the repository.
-ERIGON_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/erigon/config.toml"
+ERIGON_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/el/erigon/config.toml"
 
 
 # The folder where erigon configs are stored inside the service.
