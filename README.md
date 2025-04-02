@@ -145,25 +145,12 @@ kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.jso
 
 ### Test
 
-Trigger a state sync.
+Trigger a state sync using the [agglayer/e2e](https://github.com/agglayer/e2e) repository.
 
 ```bash
-export L1_RPC_URL="http://$(kurtosis port print pos-devnet el-1-geth-lighthouse rpc)"
-matic_contract_addresses=$(kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq)
-export L1_DEPOSIT_MANAGER_PROXY_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.DepositManagerProxy')
-export ERC20_TOKEN_ADDRESS=$(echo $matic_contract_addresses | jq --raw-output '.root.tokens.MaticToken')
-export FUNDER_PRIVATE_KEY="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" # unless it has been changed.
-bash ./scripts/send_state_sync.sh
-```
-
-Monitor state syncs.
-
-```bash
-export L2_CL_API_URL=$(kurtosis port print pos-devnet l2-cl-1-heimdall-bor-validator http)
-export L2_CL_NODE_TYPE=heimdall
-export L2_RPC_URL=$(kurtosis port print pos-devnet l2-el-1-bor-heimdall-validator rpc)
-export L2_STATE_RECEIVER_ADDRESS=$(kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq --raw-output '.config.bor.stateReceiverContract')
-bash ./scripts/check_state_sync.sh
+git clone https://github.com/agglayer/e2e.git
+pushd e2e
+bats --filter-tags pos,bridge,matic,pol --recursive tests/
 ```
 
 ### Make Changes
@@ -356,8 +343,10 @@ polygon_pos_package:
   additional_services:
     # A blockchain explorer (will be supported soon).
     # - blockscout
-    # A monitoring stack composed of Prometheus and Grafana (will be supported soon).
+    # A monitoring stack composed of Prometheus and Grafana.
     - prometheus_grafana
+    # A test runner based on the agglayer/e2e repository (https://github.com/agglayer/e2e).
+    - test_runner
     # A transaction spammer to send fake transactions to the network (will be supported soon).
     # - tx_spammer
 ```
