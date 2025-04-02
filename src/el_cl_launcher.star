@@ -8,7 +8,7 @@ erigon_launcher = import_module("./el/erigon/launcher.star")
 heimdall_launcher = import_module("./cl/heimdall/launcher.star")
 heimdall_v2_launcher = import_module("./cl/heimdall_v2/launcher.star")
 participant_module = import_module("./participant.star")
-pre_funded_accounts = import_module("./pre_funded_accounts/pre_funded_accounts.star")
+pre_funded_accounts = import_module("./pre_funded_accounts/accounts.star")
 wait = import_module("./wait/wait.star")
 
 

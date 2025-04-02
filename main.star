@@ -10,7 +10,7 @@ hex = import_module("./src/hex/hex.star")
 input_parser = import_module("./src/package_io/input_parser.star")
 math = import_module("./src/math/math.star")
 pre_funded_accounts = import_module(
-    "./src/pre_funded_accounts/pre_funded_accounts.star"
+    "./src/pre_funded_accounts/accounts.star"
 )
 prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
 test_runner = import_module("./src/additional_services/test_runner.star")
