@@ -3,9 +3,7 @@ constants = import_module("../../package_io/constants.star")
 contract_util = import_module("../../contracts/util.star")
 
 
-CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/cl/genesis/builder.sh"
-)
+CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../../static_files/cl/genesis/builder.sh"
 CL_GENESIS_TEMPLATE_FOLDER_PATH = "../../../static_files/cl/genesis/"
 HEIMDALL_GENESIS_TEMPLATE_FILE_NAME = {
     constants.CL_TYPE.heimdall: "heimdall.json",

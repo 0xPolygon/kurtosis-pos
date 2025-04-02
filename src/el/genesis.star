@@ -3,9 +3,7 @@ hex = import_module("../../hex/hex.star")
 math = import_module("../../math/math.star")
 
 
-EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = (
-    "../../../static_files/el/genesis/builder.sh"
-)
+EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../../static_files/el/genesis/builder.sh"
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../../static_files/el/genesis/genesis.json"
 
 
