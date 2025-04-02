@@ -106,8 +106,8 @@ def launch(
                     application_protocol="http",
                     wait=None,
                 ),
-                el_shared.EL_DISCOVERY_PORT_ID: PortSpec(
-                    number=el_shared.EL_DISCOVERY_PORT_NUMBER,
+                el_shared.DISCOVERY_PORT_ID: PortSpec(
+                    number=el_shared.DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
                     wait=None,
                 ),

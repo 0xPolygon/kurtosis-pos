@@ -43,7 +43,7 @@ def launch(
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,
                     "ws_port_number": el_shared.WS_PORT_NUMBER,
-                    "discovery_port_number": el_shared.EL_DISCOVERY_PORT_NUMBER,
+                    "discovery_port_number": el_shared.DISCOVERY_PORT_NUMBER,
                     "metrics_port_number": el_shared.METRICS_PORT_NUMBER,
                 },
             ),
@@ -96,8 +96,8 @@ def launch(
                     application_protocol="ws",
                     wait=None,
                 ),
-                el_shared.EL_DISCOVERY_PORT_ID: PortSpec(
-                    number=el_shared.EL_DISCOVERY_PORT_NUMBER,
+                el_shared.DISCOVERY_PORT_ID: PortSpec(
+                    number=el_shared.DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
                     wait=None,
                 ),
