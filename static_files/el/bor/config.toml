@@ -1,7 +1,8 @@
 identity = "{{.node_name}}"
 chain = "{{.config_folder_path}}/genesis.json"
-verbosity = {{.log_level_to_int}}
 datadir = "{{.data_folder_path}}"
+verbosity = {{.log_level_to_int}}
+
 syncmode = "full"
 
 [p2p]
@@ -9,6 +10,7 @@ syncmode = "full"
     bind = "0.0.0.0"
     port = {{.discovery_port_number}}
     nodiscover = true
+    nodekey = "{{.config_folder_path}}/nodekey"
     [p2p.discovery]
         static-nodes = {{.static_nodes}}
 
