@@ -8,10 +8,12 @@ polygon_pos_package:
       is_validator: true
 
     # rpcs
-    - cl_type: heimdall
-      el_type: erigon
-      is_validator: false
-      count: 2
+    # There is an issue with erigon rpcs.
+    # https://github.com/0xPolygon/kurtosis-polygon-pos/issues/26
+    # - cl_type: heimdall
+    #   el_type: erigon
+    #   is_validator: false
+    #   count: 2
     # - cl_type: heimdall
     #   el_type: bor
     #   is_validator: false
