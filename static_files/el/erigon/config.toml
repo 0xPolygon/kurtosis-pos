@@ -13,10 +13,10 @@ nat = "none"
 "bor.waypoints" = false
 
 # Validator parameters.
+{{if .is_validator}}
 mine = {{.is_validator}}
 port = {{.discovery_port_number}}
 "miner.etherbase" = "{{.address}}"
-{{if .is_validator}}
 "miner.sigfile" = "{{.config_folder_path}}/nodekey"
 {{end}}
 
