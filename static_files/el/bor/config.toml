@@ -10,18 +10,18 @@ syncmode = "full"
     bind = "0.0.0.0"
     port = {{.discovery_port_number}}
     nodiscover = true
-    nodekey = "{{.config_folder_path}}/nodekey"
+    nodekey = "{{.data_folder_path}}/nodekey"
     [p2p.discovery]
         static-nodes = {{.static_nodes}}
 
 [heimdall]
     url = "{{.cl_node_url}}"
 
+{{if .is_validator}}
 [miner]
     mine = {{.is_validator}}
     gaslimit = 30000000
     gasprice = "25000000000"
-{{if .is_validator}}
     etherbase = "{{.address}}"
     extradata = "{{.node_name}}"
 

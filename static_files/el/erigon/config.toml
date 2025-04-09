@@ -6,45 +6,49 @@ verbosity = "{{.log_level}}"
 no-downloader = true
 nat = "none"
 
-# P2P
+# [p2p]
 maxpeers = 200
 port = {{.discovery_port_number}}
 nodiscover = true
+# [p2p.discovery]
 staticpeers = "{{.static_nodes}}"
 
-[bor]
-    heimdall = "{{.cl_node_url}}"
-    milestone = true
-    waypoints = false
+# [heimdall]
+"bor.heimdall" = "{{.cl_node_url}}"
 
+# [bor]
+"bor.milestone" = true
+"bor.waypoints" = false
+
+# [miner]
 {{if .is_validator}}
 mine = {{.is_validator}}
+"miner.gaslimit" = 30000000
+"miner.gasprice" = "25000000000"
+"miner.etherbase" = "{{.address}}"
+"miner.extradata" = "{{.node_name}}"
+"miner.sigfile" = "{{.data_folder_path}}/nodekey"
 {{end}}
 
-[miner]
-    gaslimit = 30000000
-    gasprice = "25000000000"
-    etherbase = "{{.address}}"
-    extradata = "{{.node_name}}"
-    sigfile = "{{.config_folder_path}}/nodekey"
-
-# Accounts
+# [accounts]
 allow-insecure-unlock = true
 
-# JSON-RPC
+# [jsonrpc]
 ipcpath = "{{.data_folder_path}}/erigon.ipc"
-[http]
-    addr = "0.0.0.0"
-    port = {{.rpc_port_number}}
-    api = ["eth", "net", "web3", "txpool", "bor"]
-    vhosts = ["*"]
-    corsdomain = ["*"]
-[ws]
-    addr = "0.0.0.0"
-    port = {{.ws_port_number}}
-    api = ["eth", "net", "web3", "txpool", "bor"]
-    origins = ["*"]
-
-[metrics]
-    addr = "0.0.0.0"
-    port = {{.metrics_port_number}}
+# [jsonrpc.http]
+"http" = true
+"http.addr" = "0.0.0.0"
+"http.port" = {{.rpc_port_number}}
+"http.api" = ["eth", "net", "web3", "txpool", "bor"]
+"http.vhosts" = ["*"]
+"http.corsdomain" = ["*"]
+# [jsonrpc.ws]
+"ws" = true
+"ws.addr" = "0.0.0.0"
+"ws.port" = {{.ws_port_number}}
+"ws.api" = ["eth", "net", "web3", "txpool", "bor"]
+"ws.origins" = ["*"]
+   
+# [telemetry]
+"metrics.addr" = "0.0.0.0"
+"metrics.port" = {{.metrics_port_number}}
