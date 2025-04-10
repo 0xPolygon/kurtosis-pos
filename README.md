@@ -239,7 +239,7 @@ polygon_pos_package:
       # Defaults by client:
       # - bor: "0xpolygon/bor:2.0.1"
       # - bor modified for heimdall-v2: "leovct/bor:1a6957c"
-      # - erigon: "erigontech/erigon:v2.61.3"
+      # - erigon: "erigontech/erigon:main-0360e94"
       el_image: 0xpolygon/bor:2.0.1
 
       # The log level string that this participant's EL client should log at.
@@ -319,6 +319,9 @@ polygon_pos_package:
     # The checkpoint pool interval on the CL chain.
     # Default: "1m0s"
     cl_checkpoint_poll_interval: 1m0s
+    # The CL environment.
+    # Default: "mainnet"
+    cl_environment: mainnet
 
     ## Execution Layer parameters.
     # The EL network id.

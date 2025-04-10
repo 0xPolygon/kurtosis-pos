@@ -189,6 +189,17 @@ def launch(
             if participant.get("is_validator"):
                 validator_index += 1
 
+    # Make sure that the RPC of all the participants can be reached.
+    for participant in all_participants:
+        cl_shared.wait_for_node_startup(
+            plan,
+            participant.cl_context.service_name,
+        )
+        el_shared.wait_for_node_startup(
+            plan,
+            participant.el_context.service_name,
+        )
+
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
     wait.wait_for_l2_startup(plan, first_cl_context.api_url, devnet_cl_type)
@@ -282,7 +293,7 @@ def _generate_enode_url(participant, eth_public_key, el_node_name):
     return "enode://{}@{}:{}?discport=0".format(
         eth_public_key,
         el_node_name,
-        bor_launcher.BOR_DISCOVERY_PORT_NUMBER,
+        el_shared.DISCOVERY_PORT_NUMBER,
     )
 
 
