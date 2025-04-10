@@ -61,7 +61,7 @@ def launch(
         # Copy EL validator config inside bor data and config folders.
         "cp /opt/data/config/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
         "mkdir -p {}/bor".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp /opt/data/config/nodekey {}/bor/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
+        "cp /opt/data/config/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
         "cp -r /opt/data/config/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
     ]
     bor_cmds = [
