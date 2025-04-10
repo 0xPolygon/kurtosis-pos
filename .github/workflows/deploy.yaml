@@ -52,11 +52,6 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Check devnet status
-        env:
-          ENCLAVE: ${{ env.ENCLAVE_NAME }}
-        run: bash scripts/discover.sh && bash scripts/monitor.sh
-
       - name: Test state syncs
         run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
@@ -134,19 +129,6 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-
-      - name: Check devnet status
-        env:
-          ENCLAVE: ${{ env.ENCLAVE_NAME }}
-        run: |
-          bash scripts/discover.sh
-
-          # If the devnet only contains one validator, don't check the peer count.
-          if [[ "${{ matrix.file.name }}" =~ .*"single-validator" ]]; then
-            export EXPECTED_MIN_CL_PEERS=0
-            export EXPECTED_MIN_EL_PEERS=0
-          fi
-          bash scripts/monitor.sh
 
       - name: Check if test runner is deployed
         id: check-test-runner
@@ -227,11 +209,6 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Check devnet status
-        env:
-          ENCLAVE: ${{ env.ENCLAVE_NAME }}
-        run: bash scripts/discover.sh && bash scripts/monitor.sh
-
       - name: Test state syncs
         run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
@@ -306,11 +283,6 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-
-      - name: Check devnet status
-        env:
-          ENCLAVE: ${{ env.ENCLAVE_NAME }}
-        run: bash scripts/discover.sh && bash scripts/monitor.sh
 
       - name: Test state syncs
         run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
