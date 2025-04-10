@@ -34,7 +34,7 @@ mine = {{.is_validator}}
 allow-insecure-unlock = true
 
 # [jsonrpc]
-ipcpath = "{{.data_folder_path}}/erigon.ipc"
+# ipcpath = "{{.data_folder_path}}/erigon.ipc" # TODO: Make this flag available in erigon.
 # [jsonrpc.http]
 "http" = true
 "http.addr" = "0.0.0.0"
