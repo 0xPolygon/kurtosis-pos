@@ -189,6 +189,17 @@ def launch(
             if participant.get("is_validator"):
                 validator_index += 1
 
+    # Make sure every client has started.
+    for participant in all_participants:
+        cl_shared.wait_for_node_startup(
+            plan,
+            participant.cl_context.service_name,
+        )
+        el_shared.wait_for_node_startup(
+            plan,
+            participant.el_context.service_name,
+        )
+
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
     wait.wait_for_l2_startup(plan, first_cl_context.api_url, devnet_cl_type)
