@@ -39,14 +39,14 @@ ipcpath = "{{.data_folder_path}}/erigon.ipc"
 "http" = true
 "http.addr" = "0.0.0.0"
 "http.port" = {{.rpc_port_number}}
-"http.api" = ["eth", "net", "web3", "txpool", "bor"]
+"http.api" = ["admin", "eth", "net", "web3", "txpool", "bor"]
 "http.vhosts" = ["*"]
 "http.corsdomain" = ["*"]
 # [jsonrpc.ws]
 "ws" = true
 "ws.addr" = "0.0.0.0"
 "ws.port" = {{.ws_port_number}}
-"ws.api" = ["eth", "net", "web3", "txpool", "bor"]
+"ws.api" = ["admin", "eth", "net", "web3", "txpool", "bor"]
 "ws.origins" = ["*"]
    
 # [telemetry]
