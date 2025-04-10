@@ -24,7 +24,7 @@ staticpeers = "{{.static_nodes}}"
 {{if .is_validator}}
 mine = {{.is_validator}}
 "miner.gaslimit" = 30000000
-"miner.gasprice" = "25000000000"
+# "miner.gasprice" = "25000000000" # not supported by erigon?
 "miner.etherbase" = "{{.address}}"
 "miner.extradata" = "{{.node_name}}"
 "miner.sigfile" = "{{.data_folder_path}}/nodekey"
