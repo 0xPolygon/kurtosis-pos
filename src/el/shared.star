@@ -23,7 +23,7 @@ def wait_for_node_startup(plan, service_name):
         },
     )
     plan.wait(
-        description="Wait for '{}' to start".format(service_name),
+        description="Wait for '{}' to start up".format(service_name),
         service_name=service_name,
         recipe=recipe,
         field="extract.enode",
