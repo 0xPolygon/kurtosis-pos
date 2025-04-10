@@ -10,7 +10,9 @@ syncmode = "full"
     bind = "0.0.0.0"
     port = {{.discovery_port_number}}
     nodiscover = true
+{{if .is_validator}}
     nodekey = "{{.data_folder_path}}/nodekey"
+{{end}}
     [p2p.discovery]
         static-nodes = {{.static_nodes}}
 
