@@ -189,7 +189,7 @@ def launch(
             if participant.get("is_validator"):
                 validator_index += 1
 
-    # Make sure every client has started.
+    # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:
         cl_shared.wait_for_node_startup(
             plan,
