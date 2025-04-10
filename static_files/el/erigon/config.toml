@@ -24,7 +24,7 @@ staticpeers = "{{.static_nodes}}"
 {{if .is_validator}}
 mine = {{.is_validator}}
 "miner.gaslimit" = 30000000
-# "miner.gasprice" = "25000000000" # not supported by erigon?
+# "miner.gasprice" = "25000000000" # TODO: Make this flag available in erigon.
 "miner.etherbase" = "{{.address}}"
 "miner.extradata" = "{{.node_name}}"
 "miner.sigfile" = "{{.data_folder_path}}/nodekey"
@@ -47,7 +47,7 @@ ipcpath = "{{.data_folder_path}}/erigon.ipc"
 "ws.addr" = "0.0.0.0"
 "ws.port" = {{.ws_port_number}}
 "ws.api" = ["admin", "eth", "net", "web3", "txpool", "bor"]
-"ws.origins" = ["*"]
+# "ws.origins" = ["*"] # TODO: Make this flag available in erigon.
    
 # [telemetry]
 "metrics.addr" = "0.0.0.0"
