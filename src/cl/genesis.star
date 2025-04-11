@@ -1,4 +1,3 @@
-account_util = import_module("../account/account.star")
 constants = import_module("../package_io/constants.star")
 contract_util = import_module("../contracts/util.star")
 heimdall_genesis = import_module("./heimdall/genesis.star")
