@@ -1,13 +1,8 @@
-bor_launcher = import_module("./el/bor/launcher.star")
-cl_context_module = import_module("./cl/context.star")
 cl_launcher = import_module("./cl/launcher.star")
 cl_shared = import_module("./cl/shared.star")
 constants = import_module("./package_io/constants.star")
-el_context_module = import_module("./el/context.star")
 el_shared = import_module("./el/shared.star")
-erigon_launcher = import_module("./el/erigon/launcher.star")
-heimdall_launcher = import_module("./cl/heimdall/launcher.star")
-heimdall_v2_launcher = import_module("./cl/heimdall_v2/launcher.star")
+el_launcher = import_module("./el/launcher.star")
 participant_module = import_module("./participant.star")
 prefunded_accounts = import_module("./prefunded_accounts/accounts.star")
 wait = import_module("./wait/wait.star")
@@ -90,7 +85,7 @@ def launch(
                 is_validator,
                 el_genesis_artifact,
                 el_validator_config_artifact,
-                cl_api_url,
+                first_cl_context.api_url,
                 el_account,
                 network_data.el_static_nodes,
                 el_chain_id,

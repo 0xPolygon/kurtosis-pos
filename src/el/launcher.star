@@ -22,7 +22,7 @@ def launch(
     el_static_nodes,
     el_chain_id,
 ):
-    launch_method = _get_launcher(plan, participant)
+    launch_method = _get_launcher(participant)
     el_node_name = generate_name(participant, id, is_validator)
     service = launch_method(
         plan,
