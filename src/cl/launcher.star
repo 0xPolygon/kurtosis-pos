@@ -57,7 +57,7 @@ def wait_for_node_startup(plan, service_name):
         endpoint="",
         content_type="application/json",
         body='{"method":"status","params":[],"id":1,"jsonrpc":"2.0"}',
-        port_id=shared.RPC_PORT_ID,
+        port_id=cl_shared.RPC_PORT_ID,
         extract={
             "id": ".result.node_info.id",
         },
