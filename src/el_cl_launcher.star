@@ -288,10 +288,6 @@ def _generate_cl_node_name(participant, id):
     )
 
 
-def _generate_amqp_name(id):
-    return "rabbitmq-l2-cl-{}-validator".format(id)
-
-
 def _generate_el_node_name(participant, id):
     return "l2-el-{}-{}-{}-{}".format(
         id,
