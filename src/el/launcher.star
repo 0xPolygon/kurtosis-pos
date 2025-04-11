@@ -10,7 +10,18 @@ LAUNCHERS = {
 }
 
 
-def launch(plan, participant, id, is_validator):
+def launch(
+    plan,
+    participant,
+    id,
+    is_validator,
+    el_genesis_artifact,
+    el_validator_config_artifact,
+    cl_api_url,
+    el_account,
+    el_static_nodes,
+    el_chain_id,
+):
     launch_method = _get_launcher(plan, participant)
     el_node_name = generate_name(participant, id, is_validator)
     service = launch_method(
@@ -20,9 +31,9 @@ def launch(plan, participant, id, is_validator):
         el_genesis_artifact,
         el_validator_config_artifact,
         cl_api_url,
-        prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index],
-        validator_data.el_static_nodes,
-        network_params.get("el_chain_id"),
+        el_account,
+        el_static_nodes,
+        el_chain_id,
     )
 
     return context.new_context(
