@@ -52,6 +52,28 @@ def launch(
     )
 
 
+def wait_for_node_startup(plan, service_name):
+    recipe = PostHttpRequestRecipe(
+        endpoint="",
+        content_type="application/json",
+        body='{"method":"status","params":[],"id":1,"jsonrpc":"2.0"}',
+        port_id=shared.RPC_PORT_ID,
+        extract={
+            "id": ".result.node_info.id",
+        },
+    )
+    plan.wait(
+        description="Wait for '{}' to start up".format(service_name),
+        service_name=service_name,
+        recipe=recipe,
+        field="extract.id",
+        assertion="!=",
+        target_value="",
+        interval="1s",
+        timeout="1m",
+    )
+
+
 def _get_launcher(plan, participant):
     cl_type = participant.get("cl_type")
     if cl_type not in LAUNCHERS:

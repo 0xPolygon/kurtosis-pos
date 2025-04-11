@@ -1,7 +1,6 @@
 cl_launcher = import_module("./cl/launcher.star")
 cl_shared = import_module("./cl/shared.star")
 constants = import_module("./package_io/constants.star")
-el_shared = import_module("./el/shared.star")
 el_launcher = import_module("./el/launcher.star")
 participant_module = import_module("./participant.star")
 prefunded_accounts = import_module("./prefunded_accounts/accounts.star")
@@ -109,11 +108,11 @@ def launch(
 
     # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:
-        cl_shared.wait_for_node_startup(
+        cl_launcher.wait_for_node_startup(
             plan,
             participant.cl_context.service_name,
         )
-        el_shared.wait_for_node_startup(
+        el_launcher.wait_for_node_startup(
             plan,
             participant.el_context.service_name,
         )
