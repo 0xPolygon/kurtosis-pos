@@ -73,25 +73,7 @@ kurtosis run --args-file params.yml --enclave pos-devnet .
 
 ### Interact
 
-To make sure the devnet is running correctly, you can use two of our handy scripts. The first script scans the Kurtosis enclave to identify the rpc urls of the different nodes (run this script only once per deployment), while the second script queries the different rpc urls and returns the status of the devnet.
-
-```bash
-export ENCLAVE="pos-devnet"
-bash scripts/discover.sh
-bash scripts/monitor.sh
-```
-
-If you want to run the monitor only once, you can use the following command:
-
-```bash
-export TIMEOUT_SECONDS=1
-export CHECK_RATE_SECONDS=0
-bash scripts/monitor.sh
-```
-
-A healthy devnet is characterized by CL and EL nodes that successfully establish peer connections and show consistent block production and finalization across both layers.
-
-Now that we made sure the devnet is healthy, let's do a simple L2 rpc test call.
+Let's do a simple L2 rpc test call.
 
 First, you will need to figure out which port Kurtosis is using for the rpc. You can get a general feel for the entire network layout by running the following command.
 
