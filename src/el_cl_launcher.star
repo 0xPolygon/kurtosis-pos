@@ -70,6 +70,15 @@ def launch(
                 if not first_cl_context:
                     first_cl_context = cl_context
 
+            # Retrieve the correct CL api url.
+            cl_api_url = None
+            if cl_context:
+                cl_api_url = cl_context.api_url
+            elif first_cl_context:
+                cl_api_url = first_cl_context.api_url
+            else:
+                fail("No CL node deployed yet...")
+
             # Launch the EL node.
             el_validator_config_artifact = (
                 validator_config_artifacts.el_configs[validator_index]
@@ -85,7 +94,7 @@ def launch(
                 is_validator,
                 el_genesis_artifact,
                 el_validator_config_artifact,
-                first_cl_context.api_url,
+                cl_api_url,
                 el_account,
                 network_data.el_static_nodes,
                 el_chain_id,
