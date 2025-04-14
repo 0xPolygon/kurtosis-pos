@@ -1,6 +1,7 @@
-account_util = import_module("../account/account.star")
 constants = import_module("../package_io/constants.star")
 contract_util = import_module("../contracts/util.star")
+heimdall_genesis = import_module("./heimdall/genesis.star")
+heimdall_v2_genesis = import_module("./heimdall_v2/genesis.star")
 
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/cl/genesis/builder.sh"
@@ -21,13 +22,13 @@ def generate(
     network_params = polygon_pos_args.get("network_params")
     validators_number = len(validator_accounts)
 
-    cl_type_specific_data = {}
+    cl_genesis_data = {}
     if devnet_cl_type == constants.CL_TYPE.heimdall:
-        validator_data = _get_heimdall_validator_data(validator_accounts)
+        validator_data = heimdall_genesis.get_validator_data(validator_accounts)
         proposer = []
         if validators_number > 0:
             proposer = validator_data.validator_set[0]
-        cl_type_specific_data = {
+        cl_genesis_data = {
             "accounts": json.indent(json.encode(validator_data.accounts)),
             "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
             "signing_infos": json.indent(json.encode(validator_data.signing_infos)),
@@ -36,11 +37,11 @@ def generate(
             "producer_count": len(validator_data.validator_set),
         }
     elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
-        validator_data = _get_heimdall_v2_validator_data(validator_accounts)
+        validator_data = heimdall_v2_genesis.get_validator_data(validator_accounts)
         proposer = []
         if validators_number > 0:
             proposer = validator_data.validator_set[0]
-        cl_type_specific_data = {
+        cl_genesis_data = {
             "accounts": json.indent(json.encode(validator_data.accounts)),
             "balances": json.indent(json.encode(validator_data.balances)),
             "supply": json.indent(json.encode(validator_data.supply)),
@@ -108,7 +109,7 @@ def generate(
                     "staking_info_address": l1_staking_info_address,
                     "state_sender_address": l1_state_sender_address,
                 }
-                | cl_type_specific_data,
+                | cl_genesis_data,
             ),
         },
     )
@@ -144,155 +145,3 @@ def generate(
         )
     l2_cl_genesis_artifact = result.files_artifacts[0]
     return l2_cl_genesis_artifact
-
-
-def _get_heimdall_validator_data(validator_accounts):
-    accounts = []
-    dividends = []
-    signing_infos = {}
-    validator_set = []
-
-    for i, validator_account in enumerate(validator_accounts):
-        validator_id = str(i + 1)
-
-        # Accounts.
-        accounts.append(
-            {
-                "address": validator_account.eth_tendermint.address,
-                "coins": [
-                    {
-                        "denom": "matic",
-                        "amount": "{}000000000000000000".format(
-                            constants.VALIDATORS_BALANCE_ETH
-                        ),  # 18 zeros
-                    }
-                ],
-                "sequence_number": "0",
-                "account_number": "0",
-                "module_name": "",
-                "module_permissions": None,
-            }
-        )
-
-        # Dividends.
-        dividends.append(
-            {
-                "user": validator_account.eth_tendermint.address,
-                "feeAmount": "0",
-            }
-        )
-
-        # Signing infos.
-        signing_infos[validator_id] = {
-            "valID": validator_id,
-            "startHeight": "0",
-            "indexOffset": "0",
-        }
-
-        # Validator set.
-        validator_set.append(
-            {
-                "ID": validator_id,
-                "accum": "0",
-                "endEpoch": "0",
-                "jailed": False,
-                "last_updated": "",
-                "nonce": "1",
-                "power": str(constants.VALIDATORS_BALANCE_ETH),
-                "pubKey": account_util.to_tendermint_public_key(
-                    validator_account.eth_tendermint
-                ),
-                "signer": validator_account.eth_tendermint.address,
-                "startEpoch": "0",
-            }
-        )
-
-    return struct(
-        accounts=accounts,
-        dividends=dividends,
-        signing_infos=signing_infos,
-        validator_set=validator_set,
-    )
-
-
-def _get_heimdall_v2_validator_data(validator_accounts):
-    accounts = []
-    balances = []
-    dividends = []
-    signing_infos = {}
-    validator_set = []
-
-    for i, validator_account in enumerate(validator_accounts):
-        validator_id = str(i + 1)
-
-        # Accounts.
-        accounts.append(
-            {
-                "@type": "/cosmos.auth.v1beta1.BaseAccount",
-                "address": validator_account.cometbft.address,
-                "pub_key": {
-                    "@type": "/cosmos.crypto.secp256k1.PubKey",
-                    "key": validator_account.cometbft.public_key,
-                },
-                "account_number": validator_id,
-                "sequence": "0",
-            }
-        )
-
-        # Token balances.
-        balances.append(
-            {
-                "address": validator_account.cometbft.address.removeprefix("0x"),
-                "coins": [
-                    {
-                        "denom": "pol",
-                        "amount": "{}000000000000000000".format(
-                            constants.VALIDATORS_BALANCE_ETH
-                        ),  # 18 zeros
-                    },
-                ],
-            }
-        )
-
-        # Dividends.
-        dividends.append(
-            {
-                "user": validator_account.cometbft.address.removeprefix("0x"),
-                "fee_amount": "0",
-            }
-        )
-
-        # Validator set.
-        validator_set.append(
-            {
-                "start_epoch": "0",
-                "end_epoch": "0",
-                "nonce": "1",
-                "pub_key": validator_account.cometbft.public_key,
-                "signer": validator_account.cometbft.address.removeprefix("0x"),
-                "last_updated": "",
-                "jailed": False,
-                "val_id": validator_id,
-                "voting_power": str(constants.VALIDATORS_BALANCE_ETH),
-                "proposer_priority": "0",
-            }
-        )
-
-    # Token supply.
-    supply = [
-        {
-            "denom": "pol",
-            "amount": "{}000000000000000000".format(
-                constants.VALIDATORS_BALANCE_ETH * len(validator_accounts)
-            ),  # 18 zeros
-        }
-    ]
-
-    return struct(
-        accounts=accounts,
-        balances=balances,
-        supply=supply,
-        dividends=dividends,
-        validator_set=validator_set,
-        total_voting_power=constants.VALIDATORS_BALANCE_ETH * len(validator_accounts),
-    )
