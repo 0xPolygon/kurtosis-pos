@@ -19,3 +19,5 @@ halt-height = 0
 # Note: State will not be committed on the corresponding height and any logs
 # indicating such can be safely ignored.
 halt-time = 0
+
+chain = ""

@@ -2,14 +2,18 @@ identity = "{{.node_name}}"
 chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
 verbosity = {{.log_level_to_int}}
-
+{{if .is_validator}}
 syncmode = "full"
+{{else}}
+syncmode = "stateless"
+{{end}}
+
 
 [p2p]
     maxpeers = 200
     bind = "0.0.0.0"
     port = {{.discovery_port_number}}
-    nodiscover = true
+    nodiscover = false
 {{if .is_validator}}
     nodekey = "{{.data_folder_path}}/nodekey"
 {{end}}
