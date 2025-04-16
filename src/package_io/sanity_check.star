@@ -10,6 +10,7 @@ POLYGON_POS_PARAMS = {
         "cl_log_level",
         "cl_db_image",
         "is_validator",
+        "is_stateless",
         "count",
     ],
     "setup_images": [

@@ -2,10 +2,10 @@ identity = "{{.node_name}}"
 chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
 verbosity = {{.log_level_to_int}}
-{{if .is_validator}}
-syncmode = "full"
-{{else}}
+{{if .is_stateless}}
 syncmode = "stateless"
+{{else}}
+syncmode = "full"
 {{end}}
 
 
@@ -13,7 +13,7 @@ syncmode = "stateless"
     maxpeers = 200
     bind = "0.0.0.0"
     port = {{.discovery_port_number}}
-    nodiscover = false
+    nodiscover = true
 {{if .is_validator}}
     nodekey = "{{.data_folder_path}}/nodekey"
 {{end}}

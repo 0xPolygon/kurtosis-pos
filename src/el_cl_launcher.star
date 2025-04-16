@@ -108,6 +108,7 @@ def launch(
                     cl_context=cl_context or first_cl_context,
                     el_context=el_context,
                     is_validator=is_validator,
+                    is_stateless=participant.get("is_stateless"),
                 )
             )
 

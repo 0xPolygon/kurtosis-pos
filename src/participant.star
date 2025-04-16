@@ -4,6 +4,7 @@ def new_participant(
     el_context,
     cl_context,
     is_validator,
+    is_stateless,
 ):
     return struct(
         el_type=el_type,
@@ -11,4 +12,5 @@ def new_participant(
         el_context=el_context,
         cl_context=cl_context,
         is_validator=is_validator,
+        is_stateless=is_stateless,
     )

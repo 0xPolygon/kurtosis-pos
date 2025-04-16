@@ -47,14 +47,14 @@ polygon_pos_package:
       ## Consensus Layer (CL) specific flags.
       # The type of CL client that should be started.
       # Valid values are: "heimdall", "heimdall-v2"
-      cl_type: heimdall
+      cl_type: heimdall-v2
 
       # The docker image that should be used for the CL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - heimdall: "0xpolygon/heimdall:1.2.0"
       # - heimdall-v2: "0xpolygon/heimdall-v2:0.1.9"
-      cl_image: 0xpolygon/heimdall:1.2.2
+      cl_image: heimdall-v2:local
 
       # The docker image that should be used for the CL's client database.
       # Leave blank to use the default image.
@@ -75,10 +75,20 @@ polygon_pos_package:
       count: 2
 
     - el_type: bor
-      cl_type: heimdall
+      cl_type: heimdall-v2
+      cl_image: heimdall-v2:local
       is_validator: false
       el_image: bor:local
+      el_log_level: info
 
+    - el_type: bor
+      cl_type: heimdall-v2
+      cl_image: heimdall-v2:local
+      is_validator: false
+      el_image: bor:local
+      is_stateless: true
+      el_log_level: info
+      
   # Images for contract deployment and configuration.
   setup_images:
     # Image used to deploy MATIC contracts to L1.
@@ -118,7 +128,7 @@ polygon_pos_package:
     # Default: "1m0s"
     cl_checkpoint_poll_interval: 1m0s
 
-    cl_environment: local
+    # cl_environment: local
 
     ## Execution Layer parameters.
     # The EL network id.
