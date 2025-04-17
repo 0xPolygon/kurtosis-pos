@@ -4,7 +4,7 @@ context = import_module("./context.star")
 erigon_launcher = import_module("./erigon/launcher.star")
 shared = import_module("./shared.star")
 
-EL_KEYSTORE_GENERATOR_FOLDER_PATH = "../static_files/el/keystore"
+EL_KEYSTORE_GENERATOR_FOLDER_PATH = "../../static_files/el/keystore"
 
 LAUNCHERS = {
     constants.EL_TYPE.bor: bor_launcher.launch,
@@ -71,7 +71,15 @@ def _generate_keystore(plan, el_node_name, private_key):
         ],
         run="bash /opt/data/keystore/generate.sh",
     )
-    return result.files_artifacts
+    artifact_count = len(result.files_artifacts)
+    if artifact_count != 1:
+        fail(
+            "The EL keystore generator should have generated one artifact, got {}.".format(
+                artifact_count
+            )
+        )
+    el_keystore = result.files_artifacts[0]
+    return el_keystore
 
 
 def wait_for_node_startup(plan, service_name):

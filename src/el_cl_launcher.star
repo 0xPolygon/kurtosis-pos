@@ -145,6 +145,7 @@ def _prepare_network_data(participants):
     validator_index = 0
     for _, participant in enumerate(participants):
         for _ in range(participant.get("count")):
+            el_node_name = _generate_el_node_name(participant, participant_index + 1)
             account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
 
             # Generate the EL enode url.
@@ -158,9 +159,6 @@ def _prepare_network_data(participants):
             # Generate validator configurations.
             if participant.get("is_validator"):
                 cl_node_name = _generate_cl_node_name(
-                    participant, participant_index + 1
-                )
-                el_node_name = _generate_el_node_name(
                     participant, participant_index + 1
                 )
 
