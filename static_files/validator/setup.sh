@@ -35,14 +35,14 @@ echo "CL_CLIENT_CONFIG_PATH: ${CL_CLIENT_CONFIG_PATH}"
 echo "EL_CLIENT_CONFIG_PATH: ${EL_CLIENT_CONFIG_PATH}"
 echo "CL_VALIDATORS_CONFIGS: ${CL_VALIDATORS_CONFIGS}"
 
-setup_validator() {
+generate_cl_validator_config() {
   local id="${1}"
   local execution_key="${2}"
   local cometbft_address="${3}"
   local cometbft_public_key="${4}"
   local cometbft_private_key="${5}"
   local p2p_url="${6}"
-
+  
   # Generate the validator key (or consensus key) using the execution key.
   local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${id}"
   echo "Generating CL config for validator ${id}..."
@@ -98,12 +98,6 @@ setup_validator() {
     echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
     exit 1
   fi
-  local node_full_address="${node_id}@${p2p_url}"
-  if [ -z "${persistent_peers}" ]; then
-    persistent_peers="${node_full_address}"
-  else
-    persistent_peers+=",${node_full_address}"
-  fi
 
   # Drop the unnecessary files.
   rm -rf "${cl_validator_config_path}/config/app.toml" \
@@ -115,9 +109,15 @@ setup_validator() {
   # Copy the validator state.
   cp "${cl_validator_config_path}/data/priv_validator_state.json" "${cl_validator_config_path}/config"
 
-  # Generate EL validator config.
+  # Return the node full address
+  return "${node_id}@${p2p_url}"
+}
+
+generate_el_validator_config() {
+  local id="${1}"
+  local execution_key="${2}"
+
   local el_validator_config_path="${EL_CLIENT_CONFIG_PATH}/${id}"
-  echo "Generating EL config for validator ${id}..."
   polycli parseethwallet --hexkey "${execution_key}" --keystore "${el_validator_config_path}/keystore"
   echo "${execution_key}" >"${el_validator_config_path}/nodekey"
   touch "${el_validator_config_path}/password.txt"
@@ -129,7 +129,18 @@ id=1
 IFS=';' read -ra validator_configs <<<"${CL_VALIDATORS_CONFIGS}"
 for config in "${validator_configs[@]}"; do
   IFS=',' read -r execution_key cometbft_address cometbft_public_key cometbft_private_key p2p_url <<<"${config}"
-  setup_validator "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}"
+
+  echo "Generating CL config for validator ${id}..."
+  node_full_address=$(generate_cl_validator_config "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}")
+  if [ -z "${persistent_peers}" ]; then
+    persistent_peers="${node_full_address}"
+  else
+    persistent_peers+=",${node_full_address}"
+  fi
+
+  echo "Generating EL config for validator ${id}..."
+  generate_el_validator_config "${id}" "${execution_key}"
+
   ((id++))
 done
 
