@@ -86,7 +86,7 @@ jobs:
             else
               job_name="${folder_name}-${file_name}"
             fi
-            echo "{\"job_name\": \"$job_name\", \"file_path\": \"$file_path\"}"
+            echo "{\"name\": \"$name\", \"path\": \"$file_path\"}"
           done | jq -s -c '.')
           echo "matrix=${matrix}"
 
@@ -94,12 +94,13 @@ jobs:
 
   run-with-args:
     needs: list-ymls
-    name: run-with-${{ matrix.job_name }}
+    name: run-with-${{ matrix.test.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
+      matrix:
+        test: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -134,7 +135,7 @@ jobs:
           yq --version
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file_path }} --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.test.path }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -146,9 +147,9 @@ jobs:
           test_runner_deployed=true
 
           # Verify if additional services are defined and ensure the test runner is deployed.
-          additional_services=$(yq '.polygon_pos_package.additional_services' ${{ matrix.file_path }})
+          additional_services=$(yq '.polygon_pos_package.additional_services' ${{ matrix.test.path }})
           if [[ "${additional_services}" != "null" ]]; then
-            is_test_runner_deployed=$(yq '.polygon_pos_package.additional_services | contains(["test_runner"])' ${{ matrix.file_path }})
+            is_test_runner_deployed=$(yq '.polygon_pos_package.additional_services | contains(["test_runner"])' ${{ matrix.test.path }})
             if [[ "${is_test_runner_deployed}" != "true" ]]; then
               test_runner_deployed=false
             fi
@@ -167,7 +168,7 @@ jobs:
       - name: Generate archive name
         if: always()
         run: |
-          archive_name="dump_run_with_args_${{ matrix.job_name }}_${{ github.run_id }}"
+          archive_name="dump_run_with_args_${{ matrix.test.name }}_${{ github.run_id }}"
           echo "ARCHIVE_NAME=${archive_name}" >> "$GITHUB_ENV"
           echo "Generated archive name: ${archive_name}"
 
