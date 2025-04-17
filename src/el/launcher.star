@@ -25,7 +25,7 @@ def launch(
 ):
     el_node_name = generate_name(participant, id, is_validator)
 
-    # Generate node credentials.
+    # Generate keystore, nodekey and password.
     el_credentials_artifact = _generate_credentials(
         plan, el_node_name, el_account.eth_tendermint.private_key
     )

@@ -55,7 +55,7 @@ def launch(
         "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
             ERIGON_CONFIG_FOLDER_PATH
         ),
-        # Copy keystore, nodekey and password.
+        # Copy node credentials.
         "cp /opt/data/credentials/password.txt {}".format(ERIGON_CONFIG_FOLDER_PATH),
         "mkdir -p {}".format(ERIGON_APP_DATA_FOLDER_PATH),
         "cp /opt/data/credentials/nodekey {}/nodekey".format(

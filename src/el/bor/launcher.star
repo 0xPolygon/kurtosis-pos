@@ -55,7 +55,7 @@ def launch(
         "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
             BOR_CONFIG_FOLDER_PATH
         ),
-        # Copy keystore, nodekey and password.
+        # Copy node credentials.
         "cp /opt/data/credentials/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
         "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
         "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
