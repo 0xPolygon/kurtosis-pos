@@ -40,7 +40,6 @@ generate_cl_validator_config() {
 
   # Generate the validator key (or consensus key) using the execution key.
   local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${id}"
-  echo "Generating CL config for validator ${id}..."
   if [[ "${DEVNET_CL_TYPE}" == "heimdall" ]]; then
     # Create an initial dummy configuration. It is needed by `heimdallcli` to run.
     heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${id}"
