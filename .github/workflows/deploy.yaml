@@ -285,9 +285,9 @@ jobs:
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-2-heimdall-bor-validator
           kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-2-validator
 
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-heimdall-bor-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-2-heimdall-bor-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-3-heimdall-bor-rpc
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-3-bor-heimdall-rpc
 
       - name: Run Starlark for the second time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false --verbosity=DETAILED .
