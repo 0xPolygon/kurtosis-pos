@@ -32,12 +32,15 @@ polygon_pos_package:
     el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
     validator_config_generator: leovct/pos-validator-config-generator:1.2.3-0.1.9
   network_params:
+    admin_address: "0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9"
+    admin_private_key: "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea"
     ## Validators parameters.
     preregistered_validator_keys_mnemonic: sibling lend brave explain wait orbit mom alcohol disorder message grace sun
     validator_stake_amount_eth: 10000
     validator_top_up_fee_amount_eth: 2000
     ## Consensus Layer parameters
     cl_chain_id: heimdall-4927
+    cl_environment: mainnet
     cl_span_poll_interval: 0m15s
     cl_checkpoint_poll_interval: 1m0s
     ## Execution Layer parameters.
