@@ -50,24 +50,16 @@ def launch(
         },
     )
 
-    files = {
-        BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
-        "/opt/data/genesis": el_genesis_artifact,
-        "/opt/data/config": el_keystore_artifact,
-    }
-
-    validator_cmds = [
-        # Copy EL validator config inside bor data and config folders.
+    bor_cmds = [
+        # Copy genesis file.
+        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
+            BOR_CONFIG_FOLDER_PATH
+        ),
+        # Copy keystore, nodekey and password.
         "cp /opt/data/config/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
         "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
         "cp /opt/data/config/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
         "cp -r /opt/data/config/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
-    ]
-    bor_cmds = [
-        # Copy EL genesis file inside bor config folder.
-        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
-            BOR_CONFIG_FOLDER_PATH
-        ),
         # Start bor.
         # Note: this command attempts to start Bor and retries if it fails.
         # The retry mechanism addresses a race condition where Bor initially fails to
@@ -106,9 +98,13 @@ def launch(
                     wait=None,
                 ),
             },
-            files=files,
+            files={
+                BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
+                "/opt/data/genesis": el_genesis_artifact,
+                "/opt/data/config": el_keystore_artifact,
+            },
             entrypoint=["sh", "-c"],
-            cmd=["&&".join(validator_cmds + bor_cmds if is_validator else bor_cmds)],
+            cmd=["&&".join(bor_cmds)],
         ),
     )
 

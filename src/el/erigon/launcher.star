@@ -50,24 +50,16 @@ def launch(
         },
     )
 
-    files = {
-        ERIGON_CONFIG_FOLDER_PATH: erigon_node_config_artifact,
-        "/opt/data/genesis": el_genesis_artifact,
-        "/opt/data/config": el_keystore_artifact,
-    }
-
-    validator_cmds = [
-        # Copy EL validator config inside erigon data and config folders.
+    erigon_cmds = [
+        # Copy genesis file.
+        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
+            ERIGON_CONFIG_FOLDER_PATH
+        ),
+        # Copy keystore, nodekey and password.
         "cp /opt/data/config/password.txt {}".format(ERIGON_CONFIG_FOLDER_PATH),
         "mkdir -p {}".format(ERIGON_APP_DATA_FOLDER_PATH),
         "cp /opt/data/config/nodekey {}/nodekey".format(ERIGON_APP_DATA_FOLDER_PATH),
         "cp -r /opt/data/config/keystore {}".format(ERIGON_APP_DATA_FOLDER_PATH),
-    ]
-    erigon_cmd = [
-        # Copy EL genesis file inside erigon config folder.
-        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
-            ERIGON_CONFIG_FOLDER_PATH
-        ),
         # Initialise erigon.
         "erigon init --datadir {} {}/genesis.json".format(
             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
@@ -110,11 +102,13 @@ def launch(
                     wait=None,
                 ),
             },
-            files=files,
+            files={
+                ERIGON_CONFIG_FOLDER_PATH: erigon_node_config_artifact,
+                "/opt/data/genesis": el_genesis_artifact,
+                "/opt/data/keystore": el_keystore_artifact,
+            },
             entrypoint=["sh", "-c"],
-            cmd=[
-                "&&".join(validator_cmds + erigon_cmd if is_validator else erigon_cmd)
-            ],
+            cmd=["&&".join(erigon_cmds)],
             user=User(uid=0, gid=0),  # Run the container as root user.
         ),
     )
