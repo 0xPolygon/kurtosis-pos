@@ -27,16 +27,39 @@ def new(plan):
     )
 
 
-def fund(plan, address, rpc_url, funder_private_key, value="10ether"):
+def fund(plan, receiver_address, rpc_url, funder_private_key, value="10ether"):
     plan.run_sh(
         name="address-funder",
         description="Funding address on network {}".format(rpc_url),
         image=constants.TOOLBOX_IMAGE,
-        run="cast send --legacy --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --value ${VALUE} ${ADDRESS}",
+        run="cast send --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --value ${VALUE} ${RECEIVER_ADDRESS}",
         env_vars={
-            "ADDRESS": address,
-            "PRIVATE_KEY": funder_private_key,
             "RPC_URL": rpc_url,
+            "PRIVATE_KEY": funder_private_key,
             "VALUE": value,
+            "RECEIVER_ADDRESS": receiver_address,
+        },
+    )
+
+
+def send_erc20_tokens(
+    plan,
+    contract_address,
+    receiver_address,
+    rpc_url,
+    funder_private_key,
+    token_amount="100",
+):
+    plan.run_sh(
+        name="erc20-token-sender",
+        description="Sending ERC20 tokens on network {}".format(rpc_url),
+        image=constants.TOOLBOX_IMAGE,
+        run="cast send --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} ${CONTRACT_ADDRESS} 'transfer(address,uint256)' ${RECEIVER_ADDRESS} ${TOKEN_AMOUNT}",
+        env_vars={
+            "RPC_URL": rpc_url,
+            "PRIVATE_KEY": funder_private_key,
+            "CONTRACT_ADDRESS": contract_address,
+            "RECEIVER_ADDRESS": receiver_address,
+            "TOKEN_AMOUNT": token_amount,
         },
     )

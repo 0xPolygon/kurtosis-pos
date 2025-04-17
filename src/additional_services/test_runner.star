@@ -60,19 +60,27 @@ def launch(
     l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
     l2_cl_api_url = l2_context.all_participants[0].cl_context.api_url
 
-    # Generate a new wallet and fund it on L1 and L2.
+    # Generate a new wallet, fund it with ETH, MATIC and some ERC20 tokens on L1.
     funder_private_key = l2_network_params.get("admin_private_key")
     wallet = wallet_module.new(plan)
     wallet_module.fund(
         plan,
-        address=wallet.address,
+        receiver_address=wallet.address,
         rpc_url=l1_context.rpc_url,
         funder_private_key=funder_private_key,
     )
-    wallet_module.fund(
+    wallet_module.send_erc20_tokens(
         plan,
-        address=wallet.address,
-        rpc_url=l2_rpc_url,
+        contract_address=l1_matic_token_address,
+        receiver_address=wallet.address,
+        rpc_url=l1_context.rpc_url,
+        funder_private_key=funder_private_key,
+    )
+    wallet_module.send_erc20_tokens(
+        plan,
+        contract_address=l1_erc20_token_address,
+        receiver_address=wallet.address,
+        rpc_url=l1_context.rpc_url,
         funder_private_key=funder_private_key,
     )
 
