@@ -86,7 +86,7 @@ jobs:
             else
               job_name="${folder_name}-${file_name}"
             fi
-            echo "{\"name\": \"$name\", \"path\": \"$file_path\"}"
+            echo "{\"name\": \"$job_name\", \"path\": \"$file_path\"}"
           done | jq -s -c '.')
           echo "matrix=${matrix}"
 
