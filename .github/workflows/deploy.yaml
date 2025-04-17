@@ -76,6 +76,8 @@ jobs:
       - id: set-matrix
         run: |
           file_paths=$(ls -R ./.github/tests/{*,*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
+          echo "file_paths=${file_paths}"
+
           matrix=$(echo "${file_paths}" | while read -r file_path; do
             file_name=$(basename -s ".yml" "${file_path}")
             folder_name=$(basename $(dirname "${file_path}"))
@@ -86,6 +88,8 @@ jobs:
             fi
             echo "{\"job_name\": \"$job_name\", \"file_path\": \"$file_path\"}"
           done | jq -s -c '.')
+          echo "matrix=${matrix}"
+
           echo "matrix=${matrix}" >> $GITHUB_OUTPUT
 
   run-with-args:
