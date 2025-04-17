@@ -15,7 +15,7 @@ def launch(
     el_node_name,
     participant,
     el_genesis_artifact,
-    el_keystore_artifact,
+    el_credentials_artifact,
     cl_node_url,
     el_account,
     el_static_nodes,
@@ -56,10 +56,10 @@ def launch(
             BOR_CONFIG_FOLDER_PATH
         ),
         # Copy keystore, nodekey and password.
-        "cp /opt/data/config/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
+        "cp /opt/data/credentials/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
         "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp /opt/data/config/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp -r /opt/data/config/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
+        "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
+        "cp -r /opt/data/credentials/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
         # Start bor.
         # Note: this command attempts to start Bor and retries if it fails.
         # The retry mechanism addresses a race condition where Bor initially fails to
@@ -101,7 +101,7 @@ def launch(
             files={
                 BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
-                "/opt/data/config": el_keystore_artifact,
+                "/opt/data/credentials": el_credentials_artifact,
             },
             entrypoint=["sh", "-c"],
             cmd=["&&".join(bor_cmds)],

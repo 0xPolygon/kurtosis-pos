@@ -4,7 +4,7 @@ context = import_module("./context.star")
 erigon_launcher = import_module("./erigon/launcher.star")
 shared = import_module("./shared.star")
 
-EL_KEYSTORE_GENERATOR_FOLDER_PATH = "../../static_files/el/keystore"
+EL_CREDENTIALS_GENERATOR_FOLDER_PATH = "../../static_files/el/credentials"
 
 LAUNCHERS = {
     constants.EL_TYPE.bor: bor_launcher.launch,
@@ -25,8 +25,8 @@ def launch(
 ):
     el_node_name = generate_name(participant, id, is_validator)
 
-    # Generate keystore.
-    el_keystore_artifact = _generate_keystore(
+    # Generate node credentials.
+    el_credentials_artifact = _generate_credentials(
         plan, el_node_name, el_account.eth_tendermint.private_key
     )
 
@@ -37,7 +37,7 @@ def launch(
         el_node_name,
         participant,
         el_genesis_artifact,
-        el_keystore_artifact,
+        el_credentials_artifact,
         cl_api_url,
         el_account,
         el_static_nodes,
@@ -51,38 +51,38 @@ def launch(
     )
 
 
-def _generate_keystore(plan, el_node_name, private_key):
-    keystore_generator_artifact = plan.upload_files(
-        src=EL_KEYSTORE_GENERATOR_FOLDER_PATH,
-        name="{}-keystore-generator-config".format(el_node_name),
+def _generate_credentials(plan, el_node_name, private_key):
+    credentials_generator_artifact = plan.upload_files(
+        src=EL_CREDENTIALS_GENERATOR_FOLDER_PATH,
+        name="{}-credentials-generator-config".format(el_node_name),
     )
     result = plan.run_sh(
-        name="{}-keystore-generator".format(el_node_name),
+        name="{}-credentials-generator".format(el_node_name),
         image=constants.TOOLBOX_IMAGE,
         env_vars={
             "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
             "PRIVATE_KEY": private_key,
         },
         files={
-            "/opt/data/keystore": keystore_generator_artifact,
+            "/opt/data/credentials": credentials_generator_artifact,
         },
         store=[
             StoreSpec(
                 src=constants.EL_CLIENT_CONFIG_PATH,
-                name="{}-keystore-config".format(el_node_name),
+                name="{}-credentials-config".format(el_node_name),
             )
         ],
-        run="bash /opt/data/keystore/generate.sh",
+        run="bash /opt/data/credentials/generate.sh",
     )
     artifact_count = len(result.files_artifacts)
     if artifact_count != 1:
         fail(
-            "The EL keystore generator should have generated one artifact, got {}.".format(
+            "The EL credentials generator should have generated one artifact, got {}.".format(
                 artifact_count
             )
         )
-    el_keystore = result.files_artifacts[0]
-    return el_keystore
+    el_credentials = result.files_artifacts[0]
+    return el_credentials
 
 
 def wait_for_node_startup(plan, service_name):
