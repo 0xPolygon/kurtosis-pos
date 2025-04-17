@@ -24,9 +24,13 @@ def launch(
     el_chain_id,
 ):
     el_node_name = generate_name(participant, id, is_validator)
+
+    # Generate keystore.
     el_keystore_artifact = _generate_keystore(
         plan, el_node_name, el_account.eth_tendermint.private_key
     )
+
+    # Launch node.
     launch_method = _get_launcher(participant)
     service = launch_method(
         plan,
@@ -39,7 +43,6 @@ def launch(
         el_static_nodes,
         el_chain_id,
     )
-
     return context.new_context(
         service_name=el_node_name,
         rpc_http_url=service.ports[shared.RPC_PORT_ID].url,
@@ -100,7 +103,7 @@ def wait_for_node_startup(plan, service_name):
         assertion="!=",
         target_value="",
         interval="1s",
-        timeout="1m",
+        timeout="10s",
     )
 
 
