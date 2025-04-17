@@ -1,4 +1,5 @@
 constants = import_module("./constants.star")
+math = import_module("../math/math.star")
 prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 
 
@@ -206,11 +207,11 @@ def validate_chain_ids(cl_chain_id, el_chain_id):
 
 
 def _validate_participants_count(participants):
-    participants_count = sum(p.get("count", 0) for p in participants)
+    participants_count = math.sum([p.get("count") for p in participants])
     if participants_count >= len(prefunded_accounts_module.PREFUNDED_ACCOUNTS):
         fail(
             "The total number of participants '{}' exceeds the number of prefunded accounts '{}'. Please generate additional prefunded accounts by following the instructions in 'src/prefunded_accounts/README.md'.".format(
-                total_count, len(prefunded_accounts_module.PREFUNDED_ACCOUNTS)
+                participants_count, len(prefunded_accounts_module.PREFUNDED_ACCOUNTS)
             )
         )
 
