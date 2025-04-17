@@ -16,7 +16,7 @@ def launch(
     el_node_name,
     participant,
     el_genesis_artifact,
-    el_validator_config_artifact,
+    el_credentials_artifact,
     cl_node_url,
     el_account,
     el_static_nodes,
@@ -50,25 +50,18 @@ def launch(
         },
     )
 
-    files = {
-        ERIGON_CONFIG_FOLDER_PATH: erigon_node_config_artifact,
-        "/opt/data/genesis": el_genesis_artifact,
-    }
-    if is_validator:
-        files["/opt/data/config"] = el_validator_config_artifact
-
-    validator_cmds = [
-        # Copy EL validator config inside erigon data and config folders.
-        "cp /opt/data/config/password.txt {}".format(ERIGON_CONFIG_FOLDER_PATH),
-        "mkdir -p {}".format(ERIGON_APP_DATA_FOLDER_PATH),
-        "cp /opt/data/config/nodekey {}/nodekey".format(ERIGON_APP_DATA_FOLDER_PATH),
-        "cp -r /opt/data/config/keystore {}".format(ERIGON_APP_DATA_FOLDER_PATH),
-    ]
-    erigon_cmd = [
-        # Copy EL genesis file inside erigon config folder.
+    erigon_cmds = [
+        # Copy genesis file.
         "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
             ERIGON_CONFIG_FOLDER_PATH
         ),
+        # Copy node credentials.
+        "cp /opt/data/credentials/password.txt {}".format(ERIGON_CONFIG_FOLDER_PATH),
+        "mkdir -p {}".format(ERIGON_APP_DATA_FOLDER_PATH),
+        "cp /opt/data/credentials/nodekey {}/nodekey".format(
+            ERIGON_APP_DATA_FOLDER_PATH
+        ),
+        "cp -r /opt/data/credentials/keystore {}".format(ERIGON_APP_DATA_FOLDER_PATH),
         # Initialise erigon.
         "erigon init --datadir {} {}/genesis.json".format(
             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
@@ -111,11 +104,13 @@ def launch(
                     wait=None,
                 ),
             },
-            files=files,
+            files={
+                ERIGON_CONFIG_FOLDER_PATH: erigon_node_config_artifact,
+                "/opt/data/genesis": el_genesis_artifact,
+                "/opt/data/credentials": el_credentials_artifact,
+            },
             entrypoint=["sh", "-c"],
-            cmd=[
-                "&&".join(validator_cmds + erigon_cmd if is_validator else erigon_cmd)
-            ],
+            cmd=["&&".join(erigon_cmds)],
             user=User(uid=0, gid=0),  # Run the container as root user.
         ),
     )

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Create validator configurations (for both CL and EL).
+# Create CL validator configurations.
 # Unfortunately, the Heimdall node id can only be retrieved using `heimdall init`.
 # Thus, we need to generate the configs of each validator and aggregate all the node identifiers
 # to then be able to create the list of persistent peers.
@@ -19,10 +19,6 @@ if [[ -z "${CL_CLIENT_CONFIG_PATH}" ]]; then
   echo "Error: CL_CLIENT_CONFIG_PATH environment variable is not set"
   exit 1
 fi
-if [[ -z "${EL_CLIENT_CONFIG_PATH}" ]]; then
-  echo "Error: EL_CLIENT_CONFIG_PATH environment variable is not set"
-  exit 1
-fi
 if [[ -z "${CL_VALIDATORS_CONFIGS}" ]]; then
   echo "Error: CL_VALIDATORS_CONFIGS environment variable is not set"
   exit 1
@@ -32,10 +28,9 @@ fi
 echo "DEVNET_CL_TYPE: ${DEVNET_CL_TYPE}"
 echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 echo "CL_CLIENT_CONFIG_PATH: ${CL_CLIENT_CONFIG_PATH}"
-echo "EL_CLIENT_CONFIG_PATH: ${EL_CLIENT_CONFIG_PATH}"
 echo "CL_VALIDATORS_CONFIGS: ${CL_VALIDATORS_CONFIGS}"
 
-setup_validator() {
+generate_cl_validator_config() {
   local id="${1}"
   local execution_key="${2}"
   local cometbft_address="${3}"
@@ -45,7 +40,6 @@ setup_validator() {
 
   # Generate the validator key (or consensus key) using the execution key.
   local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${id}"
-  echo "Generating CL config for validator ${id}..."
   if [[ "${DEVNET_CL_TYPE}" == "heimdall" ]]; then
     # Create an initial dummy configuration. It is needed by `heimdallcli` to run.
     heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${id}"
@@ -98,12 +92,6 @@ setup_validator() {
     echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
     exit 1
   fi
-  local node_full_address="${node_id}@${p2p_url}"
-  if [ -z "${persistent_peers}" ]; then
-    persistent_peers="${node_full_address}"
-  else
-    persistent_peers+=",${node_full_address}"
-  fi
 
   # Drop the unnecessary files.
   rm -rf "${cl_validator_config_path}/config/app.toml" \
@@ -115,12 +103,8 @@ setup_validator() {
   # Copy the validator state.
   cp "${cl_validator_config_path}/data/priv_validator_state.json" "${cl_validator_config_path}/config"
 
-  # Generate EL validator config.
-  local el_validator_config_path="${EL_CLIENT_CONFIG_PATH}/${id}"
-  echo "Generating EL config for validator ${id}..."
-  polycli parseethwallet --hexkey "${execution_key}" --keystore "${el_validator_config_path}/keystore"
-  echo "${execution_key}" >"${el_validator_config_path}/nodekey"
-  touch "${el_validator_config_path}/password.txt"
+  # Return the node full address
+  echo "${node_id}@${p2p_url}" >"${cl_validator_config_path}/node_full_address.txt"
 }
 
 # Loop through validators and set them up.
@@ -129,7 +113,18 @@ id=1
 IFS=';' read -ra validator_configs <<<"${CL_VALIDATORS_CONFIGS}"
 for config in "${validator_configs[@]}"; do
   IFS=',' read -r execution_key cometbft_address cometbft_public_key cometbft_private_key p2p_url <<<"${config}"
-  setup_validator "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}"
+
+  echo "Generating CL config for validator ${id}..."
+  generate_cl_validator_config "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}"
+
+  # Retrieve the node full address from the file.
+  node_full_address=$(cat "${CL_CLIENT_CONFIG_PATH}/${id}/node_full_address.txt")
+  if [ -z "${persistent_peers}" ]; then
+    persistent_peers="${node_full_address}"
+  else
+    persistent_peers+=",${node_full_address}"
+  fi
+
   ((id++))
 done
 

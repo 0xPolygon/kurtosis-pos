@@ -1,4 +1,7 @@
 constants = import_module("./constants.star")
+math = import_module("../math/math.star")
+prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
+
 
 POLYGON_POS_PARAMS = {
     "participants": [
@@ -96,6 +99,7 @@ def sanity_check_polygon_args(plan, input_args):
     validate_chain_ids(cl_chain_id, el_chain_id)
 
     participants = input_args.get("participants")
+    _validate_participants_count(participants)
     for p in participants:
         _validate_participant(p)
 
@@ -198,6 +202,16 @@ def validate_chain_ids(cl_chain_id, el_chain_id):
         fail(
             'CL chain id must follow the standard "heimdall-<el_chain_id>". Expected "{}" but got: "{}".'.format(
                 expected_cl_chain_id, cl_chain_id
+            )
+        )
+
+
+def _validate_participants_count(participants):
+    participants_count = math.sum([p.get("count") for p in participants])
+    if participants_count >= len(prefunded_accounts_module.PREFUNDED_ACCOUNTS):
+        fail(
+            "The total number of participants '{}' exceeds the number of prefunded accounts '{}'. Please generate additional prefunded accounts by following the instructions in 'src/prefunded_accounts/README.md'.".format(
+                participants_count, len(prefunded_accounts_module.PREFUNDED_ACCOUNTS)
             )
         )
 

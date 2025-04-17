@@ -67,7 +67,7 @@ def run(plan, args):
             name="l1-chain-id-reader",
             description="Reading external L1 chain id from the RPC",
             image="ghcr.io/foundry-rs/foundry:stable",
-            run="cast to-dec $(cast rpc eth_chainId --rpc-url ${L1_RPC_URL} | sed 's/\"//g')",
+            run="cast to-dec $(cast rpc eth_chainId --rpc-url ${L1_RPC_URL} | sed 's/\"//g') | tr -d '\n'",
             env_vars={
                 "L1_RPC_URL": l1_rpc_url,
             },
@@ -209,15 +209,8 @@ def get_validator_accounts(participants):
     for participant in participants:
         for _ in range(participant.get("count")):
             if participant.get("is_validator"):
-                if participant_index >= len(prefunded_accounts):
-                    fail(
-                        "Having more than {} validators is not supported for now.".format(
-                            len(prefunded_accounts)
-                        )
-                    )
                 account = prefunded_accounts[participant_index]
                 validator_accounts.append(account)
-            # Increment the participant index.
             participant_index += 1
 
     if len(validator_accounts) == 0:
