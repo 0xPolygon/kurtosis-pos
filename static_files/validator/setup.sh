@@ -104,7 +104,7 @@ generate_cl_validator_config() {
   cp "${cl_validator_config_path}/data/priv_validator_state.json" "${cl_validator_config_path}/config"
 
   # Return the node full address
-  echo "${node_id}@${p2p_url}"
+  echo "${node_id}@${p2p_url}" >"${cl_validator_config_path}/node_full_address.txt"
 }
 
 # Loop through validators and set them up.
@@ -115,7 +115,10 @@ for config in "${validator_configs[@]}"; do
   IFS=',' read -r execution_key cometbft_address cometbft_public_key cometbft_private_key p2p_url <<<"${config}"
 
   echo "Generating CL config for validator ${id}..."
-  node_full_address=$(generate_cl_validator_config "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}")
+  generate_cl_validator_config "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}"
+
+  # Retrieve the node full address from the file.
+  node_full_address=$(cat "${CL_CLIENT_CONFIG_PATH}/${id}/node_full_address.txt")
   if [ -z "${persistent_peers}" ]; then
     persistent_peers="${node_full_address}"
   else
