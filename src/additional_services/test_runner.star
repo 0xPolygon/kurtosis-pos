@@ -2,7 +2,7 @@ contract_util = import_module("../contracts/util.star")
 wallet_module = import_module("../wallet/wallet.star")
 
 
-TEST_RUNNER_IMAGE = "leovct/e2e:8b5dd60"  # https://github.com/agglayer/e2e
+TEST_RUNNER_IMAGE = "leovct/e2e:bcf4f0d"  # https://github.com/agglayer/e2e
 
 
 def launch(
