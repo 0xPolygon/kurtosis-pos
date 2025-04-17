@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Create validator configurations (for both CL and EL).
+# Create CL validator configurations.
 # Unfortunately, the Heimdall node id can only be retrieved using `heimdall init`.
 # Thus, we need to generate the configs of each validator and aggregate all the node identifiers
 # to then be able to create the list of persistent peers.

@@ -8,7 +8,7 @@ prefunded_accounts = import_module("./prefunded_accounts/accounts.star")
 wait = import_module("./wait/wait.star")
 
 
-VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/validator"
+VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/cl/validator"
 
 
 def launch(
