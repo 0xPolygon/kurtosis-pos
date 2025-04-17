@@ -72,15 +72,22 @@ polygon_pos_package:
 
       # Count of nodes to spin up for this participant.
       # Default: 1
-      count: 2
+      count: 1
 
     - el_type: bor
       cl_type: heimdall-v2
       cl_image: heimdall-v2:local
       is_validator: false
       el_image: bor:local
-      el_log_level: info
-
+      el_log_level: trace
+      count: 2
+    - el_type: bor
+      cl_type: heimdall-v2
+      cl_image: heimdall-v2:local
+      is_validator: false
+      el_image: bor:local
+      is_stateless: true
+      el_log_level: trace
     - el_type: bor
       cl_type: heimdall-v2
       cl_image: heimdall-v2:local
@@ -88,6 +95,9 @@ polygon_pos_package:
       el_image: bor:local
       is_stateless: true
       el_log_level: info
+      count: 4
+
+      
       
   # Images for contract deployment and configuration.
   setup_images:
