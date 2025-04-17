@@ -14,14 +14,17 @@ syncmode = "full"
     bind = "0.0.0.0"
     port = {{.discovery_port_number}}
     nodiscover = true
-{{if .is_validator}}
     nodekey = "{{.data_folder_path}}/nodekey"
-{{end}}
     [p2p.discovery]
         static-nodes = {{.static_nodes}}
 
 [heimdall]
     url = "{{.cl_node_url}}"
+
+[accounts]
+    allow-insecure-unlock = true
+    password = "{{.config_folder_path}}/password.txt"
+    unlock = ["{{.address}}"]
 
 {{if .is_validator}}
 [miner]
@@ -30,11 +33,6 @@ syncmode = "full"
     gasprice = "25000000000"
     etherbase = "{{.address}}"
     extradata = "{{.node_name}}"
-
-[accounts]
-    allow-insecure-unlock = true
-    password = "{{.config_folder_path}}/password.txt"
-    unlock = ["{{.address}}"]
 {{end}}
 
 [jsonrpc]
