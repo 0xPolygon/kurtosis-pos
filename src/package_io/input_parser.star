@@ -79,7 +79,6 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "validator_top_up_fee_amount_eth": 2000,  # in ether
         # CL network params.
         "cl_chain_id": constants.DEFAULT_CL_CHAIN_ID,
-        "cl_environment": constants.CL_ENVIRONMENT.mainnet,
         "cl_span_poll_interval": "0m15s",
         "cl_checkpoint_poll_interval": "1m0s",
         # EL network params.
