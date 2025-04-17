@@ -77,14 +77,15 @@ jobs:
         run: |
           file_paths=$(ls -R ./.github/tests/{*,*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
           matrix=$(echo "${file_paths}" | while read -r file_path; do
-            file_name=$(basename -s ".yml" "$file_path")
-            echo "{\"name\": \"$file_name\", \"path\": \"$file_path\"}"
+            file_name=$(basename -s ".yml" "${file_path}")
+            folder_name=$(basename $(dirname "${file_name}"))
+            echo "{\"name\": \"$file_name\", \"dirname\": \"$folder_name\", \"path\": \"$file_path\"}"
           done | jq -s -c '.')
           echo "matrix=${matrix}" >> $GITHUB_OUTPUT
 
   run-with-args:
     needs: list-ymls
-    name: run-with-${{ matrix.file.name }}
+    name: run-with-${{ matrix.file.dirname }}-${{ matrix.file.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:

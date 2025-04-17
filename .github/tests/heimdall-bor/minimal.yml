@@ -1,0 +1,11 @@
+polygon_pos_package:
+  participants:
+    # validators
+    - cl_type: heimdall
+      el_type: bor
+      is_validator: true
+
+    # rpcs
+    - cl_type: heimdall
+      el_type: bor
+      is_validator: false
