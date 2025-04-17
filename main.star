@@ -209,15 +209,8 @@ def get_validator_accounts(participants):
     for participant in participants:
         for _ in range(participant.get("count")):
             if participant.get("is_validator"):
-                if participant_index >= len(prefunded_accounts):
-                    fail(
-                        "Having more than {} validators is not supported for now.".format(
-                            len(prefunded_accounts)
-                        )
-                    )
                 account = prefunded_accounts[participant_index]
                 validator_accounts.append(account)
-            # Increment the participant index.
             participant_index += 1
 
     if len(validator_accounts) == 0:
