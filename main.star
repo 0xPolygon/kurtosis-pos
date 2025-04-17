@@ -67,7 +67,7 @@ def run(plan, args):
             name="l1-chain-id-reader",
             description="Reading external L1 chain id from the RPC",
             image="ghcr.io/foundry-rs/foundry:stable",
-            run="cast to-dec $(cast rpc eth_chainId --rpc-url ${L1_RPC_URL} | sed 's/\"//g')",
+            run="cast to-dec $(cast rpc eth_chainId --rpc-url ${L1_RPC_URL} | sed 's/\"//g') | tr -d '\n'",
             env_vars={
                 "L1_RPC_URL": l1_rpc_url,
             },
