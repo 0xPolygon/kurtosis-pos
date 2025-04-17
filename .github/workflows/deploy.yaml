@@ -15,6 +15,57 @@ env:
   ENCLAVE_NAME: pos
 
 jobs:
+  run-without-args:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        # This step will only execute if the necessary secrets are available, preventing failures
+        # on pull requests from forked repositories.
+        if: ${{ env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN }}
+        env:
+          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Install kurtosis
+        run: |
+          echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+          sudo apt update
+          sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
+          kurtosis analytics disable
+          kurtosis version
+
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+
+      - name: Run Starlark
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false --verbosity=DETAILED .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Test state syncs
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+
+      - name: Dump enclave
+        if: always()
+        run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
+
+      - name: Upload enclave dump
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dump_run_without_args_${{ github.run_id }}
+          path: ./dump
+
   list-ymls:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -24,7 +75,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: set-matrix
         run: |
-          file_paths=$(ls -R ./.github/tests/{*,*/*}.yml | grep -Ev "cl-el-genesis|external-l1|nightly")
+          file_paths=$(ls -R ./.github/tests/nightly/{*,*/*}.yml)
           echo "file_paths=${file_paths}"
 
           matrix=$(echo "${file_paths}" | while read -r file_path; do
@@ -126,4 +177,133 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARCHIVE_NAME }}
+          path: ./dump
+
+  run-with-external-l1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        # This step will only execute if the necessary secrets are available, preventing failures
+        # on pull requests from forked repositories.
+        if: ${{ env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN }}
+        env:
+          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Install kurtosis
+        run: |
+          echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+          sudo apt update
+          sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
+          kurtosis analytics disable
+          kurtosis version
+
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+
+      - name: Deploy L1
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/tests/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@4.4.0
+
+      - name: Deploy L2
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/external-l1/polygon-pos-with-external-l1.yml --show-enclave-inspect=false --verbosity=DETAILED .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Test state syncs
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+
+      - name: Dump enclave
+        if: always()
+        run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
+
+      - name: Upload enclave dump
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dump_run_with_external_l1_${{ github.run_id }}
+          path: ./dump
+
+  run-with-cl-el-genesis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        # This step will only execute if the necessary secrets are available, preventing failures
+        # on pull requests from forked repositories.
+        if: ${{ env.DOCKERHUB_USERNAME && env.DOCKERHUB_TOKEN }}
+        env:
+          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Install kurtosis
+        run: |
+          echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+          sudo apt update
+          sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
+          kurtosis analytics disable
+          kurtosis version
+
+      - name: Install foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ env.FOUNDRY_VERSION }}
+
+      - name: Run Starlark for the first time
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false --verbosity=DETAILED .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Retrieve L2 CL genesis file
+        working-directory: .github/tests/cl-el-genesis
+        run: |
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json | tail -n +2 | jq > l2-cl-genesis.json
+          jq . l2-cl-genesis.json
+
+      - name: Retrieve L2 EL genesis file
+        working-directory: .github/tests/cl-el-genesis
+        run: |
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq > l2-el-genesis.json
+          jq . l2-el-genesis.json
+
+      - name: Retrieve MATIC contract addresses
+        working-directory: .github/tests/cl-el-genesis
+        run: |
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq > matic-contract-addresses.json
+          jq . matic-contract-addresses.json
+
+      - name: Run Starlark for the second time
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false --verbosity=DETAILED .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Test state syncs
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+
+      - name: Dump enclave
+        if: always()
+        run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
+
+      - name: Upload enclave dump
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dump_run_with_cl_el_genesis_${{ github.run_id }}
           path: ./dump
