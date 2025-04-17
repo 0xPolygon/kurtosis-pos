@@ -21,11 +21,11 @@ def launch(
     devnet_cl_type,
 ):
     network_params = polygon_pos_args.get("network_params")
-    setup_images = polygon_pos_args.get("setup_images")
+    el_chain_id = network_params.get("el_chain_id")
 
     # Prepare network data and generate validator configs.
     network_data = _prepare_network_data(participants)
-    validator_config_artifacts = _generate_cl_validator_config(
+    cl_validator_config_artifacts = _generate_cl_validator_config(
         plan,
         network_data.cl_validator_configs_str,
         network_data.cl_validator_keystores,
@@ -33,7 +33,7 @@ def launch(
         devnet_cl_type,
     )
     cl_node_ids = _read_cl_persistent_peers(
-        plan, validator_config_artifacts.persistent_peers
+        plan, cl_validator_config_artifacts.persistent_peers
     )
 
     # Start each participant.
@@ -53,7 +53,7 @@ def launch(
             # If the participant is a validator, launch the CL node and it's dedicated AMQP server.
             cl_context = {}
             if is_validator:
-                cl_validator_config_artifact = validator_config_artifacts.cl_configs[
+                cl_validator_config_artifact = cl_validator_config_artifacts.configs[
                     validator_index
                 ]
                 cl_context = cl_launcher.launch(
@@ -80,7 +80,6 @@ def launch(
 
             # Launch the EL node.
             el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
-            el_chain_id = network_params.get("el_chain_id")
             el_context = el_launcher.launch(
                 plan,
                 participant,
@@ -126,7 +125,7 @@ def launch(
 
     # Return the L2 context.
     return struct(
-        el_chain_id=network_params.get("el_chain_id"),
+        el_chain_id=el_chain_id,
         devnet_cl_type=devnet_cl_type,
         all_participants=all_participants,
     )
@@ -249,7 +248,7 @@ def _generate_cl_validator_config(
     cl_persistent_peers_artifact = result.files_artifacts[-1]
 
     return struct(
-        cl_configs=cl_validator_config_artifacts,
+        configs=cl_validator_config_artifacts,
         persistent_peers=cl_persistent_peers_artifact,
     )
 

@@ -55,7 +55,7 @@ def _generate_keystore(plan, el_node_name, private_key):
     )
     result = plan.run_sh(
         name="{}-keystore-generator".format(el_node_name),
-        image=setup_images.get("validator_config_generator"),
+        image=constants.TOOLBOX_IMAGE,
         env_vars={
             "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
             "PRIVATE_KEY": private_key,
