@@ -1,6 +1,6 @@
 contract_util = import_module("../contracts/util.star")
 
-TEST_RUNNER_IMAGE = "leovct/e2e:2bdd880"  # https://github.com/agglayer/e2e
+TEST_RUNNER_IMAGE = "leovct/e2e:bcf4f0d"  # https://github.com/agglayer/e2e
 
 
 def launch(
