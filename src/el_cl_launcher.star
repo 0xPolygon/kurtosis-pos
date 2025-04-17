@@ -25,11 +25,10 @@ def launch(
 
     # Prepare network data and generate validator configs.
     network_data = _prepare_network_data(participants)
-    validator_config_artifacts = _generate_validator_config(
+    validator_config_artifacts = _generate_cl_validator_config(
         plan,
         network_data.cl_validator_configs_str,
         network_data.cl_validator_keystores,
-        network_data.el_validator_keystores,
         polygon_pos_args,
         devnet_cl_type,
     )
@@ -80,11 +79,6 @@ def launch(
                 fail("No CL node deployed yet...")
 
             # Launch the EL node.
-            el_validator_config_artifact = (
-                validator_config_artifacts.el_configs[validator_index]
-                if is_validator
-                else None
-            )
             el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
             el_chain_id = network_params.get("el_chain_id")
             el_context = el_launcher.launch(
@@ -93,7 +87,6 @@ def launch(
                 participant_index + 1,
                 is_validator,
                 el_genesis_artifact,
-                el_validator_config_artifact,
                 cl_api_url,
                 el_account,
                 network_data.el_static_nodes,
@@ -143,9 +136,8 @@ def _prepare_network_data(participants):
     # An array of strings containing validator configurations.
     # Each string should follow the format: "<private_key>,<p2p_url>".
     cl_validator_configs = []
-    # An array of keystores for CL and EL validators.
+    # An array of keystores for CL validators.
     cl_validator_keystores = []
-    el_validator_keystores = []
     # An array of EL enode URLs.
     el_static_nodes = []
 
@@ -154,6 +146,17 @@ def _prepare_network_data(participants):
     validator_index = 0
     for _, participant in enumerate(participants):
         for _ in range(participant.get("count")):
+            account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
+
+            # Generate the EL enode url.
+            enode_url = _generate_enode_url(
+                participant,
+                account.eth_tendermint.public_key.removeprefix("0x"),
+                el_node_name,
+            )
+            el_static_nodes.append(enode_url)
+
+            # Generate validator configurations.
             if participant.get("is_validator"):
                 cl_node_name = _generate_cl_node_name(
                     participant, participant_index + 1
@@ -161,22 +164,19 @@ def _prepare_network_data(participants):
                 el_node_name = _generate_el_node_name(
                     participant, participant_index + 1
                 )
-                validator_account = prefunded_accounts.PREFUNDED_ACCOUNTS[
-                    participant_index
-                ]
 
                 # Generate the CL validator config.
                 cl_validator_config = "{},{},{},{},{}:{}".format(
-                    validator_account.eth_tendermint.private_key,
-                    validator_account.cometbft.address,
-                    validator_account.cometbft.public_key,
-                    validator_account.cometbft.private_key,
+                    account.eth_tendermint.private_key,
+                    account.cometbft.address,
+                    account.cometbft.public_key,
+                    account.cometbft.private_key,
                     cl_node_name,
                     cl_shared.NODE_LISTEN_PORT_NUMBER,
                 )
                 cl_validator_configs.append(cl_validator_config)
 
-                # Generate the validator CL and EL keystores.
+                # Generate the validator CL keystores.
                 cl_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}/config/".format(
@@ -185,22 +185,6 @@ def _prepare_network_data(participants):
                         name="{}-config".format(cl_node_name),
                     )
                 )
-                el_validator_keystores.append(
-                    StoreSpec(
-                        src="{}/{}".format(
-                            constants.EL_CLIENT_CONFIG_PATH, validator_index + 1
-                        ),
-                        name="{}-config".format(el_node_name),
-                    ),
-                )
-
-                # Generate the EL enode url.
-                enode_url = _generate_enode_url(
-                    participant,
-                    validator_account.eth_tendermint.public_key.removeprefix("0x"),
-                    el_node_name,
-                )
-                el_static_nodes.append(enode_url)
 
                 # Increment the validator index.
                 validator_index += 1
@@ -211,7 +195,6 @@ def _prepare_network_data(participants):
     return struct(
         cl_validator_configs_str=";".join(cl_validator_configs),
         cl_validator_keystores=cl_validator_keystores,
-        el_validator_keystores=el_validator_keystores,
         el_static_nodes=el_static_nodes,
     )
 
@@ -224,24 +207,22 @@ def _generate_enode_url(participant, eth_public_key, el_node_name):
     )
 
 
-def _generate_validator_config(
+def _generate_cl_validator_config(
     plan,
     cl_validator_configs_str,
     cl_validator_keystores,
-    el_validator_keystores,
     polygon_pos_args,
     devnet_cl_type,
 ):
     setup_images = polygon_pos_args.get("setup_images")
     network_params = polygon_pos_args.get("network_params")
 
-    # Generate CL validators configuration such as the public/private keys and node identifiers.
     validator_config_generator_artifact = plan.upload_files(
         src=VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH,
         name="l2-validator-config-generator-config",
     )
 
-    # Generate validator configs.
+    # Generate CL validators configuration such as the public/private keys and node identifiers.
     result = plan.run_sh(
         name="l2-validators-config-generator",
         image=setup_images.get("validator_config_generator"),
@@ -249,14 +230,12 @@ def _generate_validator_config(
             "DEVNET_CL_TYPE": devnet_cl_type,
             "CL_CHAIN_ID": network_params.get("cl_chain_id"),
             "CL_CLIENT_CONFIG_PATH": constants.CL_CLIENT_CONFIG_PATH,
-            "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
             "CL_VALIDATORS_CONFIGS": cl_validator_configs_str,
         },
         files={
             "/opt/data": validator_config_generator_artifact,
         },
         store=cl_validator_keystores
-        + el_validator_keystores
         + [
             StoreSpec(
                 src="{}/persistent_peers.txt".format(constants.CL_CLIENT_CONFIG_PATH),
@@ -266,14 +245,11 @@ def _generate_validator_config(
         run="bash /opt/data/setup.sh",
     )
     # Artifacts are ordered to match the `StoreSpec` definitions.
-    n = len(result.files_artifacts) // 2  # Assuming equal number of cl and el configs.
-    cl_validator_config_artifacts = result.files_artifacts[:n]
-    el_validator_config_artifacts = result.files_artifacts[n:-1]
+    cl_validator_config_artifacts = result.files_artifacts[:-1]
     cl_persistent_peers_artifact = result.files_artifacts[-1]
 
     return struct(
         cl_configs=cl_validator_config_artifacts,
-        el_configs=el_validator_config_artifacts,
         persistent_peers=cl_persistent_peers_artifact,
     )
 

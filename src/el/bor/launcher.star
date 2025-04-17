@@ -15,7 +15,7 @@ def launch(
     el_node_name,
     participant,
     el_genesis_artifact,
-    el_validator_config_artifact,
+    el_keystore_artifact,
     cl_node_url,
     el_account,
     el_static_nodes,
@@ -53,9 +53,8 @@ def launch(
     files = {
         BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
         "/opt/data/genesis": el_genesis_artifact,
+        "/opt/data/config": el_keystore_artifact,
     }
-    if is_validator:
-        files["/opt/data/config"] = el_validator_config_artifact
 
     validator_cmds = [
         # Copy EL validator config inside bor data and config folders.
