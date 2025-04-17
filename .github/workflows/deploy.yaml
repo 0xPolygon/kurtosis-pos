@@ -75,22 +75,32 @@ jobs:
       - uses: actions/checkout@v4
       - id: set-matrix
         run: |
-          file_paths=$(ls -R ./.github/tests/{*,*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
+          file_paths=$(ls -R ./.github/tests/{*,*/*}.yml | grep -Ev "cl-el-genesis|external-l1|nightly")
+          echo "file_paths=${file_paths}"
+
           matrix=$(echo "${file_paths}" | while read -r file_path; do
-            file_name=$(basename -s ".yml" "$file_path")
-            echo "{\"name\": \"$file_name\", \"path\": \"$file_path\"}"
+            file_name=$(basename -s ".yml" "${file_path}")
+            folder_name=$(basename $(dirname "${file_path}"))
+            if [[ "${folder_name}" == "tests" ]]; then
+              job_name="${file_name}"
+            else
+              job_name="${folder_name}-${file_name}"
+            fi
+            echo "{\"name\": \"$job_name\", \"path\": \"$file_path\"}"
           done | jq -s -c '.')
+          echo "matrix=${matrix}"
+
           echo "matrix=${matrix}" >> $GITHUB_OUTPUT
 
   run-with-args:
     needs: list-ymls
-    name: run-with-${{ matrix.file.name }}
+    name: run-with-${{ matrix.test.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        file: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
+        test: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -125,7 +135,7 @@ jobs:
           yq --version
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file.path }} --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.test.path }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -137,9 +147,9 @@ jobs:
           test_runner_deployed=true
 
           # Verify if additional services are defined and ensure the test runner is deployed.
-          additional_services=$(yq '.polygon_pos_package.additional_services' ${{ matrix.file.path }})
+          additional_services=$(yq '.polygon_pos_package.additional_services' ${{ matrix.test.path }})
           if [[ "${additional_services}" != "null" ]]; then
-            is_test_runner_deployed=$(yq '.polygon_pos_package.additional_services | contains(["test_runner"])' ${{ matrix.file.path }})
+            is_test_runner_deployed=$(yq '.polygon_pos_package.additional_services | contains(["test_runner"])' ${{ matrix.test.path }})
             if [[ "${is_test_runner_deployed}" != "true" ]]; then
               test_runner_deployed=false
             fi
@@ -158,7 +168,7 @@ jobs:
       - name: Generate archive name
         if: always()
         run: |
-          archive_name="dump_run_with_args_${{ matrix.file.name }}_${{ github.run_id }}"
+          archive_name="dump_run_with_args_${{ matrix.test.name }}_${{ github.run_id }}"
           echo "ARCHIVE_NAME=${archive_name}" >> "$GITHUB_ENV"
           echo "Generated archive name: ${archive_name}"
 
