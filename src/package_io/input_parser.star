@@ -64,6 +64,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
             "kind": constants.PARTICIPANT_KIND.rpc,
             "count": 1,
         },
+        DEFAULT_POLYGON_POS_PARTICIPANT
         | {
             "kind": constants.PARTICIPANT_KIND.stateless,
             "count": 1,
