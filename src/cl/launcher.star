@@ -23,7 +23,7 @@ def launch(
     node_ids,
     l1_rpc_url,
 ):
-    rabbitmq_name = rabbitmq.generate_name(id)
+    rabbitmq_name = "rabbitmq-l2-cl-{}-{}".format(id, participant.get("kind"))
     rabbitmq_image = participant.get("cl_db_image")
     rabbitmq_url = rabbitmq.launch(plan, rabbitmq_name, rabbitmq_image)
 
