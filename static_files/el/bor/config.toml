@@ -3,7 +3,11 @@ chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
 verbosity = {{.log_level_to_int}}
 
+{{if eq .kind "stateless"}}
+syncmode = "stateless"
+{{else}}
 syncmode = "full"
+{{end}}
 
 [p2p]
     maxpeers = 200
