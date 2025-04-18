@@ -215,7 +215,6 @@ polygon_pos_package:
       # Valid values are:
       # - "validator": A participant responsible for validating and proposing blocks.
       # - "rpc": A participant that provides RPC endpoints for interacting with the network (e.g., querying data, sending transactions).
-      # - "stateless": A lightweight participant that does not maintain state but may serve other purposes (e.g., monitoring or relaying data).
       kind: validator
 
       ## Execution Layer (EL) specific flags.
