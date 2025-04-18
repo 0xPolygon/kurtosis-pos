@@ -27,6 +27,9 @@ polygon_pos_package:
     - kind: rpc
       el_type: bor
       cl_type: heimdall
+    - kind: stateless
+      cl_type: heimdall
+      el_type: bor
   setup_images:
     contract_deployer: leovct/pos-contract-deployer-node-20:ed58f8a
     el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
