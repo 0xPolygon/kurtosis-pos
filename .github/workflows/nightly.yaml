@@ -34,7 +34,7 @@ jobs:
           matrix=$(echo "${file_paths}" | while read -r file_path; do
             file_name=$(basename -s ".yml" "${file_path}")
             folder_name=$(basename $(dirname "${file_path}"))
-            if [[ "${folder_name}" == "tests" ]]; then
+            if [[ "${folder_name}" == "nightly" ]]; then
               job_name="${file_name}"
             else
               job_name="${folder_name}-${file_name}"
