@@ -41,6 +41,7 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
 }
 
 DEFAULT_POLYGON_POS_PARTICIPANT = {
+    "kind": constants.PARTICIPANT_KIND.validator,
     "el_type": constants.EL_TYPE.bor,
     "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
     "el_log_level": constants.LOG_LEVEL.info,
@@ -48,7 +49,6 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
     "cl_log_level": constants.LOG_LEVEL.info,
     "cl_db_image": DEFAULT_CL_DB_IMAGE,
-    "is_validator": True,
     "count": 1,
 }
 
@@ -56,11 +56,13 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "participants": [
         DEFAULT_POLYGON_POS_PARTICIPANT
         | {
+            "kind": constants.PARTICIPANT_KIND.validator,
             "count": 2,
         },
         DEFAULT_POLYGON_POS_PARTICIPANT
         | {
-            "is_validator": False,
+            "kind": constants.PARTICIPANT_KIND.rpc,
+            "count": 1,
         },
     ],
     "setup_images": {

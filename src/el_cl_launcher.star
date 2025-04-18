@@ -42,7 +42,7 @@ def launch(
     all_participants = []
     first_cl_context = None
     for _, participant in enumerate(participants):
-        is_validator = participant.get("is_validator")
+        is_validator = participant_module.is_validator(participant)
         for _ in range(participant.get("count")):
             plan.print(
                 "Launching participant {} with config: {}".format(
@@ -84,7 +84,6 @@ def launch(
                 plan,
                 participant,
                 participant_index + 1,
-                is_validator,
                 el_genesis_artifact,
                 cl_api_url,
                 el_account,
@@ -95,11 +94,11 @@ def launch(
             # Add the node to the all_participants array.
             all_participants.append(
                 participant_module.new_participant(
+                    kind=participant.get("kind"),
                     cl_type=participant.get("cl_type"),
                     el_type=participant.get("el_type"),
                     cl_context=cl_context or first_cl_context,
                     el_context=el_context,
-                    is_validator=is_validator,
                 )
             )
 
@@ -157,7 +156,7 @@ def _prepare_network_data(participants):
             el_static_nodes.append(enode_url)
 
             # Generate validator configurations.
-            if participant.get("is_validator"):
+            if participant_module.is_validator(participant):
                 cl_node_name = _generate_cl_node_name(
                     participant, participant_index + 1
                 )
@@ -265,15 +264,8 @@ def _read_cl_persistent_peers(plan, cl_persistent_peers_artifact):
 
 
 def _generate_cl_node_name(participant, id):
-    return "l2-cl-{}-{}-{}-validator".format(
-        id, participant.get("cl_type"), participant.get("el_type")
-    )
+    return cl_launcher.generate_name(participant, id)
 
 
 def _generate_el_node_name(participant, id):
-    return "l2-el-{}-{}-{}-{}".format(
-        id,
-        participant.get("el_type"),
-        participant.get("cl_type"),
-        "validator" if participant.get("is_validator") else "rpc",
-    )
+    return el_launcher.generate_name(participant, id)

@@ -208,7 +208,7 @@ def get_validator_accounts(participants):
     participant_index = 0
     for participant in participants:
         for _ in range(participant.get("count")):
-            if participant.get("is_validator"):
+            if participant.get("kind") == constants.PARTICIPANT_KIND.validator:
                 account = prefunded_accounts[participant_index]
                 validator_accounts.append(account)
             participant_index += 1
