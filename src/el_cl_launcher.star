@@ -142,25 +142,23 @@ def _prepare_network_data(participants):
     # Iterate through all participants in the network and generate necessary configurations.
     participant_index = 0
     validator_index = 0
-    for _, participant in enumerate(participants):
-        for _ in range(participant.get("count")):
-            el_node_name = _generate_el_node_name(participant, participant_index + 1)
+    for _, p in enumerate(participants):
+        for _ in range(p.get("count")):
+            el_node_name = _generate_el_node_name(p, participant_index + 1)
             account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
 
             # Generate the EL enode url.
             enode_url = _generate_enode_url(
-                participant,
+                p,
                 account.eth_tendermint.public_key.removeprefix("0x"),
                 el_node_name,
             )
             el_static_nodes.append(enode_url)
 
             # Generate validator configurations.
-            is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
+            is_validator = p.get("kind") == constants.PARTICIPANT_KIND.validator
             if is_validator:
-                cl_node_name = _generate_cl_node_name(
-                    participant, participant_index + 1
-                )
+                cl_node_name = _generate_cl_node_name(p, participant_index + 1)
 
                 # Generate the CL validator config.
                 cl_validator_config = "{},{},{},{},{}:{}".format(
