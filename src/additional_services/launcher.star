@@ -1,8 +1,8 @@
-blockscout = import_module("./src/additional_services/blockscout.star")
+blockscout = import_module("./blockscout.star")
 constants = import_module("../package_io/constants.star")
-prometheus_grafana = import_module("./src/additional_services/prometheus_grafana.star")
-test_runner = import_module("./src/additional_services/test_runner.star")
-tx_spammer = import_module("./src/additional_services/tx_spammer.star")
+prometheus_grafana = import_module("./prometheus_grafana.star")
+test_runner = import_module("./test_runner.star")
+tx_spammer = import_module("./tx_spammer.star")
 
 
 def launch(
