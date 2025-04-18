@@ -15,7 +15,3 @@ def new_participant(
         el_context=el_context,
         cl_context=cl_context,
     )
-
-
-def is_validator(participant):
-    return participant.kind == constants.PARTICIPANT_KIND.validator

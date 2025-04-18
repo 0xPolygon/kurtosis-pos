@@ -205,13 +205,14 @@ def get_validator_accounts(participants):
     prefunded_accounts = prefunded_accounts_module.PREFUNDED_ACCOUNTS
 
     validator_accounts = []
-    participant_index = 0
-    for participant in participants:
-        for _ in range(participant.get("count")):
-            if participant.get("kind") == constants.PARTICIPANT_KIND.validator:
-                account = prefunded_accounts[participant_index]
+    id = 0
+    for p in participants:
+        for _ in range(p.get("count")):
+            is_validator = p.get("kind") == constants.PARTICIPANT_KIND.validator
+            if is_validator:
+                account = prefunded_accounts[id]
                 validator_accounts.append(account)
-            participant_index += 1
+            id += 1
 
     if len(validator_accounts) == 0:
         fail("There must be at least one validator among the participants!")

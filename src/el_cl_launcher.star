@@ -42,7 +42,7 @@ def launch(
     all_participants = []
     first_cl_context = None
     for _, participant in enumerate(participants):
-        is_validator = participant_module.is_validator(participant)
+        is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
             plan.print(
                 "Launching participant {} with config: {}".format(
@@ -156,7 +156,8 @@ def _prepare_network_data(participants):
             el_static_nodes.append(enode_url)
 
             # Generate validator configurations.
-            if participant_module.is_validator(participant):
+            is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
+            if is_validator:
                 cl_node_name = _generate_cl_node_name(
                     participant, participant_index + 1
                 )
