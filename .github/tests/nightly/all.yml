@@ -15,18 +15,18 @@ ethereum_package:
 # Polygon PoS package (L2) configuration.
 polygon_pos_package:
   participants:
-    - el_type: bor
+    - kind: validator
+      el_type: bor
       el_image: 0xpolygon/bor:2.0.1
       el_log_level: info
       cl_type: heimdall
       cl_image: 0xpolygon/heimdall:1.2.3
       cl_db_image: rabbitmq:4.0.6
       cl_log_level: info
-      is_validator: true
       count: 2
-    - el_type: bor
+    - kind: rpc
+      el_type: bor
       cl_type: heimdall
-      is_validator: false
   setup_images:
     contract_deployer: leovct/pos-contract-deployer-node-20:ed58f8a
     el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
