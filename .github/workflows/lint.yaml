@@ -23,7 +23,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Load environment variables
-        run: grep -vE '^\s*#|^\s*$' .github/workflows/.env >> $GITHUB_ENV
+        run: |
+          grep -vE '^\s*#|^\s*$' .github/workflows/.env >> $GITHUB_ENV
+          cat $GITHUB_ENV
 
       - name: Install kurtosis
         run: |
