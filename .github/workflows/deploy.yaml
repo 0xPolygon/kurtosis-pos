@@ -39,27 +39,27 @@ jobs:
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
           sudo apt update
-          sudo apt install kurtosis-cli=${KURTOSIS_VERSION}
+          sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
 
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@de808b1eea699e761c404bda44ba8f21aba30b2c # v1.3.1
         with:
-          version: ${FOUNDRY_VERSION}
+          version: ${{ env.FOUNDRY_VERSION }}
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${ENCLAVE_NAME} --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
-        run: kurtosis enclave inspect ${ENCLAVE_NAME}
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        run: kurtosis service exec ${ENCLAVE_NAME} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
-        run: kurtosis enclave dump ${ENCLAVE_NAME} ./dump
+        run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
 
       - name: Upload enclave dump
         if: always()
@@ -125,14 +125,14 @@ jobs:
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
           sudo apt update
-          sudo apt install kurtosis-cli=${KURTOSIS_VERSION}
+          sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
 
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@de808b1eea699e761c404bda44ba8f21aba30b2c # v1.3.1
         with:
-          version: ${FOUNDRY_VERSION}
+          version: ${{ env.FOUNDRY_VERSION }}
 
       - name: Install yq
         run: |
@@ -140,10 +140,10 @@ jobs:
           yq --version
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${ENCLAVE_NAME} --args-file=${{ matrix.test.path }} --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.test.path }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
-        run: kurtosis enclave inspect ${ENCLAVE_NAME}
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Check if test runner is deployed
         id: check-test-runner
@@ -164,24 +164,24 @@ jobs:
 
       - name: Test state syncs
         if: steps.check-test-runner.outputs.test_runner_deployed == 'true'
-        run: kurtosis service exec ${ENCLAVE_NAME} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
-        run: kurtosis enclave dump ${ENCLAVE_NAME} ./dump
+        run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
 
       - name: Generate archive name
         if: always()
         run: |
           archive_name="dump_run_with_args_${{ matrix.test.name }}_${{ github.run_id }}"
-          echo "ARCHIVE_NAME=${archive_name}" >> "$GITHUB_ENV"
-          echo "Generated archive name: ${archive_name}"
+          echo "ARCHIVE_NAME=${{ env.ARCHIVE_NAME }}" >> "$GITHUB_ENV"
+          echo "Generated archive name: ${{ env.ARCHIVE_NAME }}"
 
       - name: Upload enclave dump
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${ARCHIVE_NAME}
+          name: ${{ env.ARCHIVE_NAME }}
           path: ./dump
 
   run-with-external-l1:
@@ -209,30 +209,30 @@ jobs:
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
           sudo apt update
-          sudo apt install kurtosis-cli=${KURTOSIS_VERSION}
+          sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
 
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@de808b1eea699e761c404bda44ba8f21aba30b2c # v1.3.1
         with:
-          version: ${FOUNDRY_VERSION}
+          version: ${{ env.FOUNDRY_VERSION }}
 
       - name: Deploy L1
-        run: kurtosis run --enclave=${ENCLAVE_NAME} --args-file ./.github/tests/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@4.4.0
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/tests/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@4.4.0
 
       - name: Deploy L2
-        run: kurtosis run --enclave=${ENCLAVE_NAME} --args-file=./.github/tests/external-l1/polygon-pos-with-external-l1.yml --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/external-l1/polygon-pos-with-external-l1.yml --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
-        run: kurtosis enclave inspect ${ENCLAVE_NAME}
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        run: kurtosis service exec ${ENCLAVE_NAME} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
-        run: kurtosis enclave dump ${ENCLAVE_NAME} ./dump
+        run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
 
       - name: Upload enclave dump
         if: always()
@@ -266,62 +266,62 @@ jobs:
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
           sudo apt update
-          sudo apt install kurtosis-cli=${KURTOSIS_VERSION}
+          sudo apt install kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
           kurtosis version
 
       - name: Install foundry
         uses: foundry-rs/foundry-toolchain@de808b1eea699e761c404bda44ba8f21aba30b2c # v1.3.1
         with:
-          version: ${FOUNDRY_VERSION}
+          version: ${{ env.FOUNDRY_VERSION }}
 
       - name: Run Starlark for the first time
-        run: kurtosis run --enclave=${ENCLAVE_NAME} --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
-        run: kurtosis enclave inspect ${ENCLAVE_NAME}
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Retrieve L2 CL genesis file
         working-directory: .github/tests/cl-el-genesis
         run: |
-          kurtosis files inspect ${ENCLAVE_NAME} l2-cl-genesis genesis.json | jq > l2-cl-genesis.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json | jq > l2-cl-genesis.json
           jq . l2-cl-genesis.json
 
       - name: Retrieve L2 EL genesis file
         working-directory: .github/tests/cl-el-genesis
         run: |
-          kurtosis files inspect ${ENCLAVE_NAME} l2-el-genesis genesis.json | jq > l2-el-genesis.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | jq > l2-el-genesis.json
           jq . l2-el-genesis.json
 
       - name: Retrieve MATIC contract addresses
         working-directory: .github/tests/cl-el-genesis
         run: |
-          kurtosis files inspect ${ENCLAVE_NAME} matic-contract-addresses contractAddresses.json | jq > matic-contract-addresses.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | jq > matic-contract-addresses.json
           jq . matic-contract-addresses.json
 
       - name: Stop L2 participants
         run: |
-          kurtosis service stop ${ENCLAVE_NAME} l2-cl-1-heimdall-bor-validator
-          kurtosis service stop ${ENCLAVE_NAME} rabbitmq-l2-cl-1-validator
-          kurtosis service stop ${ENCLAVE_NAME} l2-cl-2-heimdall-bor-validator
-          kurtosis service stop ${ENCLAVE_NAME} rabbitmq-l2-cl-2-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-1-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-2-heimdall-bor-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-2-validator
 
-          kurtosis service stop ${ENCLAVE_NAME} l2-el-1-bor-heimdall-validator
-          kurtosis service stop ${ENCLAVE_NAME} l2-el-2-bor-heimdall-validator
-          kurtosis service stop ${ENCLAVE_NAME} l2-el-3-bor-heimdall-rpc
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-3-bor-heimdall-rpc
 
       - name: Run Starlark for the second time
-        run: kurtosis run --enclave=${ENCLAVE_NAME} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false --verbosity=DETAILED .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/tests/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml --show-enclave-inspect=false --verbosity=DETAILED .
 
       - name: Inspect enclave
-        run: kurtosis enclave inspect ${ENCLAVE_NAME}
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        run: kurtosis service exec ${ENCLAVE_NAME} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Dump enclave
         if: always()
-        run: kurtosis enclave dump ${ENCLAVE_NAME} ./dump
+        run: kurtosis enclave dump ${{ env.ENCLAVE_NAME }} ./dump
 
       - name: Upload enclave dump
         if: always()
