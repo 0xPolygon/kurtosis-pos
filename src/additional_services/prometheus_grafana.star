@@ -77,7 +77,11 @@ def launch_panoptichain(
         l2_el_genesis_artifact=l2_el_genesis_artifact,
     )
 
-    heimdall_version = 2 if l2_context.devnet_cl_type == "heimdall-v2" else 1
+    heimdall_version_map = {
+        constants.CL_TYPE.heimdall: 1,
+        constants.CL_TYPE.heimdall_v2: 2,
+    }
+    heimdall_version = heimdall_version_map.get(l2_context.devnet_cl_type)
 
     panoptichain_config_artifact = plan.render_templates(
         name="panoptichain-config",
