@@ -7,7 +7,7 @@ GRAFANA_PACKAGE = "github.com/kurtosis-tech/grafana-package/main.star@c8ff0b52d2
 GRAFANA_IMAGE = "grafana/grafana:11.6.0"
 GRAFANA_DASHBOARDS = "../../static_files/additional_services/grafana/dashboards"
 
-PANOPTICHAIN_IMAGE = "ghcr.io/0xpolygon/panoptichain:v2.3.0"
+PANOPTICHAIN_IMAGE = "ghcr.io/0xpolygon/panoptichain:v2.4.1-dev"
 PANOPTICHAIN_PORT = 9090
 PANOPTICHAIN_METRICS_PATH = "/metrics"
 
@@ -77,6 +77,8 @@ def launch_panoptichain(
         l2_el_genesis_artifact=l2_el_genesis_artifact,
     )
 
+    heimdall_version = 2 if l2_context.devnet_cl_type == "heimdall-v2" else 1
+
     panoptichain_config_artifact = plan.render_templates(
         name="panoptichain-config",
         config={
@@ -90,6 +92,7 @@ def launch_panoptichain(
                     "l1_rpcs": l1_rpcs,
                     "l2_rpcs": l2_el_rpcs,
                     "heimdall_urls": l2_cl_urls,
+                    "heimdall_version": heimdall_version,
                     "checkpoint_address": l1_root_chain_proxy_address,
                     "state_sync_sender_address": l1_state_sender_address,
                     "state_sync_receiver_address": l2_state_receiver_address,
