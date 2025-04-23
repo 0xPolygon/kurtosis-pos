@@ -115,14 +115,14 @@ kurtosis service shell pos-devnet l2-el-1-bor-heimdall-validator
 You might also want to check the CL and EL genesis files.
 
 ```bash
-kurtosis files inspect pos-devnet l2-cl-genesis genesis.json | tail -n +2 | jq
-kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq
+kurtosis files inspect pos-devnet l2-cl-genesis genesis.json | jq
+kurtosis files inspect pos-devnet l2-el-genesis genesis.json | jq
 ```
 
 In the same way, you might want to check the MATIC contract addresses on L1 and L2.
 
 ```bash
-kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq
+kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | jq
 ```
 
 ### Test
@@ -143,9 +143,9 @@ First, we will save the L2 CL and EL genesis files for later.
 
 ```bash
 mkdir -p ./tmp
-kurtosis files inspect pos-devnet l2-cl-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-cl-genesis.json
-kurtosis files inspect pos-devnet l2-el-genesis genesis.json | tail -n +2 | jq > ./tmp/l2-el-genesis.json
-kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | tail -n +2 | jq > ./tmp/matic-contract-addresses.json
+kurtosis files inspect pos-devnet l2-cl-genesis genesis.json | jq > ./tmp/l2-cl-genesis.json
+kurtosis files inspect pos-devnet l2-el-genesis genesis.json | jq > ./tmp/l2-el-genesis.json
+kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | jq > ./tmp/matic-contract-addresses.json
 ```
 
 Then, we will add the following parameters to the args file.

@@ -277,19 +277,19 @@ jobs:
       - name: Retrieve L2 CL genesis file
         working-directory: .github/tests/cl-el-genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json | tail -n +2 | jq > l2-cl-genesis.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json | jq > l2-cl-genesis.json
           jq . l2-cl-genesis.json
 
       - name: Retrieve L2 EL genesis file
         working-directory: .github/tests/cl-el-genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | tail -n +2 | jq > l2-el-genesis.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | jq > l2-el-genesis.json
           jq . l2-el-genesis.json
 
       - name: Retrieve MATIC contract addresses
         working-directory: .github/tests/cl-el-genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | tail -n +2 | jq > matic-contract-addresses.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | jq > matic-contract-addresses.json
           jq . matic-contract-addresses.json
 
       - name: Stop L2 participants
