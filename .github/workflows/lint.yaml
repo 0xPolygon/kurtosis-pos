@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Load environment variables
-        run: export $(cat .github/workflows/.env | xargs)
+        run: cat .github/workflows/.env >> "${GITHUB_ENV}"
 
       - name: Install kurtosis
         run: |
