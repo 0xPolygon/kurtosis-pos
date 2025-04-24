@@ -163,8 +163,13 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     additional_services = polygon_pos_args.get("additional_services", [])
     result["additional_services"] = _parse_additional_services(additional_services)
 
+    is_test_runner_deployed = (
+        constants.ADDITIONAL_SERVICE.test_runner in additional_services
+    )
     test_runner_params = polygon_pos_args.get("test_runner_params", {})
-    result["test_runner_params"] = _parse_test_runner_params(test_runner_params)
+    result["test_runner_params"] = _parse_test_runner_params(
+        is_test_runner_deployed, test_runner_params
+    )
 
     # Sanity check and return the result.
     sanity_check.sanity_check_polygon_args(plan, result)
@@ -301,7 +306,11 @@ def _parse_additional_services(additional_services):
     return additional_services
 
 
-def _parse_test_runner_params(test_runner_params):
+def _parse_test_runner_params(is_test_runner_deployed, test_runner_params):
+    # If the test runner is not deployed, return an empty dict.
+    if not is_test_runner_deployed:
+        return {}
+
     # Create a mutable copy of test_runner_params.
     if test_runner_params:
         test_runner_params = dict(test_runner_params)
