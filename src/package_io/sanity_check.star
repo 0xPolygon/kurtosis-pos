@@ -36,8 +36,8 @@ POLYGON_POS_PARAMS = {
         "el_gas_limit",
     ],
     "additional_services": [
-        getattr(constants.ADDITIONAL_SERVICES, field)
-        for field in dir(constants.ADDITIONAL_SERVICES)
+        getattr(constants.ADDITIONAL_SERVICE, field)
+        for field in dir(constants.ADDITIONAL_SERVICE)
     ],
     "test_runner_params": [
         "image",

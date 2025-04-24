@@ -16,9 +16,9 @@ def launch(
 ):
     additional_services = polygon_pos_args.get("additional_services")
     for svc in additional_services:
-        if svc == constants.ADDITIONAL_SERVICES.blockscout:
+        if svc == constants.ADDITIONAL_SERVICE.blockscout:
             blockscout.launch(plan)
-        elif svc == constants.ADDITIONAL_SERVICES.prometheus_grafana:
+        elif svc == constants.ADDITIONAL_SERVICE.prometheus_grafana:
             prometheus_grafana.launch(
                 plan,
                 l1_context,
@@ -26,7 +26,7 @@ def launch(
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
-        elif svc == constants.ADDITIONAL_SERVICES.test_runner:
+        elif svc == constants.ADDITIONAL_SERVICE.test_runner:
             test_runner_params = polygon_pos_args.get("test_runner_params")
             test_runner.launch(
                 plan,
@@ -37,7 +37,7 @@ def launch(
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
-        elif svc == constants.ADDITIONAL_SERVICES.tx_spammer:
+        elif svc == constants.ADDITIONAL_SERVICE.tx_spammer:
             tx_spammer.launch(plan)
         else:
             fail("Invalid additional service: %s" % (svc))

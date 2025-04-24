@@ -30,7 +30,7 @@ LOG_LEVEL = struct(
     trace="trace",
 )
 
-ADDITIONAL_SERVICES = struct(
+ADDITIONAL_SERVICE = struct(
     blockscout="blockscout",
     prometheus_grafana="prometheus_grafana",
     test_runner="test_runner",
