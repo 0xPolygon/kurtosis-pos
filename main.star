@@ -176,10 +176,9 @@ def run(plan, args):
     )
 
     # Deploy additional services.
-    additional_services = polygon_pos_args.get("additional_services")
     additional_services_launcher.launch(
         plan,
-        additional_services,
+        polygon_pos_args,
         l1_context,
         l2_context,
         l2_network_params,
