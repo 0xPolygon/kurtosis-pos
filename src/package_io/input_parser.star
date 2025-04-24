@@ -164,7 +164,7 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     result["additional_services"] = _parse_additional_services(additional_services)
 
     is_test_runner_deployed = (
-        constants.ADDITIONAL_SERVICE.test_runner in additional_services
+        constants.ADDITIONAL_SERVICE.test_runner in result["additional_services"]
     )
     test_runner_params = polygon_pos_args.get("test_runner_params", {})
     result["test_runner_params"] = _parse_test_runner_params(
