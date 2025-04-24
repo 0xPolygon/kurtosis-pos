@@ -1,5 +1,5 @@
 blockscout = import_module("./blockscout.star")
-constants = import_module("../package_io/constants.star")
+constants = import_module("../config/constants.star")
 prometheus_grafana = import_module("./prometheus_grafana.star")
 test_runner = import_module("./test_runner.star")
 tx_spammer = import_module("./tx_spammer.star")
