@@ -92,7 +92,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "el_gas_limit": math.pow(10, 7),
     },
     "additional_services": [
-        constants.ADDITIONAL_SERVICE.test_runner,
+        constants.ADDITIONAL_SERVICES.test_runner,
     ],
     "test_runner_params": {
         "image": DEFAULT_E2E_TEST_IMAGE,
