@@ -1,5 +1,5 @@
 contract_util = import_module("../contracts/util.star")
-constants = import_module("../package_io/constants.star")
+constants = import_module("../config/constants.star")
 
 PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star@f5ce159aec728898e3deb827f6b921f8ecfc527f"
 PROMETHEUS_IMAGE = "prom/prometheus:v3.2.1"
