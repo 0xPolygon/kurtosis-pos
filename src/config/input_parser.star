@@ -19,6 +19,8 @@ DEFAULT_CL_IMAGES = {
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1.0"
 
+DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:2aa5ca7"
+
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
         {
@@ -41,6 +43,7 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
 }
 
 DEFAULT_POLYGON_POS_PARTICIPANT = {
+    "kind": constants.PARTICIPANT_KIND.validator,
     "el_type": constants.EL_TYPE.bor,
     "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
     "el_log_level": constants.LOG_LEVEL.info,
@@ -48,7 +51,6 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
     "cl_log_level": constants.LOG_LEVEL.info,
     "cl_db_image": DEFAULT_CL_DB_IMAGE,
-    "is_validator": True,
     "count": 1,
 }
 
@@ -56,11 +58,13 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "participants": [
         DEFAULT_POLYGON_POS_PARTICIPANT
         | {
+            "kind": constants.PARTICIPANT_KIND.validator,
             "count": 2,
         },
         DEFAULT_POLYGON_POS_PARTICIPANT
         | {
-            "is_validator": False,
+            "kind": constants.PARTICIPANT_KIND.rpc,
+            "count": 1,
         },
     ],
     "setup_images": {
@@ -71,7 +75,6 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "network_params": {
         # Admin account generated using `cast wallet new`.
         # This private key is used to deploy Polygon PoS contracts on both L1 and L2.
-        "admin_address": "0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9",
         "admin_private_key": "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea",
         # Validators params.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
@@ -91,6 +94,9 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "additional_services": [
         constants.ADDITIONAL_SERVICES.test_runner,
     ],
+    "test_runner_params": {
+        "image": DEFAULT_E2E_TEST_IMAGE,
+    },
 }
 
 DEFAULT_DEV_ARGS = {
@@ -156,6 +162,14 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     additional_services = polygon_pos_args.get("additional_services", [])
     result["additional_services"] = _parse_additional_services(additional_services)
+
+    is_test_runner_deployed = (
+        constants.ADDITIONAL_SERVICES.test_runner in result["additional_services"]
+    )
+    test_runner_params = polygon_pos_args.get("test_runner_params", {})
+    result["test_runner_params"] = _parse_test_runner_params(
+        is_test_runner_deployed, test_runner_params
+    )
 
     # Sanity check and return the result.
     sanity_check.sanity_check_polygon_args(plan, result)
@@ -290,6 +304,27 @@ def _parse_additional_services(additional_services):
             "additional_services", []
         )
     return additional_services
+
+
+def _parse_test_runner_params(is_test_runner_deployed, test_runner_params):
+    # If the test runner is not deployed, return an empty dict.
+    if not is_test_runner_deployed:
+        return {}
+
+    # Create a mutable copy of test_runner_params.
+    if test_runner_params:
+        test_runner_params = dict(test_runner_params)
+    else:
+        # Set default test runner params if not provided.
+        test_runner_params = dict(
+            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {})
+        )
+
+    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {}).items():
+        test_runner_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(test_runner_params)
 
 
 def _sort_dict_by_values(d):

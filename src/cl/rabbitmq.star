@@ -1,4 +1,4 @@
-constants = import_module("../package_io/constants.star")
+constants = import_module("../config/constants.star")
 
 # Port identifiers and numbers.
 RABBITMQ_AMQP_PORT_ID = "amqp"
@@ -24,7 +24,3 @@ def launch(plan, name, image):
         name,
         RABBITMQ_AMQP_PORT_NUMBER,
     )
-
-
-def generate_name(id):
-    return "rabbitmq-l2-cl-{}-validator".format(id)
