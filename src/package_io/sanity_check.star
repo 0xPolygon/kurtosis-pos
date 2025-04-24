@@ -98,7 +98,6 @@ def sanity_check_polygon_args(plan, input_args):
     _validate_dict(input_args, "setup_images")
     _validate_dict(input_args, "network_params")
     _validate_list(input_args, "additional_services")
-    _validate_dict(input_args, "test_runner_params")
 
     # Validate values.
     network_params = input_args.get("network_params")
@@ -115,13 +114,15 @@ def sanity_check_polygon_args(plan, input_args):
     validate_cl_environment(cl_environment, participants)
 
     # Make sure test params are defined only if the test runner is deployed.
-    additional_services = input_args.get("additional_services")
-    test_runner_params = input_args.get("test_runner_params", {})
-    if (
-        test_runner_params
-        and constants.ADDITIONAL_SERVICE.test_runner not in additional_services
-    ):
-        fail("`test_runner_params` must be empty when the test runner is not deployed.")
+    additional_services = input_args.get("additional_services", [])
+    if constants.ADDITIONAL_SERVICE.test_runner in additional_services:
+        _validate_dict(input_args, "test_runner_params")
+    else:
+        test_runner_params = input_args.get("test_runner_params", {})
+        if test_runner_params:
+            fail(
+                "`test_runner_params` must be empty when the test runner is not deployed."
+            )
 
     plan.print("Sanity check passed")
 
