@@ -161,7 +161,7 @@ dev:
   should_deploy_matic_contracts: false
   l2_cl_genesis_filepath: ./tmp/l2-cl-genesis.json
   l2_el_genesis_filepath: ./tmp/l2-el-genesis.json
-  matic_contract_addresses_filepath: ./tmp/matic-contract-addresses
+  matic_contract_addresses_filepath: ./tmp/matic-contract-addresses.json
 ```
 
 You can now run the package and it will only re-deploy the L2 participants. This will be much faster than a full deployment!
