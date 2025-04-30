@@ -40,7 +40,6 @@ providers:
 networks:
   - name: "L1"
     chain_id: "{{.l1_chain_id}}"
-    polygon_pos: true
 
   - name: "L2"
     chain_id: "{{.l2_chain_id}}"
