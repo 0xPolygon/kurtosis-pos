@@ -150,7 +150,7 @@ polygon_pos_package:
     - kind: validator
       cl_type: heimdall
       el_type: bor
-      el_image: 0xpolygon/bor:2.0.1
+      el_image: 0xpolygon/bor:2.0.3
       count: 2
     - kind: rpc
       cl_type: heimdall
@@ -193,7 +193,7 @@ polygon_pos_package:
     - kind: validator
       cl_type: heimdall
       el_type: bor
-      el_image: 0xpolygon/bor:2.0.0 # default: 0xpolygon/bor:2.0.1
+      el_image: 0xpolygon/bor:2.0.0 # default: 0xpolygon/bor:2.0.3
       count: 2
     - kind: rpc
       cl_type: heimdall
@@ -280,10 +280,10 @@ polygon_pos_package:
       # The docker image that should be used for the EL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
-      # - bor: "0xpolygon/bor:2.0.1"
+      # - bor: "0xpolygon/bor:2.0.3"
       # - bor modified for heimdall-v2: "leovct/bor:84794ac"
       # - erigon: "erigontech/erigon:main-767a6d6"
-      el_image: 0xpolygon/bor:2.0.1
+      el_image: 0xpolygon/bor:2.0.3
 
       # The log level string that this participant's EL client should log at.
       # Leave blank to use the default log level, info.
