@@ -281,7 +281,7 @@ polygon_pos_package:
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - bor: "0xpolygon/bor:2.0.1"
-      # - bor modified for heimdall-v2: "leovct/bor:1a6957c"
+      # - bor modified for heimdall-v2: "leovct/bor:84794ac"
       # - erigon: "erigontech/erigon:main-767a6d6"
       el_image: 0xpolygon/bor:2.0.1
 
