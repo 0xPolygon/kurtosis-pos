@@ -13,6 +13,9 @@ concurrency:
   group: deploy-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  ENCLAVE_NAME: pos
+
 jobs:
   run-without-args:
     runs-on: ubuntu-latest
