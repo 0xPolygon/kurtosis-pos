@@ -68,48 +68,60 @@ polygon_pos_package:
 
       # Wether to run this participant as a validator or an rpc.
       # Default: false (run as an rpc)
-      is_validator: true
+      kind: validator
 
       # Count of nodes to spin up for this participant.
       # Default: 1
-      count: 1
+      count: 2
 
     - el_type: bor
       cl_type: heimdall-v2
       cl_image: heimdall-v2:local
-      is_validator: false
+      kind: rpc
       el_image: bor:local
-      el_log_level: trace
+      el_log_level: info
+      enable_witness: true
+      sync_with_witness: false
       count: 2
     - el_type: bor
       cl_type: heimdall-v2
       cl_image: heimdall-v2:local
-      is_validator: false
+      kind: rpc
       el_image: bor:local
-      is_stateless: true
-      el_log_level: trace
+      el_log_level: info
+      enable_witness: true
+      sync_with_witness: true
+      count: 1
     - el_type: bor
       cl_type: heimdall-v2
       cl_image: heimdall-v2:local
-      is_validator: false
+      kind: rpc
       el_image: bor:local
-      is_stateless: true
       el_log_level: info
-      count: 4
+      enable_witness: false
+      sync_with_witness: false
+      count: 1
+    - el_type: bor
+      cl_type: heimdall-v2
+      cl_image: heimdall-v2:local
+      kind: stateless
+      el_image: bor:local
+      el_log_level: info
+      count: 1
 
       
       
   # Images for contract deployment and configuration.
-  setup_images:
+  # setup_images:
     # Image used to deploy MATIC contracts to L1.
     # Default: "leovct/pos-contract-deployer-node-20:1b16c4b"
-    contract_deployer: leovct/pos-contract-deployer-node-20:ed58f8a
+    # contract_deployer: leovct/pos-contract-deployer-node-20:ed58f8a
     # Image used to create the L2 EL genesis file.
     # Default: "leovct/pos-el-genesis-builder:96a19dd"
-    el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
+    # el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
     # Image used to generate L2 CL/EL validators configurations.
     # Default: "leovct/pos-validator-config-generator:1.2.0-0.1.9"
-    validator_config_generator: leovct/pos-validator-config-generator:1.2.2-0.1.9
+    # validator_config_generator: leovct/pos-validator-config-generator:1.2.2-0.1.9
 
   # L2 network parameters.
   network_params:

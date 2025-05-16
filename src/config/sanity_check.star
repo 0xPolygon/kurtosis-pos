@@ -14,6 +14,8 @@ POLYGON_POS_PARAMS = {
         "cl_log_level",
         "cl_db_image",
         "count",
+        "enable_witness",
+        "sync_with_witness",
     ],
     "setup_images": [
         "contract_deployer",
@@ -47,6 +49,7 @@ POLYGON_POS_PARAMS = {
 VALID_PARTICIPANT_KINDS = [
     constants.PARTICIPANT_KIND.validator,
     constants.PARTICIPANT_KIND.rpc,
+    constants.PARTICIPANT_KIND.stateless,
 ]
 
 VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
