@@ -248,7 +248,7 @@ bor_rpc_url = "{{.el_rpc_url}}"
 eth_rpc_url = "{{.l1_rpc_url}}"
 
 # RPC endpoint for cometBFT.
-comet_bft_rpc_url = "http://0.0.0.0:{{.cometbft_rpc_port_number}}"
+comet_bft_rpc_url = "http://0.0.0.0:{{.rpc_port_number}}"
 
 # Polygon Sub Graph URL for self-heal mechanism (optional).
 sub_graph_url = ""
