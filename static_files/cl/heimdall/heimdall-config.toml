@@ -1,4 +1,4 @@
-##### RPC and REST config #####
+##### RPC and REST configs #####
 
 # AMQP endpoint.
 amqp_url = "{{.amqp_url}}"
