@@ -150,7 +150,7 @@ polygon_pos_package:
     - kind: validator
       cl_type: heimdall
       el_type: bor
-      el_image: 0xpolygon/bor:2.0.1
+      el_image: 0xpolygon/bor:2.0.3
       count: 2
     - kind: rpc
       cl_type: heimdall
@@ -193,7 +193,7 @@ polygon_pos_package:
     - kind: validator
       cl_type: heimdall
       el_type: bor
-      el_image: 0xpolygon/bor:2.0.0 # default: 0xpolygon/bor:2.0.1
+      el_image: 0xpolygon/bor:2.0.0 # default: 0xpolygon/bor:2.0.3
       count: 2
     - kind: rpc
       cl_type: heimdall
@@ -280,10 +280,10 @@ polygon_pos_package:
       # The docker image that should be used for the EL client.
       # Leave blank to use the default image for the client type.
       # Defaults by client:
-      # - bor: "0xpolygon/bor:2.0.1"
-      # - bor modified for heimdall-v2: "leovct/bor:1a6957c"
-      # - erigon: "erigontech/erigon:main-767a6d6"
-      el_image: 0xpolygon/bor:2.0.1
+      # - bor: "0xpolygon/bor:2.0.3"
+      # - bor modified for heimdall-v2: "leovct/bor:84794ac"
+      # - erigon: "erigontech/erigon:main-latest"
+      el_image: 0xpolygon/bor:2.0.3
 
       # The log level string that this participant's EL client should log at.
       # Leave blank to use the default log level, info.
@@ -299,7 +299,7 @@ polygon_pos_package:
       # Leave blank to use the default image for the client type.
       # Defaults by client:
       # - heimdall: "0xpolygon/heimdall:1.2.3"
-      # - heimdall-v2: "0xpolygon/heimdall-v2:0.1.9"
+      # - heimdall-v2: "0xpolygon/heimdall-v2:0.1.12"
       cl_image: 0xpolygon/heimdall:1.2.3
 
       # The docker image that should be used for the CL's client database.
@@ -329,8 +329,8 @@ polygon_pos_package:
     # Default: "leovct/pos-el-genesis-builder:96a19dd"
     el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
     # Image used to generate L2 CL/EL validators configurations.
-    # Default: "leovct/pos-validator-config-generator:1.2.3-0.1.9"
-    validator_config_generator: leovct/pos-validator-config-generator:1.2.3-0.1.9
+    # Default: "leovct/pos-validator-config-generator:1.2.3-0.1.12"
+    validator_config_generator: leovct/pos-validator-config-generator:1.2.3-0.1.12
 
   # L2 network parameters.
   network_params:
