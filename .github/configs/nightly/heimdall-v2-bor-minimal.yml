@@ -3,4 +3,3 @@ polygon_pos_package:
     - kind: validator
       cl_type: heimdall-v2
       el_type: bor
-      count: 1
