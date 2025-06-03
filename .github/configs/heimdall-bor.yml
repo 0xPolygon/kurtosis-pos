@@ -3,6 +3,8 @@ polygon_pos_package:
     - kind: validator
       cl_type: heimdall
       el_type: bor
+      count: 10
     - kind: rpc
       cl_type: heimdall
       el_type: bor
+      count: 5
