@@ -97,11 +97,12 @@ echo "VALIDATOR_TOP_UP_FEE_AMOUNT_ETH: ${VALIDATOR_TOP_UP_FEE_AMOUNT_ETH}"
 echo "Increasing the validator threshold..."
 validators_count=$(echo -n "$VALIDATOR_ACCOUNTS" | tr -cd ';' | wc -c | xargs)
 validators_count=$((validators_count + 1))
-cast send \
-  --rpc-url "${L1_RPC_URL}" \
-  --private-key "${PRIVATE_KEY}" \
-  "$(jq -r '.root.StakeManagerProxy' "${CONTRACT_ADDRESSES_FILE}")" \
-  "updateValidatorThreshold(uint)" "${validators_count}"
+calldata=$(cast calldata "updateValidatorThreshold(uint)" "${validators_count}")
+
+governance_proxy_address=$(jq -r '.root.GovernanceProxy' "${CONTRACT_ADDRESSES_FILE}")
+stake_manager_proxy_address=$(jq -r '.root.StakeManagerProxy' "${CONTRACT_ADDRESSES_FILE}")
+cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
+  "${governance_proxy_address}" "update(address,bytes)" "${stake_manager_proxy_address}" "${calldata}"
 
 # Create the validator config file.
 jq -n '[]' >"${VALIDATORS_CONFIG_FILE}"
