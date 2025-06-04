@@ -2,8 +2,10 @@ name: docs-deploy
 
 on:
   push:
-    branches: [main]
-
+    branches:
+      - main
+    paths:
+      - docs/**
 permissions:
   contents: read
 
@@ -21,7 +23,7 @@ jobs:
         with:
           node-version: 18
           cache: npm
-          cache-dependency-path: "docs/package-lock.json"
+          cache-dependency-path: docs/package-lock.json
 
       - name: Install dependencies
         working-directory: docs

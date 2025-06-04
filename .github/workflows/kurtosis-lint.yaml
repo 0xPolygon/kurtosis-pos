@@ -2,8 +2,14 @@ name: kurtosis-lint
 
 on:
   pull_request:
+    paths-ignore:
+      - docs/**
+
   push:
-    branches: [main]
+    branches:
+      - main
+    paths-ignore:
+      - docs/**
 
 permissions:
   contents: read
