@@ -12,7 +12,7 @@ Get up and running with the package in just a few steps.
 kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos
 ```
 
-2. Get the RPC url.
+2. Get the L2 RPC url.
 
 ```bash
 export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-validator rpc)
@@ -31,6 +31,5 @@ where `0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea` is th
 4. Tear down the devnet.
 
 ```bash
-kurtosis enclave stop pos
-kurtosis clean
+kurtosis enclave rm --force pos
 ```
