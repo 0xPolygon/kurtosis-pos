@@ -1,63 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
-# Quickstart
-
-## Prerequisites
-
-You will need to install the following tools:
-
-- [kurtosis](https://github.com/kurtosis-tech/kurtosis)
-- [docker](https://docs.docker.com/)
-
-If you intend to interact with and debug the devnet, you may also want to consider a few additional tools such as:
-
-- [jq](https://github.com/jqlang/jq)
-- [yq](https://pypi.org/project/yq/) (v3)
-- [foundry](https://github.com/foundry-rs/foundry) (`cast` and `forge`)
-- [polycli](https://github.com/0xPolygon/polygon-cli)
-
-## Installation
-
-```bash
-git clone https://github.com/0xPolygon/kurtosis-polygon-pos.git
-cd kurtosis-polygon-pos
-```
-
-## Running Your First Environment
-
-```bash
-kurtosis run --enclave pos .
-```
-
-## Using Custom Configurations
-
-You can pass custom arguments using the `--args-file` flag.
-
-```bash
-kurtosis run --enclave pos --args-file=./.github/configs/your-config.yml .
-```
-
-It is also possible to specify args on the command line.
-
-```bash
-kurtosis run --enclave pos . '{"polygon_pos_package": {"network_params": {"bor_id": "98765"}}}"'
-```
-
-Note that you can also run the default configuration without cloning the repository.
-
-```bash
-kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos
-```
-
-To use a specific version, you can use the following command.
-
-```bash
-kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos@v1.0.12
-```
-
-## Interact With The Network
+# Interact
 
 Let's do a simple L2 rpc test call.
 
@@ -109,12 +54,4 @@ In the same way, you might want to check the MATIC contract addresses on L1 and 
 
 ```bash
 kurtosis files inspect pos-devnet matic-contract-addresses contractAddresses.json | jq
-```
-
-## Tear Down
-
-Once done with the enclave, you can remove its contents with the following command.
-
-```bash
-kurtosis enclave rm --force pos-devnet
 ```

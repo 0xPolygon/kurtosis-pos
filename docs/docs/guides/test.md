@@ -1,8 +1,8 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
 ---
 
-# Testing
+# Test
 
 Most of our tests live in the [agglayer/e2e](https://github.com/agglayer/e2e) repository.
 

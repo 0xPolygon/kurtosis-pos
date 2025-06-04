@@ -16,4 +16,4 @@ Optional features:
 - Spin up a transaction spammer to send fake transactions to the network.
 - Spin up monitoring solutions such as Prometheus, Grafana and Blockscout to observe the network.
 
-For full documentation, see [docs](./docs/docs/).
+For full documentation, see [docs](./docs/docs/introduction/overview.md).

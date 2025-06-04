@@ -1,10 +1,34 @@
 ---
-sidebar_position: 3
+sidebar_position: 1
 ---
 
-# Configuration
+# Overview
 
-To configure the package behaviour, you can create your own `params.yml` file (you can name it anything you like). The full YAML schema that can be passed in is as follows with the defaults provided:
+You can pass custom arguments using the `--args-file` flag.
+
+```bash
+kurtosis run --enclave pos --args-file params.yml .
+```
+
+It is also possible to specify args on the command line.
+
+```bash
+kurtosis run --enclave pos . '{"polygon_pos_package": {"network_params": {"bor_id": "98765"}}}"'
+```
+
+Note that you can also run the default configuration without cloning the repository.
+
+```bash
+kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos
+```
+
+To use a specific version, you can use the following command.
+
+```bash
+kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos@v1.0.12
+```
+
+The full YAML schema that can be passed in is as follows with the defaults provided:
 
 ```yml
 # Ethereum package (L1) configuration.

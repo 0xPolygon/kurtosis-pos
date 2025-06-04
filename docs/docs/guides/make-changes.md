@@ -1,10 +1,10 @@
 ---
-sidebar_position: 5
+sidebar_position: 3
 ---
 
 # Make Changes
 
-Once you have deployed the package once, you should have a fully working L1 devnet, MATIC contracts deployed to L1 and L2, as well as a fully working L2 Polygon PoS devnet.
+Once you have deployed the package, you should have a fully working devnet.
 
 Now imagine you would like to make a change to some of the L2 participants, eg. the EL image. No need to re-run the entire package, you can specify the `dev` parameters to save some time!
 
