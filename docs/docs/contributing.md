@@ -6,7 +6,7 @@ sidebar_position: 6
 
 Thank you for your interest in contributing to the Polygon PoS Kurtosis package!
 
-This guide will help you get started quickly. For more details, see the [full documentation](./introduction.md).
+This guide will help you get started quickly. For more details, see the [full documentation](./introduction/overview.md).
 
 ## How to Contribute
 
@@ -52,4 +52,5 @@ Then visit http://localhost:3000.
 
 ## Need Help?
 
-- Open an [issue](https://github.com/0xPolygon/kurtosis-polygon-pos/issues).
+- Check the [full documentation](./introduction/overview.md).
+- Open an [issue](https://github.com/0xPolygon/kurtosis-polygon-pos/issues/new).
