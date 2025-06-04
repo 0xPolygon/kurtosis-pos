@@ -34,3 +34,9 @@ This section will give you an overview of how the package works.
 [Contributing](../contributing.md)
 
 Help us improve the package.
+
+**Appendix**
+
+References, troubleshooting, and more.
+
+- [FAQ](../appendix/faq.md)
