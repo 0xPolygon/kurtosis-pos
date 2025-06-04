@@ -1,4 +1,4 @@
-name: deploy docs to github pages
+name: docs-deploy
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 18
           cache: npm
-          cache-dependency-path: 'docs/package-lock.json'
+          cache-dependency-path: "docs/package-lock.json"
 
       - name: Install dependencies
         working-directory: docs

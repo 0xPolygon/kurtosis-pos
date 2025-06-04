@@ -1,4 +1,4 @@
-name: deploy
+name: kurtosis-deploy
 
 on:
   pull_request:
