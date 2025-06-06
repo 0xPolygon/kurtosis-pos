@@ -24,10 +24,10 @@ DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:2aa5ca7"
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
         {
-            "el_type": "geth",
-            "el_image": "ethereum/client-go:v1.14.13",
             "cl_type": "lighthouse",
             "cl_image": "sigp/lighthouse:v6.0.1",
+            "el_type": "geth",
+            "el_image": "ethereum/client-go:v1.14.13",
             "use_separate_vc": True,
             "vc_type": "lighthouse",
             "vc_image": "sigp/lighthouse:v6.0.1",
@@ -35,22 +35,22 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
         },
     ],
     "network_params": {
-        "preset": "minimal",
-        "seconds_per_slot": 1,
         "network_id": constants.DEFAULT_L1_CHAIN_ID,
         "prefunded_accounts": "",
+        "preset": "minimal",
+        "seconds_per_slot": 1,
     },
 }
 
 DEFAULT_POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
+    "cl_type": constants.CL_TYPE.heimdall,
+    "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
+    "cl_db_image": DEFAULT_CL_DB_IMAGE,
+    "cl_log_level": constants.LOG_LEVEL.info,
     "el_type": constants.EL_TYPE.bor,
     "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
     "el_log_level": constants.LOG_LEVEL.info,
-    "cl_type": constants.CL_TYPE.heimdall,
-    "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
-    "cl_log_level": constants.LOG_LEVEL.info,
-    "cl_db_image": DEFAULT_CL_DB_IMAGE,
     "count": 1,
 }
 
