@@ -43,10 +43,6 @@ Step-by-step guides for working with devnets in Kurtosis.
 - [Run bridge tests](../guides/run-bridge-tests.md)
 - [Partial devnet redeploy](../guides/partial-devnet-redeploy.md)
 
-### [Architecture](../architecture/overview.md)
-
-This section will give you an overview of how the package works.
-
 ### [Contributing](../contributing.md)
 
 Help us improve the package.
