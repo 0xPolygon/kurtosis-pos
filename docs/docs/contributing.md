@@ -4,7 +4,7 @@ sidebar_position: 6
 
 # Contributing
 
-Thank you for your interest in contributing to the Polygon PoS Kurtosis package!
+Thank you for your interest in contributing to the package!
 
 This guide will help you get started quickly. For more details, see the [full documentation](./introduction/overview.md).
 
@@ -26,6 +26,10 @@ kurtosis lint .
 ```
 
 ### Testing
+
+:::info
+You will need to have the test runner deployed in your environment to run e2e tests with this command.
+:::
 
 Run bridge tests:
 
