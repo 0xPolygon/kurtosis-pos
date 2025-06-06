@@ -39,9 +39,9 @@ Learn how to configure your devnet deployment.
 
 Step-by-step guides for working with devnets in Kurtosis.
 
-- [Usage](../guides/interact.md)
-- [Testing](../guides/test.md)
-- [Make Changes](../guides/make-changes.md)
+- [Interact with the devnet](../guides/interact-with-the-devnet.md)
+- [Run bridge tests](../guides/run-bridge-tests.md)
+- [Partial devnet redeploy](../guides/partial-devnet-redeploy.md)
 
 ### [Architecture](../architecture/overview.md)
 

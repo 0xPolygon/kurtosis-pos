@@ -10,11 +10,13 @@ Get up and running with the package in just a few steps.
 Make sure you have installed the [required tools](./installation.md)!
 :::
 
-1. *Deploy a local Polygon PoS devnet*.
+1. Deploy a local Polygon PoS devnet.
 
 ```bash
 kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos
 ```
+
+where `pos` is the name of the enclave, you can choosse any name you like.
 
 2. Retrieve the L2 RPC URL.
 
