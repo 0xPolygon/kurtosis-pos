@@ -1,9 +1,17 @@
-name: lint
+name: kurtosis-lint
 
 on:
   pull_request:
+    paths-ignore:
+      - docs/**
+      - .github/workflows/docs-*.yaml
+
   push:
-    branches: [main]
+    branches:
+      - main
+    paths-ignore:
+      - docs/**
+      - .github/workflows/docs-*.yaml
 
 permissions:
   contents: read
