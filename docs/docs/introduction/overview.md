@@ -19,7 +19,7 @@ Specifically, this package will:
 Optional features:
 
 - Run a transaction spammer to simulate network load.
-- Deploy monitoring solutions such as [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/) and [Blockscout](https://www.blockscout.com/) to observe the network.
+- Deploy monitoring solutions such as [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), [Panoptichain](https://github.com/0xPolygon/panoptichain) and [Blockscout](https://www.blockscout.com/) to observe the network.
 
 :::info
 This package is for development and testing only — **not for production use!**

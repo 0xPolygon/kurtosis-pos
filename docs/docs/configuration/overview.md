@@ -4,184 +4,87 @@ sidebar_position: 1
 
 # Overview
 
-You can pass custom arguments using the `--args-file` flag.
+This section explains how to customize your Polygon PoS devnet deployment.
+
+## Running With Custom Arguments
+
+You can pass custom arguments using the `--args-file` flag:
 
 ```bash
 kurtosis run --enclave pos --args-file params.yml .
 ```
 
-It is also possible to specify args on the command line.
+Alternatively, you can specify arguments directly on the command line:
 
 ```bash
-kurtosis run --enclave pos . '{"polygon_pos_package": {"network_params": {"bor_id": "98765"}}}"'
+kurtosis run --enclave pos . \
+  '{"polygon_pos_package": {"network_params": {"bor_id": "98765"}}}"'
 ```
 
-Note that you can also run the default configuration without cloning the repository.
+:::warning
+Do not combine an args file with on-the-fly arguments as Kurtosis cannot merge parameters from both sources and will use only the on-the-fly arguments.
+:::
 
-```bash
-kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos
-```
+## Example Configurations
 
-To use a specific version, you can use the following command.
+Below are some sample configurations to help you get started. Feel free to copy and adapt these examples to fit your use case. You can find more examples in the `.github/configs/` directory.
 
-```bash
-kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos@v1.0.12
-```
+### Heimdall - Bor Devnet
 
-The full YAML schema that can be passed in is as follows with the defaults provided:
-
-```yml
-# Ethereum package (L1) configuration.
-# https://github.com/ethpandaops/ethereum-package?tab=readme-ov-file#configuration
-ethereum_package:
-  # Specification of the L1 participants.
-  # By default, the L1 will rely on a single validator node (lighthouse/geth).
-  participants:
-    - el_type: geth
-      el_image: ethereum/client-go:v1.14.12
-      cl_type: lighthouse
-      cl_image: sigp/lighthouse:v6.0.0
-      use_separate_vc: true
-      vc_type: lighthouse
-      vc_image: sigp/lighthouse:v6.0.0
-
-  # L1 network parameters.
-  network_params:
-    # Preset for the network.
-    # Minimal preset is useful for rapid testing and development.
-    # It only takes 192 seconds to get to finalized epoch vs 1536 seconds with mainnet defaults.
-    preset: minimal
-    # Number of seconds per slot on the Beacon chain.
-    seconds_per_slot: 1
-
-
-# Polygon PoS package (L2) configuration.
+```yml title=".github/configs/heimdall-bor.yml"
 polygon_pos_package:
-  # Specification of the L2 participants.
   participants:
-    - ## Role of the participant in the network.
-      # Valid values are:
-      # - "validator": A participant responsible for validating and proposing blocks.
-      # - "rpc": A participant that provides RPC endpoints for interacting with the network (e.g., querying data, sending transactions).
-      kind: validator
-
-      ## Execution Layer (EL) specific flags.
-      # The type of EL client that should be started.
-      # Valid values are: "bor", "erigon"
-      el_type: bor
-
-      # The docker image that should be used for the EL client.
-      # Leave blank to use the default image for the client type.
-      # Defaults by client:
-      # - bor: "0xpolygon/bor:2.0.3"
-      # - bor modified for heimdall-v2: "leovct/bor:84794ac"
-      # - erigon: "erigontech/erigon:main-latest"
-      el_image: 0xpolygon/bor:2.0.3
-
-      # The log level string that this participant's EL client should log at.
-      # Leave blank to use the default log level, info.
-      # Valid values are: "error", "warn", "info", "debug", "trace"
-      el_log_level: info
-
-      ## Consensus Layer (CL) specific flags.
-      # The type of CL client that should be started.
-      # Valid values are: "heimdall", "heimdall-v2"
+    - kind: validator
       cl_type: heimdall
+      el_type: bor
+      count: 4
+    - kind: rpc
+      cl_type: heimdall
+      el_type: bor
+      count: 2
+```
 
-      # The docker image that should be used for the CL client.
-      # Leave blank to use the default image for the client type.
-      # Defaults by client:
-      # - heimdall: "0xpolygon/heimdall:1.2.3"
-      # - heimdall-v2: "0xpolygon/heimdall-v2:0.1.12"
-      cl_image: 0xpolygon/heimdall:1.2.3
+### Heimdall - Erigon Devnet
 
-      # The docker image that should be used for the CL's client database.
-      # Leave blank to use the default image.
-      # Default: "rabbitmq:4.0.6"
-      cl_db_image: rabbitmq:4.0.6
-
-      # The log level string that this participant's CL client should log at.
-      # Leave blank to use the default log level, info.
-      # Valid values are: "error", "warn", "info", "debug", "trace"
-      cl_log_level: info
-
-      # Count of nodes to spin up for this participant.
-      # Default: 1
+```yml title=".github/configs/heimdall-erigon.yml"
+polygon_pos_package:
+  participants:
+    - kind: validator
+      cl_type: heimdall
+      el_type: erigon
+      count: 4
+    - kind: rpc
+      cl_type: heimdall
+      el_type: erigon
       count: 2
 
-    - kind: rpc
-      el_type: bor
-      cl_type: heimdall
-
-  # Images for contract deployment and configuration.
-  setup_images:
-    # Image used to deploy MATIC contracts to L1.
-    # Default: "leovct/pos-contract-deployer-node-20:ed58f8a"
-    contract_deployer: leovct/pos-contract-deployer-node-20:ed58f8a
-    # Image used to create the L2 EL genesis file.
-    # Default: "leovct/pos-el-genesis-builder:96a19dd"
-    el_genesis_builder: leovct/pos-el-genesis-builder:96a19dd
-    # Image used to generate L2 CL/EL validators configurations.
-    # Default: "leovct/pos-validator-config-generator:1.2.3-0.1.12"
-    validator_config_generator: leovct/pos-validator-config-generator:1.2.3-0.1.12
-
-  # L2 network parameters.
   network_params:
-    ## Validators parameters.
-    # This mnemonic will be used to create keystores for CL/EL validators.
-    # Note that validators accounts are prefunded to make the validator setup easier and faster.
-    # Take a look at src/prefunded_accounts/README.md
-    # Default: "sibling lend brave explain wait orbit mom alcohol disorder message grace sun"
-    preregistered_validator_keys_mnemonic: sibling lend brave explain wait orbit mom alcohol disorder message grace sun
-    # The amount of ether to stake for each validator.
-    # Default: 10000
-    validator_stake_amount_eth: 10000
-    # The top up fee amount, in ether, for each validator.
-    # Default: 2000
-    validator_top_up_fee_amount_eth: 2000
-
-    ## Consensus Layer parameters.
-    # The CL network id.
-    # Default: "heimdall-4927"
-    # Note: it must be a string!
-    cl_chain_id: heimdall-4927
-    # The span poll interval on the CL chain.
-    # Default: "0m15s"
-    cl_span_poll_interval: 0m15s
-    # The checkpoint pool interval on the CL chain.
-    # Default: "1m0s"
-    cl_checkpoint_poll_interval: 1m0s
-    # The CL environment.
-    # Default: "mainnet"
-    cl_environment: mainnet
-
-    ## Execution Layer parameters.
-    # The EL network id.
-    # Default: "4927"
-    # Note: it must be a string!
-    el_chain_id: "4927"
-    # The number of seconds per block on the EL chain.
-    # Default: 2
-    el_block_interval_seconds: 2
-    # The duration of an EL sprint, measured in blocks.
-    # Default: 16
-    el_sprint_duration: 16
-    # The duration of an EL span, measured in blocks.
-    # Default: 128
-    el_span_duration: 128
-    # The EL gas limit.
-    # Default: 10^7
-    el_gas_limit: 10_000_000
-
-  # Additional services to run in this enclave.
-  # Default: []
-  additional_services:
-    # A blockchain explorer (will be supported soon).
-    # - blockscout
-    # A monitoring stack composed of Prometheus and Grafana.
-    - prometheus_grafana
-    # A test runner based on the agglayer/e2e repository (https://github.com/agglayer/e2e).
-    - test_runner
-    # A transaction spammer to send fake transactions to the network (will be supported soon).
-    # - tx_spammer
+    cl_environment: local
 ```
+
+### Heimdall-v2 - Bor Devnet
+
+```yml title=".github/configs/heimdall-v2-bor.yml"
+polygon_pos_package:
+  participants:
+    - kind: validator
+      cl_type: heimdall-v2
+      el_type: bor
+      count: 4
+    - kind: rpc
+      cl_type: heimdall-v2
+      el_type: bor
+      count: 2
+```
+
+### Default Devnet with Observability and Test Runner
+
+```yml title=".github/configs/additional-services.yml"
+polygon_pos_package:
+  additional_services:
+    - prometheus_grafana
+    - test_runner
+
+```
+
+Explore the [Configuration Schema](./configuration-schema.md) for a detailed breakdown of all available options.
