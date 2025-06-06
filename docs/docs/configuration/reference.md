@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Configuration Schema
+# Reference
 
 The following tables break down each configuration section and field available for customizing your devnet. Use these references to understand the structure, defaults, and purpose of every option.
 

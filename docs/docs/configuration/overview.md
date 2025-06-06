@@ -87,4 +87,4 @@ polygon_pos_package:
 
 ```
 
-Explore the [Configuration Schema](./configuration-schema.md) for a detailed breakdown of all available options.
+Explore the [Configuration Schema](reference.md) for a detailed breakdown of all available options.
