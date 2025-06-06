@@ -5,37 +5,53 @@ sidebar_position: 1
 
 # Overview
 
-Welcome to the Polygon PoS Kurtosis package documentation!
+👋 Welcome to the Polygon PoS Kurtosis package documentation!
 
-This project provides a modular, reproducible environment for developing, testing, and running Polygon PoS networks using [Kurtosis](https://kurtosis.com/).
+This project provides a modular, reproducible environment for developing, testing, and running [Polygon PoS](https://docs.polygon.technology/pos/) devnets using [Kurtosis](https://kurtosis.com/).
+
+Specifically, this package will:
+
+1. Spin up a local L1 blockchain, fully customizable with multi-client support, leveraging the [Ethereum Kurtosis package](https://github.com/ethpandaops/ethereum-package).
+2. Deploy Polygon PoS contracts to L1 and stake for each validator.
+3. Generate L2 consensus and execution layer genesis information.
+4. Configure and launch a network of Polygon PoS nodes.
+
+Optional features:
+
+- Run a transaction spammer to simulate network load.
+- Deploy monitoring solutions such as [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/) and [Blockscout](https://www.blockscout.com/) to observe the network.
+
+:::info
+This package is for development and testing only — **not for production use!**
+:::
 
 ## Sections
 
-[Getting Started](./getting-started.md)
+### [Getting Started](./getting-started.md)
 
-To get started with the package, install Kurtosis and set up your first devnet.
+Install Kurtosis and set up your first devnet.
 
-[Configuration](../configuration/overview.md)
+### [Configuration](../configuration/overview.md)
 
-Learn how to configure the package to deploy a devnet suited to your needs.
+Learn how to configure your devnet deployment.
 
-**Guides**
+### Guides
 
-Guides for interacting with devnets using kurtosis.
+Step-by-step guides for working with devnets in Kurtosis.
 
 - [Usage](../guides/interact.md)
 - [Testing](../guides/test.md)
 - [Make Changes](../guides/make-changes.md)
 
-[Architecture](../architecture/overview.md)
+### [Architecture](../architecture/overview.md)
 
 This section will give you an overview of how the package works.
 
-[Contributing](../contributing.md)
+### [Contributing](../contributing.md)
 
 Help us improve the package.
 
-**Appendix**
+### Appendix
 
 References, troubleshooting, and more.
 
