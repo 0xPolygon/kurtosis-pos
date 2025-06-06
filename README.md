@@ -1,19 +1,50 @@
 # Polygon PoS Kurtosis Package
 
-A [Kurtosis](https://github.com/kurtosis-tech/kurtosis) package for creating a private, portable and modular Polygon PoS devnet that can be deployed locally or in the cloud using Docker or Kubernetes. The package includes network tools and supports multiple clients, making blockchain development and testing more accessible.
-
-> 🚨 Please note that this package is not intended for production use!
+This project provides a modular, reproducible environment for developing, testing, and running [Polygon PoS](https://docs.polygon.technology/pos/) devnets using [Kurtosis](https://kurtosis.com/).
 
 Specifically, this package will:
 
-1. Spin up a local L1 chain, fully customizable with multi-client support, leveraging the [ethereum-package](https://github.com/ethpandaops/ethereum-package).
-2. Deploy MATIC contracts to L1 as well as stake for each validators.
-3. Generate L2 Consensus Layer (CL) and Execution Layer (EL) genesis information.
-4. Configure and boostrap a network of Polygon PoS nodes of configurable size using the genesis data generated above.
+1. Spin up a local L1 blockchain, fully customizable with multi-client support, leveraging the [Ethereum Kurtosis package](https://github.com/ethpandaops/ethereum-package).
+2. Deploy Polygon PoS contracts to L1 and stake for each validator.
+3. Generate L2 consensus and execution layer genesis information.
+4. Configure and launch a network of Polygon PoS nodes.
 
 Optional features:
 
-- Spin up a transaction spammer to send fake transactions to the network.
-- Spin up monitoring solutions such as Prometheus, Grafana and Blockscout to observe the network.
+- Run a transaction spammer to simulate network load.
+- Deploy monitoring solutions such as [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), [Panoptichain](https://github.com/0xPolygon/panoptichain) and [Blockscout](https://www.blockscout.com/) to observe the network.
 
-For full documentation, see [docs](./docs/docs/introduction/overview.md).
+> 🚨 This package is for development and testing only — **not for production use!**
+
+
+## Sections
+
+### [Getting Started](./docs/docs/introduction/getting-started.md)
+
+Install Kurtosis and set up your first devnet.
+
+### [Configuration](./docs/docs/configuration/overview.md)
+
+Learn how to configure your devnet deployment.
+
+### Guides
+
+Step-by-step guides for working with devnets in Kurtosis.
+
+- [Interact with the devnet](./docs/docs/guides/interact-with-the-devnet.md)
+- [Run bridge tests](./docs/docs/guides/run-bridge-tests.md)
+- [Partial devnet redeploy](./docs/docs/guides/partial-devnet-redeploy.md)
+
+### [Architecture](./docs/docs/architecture/overview.md)
+
+This section will give you an overview of how the package works.
+
+### [Contributing](./docs/docs/contributing.md)
+
+Help us improve the package.
+
+### Appendix
+
+References, troubleshooting, and more.
+
+- [FAQ](./docs/docs/appendix/faq.md)
