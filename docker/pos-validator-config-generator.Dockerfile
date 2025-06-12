@@ -1,5 +1,5 @@
 ARG HEIMDALL_VERSION=1.2.3
-ARG HEIMDALL_V2_VERSION=0.1.12
+ARG HEIMDALL_V2_VERSION=0.1.32
 FROM 0xpolygon/heimdall:${HEIMDALL_VERSION} AS heimdall
 FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
@@ -7,7 +7,7 @@ FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 FROM golang:1.23-alpine AS polycli-builder
 LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
-WORKDIR /opt/polygon-cli 
+WORKDIR /opt/polygon-cli
 RUN apk add --no-cache git build-base \
   && git clone --branch "v0.1.75" https://github.com/maticnetwork/polygon-cli.git . \
   && make build
