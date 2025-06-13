@@ -117,6 +117,6 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 ### `test_runner_params`
 
-| Field                 | Type   | Default            | Description                                     |
-|-----------------------|--------|--------------------|-------------------------------------------------|
-| image                 | string | leovct/e2e:318d97d | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
+| Field                 | Type   | Default                | Description                                     |
+|-----------------------|--------|------------------------|-------------------------------------------------|
+| image                 | string | leovct/e2e:318d97d-pos | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |

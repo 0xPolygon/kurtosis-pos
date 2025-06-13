@@ -19,7 +19,7 @@ DEFAULT_CL_IMAGES = {
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1"
 
-DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:318d97d"
+DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:318d97d-pos"
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
