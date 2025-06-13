@@ -7,8 +7,8 @@
 - [Docker Hub](https://hub.docker.com/r/leovct/bor)
 
 ```bash
-bor_branch="heimdall-v2"
-bor_commit_sha="84794ac" # 2025/04/25
+bor_branch="heimdallv2-final"
+bor_commit_sha="35f2fcf" # 2025/05/13
 image_name="leovct/bor:${bor_commit_sha}"
 git clone --branch "${bor_branch}" git@github.com:maticnetwork/bor.git
 pushd bor
