@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Deploy Polygon PoS contracts to L1, initialise state and stake for each validator.
+# Deploy MATIC contracts to L2 and synchronize state on L1.
 # For reference: https://github.com/0xPolygon/pos-contracts/tree/arya/matic-cli/pos-1869
 
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
