@@ -143,7 +143,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy L1
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/configs/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@4.4.0
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/configs/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@5.0.1
 
       - name: Deploy L2
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/configs/external-l1/polygon-pos-with-external-l1.yml .
