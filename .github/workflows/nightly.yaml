@@ -9,10 +9,6 @@ permissions:
   contents: read
   actions: write
 
-concurrency:
-  group: nightly-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
   ENCLAVE_NAME: pos
 
@@ -94,3 +90,97 @@ jobs:
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: ${{ matrix.file.name }}
+
+  run-with-external-l1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pre kurtosis run
+        uses: ./.github/actions/kurtosis-pre-run
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Deploy L1
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@1bf08937f7ec376d5e281fef87dc1efc28aeefef # 2025-06-14 (>v5.0.1)
+
+      - name: Deploy L2
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Test state syncs
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+
+      - name: Post kurtosis run
+        if: always()
+        uses: ./.github/actions/kurtosis-post-run
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+          args_filename: external-l1
+
+  run-with-cl-el-genesis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pre kurtosis run
+        uses: ./.github/actions/kurtosis-pre-run
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Kurtosis run for the first time
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Retrieve L2 CL genesis file
+        working-directory: .github/configs/nightly/cl-el-genesis
+        run: |
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json | jq > l2-cl-genesis.json
+          jq . l2-cl-genesis.json
+
+      - name: Retrieve L2 EL genesis file
+        working-directory: .github/configs/nightly/cl-el-genesis
+        run: |
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | jq > l2-el-genesis.json
+          jq . l2-el-genesis.json
+
+      - name: Retrieve MATIC contract addresses
+        working-directory: .github/configs/nightly/cl-el-genesis
+        run: |
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | jq > matic-contract-addresses.json
+          jq . matic-contract-addresses.json
+
+      - name: Stop L2 participants
+        run: |
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-bor-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-1-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-2-heimdall-bor-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-2-validator
+
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-3-bor-heimdall-rpc
+
+      - name: Kurtosis run for the second time
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Test state syncs
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+
+      - name: Post kurtosis run
+        if: always()
+        uses: ./.github/actions/kurtosis-post-run
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+          args_filename: cl-el-genesis
