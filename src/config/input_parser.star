@@ -25,12 +25,12 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
         {
             "cl_type": "lighthouse",
-            "cl_image": "sigp/lighthouse:v7.0.1",
+            "cl_image": "ethpandaops/lighthouse:unstable",
             "el_type": "geth",
             "el_image": "ethereum/client-go:v1.15.11",
             "use_separate_vc": True,
             "vc_type": "lighthouse",
-            "vc_image": "sigp/lighthouse:v7.0.1",
+            "vc_image": "ethpandaops/lighthouse:unstable",
             "count": 1,
         },
     ],

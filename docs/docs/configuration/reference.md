@@ -29,7 +29,7 @@ ethereum_package:
 | Field           | Type    | Default                     | Description                                               |
 |-----------------|---------|-----------------------------|-----------------------------------------------------------|
 | cl_type         | string  | lighthouse                  | Consensus Layer (CL) client type.                         |
-| cl_image        | string  | sigp/lighthouse:v7.0.1      | Image for the CL client.                                  |
+| cl_image        | string  | ethpandaops/lighthouse:unstable | Image for the CL client.                              |
 | el_type         | string  | geth                        | Execution Layer (EL) client type.                         |
 | el_image        | string  | ethereum/client-go:v1.15.11 | Image for the EL client.                                  |
 
