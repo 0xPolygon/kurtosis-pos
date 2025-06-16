@@ -8,7 +8,7 @@
 
 ```bash
 bor_branch="heimdallv2-final"
-bor_commit_sha="35f2fcf" # 2025/06/13
+bor_commit_sha="3c77074" # 2025/06/13
 image_name="leovct/bor:${bor_commit_sha}"
 git clone --branch "${bor_branch}" git@github.com:maticnetwork/bor.git
 pushd bor
