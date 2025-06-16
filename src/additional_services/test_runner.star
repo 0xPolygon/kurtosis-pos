@@ -103,6 +103,9 @@ def launch(
                 "L2_STATE_RECEIVER_ADDRESS": l2_state_receiver_address,
                 "L2_ERC20_TOKEN_ADDRESS": l2_erc20_token_address,
                 "L2_ERC721_TOKEN_ADDRESS": l2_erc721_token_address,
+                # Bridge test parameters.
+                "TIMEOUT_SECONDS": "360", # default: 180
+                "INTERVAL_SECONDS": "10", # default: 10
             },
             entrypoint=["bash", "-c"],
             cmd=["sleep infinity"],
