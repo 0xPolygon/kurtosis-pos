@@ -2,17 +2,16 @@ name: docs-build
 
 on:
   pull_request:
-    branches:
-      - main
-    paths:
-      - docs/**
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
 jobs:
   build:
-    name: Build Docusaurus
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
