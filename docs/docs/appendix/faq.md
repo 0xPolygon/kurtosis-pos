@@ -114,7 +114,7 @@ WARNING: Container images with different architecture than expected(arm64):
 > leovct/toolbox:0.0.8 - amd64
 > leovct/pos-el-genesis-builder:96a19dd - amd64
 > leovct/pos-validator-config-generator:1.2.3-0.1.12 - amd64
-> leovct/e2e:2aa5ca7 - amd64
+> leovct/e2e:9fe80e1 - amd64
 ```
 
 **Solution:** Pull the image by specifying the `amd64` platform.
