@@ -101,8 +101,8 @@ def wait_for_node_startup(plan, service_name):
         field="extract.enode",
         assertion="!=",
         target_value="",
-        interval="1s",
-        timeout="60s",
+        interval="5s",
+        timeout="2m",
     )
 
 
