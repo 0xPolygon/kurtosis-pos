@@ -2,10 +2,10 @@ participants:
   - el_type: geth
     el_image: ethereum/client-go:v1.15.11
     cl_type: lighthouse
-    cl_image: ethpandaops/lighthouse:unstable
+    cl_image: ethpandaops/lighthouse:unstable-6135f41
     use_separate_vc: true
     vc_type: lighthouse
-    vc_image: ethpandaops/lighthouse:unstable
+    vc_image: ethpandaops/lighthouse:unstable-6135f41
     count: 1
 
 network_params:
