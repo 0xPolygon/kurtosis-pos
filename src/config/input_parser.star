@@ -19,18 +19,18 @@ DEFAULT_CL_IMAGES = {
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1"
 
-DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:318d97d-pos"
+DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:9fe80e1"
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
         {
             "cl_type": "lighthouse",
-            "cl_image": "sigp/lighthouse:v6.0.1",
+            "cl_image": "ethpandaops/lighthouse:unstable-6135f41",
             "el_type": "geth",
-            "el_image": "ethereum/client-go:v1.14.13",
+            "el_image": "ethereum/client-go:v1.15.11",
             "use_separate_vc": True,
             "vc_type": "lighthouse",
-            "vc_image": "sigp/lighthouse:v6.0.1",
+            "vc_image": "ethpandaops/lighthouse:unstable-6135f41",
             "count": 1,
         },
     ],
