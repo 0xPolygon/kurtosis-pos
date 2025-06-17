@@ -14,12 +14,12 @@ DEFAULT_EL_IMAGES = {
 
 DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.2.3",
-    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.1.12",
+    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.1.32",
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1"
 
-DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:2aa5ca7"
+DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:9fe80e1"
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
