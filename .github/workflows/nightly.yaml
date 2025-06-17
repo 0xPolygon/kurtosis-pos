@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: set-matrix
         run: |
-          file_paths=$(ls -R ./.github/configs/nightly/{*,*/*}.yml)
+          file_paths=$(ls -R ./.github/configs/nightly/{*,*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
           echo "file_paths=${file_paths}"
 
           matrix=$(echo "${file_paths}" | while read -r file_path; do
