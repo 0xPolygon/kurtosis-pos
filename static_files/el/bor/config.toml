@@ -16,6 +16,7 @@ syncmode = "full"
 
 [heimdall]
     url = "{{.cl_node_url}}"
+    version-check-timeout = "120s"  # default: 60s - setting for slower devnets (e.g. CI)
 
 [accounts]
     allow-insecure-unlock = true
@@ -50,4 +51,3 @@ syncmode = "full"
 [telemetry]
     metrics = true
     prometheus-addr = "0.0.0.0:{{.metrics_port_number}}"
-
