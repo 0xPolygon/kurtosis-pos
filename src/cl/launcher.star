@@ -74,6 +74,41 @@ def wait_for_node_startup(plan, service_name):
     )
 
 
+def wait_for_chainmanager_api(plan, service_name, cl_type):
+    key = ""
+    if cl_type == constants.CL_TYPE.heimdall:
+        key = ".result.chain_params.matic_token_address"
+    elif cl_type == constants.CL_TYPE.heimdall_v2:
+        key = ".params.chain_params.pol_token_address"
+    else:
+        fail(
+            'Wrong CL type: "{}". Allowed values: "{}."'.format(
+                cl_type,
+                [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2],
+            )
+        )
+
+    recipe = GetHttpRequestRecipe(
+        endpoint="/chainmanager/params",
+        port_id=cl_shared.REST_API_PORT_ID,
+        extract={
+            "token_address": key,
+        },
+    )
+    plan.wait(
+        description="Wait for '{}'s chain manager api to be reachable".format(
+            service_name
+        ),
+        service_name=service_name,
+        recipe=recipe,
+        field="extract.token_address",
+        assertion="!=",
+        target_value="",
+        interval="1s",
+        timeout="10s",
+    )
+
+
 def _get_launcher(plan, participant):
     cl_type = participant.get("cl_type")
     if cl_type not in LAUNCHERS:
