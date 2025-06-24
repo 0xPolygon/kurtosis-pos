@@ -14,7 +14,7 @@ POLYGON_POS_PARAMS = {
         "el_image",
         "el_log_level",
         # Allow the node to start producing witnesses.
-        "el_enable_witness",
+        "el_produce_witness",
         # Enable the node to sync new blocks using witnesses.
         "el_sync_with_witness",
         "count",

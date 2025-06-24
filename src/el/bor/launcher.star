@@ -52,7 +52,7 @@ def launch(
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
-                    "el_enable_witness": participant.get("el_enable_witness"),
+                    "el_produce_witness": participant.get("el_produce_witness"),
                     "el_sync_with_witness": participant.get("el_sync_with_witness"),
                     # network params
                     "static_nodes": str(el_static_nodes),
