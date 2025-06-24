@@ -50,7 +50,7 @@ def launch(
     return context.new_context(
         service_name=cl_node_name,
         api_url=service.ports[cl_shared.REST_API_PORT_ID].url,
-        http_rpc_url=http_rpc_url,
+        rpc_url=rpc_url,
         ws_rpc_url=ws_rpc_url,
         metrics_url=service.ports[cl_shared.METRICS_PORT_ID].url,
     )
