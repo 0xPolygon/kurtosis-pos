@@ -113,11 +113,6 @@ def launch(
             plan,
             participant.cl_context.service_name,
         )
-        cl_launcher.wait_for_chainmanager_api(
-            plan,
-            participant.cl_context.service_name,
-            devnet_cl_type,
-        )
         el_launcher.wait_for_node_startup(
             plan,
             participant.el_context.service_name,
