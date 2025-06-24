@@ -31,7 +31,7 @@ static-nodes = {{.static_nodes}}
 
 [heimdall]
 url = "{{.cl_api_url}}"
-ws-address = "{{.cl_node_ws_url}}"
+ws-address = "{{.cl_ws_rpc_url}}"
 
 [accounts]
 
