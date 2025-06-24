@@ -74,7 +74,7 @@ def launch(
             cl_ws_rpc_url = None
             if cl_context:
                 cl_api_url = cl_context.api_url
-                cl_ws_rpc_url = context.ws_rpc_url
+                cl_ws_rpc_url = cl_context.ws_rpc_url
             elif first_cl_context:
                 cl_api_url = first_cl_context.api_url
                 cl_ws_rpc_url = first_cl_context.ws_rpc_url
