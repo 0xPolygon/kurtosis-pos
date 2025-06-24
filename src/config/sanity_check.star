@@ -6,13 +6,13 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 POLYGON_POS_PARAMS = {
     "participants": [
         "kind",
-        "el_type",
-        "el_image",
-        "el_log_level",
         "cl_type",
         "cl_image",
         "cl_log_level",
         "cl_db_image",
+        "el_type",
+        "el_image",
+        "el_log_level",
         "count",
         "enable_witness",
         "sync_with_witness",
@@ -59,7 +59,10 @@ VALID_CLIENT_COMBINATIONS = {
         constants.EL_TYPE.bor,
         constants.EL_TYPE.erigon,
     ],
-    constants.CL_TYPE.heimdall_v2: [constants.EL_TYPE.bor],
+    constants.CL_TYPE.heimdall_v2: [
+        constants.EL_TYPE.bor,
+        constants.EL_TYPE.erigon,
+    ],
 }
 
 VALID_CL_ENVIRONMENTS = [
