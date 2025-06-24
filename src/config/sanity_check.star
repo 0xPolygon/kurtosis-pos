@@ -58,6 +58,7 @@ VALID_CLIENT_COMBINATIONS = {
     ],
     constants.CL_TYPE.heimdall_v2: [
         constants.EL_TYPE.bor,
+        constants.EL_TYPE.erigon,
     ],
 }
 
