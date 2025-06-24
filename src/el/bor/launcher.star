@@ -52,8 +52,8 @@ def launch(
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
-                    "enable_witness": participant.get("enable_witness"),
-                    "sync_with_witness": participant.get("sync_with_witness"),
+                    "el_enable_witness": participant.get("el_enable_witness"),
+                    "el_sync_with_witness": participant.get("el_sync_with_witness"),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     # ports

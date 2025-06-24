@@ -7,7 +7,7 @@ polygon_pos_package:
       el_type: bor
       el_image: bor:local
       count: 2
-      enable_witness: true
+      el_enable_witness: true
 
     # rpc nodes
     - kind: rpc
@@ -15,8 +15,8 @@ polygon_pos_package:
       cl_image: heimdall-v2:local
       el_type: bor
       el_image: bor:local
-      enable_witness: true
-      sync_with_witness: false
+      el_enable_witness: true
+      el_sync_with_witness: false
       count: 2
 
     - kind: rpc
@@ -24,8 +24,8 @@ polygon_pos_package:
       cl_image: heimdall-v2:local
       el_type: bor
       el_image: bor:local
-      enable_witness: true
-      sync_with_witness: true
+      el_enable_witness: true
+      el_sync_with_witness: true
       count: 1
 
     - kind: rpc
@@ -33,8 +33,8 @@ polygon_pos_package:
       cl_image: heimdall-v2:local
       el_type: bor
       el_image: bor:local
-      enable_witness: false
-      sync_with_witness: false
+      el_enable_witness: false
+      el_sync_with_witness: false
       count: 1
 
     # stateless nodes

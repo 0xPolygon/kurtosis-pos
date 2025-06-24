@@ -13,9 +13,11 @@ POLYGON_POS_PARAMS = {
         "el_type",
         "el_image",
         "el_log_level",
+        # Allow the node to start producing witnesses.
+        "el_enable_witness",
+        # Enable the node to sync new blocks using witnesses.
+        "el_sync_with_witness",
         "count",
-        "enable_witness",
-        "sync_with_witness",
     ],
     "setup_images": [
         "contract_deployer",
