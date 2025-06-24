@@ -16,7 +16,8 @@ def launch(
     participant,
     el_genesis_artifact,
     el_credentials_artifact,
-    cl_node_url,
+    cl_api_url,
+    cl_ws_rpc_url,
     el_account,
     el_static_nodes,
     el_chain_id,
@@ -34,8 +35,6 @@ def launch(
         host = host_port.split(":")[0]
         return "ws://{}:{}{}".format(host, cl_shared.RPC_PORT_NUMBER, "/websocket")
 
-    cl_node_ws_url = _generate_cl_ws_url(cl_node_url)
-
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
         config={
@@ -48,12 +47,13 @@ def launch(
                     "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
                     "kind": participant.get("kind"),
                     "address": el_account.eth_tendermint.address,
-                    "cl_node_url": cl_node_url,
+                    "cl_api_url": cl_api_url,
+                    "cl_ws_rpc_url": cl_ws_rpc_url,
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
-                    "enable_witness": participant.get("enable_witness"),
-                    "sync_with_witness": participant.get("sync_with_witness"),
+                    "el_produce_witness": participant.get("el_produce_witness"),
+                    "el_sync_with_witness": participant.get("el_sync_with_witness"),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     # ports
@@ -61,7 +61,6 @@ def launch(
                     "ws_port_number": el_shared.WS_PORT_NUMBER,
                     "discovery_port_number": el_shared.DISCOVERY_PORT_NUMBER,
                     "metrics_port_number": el_shared.METRICS_PORT_NUMBER,
-                    "cl_node_ws_url": cl_node_ws_url,
                 },
             ),
         },

@@ -8,11 +8,11 @@ syncmode = "stateless"
 syncmode = "full"
 {{end}}
 
-{{if .enable_witness}}
+{{if .el_produce_witness}}
 witnessprotocol = true
 {{end}}
 
-{{if .sync_with_witness}}
+{{if .el_sync_with_witness}}
 syncwithwitnesses = true
 {{end}}
 
@@ -26,8 +26,8 @@ syncwithwitnesses = true
         static-nodes = {{.static_nodes}}
 
 [heimdall]
-    url = "{{.cl_node_url}}"
-    ws-address = "{{.cl_node_ws_url}}"
+    url = "{{.cl_api_url}}"
+    ws-address = "{{.cl_ws_rpc_url}}"
 
 [accounts]
     allow-insecure-unlock = true
