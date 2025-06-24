@@ -30,7 +30,7 @@ nodekey = "{{.data_folder_path}}/nodekey"
 static-nodes = {{.static_nodes}}
 
 [heimdall]
-url = "{{.cl_node_url}}"
+url = "{{.cl_api_url}}"
 ws-address = "{{.cl_node_ws_url}}"
 
 [accounts]

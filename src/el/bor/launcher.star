@@ -16,7 +16,7 @@ def launch(
     participant,
     el_genesis_artifact,
     el_credentials_artifact,
-    cl_node_url,
+    cl_api_url,
     el_account,
     el_static_nodes,
     el_chain_id,
@@ -34,7 +34,7 @@ def launch(
         host = host_port.split(":")[0]
         return "ws://{}:{}{}".format(host, cl_shared.RPC_PORT_NUMBER, "/websocket")
 
-    cl_node_ws_url = _generate_cl_ws_url(cl_node_url)
+    cl_node_ws_url = _generate_cl_ws_url(cl_api_url)
 
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -48,7 +48,7 @@ def launch(
                     "data_folder_path": BOR_APP_DATA_FOLDER_PATH,
                     "kind": participant.get("kind"),
                     "address": el_account.eth_tendermint.address,
-                    "cl_node_url": cl_node_url,
+                    "cl_api_url": cl_api_url,
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
