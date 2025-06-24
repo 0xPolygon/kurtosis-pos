@@ -1,70 +1,64 @@
-verbosity = {{.log_level_to_int}}
-{{if eq .kind "stateless"}}
-
-{{else}}
-
-{{end}}
-
-{{if .el_produce_witness}}
-
-{{end}}
-
-{{if .el_sync_with_witness}}
-
-{{end}}
-
 identity = "{{.node_name}}"
 chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
+verbosity = {{.log_level_to_int}}
+{{if eq .kind "stateless"}}
 syncmode = "stateless"
+{{else}}
 syncmode = "full"
-witnessprotocol = true
-syncwithwitnesses = true
-[p2p]
-port = {{.discovery_port_number}}
-maxpeers = 200
-bind = "0.0.0.0"
-nodiscover = true
-nodekey = "{{.data_folder_path}}/nodekey"
-[p2p.discovery]
-static-nodes = {{.static_nodes}}
-
-[heimdall]
-url = "{{.cl_api_url}}"
-ws-address = "{{.cl_ws_rpc_url}}"
-
-[accounts]
-
-
-{{if eq .kind "validator"}}
-allow-insecure-unlock = true
-password = "{{.config_folder_path}}/password.txt"
-unlock = ["{{.address}}"]
-[miner]
-
 {{end}}
 
-mine = true
-gaslimit = 45000000
-gasprice = "25000000000"
-etherbase = "{{.address}}"
-extradata = "{{.node_name}}"
+{{if .el_produce_witness}}
+witnessprotocol = true
+{{end}}
+
+{{if .el_sync_with_witness}}
+syncwithwitnesses = true
+{{end}}
+
+[p2p]
+    maxpeers = 200
+    bind = "0.0.0.0"
+    port = {{.discovery_port_number}}
+    nodiscover = true
+    nodekey = "{{.data_folder_path}}/nodekey"
+    [p2p.discovery]
+        static-nodes = {{.static_nodes}}
+
+[heimdall]
+    url = "{{.cl_api_url}}"
+    ws-address = "{{.cl_ws_rpc_url}}"
+
+[accounts]
+    allow-insecure-unlock = true
+    password = "{{.config_folder_path}}/password.txt"
+    unlock = ["{{.address}}"]
+
+{{if eq .kind "validator"}}
+[miner]
+    mine = true
+    gaslimit = 45000000
+    gasprice = "25000000000"
+    etherbase = "{{.address}}"
+    extradata = "{{.node_name}}"
+{{end}}
+
 [jsonrpc]
-ipcpath = "{{.data_folder_path}}/bor.ipc"
-[jsonrpc.http]
-port = {{.rpc_port_number}}
-enabled = true
-host = "0.0.0.0"
-api = ["admin", "eth", "net", "web3", "txpool", "bor"]
-vhosts = ["*"]
-corsdomain = ["*"]
-[jsonrpc.ws]
-port = {{.ws_port_number}}
-enabled = true
-host = "0.0.0.0"
-api = ["admin", "eth", "net", "web3", "txpool", "bor"]
-origins = ["*"]
+    ipcpath = "{{.data_folder_path}}/bor.ipc"
+    [jsonrpc.http]
+        enabled = true
+        host = "0.0.0.0"
+        port = {{.rpc_port_number}}
+        api = ["admin", "eth", "net", "web3", "txpool", "bor"]
+        vhosts = ["*"]
+        corsdomain = ["*"]
+    [jsonrpc.ws]
+        enabled = true
+        host = "0.0.0.0"
+        port = {{.ws_port_number}}
+        api = ["admin", "eth", "net", "web3", "txpool", "bor"]
+        origins = ["*"]
 
 [telemetry]
-metrics = true
-prometheus-addr = "0.0.0.0:{{.metrics_port_number}}"
+    metrics = true
+    prometheus-addr = "0.0.0.0:{{.metrics_port_number}}"
