@@ -1,5 +1,5 @@
 # bor:local => https://github.com/maticnetwork/bor/tree/stateless_sync
-# heimdall-v2:local => https://github.com/0xPolygon/heimdall-v2/tree/develop
+# heimdall-v2:local => https://github.com/0xPolygon/heimdall-v2/tree/stateless_sync
 
 polygon_pos_package:
   participants:
