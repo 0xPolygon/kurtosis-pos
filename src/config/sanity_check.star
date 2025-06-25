@@ -249,8 +249,9 @@ def _validate_participant(p):
 
     # Validate stateless nodes.
     kind = p.get("kind")
+    el_type = p.get("el_type")
     if (
-        kind == PARTICIPANT_KIND.stateless
+        kind == constants.PARTICIPANT_KIND.stateless
         or p.get("el_produce_witness")
         or p.get("el_sync_with_witness")
     ) and el_type != constants.EL_TYPE.bor:
@@ -260,7 +261,6 @@ def _validate_participant(p):
 
     # Validate client combination.
     cl_type = p.get("cl_type")
-    el_type = p.get("el_type")
     if cl_type in VALID_CLIENT_COMBINATIONS:
         valid_combinations = VALID_CLIENT_COMBINATIONS[cl_type]
         if el_type not in valid_combinations:
