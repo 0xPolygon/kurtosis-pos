@@ -247,7 +247,7 @@ def _validate_participant(p):
     _validate_str(p, "cl_type", VALID_CL_CLIENTS)
     _validate_str(p, "el_type", VALID_EL_CLIENTS)
 
-    # Validate stateless nodes
+    # Validate stateless nodes.
     kind = p.get("kind")
     if (
         kind == PARTICIPANT_KIND.stateless
