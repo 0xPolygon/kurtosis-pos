@@ -150,7 +150,7 @@ jobs:
           heimdall_v2_commit_sha="52224d7" # 2025/06/25
           image_name="local/heimdall-v2:${heimdall_v2_commit_sha}"
           git clone --branch "${heimdall_v2_branch}" https://github.com/0xPolygon/heimdall-v2.git
-          pushd heimdall_v2
+          pushd heimdall-v2
           git checkout "${heimdall_v2_commit_sha}"
           docker build --tag "${image_name}" .
 
