@@ -32,6 +32,8 @@ Note that we use a slightly modified version of Bor to address startup deadlocks
 - Node 2 was starting successfully, properly detecting Heimdall v2 and switching to v2 APIs.
 - The "Starting Heimdall migration monitor" log never appeared in Node 1, indicating it never reached that startup phase.
 
+For reference, check [node1.log](./node1.log) and [node2.log](./node2.log).
+
 #### Root Cause Analysis
 
 1. Circular dependency: During Bor node startup, the backend creation (`eth.New()`) immediately initializes the Bor consensus engine.
