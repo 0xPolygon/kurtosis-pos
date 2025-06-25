@@ -47,3 +47,4 @@ polygon_pos_package:
 
   additional_services:
     - prometheus_grafana
+    - test_runner
