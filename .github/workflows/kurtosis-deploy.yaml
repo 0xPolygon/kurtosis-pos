@@ -121,3 +121,48 @@ jobs:
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: ${{ matrix.file.name }}
+  
+  run-with-stateless:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pre kurtosis run
+        uses: ./.github/actions/kurtosis-pre-run
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Kurtosis run
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=stateless.yml .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Check if test runner is deployed
+        id: check-test-runner
+        run: |
+          # The test runner is deployed by default.
+          test_runner_deployed=true
+
+          # Verify if additional services are defined and ensure the test runner is deployed.
+          additional_services=$(yq '.polygon_pos_package.additional_services' stateless.yml)
+          if [[ "${additional_services}" != "null" ]]; then
+            is_test_runner_deployed=$(yq '.polygon_pos_package.additional_services | contains(["test_runner"])' stateless.yml)
+            if [[ "${is_test_runner_deployed}" != "true" ]]; then
+              test_runner_deployed=false
+            fi
+          fi
+          echo "test_runner_deployed=${test_runner_deployed}" >> $GITHUB_OUTPUT
+
+      - name: Test state syncs
+        if: steps.check-test-runner.outputs.test_runner_deployed == 'true'
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+
+      - name: Post kurtosis run
+        if: always()
+        uses: ./.github/actions/kurtosis-post-run
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+          args_filename: ${{ matrix.file.name }}
