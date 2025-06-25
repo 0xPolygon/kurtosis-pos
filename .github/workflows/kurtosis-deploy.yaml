@@ -192,4 +192,4 @@ jobs:
         uses: ./.github/actions/kurtosis-post-run
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
-          args_filename: ${{ matrix.file.name }}
+          args_filename: stateless
