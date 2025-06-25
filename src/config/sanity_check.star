@@ -247,6 +247,17 @@ def _validate_participant(p):
     _validate_str(p, "cl_type", VALID_CL_CLIENTS)
     _validate_str(p, "el_type", VALID_EL_CLIENTS)
 
+    # Validate stateless nodes
+    kind = p.get("kind")
+    if (
+        kind == PARTICIPANT_KIND.stateless
+        or p.get("el_produce_witness")
+        or p.get("el_sync_with_witness")
+    ) and el_type != constants.EL_TYPE.bor:
+        fail(
+            "Stateless participants (`kind: stateless`) and witness operations (`el_produce_witness: True`, `el_sync_with_witness: True`) require bor EL client."
+        )
+
     # Validate client combination.
     cl_type = p.get("cl_type")
     el_type = p.get("el_type")
