@@ -13,6 +13,7 @@ runs:
   using: composite
   steps:
     - name: Retrieve L2 CL API URL
+      id: l2-cl-api-url
       shell: bash
       run: |
         if [[ -z "${{ inputs.args_filename }}" ]]; then
@@ -25,29 +26,33 @@ runs:
         echo "L2_CL_API_URL=${l2_cl_api_url}"
 
     - name: Monitor milestones
+      id: milestone
       shell: bash
       run: |
-        milestone_count=$(curl "${L2_CL_API_URL}/milestone/count" | jq --raw-output '.result.count')
+        milestone_count=$(curl "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/milestone/count" | jq --raw-output '.result.count')
         echo "MILESTONE_COUNT=${milestone_count}" >> "${GITHUB_OUTPUT}"
         echo "MILESTONE_COUNT=${milestone_count}"
 
     - name: Monitor checkpoints
+      id: checkpoint
       shell: bash
       run: |
-        checkpoint_count=$(curl "${L2_CL_API_URL}/checkpoints/count" | jq --raw-output '.result.result')
+        checkpoint_count=$(curl "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/checkpoints/count" | jq --raw-output '.result.result')
         echo "CHECKPOINT_COUNT=${checkpoint_count}" >> "${GITHUB_OUTPUT}"
         echo "CHECKPOINT_COUNT=${checkpoint_count}" >> "${GITHUB_OUTPUT}"
 
     - name: Job status
       shell: bash
       run: |
-        if [[ "${MILESTONE_COUNT}" -lt 1 && "${CHECKPOINT_COUNT}" -lt 1 ]]; then
+        milestone_count="${{ steps.milestone.outputs.MILESTONE_COUNT }}"
+        checkpoint_count="${{ steps.checkpoint.outputs.CHECKPOINT_COUNT }}"
+        if [[ "${milestone_count}" -lt 1 && "${checkpoint_count}" -lt 1 ]]; then
           echo "No milestones or checkpoints found, exiting with error."
           exit 1
-        elif [[ "${MILESTONE_COUNT}" -lt 1 ]]; then
+        elif [[ "${milestone_count}" -lt 1 ]]; then
           echo "No milestones found, exiting with error."
           exit 1
-        elif [[ "${CHECKPOINT_COUNT}" -lt 1 ]]; then
+        elif [[ "${checkpoint_count}" -lt 1 ]]; then
           echo "No checkpoints found, exiting with error."
           exit 1
         fi
