@@ -33,12 +33,14 @@ runs:
       id: milestone
       shell: bash
       run: |
-        if [[ "${{env.L2_CL_NODE_TYPE}}" == "heimdall" ]]; then
-          milestone_count=$(curl --silent "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/milestone/count" | jq --raw-output '.result.count')
-        elif [[ "${{env.L2_CL_NODE_TYPE}}" == "heimdall-v2" ]]; then
-          milestone_count=$(curl --silent "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/milestones/count" | jq --raw-output '.count')
+        l2_cl_api_url=${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}
+        l2_cl_node_type="${{ steps.l2-cl-api-url.outputs.L2_CL_NODE_TYPE }}
+        if [[ "${l2_cl_node_type}" == "heimdall" ]]; then
+          milestone_count=$(curl --silent "${l2_cl_api_url}/milestone/count" | jq --raw-output '.result.count')
+        elif [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
+          milestone_count=$(curl --silent "${l2_cl_api_url}/milestones/count" | jq --raw-output '.count')
         else
-          echo "Unsupported CL type: ${{env.L2_CL_NODE_TYPE}}"
+          echo "Unsupported CL type: ${l2_cl_node_type}"
           exit 1
         fi
         echo "MILESTONE_COUNT=${milestone_count}" >> "${GITHUB_OUTPUT}"
@@ -48,12 +50,14 @@ runs:
       id: checkpoint
       shell: bash
       run: |
-        if [[ "${{env.L2_CL_NODE_TYPE}}" == "heimdall" ]]; then
-          checkpoint_count=$(curl --silent "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/checkpoints/count" | jq --raw-output '.result.result')
-        elif [[ "${{env.L2_CL_NODE_TYPE}}" == "heimdall-v2" ]]; then
-          checkpoint_count=$(curl --silent "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/checkpoints/count" | jq --raw-output '.ack_count')
+        l2_cl_api_url=${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}
+        l2_cl_node_type="${{ steps.l2-cl-api-url.outputs.L2_CL_NODE_TYPE }}"
+        if [[ "${l2_cl_node_type}" == "heimdall" ]]; then
+          checkpoint_count=$(curl --silent "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.result.result')
+        elif [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
+          checkpoint_count=$(curl --silent "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.ack_count')
         else
-          echo "Unsupported CL type: ${{env.L2_CL_NODE_TYPE}}"
+          echo "Unsupported CL type: ${l2_cl_node_type}"
           exit 1
         fi
         echo "CHECKPOINT_COUNT=${checkpoint_count}" >> "${GITHUB_OUTPUT}"
