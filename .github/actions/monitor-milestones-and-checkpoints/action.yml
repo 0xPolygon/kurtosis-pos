@@ -1,0 +1,53 @@
+name: monitor-milestones-and-checkpoints
+description: Monitor milestones and checkpoints in a Kurtosis enclave.
+
+inputs:
+  enclave_name:
+    description: The name of the kurtosis enclave
+    required: true
+  args_filename:
+    description: The name of the args file
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Retrieve L2 CL API URL
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.args_filename }}" ]]; then
+          cl_type="heimdall"
+        else
+          cl_type=$(yq '.polygon_pos_package.participants[0].cl_type' ${{ inputs.args_filename }})
+        fi
+        l2_cl_api_url=$(kurtosis port print ${{ inputs.enclave_name }} l2-cl-1-${cl_type}-bor-validator http)
+        echo "L2_CL_API_URL=${l2_cl_api_url}" >> "${GITHUB_OUTPUT}"
+        echo "L2_CL_API_URL=${l2_cl_api_url}"
+
+    - name: Monitor milestones
+      shell: bash
+      run: |
+        milestone_count=$(curl "${L2_CL_API_URL}/milestone/count" | jq --raw-output '.result.count')
+        echo "MILESTONE_COUNT=${milestone_count}" >> "${GITHUB_OUTPUT}"
+        echo "MILESTONE_COUNT=${milestone_count}"
+
+    - name: Monitor checkpoints
+      shell: bash
+      run: |
+        checkpoint_count=$(curl "${L2_CL_API_URL}/checkpoints/count" | jq --raw-output '.result.result')
+        echo "CHECKPOINT_COUNT=${checkpoint_count}" >> "${GITHUB_OUTPUT}"
+        echo "CHECKPOINT_COUNT=${checkpoint_count}" >> "${GITHUB_OUTPUT}"
+
+    - name: Job status
+      shell: bash
+      run: |
+        if [[ "${MILESTONE_COUNT}" -lt 1 && "${CHECKPOINT_COUNT}" -lt 1 ]]; then
+          echo "No milestones or checkpoints found, exiting with error."
+          exit 1
+        elif [[ "${MILESTONE_COUNT}" -lt 1 ]]; then
+          echo "No milestones found, exiting with error."
+          exit 1
+        elif [[ "${CHECKPOINT_COUNT}" -lt 1 ]]; then
+          echo "No checkpoints found, exiting with error."
+          exit 1
+        fi
