@@ -19,7 +19,7 @@ runs:
         if [[ -z "${{ inputs.args_filename }}" ]]; then
           cl_type="heimdall"
         else
-          cl_type=$(yq '.polygon_pos_package.participants[0].cl_type' ${{ inputs.args_filename }})
+          cl_type=$(yq --raw-output '.polygon_pos_package.participants[0].cl_type' ${{ inputs.args_filename }})
         fi
         l2_cl_api_url=$(kurtosis port print ${{ inputs.enclave_name }} l2-cl-1-${cl_type}-bor-validator http)
         echo "L2_CL_API_URL=${l2_cl_api_url}" >> "${GITHUB_OUTPUT}"
@@ -29,7 +29,7 @@ runs:
       id: milestone
       shell: bash
       run: |
-        milestone_count=$(curl "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/milestone/count" | jq --raw-output '.result.count')
+        milestone_count=$(curl --silent "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/milestone/count" | jq --raw-output '.result.count')
         echo "MILESTONE_COUNT=${milestone_count}" >> "${GITHUB_OUTPUT}"
         echo "MILESTONE_COUNT=${milestone_count}"
 
@@ -37,9 +37,9 @@ runs:
       id: checkpoint
       shell: bash
       run: |
-        checkpoint_count=$(curl "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/checkpoints/count" | jq --raw-output '.result.result')
+        checkpoint_count=$(curl --silent "${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}/checkpoints/count" | jq --raw-output '.result.result')
         echo "CHECKPOINT_COUNT=${checkpoint_count}" >> "${GITHUB_OUTPUT}"
-        echo "CHECKPOINT_COUNT=${checkpoint_count}" >> "${GITHUB_OUTPUT}"
+        echo "CHECKPOINT_COUNT=${checkpoint_count}"
 
     - name: Job status
       shell: bash
@@ -56,3 +56,4 @@ runs:
           echo "No checkpoints found, exiting with error."
           exit 1
         fi
+        echo "Milestones and checkpoints found."
