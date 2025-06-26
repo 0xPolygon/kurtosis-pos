@@ -34,7 +34,7 @@ runs:
       shell: bash
       run: |
         l2_cl_api_url=${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}
-        l2_cl_node_type="${{ steps.l2-cl-api-url.outputs.L2_CL_NODE_TYPE }}
+        l2_cl_node_type=${{ steps.l2-cl-api-url.outputs.L2_CL_NODE_TYPE }}
         if [[ "${l2_cl_node_type}" == "heimdall" ]]; then
           milestone_count=$(curl --silent "${l2_cl_api_url}/milestone/count" | jq --raw-output '.result.count')
         elif [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
@@ -51,7 +51,7 @@ runs:
       shell: bash
       run: |
         l2_cl_api_url=${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}
-        l2_cl_node_type="${{ steps.l2-cl-api-url.outputs.L2_CL_NODE_TYPE }}"
+        l2_cl_node_type=${{ steps.l2-cl-api-url.outputs.L2_CL_NODE_TYPE }}
         if [[ "${l2_cl_node_type}" == "heimdall" ]]; then
           checkpoint_count=$(curl --silent "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.result.result')
         elif [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
@@ -66,8 +66,8 @@ runs:
     - name: Job status
       shell: bash
       run: |
-        milestone_count="${{ steps.milestone.outputs.MILESTONE_COUNT }}"
-        checkpoint_count="${{ steps.checkpoint.outputs.CHECKPOINT_COUNT }}"
+        milestone_count=${{ steps.milestone.outputs.MILESTONE_COUNT }}
+        checkpoint_count=${{ steps.checkpoint.outputs.CHECKPOINT_COUNT }}
         if [[ "${milestone_count}" -lt 1 && "${checkpoint_count}" -lt 1 ]]; then
           echo "No milestones or checkpoints found, exiting with error."
           exit 1
