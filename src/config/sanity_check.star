@@ -13,10 +13,11 @@ POLYGON_POS_PARAMS = {
         "el_type",
         "el_image",
         "el_log_level",
-        # Allow the node to start producing witnesses.
-        "el_produce_witness",
-        # Enable the node to sync new blocks using witnesses.
-        "el_sync_with_witness",
+        # Bor specific parameters.
+        # Allow bor to start producing witnesses.
+        "el_bor_produce_witness",
+        # Enable bor to sync new blocks using witnesses.
+        "el_bor_sync_with_witness",
         "count",
     ],
     "setup_images": [
@@ -51,7 +52,6 @@ POLYGON_POS_PARAMS = {
 VALID_PARTICIPANT_KINDS = [
     constants.PARTICIPANT_KIND.validator,
     constants.PARTICIPANT_KIND.rpc,
-    constants.PARTICIPANT_KIND.stateless,
 ]
 
 VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
@@ -247,20 +247,9 @@ def _validate_participant(p):
     _validate_str(p, "cl_type", VALID_CL_CLIENTS)
     _validate_str(p, "el_type", VALID_EL_CLIENTS)
 
-    # Validate stateless nodes.
-    kind = p.get("kind")
-    el_type = p.get("el_type")
-    if (
-        kind == constants.PARTICIPANT_KIND.stateless
-        or p.get("el_produce_witness")
-        or p.get("el_sync_with_witness")
-    ) and el_type != constants.EL_TYPE.bor:
-        fail(
-            "Stateless participants (`kind: stateless`) and witness operations (`el_produce_witness: True`, `el_sync_with_witness: True`) require bor EL client."
-        )
-
     # Validate client combination.
     cl_type = p.get("cl_type")
+    el_type = p.get("el_type")
     if cl_type in VALID_CLIENT_COMBINATIONS:
         valid_combinations = VALID_CLIENT_COMBINATIONS[cl_type]
         if el_type not in valid_combinations:
@@ -292,6 +281,14 @@ def _validate_participant(p):
         )
 
     _validate_strictly_positive_int(p, "count")
+
+    # Validate witness parameters.
+    if (
+        p.get("el_bor_produce_witness") or p.get("el_bor_sync_with_witness")
+    ) and el_type != constants.EL_TYPE.bor:
+        fail(
+            "Witness parameters (`el_bor_produce_witness` and `el_bor_sync_with_witness`) require bor EL client."
+        )
 
 
 # The CL environment is only used in Heimdall (v1) templates to specify the height for applying

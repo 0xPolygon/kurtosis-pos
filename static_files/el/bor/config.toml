@@ -2,18 +2,16 @@ identity = "{{.node_name}}"
 chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
 verbosity = {{.log_level_to_int}}
-{{if eq .kind "stateless"}}
+
+{{if .el_bor_sync_with_witness}}
 syncmode = "stateless"
+syncwithwitnesses = true
 {{else}}
 syncmode = "full"
 {{end}}
 
-{{if .el_produce_witness}}
+{{if .el_bor_produce_witness}}
 witnessprotocol = true
-{{end}}
-
-{{if .el_sync_with_witness}}
-syncwithwitnesses = true
 {{end}}
 
 [p2p]
