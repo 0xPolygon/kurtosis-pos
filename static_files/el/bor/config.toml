@@ -5,11 +5,11 @@ verbosity = {{.log_level_to_int}}
 
 syncmode = "{{.sync_mode}}"
 
-{{if .el_bor_sync_with_witness}}
+{{if .sync_with_witness}}
 syncwithwitnesses = true
 {{end}}
 
-{{if .el_bor_produce_witness}}
+{{if .produce_witness}}
 witnessprotocol = true
 {{end}}
 

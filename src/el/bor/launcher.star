@@ -39,8 +39,8 @@ def launch(
                         participant.get("el_log_level")
                     ),
                     "sync_mode": participant.get("el_bor_sync_mode"),
-                    "el_bor_produce_witness": participant.get("el_bor_produce_witness"),
-                    "el_bor_sync_with_witness": participant.get(
+                    "produce_witness": participant.get("el_bor_produce_witness"),
+                    "sync_with_witness": participant.get(
                         "el_bor_sync_with_witness"
                     ),
                     # network params
