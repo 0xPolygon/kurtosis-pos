@@ -54,6 +54,10 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "count": 1,
 }
 
+DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
+    "el_bor_sync_mode": constants.BOR_SYNC_MODES.full,
+}
+
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "participants": [
         DEFAULT_POLYGON_POS_PARTICIPANT
@@ -239,6 +243,11 @@ def _parse_participants(participants):
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
             p.setdefault(k, v)
+
+        # Fill in any missing fields with default values for bor participants.
+        if el_type == constants.EL_TYPE.bor:
+            for k, v in DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT.items():
+                p.setdefault(k, v)
 
         # Set devnet CL type using the first participant CL type.
         if devnet_cl_type == "":
