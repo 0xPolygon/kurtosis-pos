@@ -3,11 +3,10 @@ chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
 verbosity = {{.log_level_to_int}}
 
+syncmode = "{{.sync_mode}}"
+
 {{if .el_bor_sync_with_witness}}
-syncmode = "stateless"
 syncwithwitnesses = true
-{{else}}
-syncmode = "full"
 {{end}}
 
 {{if .el_bor_produce_witness}}

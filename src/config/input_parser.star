@@ -4,7 +4,7 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:ed58f8a"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.3-0.2.0"  # Based on 0xpolygon/heimdall:1.2.3 and 0xpolygon/heimdall-v2:0.2.0.
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.2.3-0.2.4"  # Based on 0xpolygon/heimdall:1.2.3 and 0xpolygon/heimdall-v2:0.2.4.
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:2.1.1",
@@ -14,7 +14,7 @@ DEFAULT_EL_IMAGES = {
 
 DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.2.3",
-    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.0",
+    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.4",
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1"
@@ -54,6 +54,10 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "el_bor_produce_witness": False,
     "el_bor_sync_with_witness": False,
     "count": 1,
+}
+
+DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
+    "el_bor_sync_mode": constants.BOR_SYNC_MODES.full,
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
@@ -241,6 +245,11 @@ def _parse_participants(participants):
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
             p.setdefault(k, v)
+
+        # Fill in any missing fields with default values for bor participants.
+        if el_type == constants.EL_TYPE.bor:
+            for k, v in DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT.items():
+                p.setdefault(k, v)
 
         # Set devnet CL type using the first participant CL type.
         if devnet_cl_type == "":

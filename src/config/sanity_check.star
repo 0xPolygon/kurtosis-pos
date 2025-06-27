@@ -14,6 +14,7 @@ POLYGON_POS_PARAMS = {
         "el_image",
         "el_log_level",
         # Bor specific parameters.
+        "el_bor_sync_mode",
         # Allow bor to start producing witnesses.
         "el_bor_produce_witness",
         # Enable bor to sync new blocks using witnesses.
@@ -79,6 +80,12 @@ VALID_LOG_LEVELS = [
     constants.LOG_LEVEL.info,
     constants.LOG_LEVEL.debug,
     constants.LOG_LEVEL.trace,
+]
+
+VALID_BOR_SYNC_MODES = [
+    constants.BOR_SYNC_MODES.full,
+    constants.BOR_SYNC_MODES.snap,
+    constants.BOR_SYNC_MODES.archive,
 ]
 
 DEV_PARAMS = [
@@ -263,6 +270,13 @@ def _validate_participant(p):
 
     _validate_str(p, "cl_log_level", VALID_LOG_LEVELS)
     _validate_str(p, "el_log_level", VALID_LOG_LEVELS)
+
+    # Validate sync mode.
+    if el_type == constants.EL_TYPE.bor:
+        _validate_str(p, "el_bor_sync_mode", VALID_BOR_SYNC_MODES)
+    else:
+        if p.get("el_bor_sync_mode"):
+            fail('The "el_bor_sync_mode" parameter is only valid for the bor EL client')
 
     # Heimdall (v1) only supports "error", "info", "debug" or "none" log levels.
     # ERROR: Failed to parse default log level (pair *:trace, list *:trace): Expected either "info", "debug", "error" or "none" level, given trace
