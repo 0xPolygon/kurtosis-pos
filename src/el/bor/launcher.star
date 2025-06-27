@@ -40,9 +40,7 @@ def launch(
                     ),
                     "sync_mode": participant.get("el_bor_sync_mode"),
                     "produce_witness": participant.get("el_bor_produce_witness"),
-                    "sync_with_witness": participant.get(
-                        "el_bor_sync_with_witness"
-                    ),
+                    "sync_with_witness": participant.get("el_bor_sync_with_witness"),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     # ports
