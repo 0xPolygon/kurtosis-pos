@@ -37,6 +37,7 @@ def launch(
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
+                    "sync_mode": participant.get("el_bor_sync_mode"),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     # ports
