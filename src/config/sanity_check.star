@@ -318,7 +318,8 @@ def validate_cl_environment(cl_environment, participants):
 
 
 def _fail_if_not_bor_el_type(input, attribute):
-    if input.get("el_type") != constants.EL_TYPE.bor:
+    value = input.get(attribute)
+    if input.get("el_type") != constants.EL_TYPE.bor and value:
         fail(
             'The "{}" parameter is only valid for the bor EL client.'.format(attribute)
         )
