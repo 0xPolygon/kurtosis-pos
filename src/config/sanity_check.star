@@ -13,10 +13,10 @@ POLYGON_POS_PARAMS = {
         "el_type",
         "el_image",
         "el_log_level",
-        # Allow the node to start producing witnesses.
-        "el_produce_witness",
-        # Enable the node to sync new blocks using witnesses.
-        "el_sync_with_witness",
+        # Bor specific parameters.
+        "el_bor_sync_mode",
+        "el_bor_produce_witness",  # Allow bor to start producing witnesses.
+        "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
         "count",
     ],
     "setup_images": [
@@ -51,7 +51,6 @@ POLYGON_POS_PARAMS = {
 VALID_PARTICIPANT_KINDS = [
     constants.PARTICIPANT_KIND.validator,
     constants.PARTICIPANT_KIND.rpc,
-    constants.PARTICIPANT_KIND.stateless,
 ]
 
 VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
@@ -79,6 +78,12 @@ VALID_LOG_LEVELS = [
     constants.LOG_LEVEL.info,
     constants.LOG_LEVEL.debug,
     constants.LOG_LEVEL.trace,
+]
+
+VALID_BOR_SYNC_MODES = [
+    constants.BOR_SYNC_MODES.full,
+    constants.BOR_SYNC_MODES.snap,
+    constants.BOR_SYNC_MODES.archive,
 ]
 
 DEV_PARAMS = [
@@ -247,20 +252,9 @@ def _validate_participant(p):
     _validate_str(p, "cl_type", VALID_CL_CLIENTS)
     _validate_str(p, "el_type", VALID_EL_CLIENTS)
 
-    # Validate stateless nodes.
-    kind = p.get("kind")
-    el_type = p.get("el_type")
-    if (
-        kind == constants.PARTICIPANT_KIND.stateless
-        or p.get("el_produce_witness")
-        or p.get("el_sync_with_witness")
-    ) and el_type != constants.EL_TYPE.bor:
-        fail(
-            "Stateless participants (`kind: stateless`) and witness operations (`el_produce_witness: True`, `el_sync_with_witness: True`) require bor EL client."
-        )
-
     # Validate client combination.
     cl_type = p.get("cl_type")
+    el_type = p.get("el_type")
     if cl_type in VALID_CLIENT_COMBINATIONS:
         valid_combinations = VALID_CLIENT_COMBINATIONS[cl_type]
         if el_type not in valid_combinations:
@@ -274,6 +268,14 @@ def _validate_participant(p):
 
     _validate_str(p, "cl_log_level", VALID_LOG_LEVELS)
     _validate_str(p, "el_log_level", VALID_LOG_LEVELS)
+
+    # Validate bor specific parameters.
+    if el_type == constants.EL_TYPE.bor:
+        _validate_str(p, "el_bor_sync_mode", VALID_BOR_SYNC_MODES)
+    else:
+        _fail_if_not_bor_el_type(p, "el_bor_sync_mode")
+        _fail_if_not_bor_el_type(p, "el_bor_produce_witness")
+        _fail_if_not_bor_el_type(p, "el_bor_sync_with_witness")
 
     # Heimdall (v1) only supports "error", "info", "debug" or "none" log levels.
     # ERROR: Failed to parse default log level (pair *:trace, list *:trace): Expected either "info", "debug", "error" or "none" level, given trace
@@ -313,6 +315,14 @@ def validate_cl_environment(cl_environment, participants):
                     cl_environment, VALID_CL_ENVIRONMENTS
                 )
             )
+
+
+def _fail_if_not_bor_el_type(input, attribute):
+    value = input.get(attribute)
+    if input.get("el_type") != constants.EL_TYPE.bor and value:
+        fail(
+            'The "{}" parameter is only valid for the bor EL client.'.format(attribute)
+        )
 
 
 def _validate_str(input, attribute, allowed_values):

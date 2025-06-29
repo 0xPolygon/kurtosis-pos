@@ -3,7 +3,6 @@ math = import_module("../math/math.star")
 PARTICIPANT_KIND = struct(
     validator="validator",
     rpc="rpc",
-    stateless="stateless",
 )
 
 EL_TYPE = struct(
@@ -29,6 +28,12 @@ LOG_LEVEL = struct(
     info="info",
     debug="debug",
     trace="trace",
+)
+
+BOR_SYNC_MODES = struct(
+    full="full",
+    snap="snap",
+    archive="archive",
 )
 
 ADDITIONAL_SERVICES = struct(
