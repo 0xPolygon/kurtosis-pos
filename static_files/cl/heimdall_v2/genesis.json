@@ -1,6 +1,6 @@
 {
-  "app_name": "heimdall-v2",
-  "app_version": "v0.1.22-beta-polygon",
+  "app_name": "heimdalld",
+  "app_version": "v0.2.1-polygon",
   "genesis_time": "1970-01-01T00:00:00.000000000Z",
   "chain_id": "{{.cl_chain_id}}",
   "initial_height": 1,
@@ -151,31 +151,27 @@
       "dividend_accounts": {{.dividend_accounts}}
     }
   },
-  "consensus": {
-    "params": {
-      "block": {
-        "max_bytes": "22020096",
-        "max_gas": "-1"
-      },
-      "blob": {
-        "max_bytes": "0"
-      },
-      "evidence": {
-        "max_age_num_blocks": "100000",
-        "max_age_duration": "172800000000000",
-        "max_bytes": "1048576"
-      },
-      "validator": {
-        "pub_key_types": [
-          "secp256k1"
-        ]
-      },
-      "version": {
-        "app": "0"
-      },
-      "abci": {
-        "vote_extensions_enable_height": "1"
-      }
+  "consensus_params": {
+    "block": {
+      "max_bytes": 22020096,
+      "max_gas": -1
+    },
+    "blob": {
+      "max_bytes": 0
+    },
+    "evidence": {
+      "max_age_num_blocks": 100000,
+      "max_age_duration": 172800000000000,
+      "max_bytes": 1048576
+    },
+    "validator": {
+      "pub_key_types": ["secp256k1"]
+    },
+    "version": {
+      "app": 0
+    },
+    "abci": {
+      "vote_extensions_enable_height": 1
     }
   }
 }

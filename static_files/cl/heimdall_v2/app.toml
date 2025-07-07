@@ -1,21 +1,9 @@
+# This is a TOML config file.
+# For more information, see https://github.com/toml-lang/toml
+
 ###############################################################################
 ###                           Base Configuration                            ###
 ###############################################################################
-
-# NOTE: This config is similar to app.toml and heimdall-config.toml in heimdall-v1.
-
-# HaltHeight contains a non-zero block height at which a node will gracefully
-# halt and shutdown that can be used to assist upgrades and testing.
-#
-# Note: Commitment of state will be attempted on the corresponding block.
-halt-height = 0
-
-# HaltTime contains a non-zero minimum block time (in Unix seconds) at which
-# a node will gracefully halt and shutdown that can be used to assist upgrades
-# and testing.
-#
-# Note: Commitment of state will be attempted on the corresponding block.
-halt-time = 0
 
 # The minimum gas prices a validator is willing to accept for processing a
 # transaction. A transaction's fees must meet the minimum of any denomination
@@ -35,6 +23,19 @@ pruning = "default"
 # These are applied if and only if the pruning strategy is custom.
 pruning-keep-recent = "0"
 pruning-interval = "0"
+
+# HaltHeight contains a non-zero block height at which a node will gracefully
+# halt and shutdown that can be used to assist upgrades and testing.
+#
+# Note: Commitment of state will be attempted on the corresponding block.
+halt-height = 0
+
+# HaltTime contains a non-zero minimum block time (in Unix seconds) at which
+# a node will gracefully halt and shutdown that can be used to assist upgrades
+# and testing.
+#
+# Note: Commitment of state will be attempted on the corresponding block.
+halt-time = 0
 
 # MinRetainBlocks defines the minimum block height offset from the current
 # block being committed, such that all blocks past this offset are pruned
@@ -65,7 +66,7 @@ index-events = []
 # IavlCacheSize set the size of the iavl tree cache (in number of nodes).
 iavl-cache-size = 781250
 
-# IAVLDisableFastNode enables or disables the fast node feature of IAVL.
+# IAVLDisableFastNode enables or disables the fast node feature of IAVL. 
 # Default is false.
 iavl-disable-fastnode = false
 
@@ -105,7 +106,8 @@ prometheus-retention-time = 0
 #
 # Example:
 # [["chain_id", "cosmoshub-1"]]
-global-labels = []
+global-labels = [
+]
 
 # MetricsSink defines the type of metrics sink to use.
 metrics-sink = ""
@@ -231,49 +233,57 @@ stop-node-on-err = true
 #
 # Note, this configuration only applies to SDK built-in app-side mempool
 # implementations.
-max-txs = 5000
+max-txs = -1
 
 [custom]
-# NOTE: This part of the config is similar to heimdall-config.toml (heimdall-v1).
+# This is a TOML config file.
+# For more information, see https://github.com/toml-lang/toml
 
 ##### RPC and REST configs #####
 
-# AMQP endpoint.
-amqp_url = "{{.amqp_url}}"
-
-# RPC endpoint for the EL chain.
-bor_rpc_url = "{{.el_rpc_url}}"
-
-# RPC endpoint for the Ethereum chain.
+# RPC endpoint for ethereum chain
 eth_rpc_url = "{{.l1_rpc_url}}"
 
-# RPC endpoint for CometBFT.
+# RPC endpoint for bor chain
+bor_rpc_url = "{{.el_rpc_url}}"
+
+# GRPC flag for bor chain
+bor_grpc_flag = "false"
+
+# GRPC endpoint for bor chain
+bor_grpc_url = "localhost:3131"
+
+# RPC endpoint for cometBFT
 comet_bft_rpc_url = "http://0.0.0.0:{{.rpc_port_number}}"
 
-# Polygon Sub Graph URL for self-heal mechanism (optional).
+# Polygon Sub Graph URL for self-heal mechanism (optional)
 sub_graph_url = ""
 
-#### Bridge config ####
+#### Bridge configs ####
 
-## Poll intervals.
+# AMQP endpoint
+amqp_url = "{{.amqp_url}}"
+
+## Poll intervals
 checkpoint_poll_interval = "{{.checkpoint_poll_interval}}"
-clerk_poll_interval = "10s"
-enable_self_heal = "false"
-milestone_poll_interval = "30s"
-noack_poll_interval = "16m50s"
-sh_max_depth_duration = "1h0m0s"
-sh_stake_update_interval = "3h0m0s"
-sh_state_synced_interval = "15m0s"
-span_poll_interval = "{{.span_poll_interval}}"
 syncer_poll_interval = "1m0s"
+noack_poll_interval = "16m50s"
+clerk_poll_interval = "10s"
+span_poll_interval = "{{.span_poll_interval}}"
+milestone_poll_interval = "30s"
+enable_self_heal = "false"
+sh_state_synced_interval = "3h0m0s"
+sh_stake_update_interval = "3h0m0s"
+sh_checkpoint_ack_interval = "30m0s"
+sh_max_depth_duration = "24h0m0s"
 
-#### Gas config ####
+#### gas limits ####
 main_chain_gas_limit = "5000000"
+
+#### gas price ####
 main_chain_max_gas_price = "400000000000"
 
-##### Timeout config #####
-eth_rpc_timeout = "5m0s"
-bor_rpc_timeout = "5m0s"
+##### Timeout Config #####
 no_ack_wait_time = "30m0s"
 
 chain = "{{.environment}}"
