@@ -1,8 +1,6 @@
 # This is a TOML config file.
 # For more information, see https://github.com/toml-lang/toml
 
-# NOTE: This config is similar to heimdall-config.toml in heimdall-v1.
-
 # NOTE: Any path below can be absolute (e.g. "/var/myawesomeapp/data") or
 # relative to the home directory (e.g. "data"). The home directory is
 # "$HOME/.cometbft" by default, but could be changed via $CMTHOME env variable
@@ -296,8 +294,8 @@ type = "flood"
 recheck = true
 
 # recheck_timeout is the time the application has during the rechecking process
-# to return CheckTx responses, once all requests have been sent. Responses that
-# arrive after the timeout expires are discarded. It only applies to
+# to return CheckTx responses, once all requests have been sent. Responses that 
+# arrive after the timeout expires are discarded. It only applies to 
 # non-local ABCI clients and when recheck is enabled.
 #
 # The ideal value will strongly depend on the application. It could roughly be estimated as the
@@ -420,11 +418,11 @@ timeout_propose = "1s"
 # How much timeout_propose increases with each round
 timeout_propose_delta = "200ms"
 # How long we wait after receiving +2/3 prevotes for “anything” (ie. not a single block or nil)
-timeout_prevote = "500ms"
+timeout_prevote = "1s"
 # How much the timeout_prevote increases with each round
 timeout_prevote_delta = "200ms"
 # How long we wait after receiving +2/3 precommits for “anything” (ie. not a single block or nil)
-timeout_precommit = "500ms"
+timeout_precommit = "1s"
 # How much the timeout_precommit increases with each round
 timeout_precommit_delta = "200ms"
 # How long we wait after committing a block, before starting on the new
