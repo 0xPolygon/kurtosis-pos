@@ -67,14 +67,16 @@ def wait_for_node_startup(plan, service_name):
         },
     )
     plan.wait(
-        description="Wait for '{}' to start up".format(service_name),
+        description="Wait for '{}' to start up - it can take up to 1 minute".format(
+            service_name
+        ),
         service_name=service_name,
         recipe=recipe,
         field="extract.id",
         assertion="!=",
         target_value="",
         interval="1s",
-        timeout="10s",
+        timeout="1m",
     )
 
 
