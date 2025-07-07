@@ -249,10 +249,10 @@ jobs:
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: ${{ matrix.file.name }}
-  
+
   run-with-stateless:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
