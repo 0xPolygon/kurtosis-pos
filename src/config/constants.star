@@ -30,6 +30,12 @@ LOG_LEVEL = struct(
     trace="trace",
 )
 
+BOR_SYNC_MODES = struct(
+    full="full",
+    snap="snap",
+    archive="archive",
+)
+
 ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
     prometheus_grafana="prometheus_grafana",
