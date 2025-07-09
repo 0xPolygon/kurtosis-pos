@@ -16,7 +16,7 @@ runs:
       id: l2-cl-api-url
       shell: bash
       run: |
-        if [[ -z "${{ inputs.args_filename }}" || "${{ inputs.args_filename }}" == "./.github/configs/additional-services.yml" ]]; then
+        if [[ -z "${{ inputs.args_filename }}" || contains(fromJSON('["additional-services", "contract-deployer"]'), inputs.args_filename) ]]; then
           cl_type="heimdall"
           el_type="bor"
         else
