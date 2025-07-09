@@ -84,6 +84,7 @@ VALID_BOR_SYNC_MODES = [
     constants.BOR_SYNC_MODES.full,
     constants.BOR_SYNC_MODES.snap,
     constants.BOR_SYNC_MODES.archive,
+    constants.BOR_SYNC_MODES.stateless,
 ]
 
 DEV_PARAMS = [
