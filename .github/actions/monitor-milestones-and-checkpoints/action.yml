@@ -11,7 +11,7 @@ inputs:
   timeout_seconds:
     description: The maximum time to monitor milestones and checkpoints, in seconds
     required: false
-    default: "120"
+    default: "600"
   check_interval_seconds:
     description: The interval to check for milestones and checkpoints, in seconds
     required: false
