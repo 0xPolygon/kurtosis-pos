@@ -85,7 +85,6 @@ jobs:
         run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Monitor milestones and checkpoints
-        if: ${{ contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why heimdall-v2/erigon devnets are not producing checkpoints.
         uses: ./.github/actions/monitor-milestones-and-checkpoints
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
