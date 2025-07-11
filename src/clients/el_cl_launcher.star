@@ -9,7 +9,7 @@ enums = import_module("../enums.star")
 wait = import_module("../utils/wait/wait.star")
 
 
-VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/cl/validator"
+VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../../static_files/cl/validator"
 
 
 def launch(

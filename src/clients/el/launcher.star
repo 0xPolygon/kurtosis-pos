@@ -5,7 +5,7 @@ erigon_launcher = import_module("./erigon/launcher.star")
 shared = import_module("./shared.star")
 enums = import_module("../../enums.star")
 
-EL_CREDENTIALS_GENERATOR_FOLDER_PATH = "../../static_files/el/credentials"
+EL_CREDENTIALS_GENERATOR_FOLDER_PATH = "../../../static_files/el/credentials"
 
 LAUNCHERS = {
     enums.EL_TYPE.bor: bor_launcher.launch,

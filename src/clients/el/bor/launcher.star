@@ -2,7 +2,7 @@ el_shared = import_module("../shared.star")
 
 
 # The folder where the bor template config is stored in the repository.
-BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/el/bor/config.toml"
+BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../../static_files/el/bor/config.toml"
 
 # The folder where bor configs are stored inside the service.
 BOR_CONFIG_FOLDER_PATH = "/etc/bor"
