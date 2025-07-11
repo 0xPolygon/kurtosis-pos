@@ -6,6 +6,11 @@ RABBITMQ_AMQP_PORT_NUMBER = 5672
 
 
 def launch(plan, name, image):
+    if not name:
+        fail("Name cannot be empty.")
+    if not image:
+        fail("Image cannot be empty.")
+
     service = plan.add_service(
         name=name,
         config=ServiceConfig(
