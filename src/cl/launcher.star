@@ -5,7 +5,7 @@ el_shared = import_module("../el/shared.star")
 heimdall_launcher = import_module("./heimdall/launcher.star")
 heimdall_v2_launcher = import_module("./heimdall_v2/launcher.star")
 rabbitmq = import_module("./rabbitmq.star")
-types = import_module("../config/types.star")
+types = import_module("../types.star")
 
 LAUNCHERS = {
     types.CL_TYPE.heimdall: heimdall_launcher.launch,

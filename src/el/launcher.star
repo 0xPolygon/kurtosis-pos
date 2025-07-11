@@ -3,7 +3,7 @@ constants = import_module("../config/constants.star")
 context = import_module("./context.star")
 erigon_launcher = import_module("./erigon/launcher.star")
 shared = import_module("./shared.star")
-types = import_module("../config/types.star")
+types = import_module("../types.star")
 
 EL_CREDENTIALS_GENERATOR_FOLDER_PATH = "../../static_files/el/credentials"
 

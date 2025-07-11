@@ -1,6 +1,6 @@
 math = import_module("../math/math.star")
 prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
-types = import_module("./types.star")
+types = import_module("../types.star")
 
 
 POLYGON_POS_PARAMS = {

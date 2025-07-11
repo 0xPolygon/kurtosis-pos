@@ -1,4 +1,4 @@
-types = import_module("../config/types.star")
+types = import_module("../types.star")
 
 
 def wait_for_l1_startup(plan, cl_rpc_url):

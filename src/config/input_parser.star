@@ -1,7 +1,7 @@
 constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
-types = import_module("./config/types.star")
+types = import_module("../types.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:ed58f8a"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"

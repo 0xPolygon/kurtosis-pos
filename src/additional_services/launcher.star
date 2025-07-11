@@ -2,7 +2,7 @@ blockscout = import_module("./blockscout.star")
 prometheus_grafana = import_module("./prometheus_grafana.star")
 test_runner = import_module("./test_runner.star")
 tx_spammer = import_module("./tx_spammer.star")
-types = import_module("../config/types.star")
+types = import_module("../types.star")
 
 
 def launch(

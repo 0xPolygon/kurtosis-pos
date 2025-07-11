@@ -10,7 +10,7 @@ hex = import_module("./src/hex/hex.star")
 input_parser = import_module("./src/config/input_parser.star")
 math = import_module("./src/math/math.star")
 prefunded_accounts_module = import_module("./src/prefunded_accounts/accounts.star")
-types = import_module("./src/config/types.star")
+types = import_module("./src/types.star")
 wait = import_module("./src/wait/wait.star")
 wallet = import_module("./src/wallet/wallet.star")
 

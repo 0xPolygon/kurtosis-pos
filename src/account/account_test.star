@@ -1,5 +1,5 @@
 account = import_module("account.star")
-types = import_module("../config/types.star")
+types = import_module("../types.star")
 
 
 def test_new(plan):

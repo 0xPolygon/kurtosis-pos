@@ -5,7 +5,7 @@ el_launcher = import_module("./el/launcher.star")
 el_shared = import_module("./el/shared.star")
 participant_module = import_module("./participant.star")
 prefunded_accounts = import_module("./prefunded_accounts/accounts.star")
-types = import_module("./src/config/types.star")
+types = import_module("./src/types.star")
 wait = import_module("./wait/wait.star")
 
 
