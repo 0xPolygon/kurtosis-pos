@@ -3,26 +3,7 @@ math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 types = import_module("../types.star")
 
-DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:ed58f8a"
-DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.6.0-0.2.7"  # Based on 0xpolygon/heimdall:1.6.0 and 0xpolygon/heimdall-v2:0.2.7.
-
-DEFAULT_EL_IMAGES = {
-    types.EL_TYPE.bor: "0xpolygon/bor:2.2.5",
-    types.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor:581a230ed-fix",  # There is no official image yet.
-    types.EL_TYPE.erigon: "erigontech/erigon:v3.0.12",
-}
-
-DEFAULT_CL_IMAGES = {
-    types.CL_TYPE.heimdall: "0xpolygon/heimdall:1.6.0",
-    types.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.7",
-}
-
-DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1.2"
-
-DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:9fe80e1"
-
-DEFAULT_ETHEREUM_PACKAGE_ARGS = {
+ETHEREUM_PACKAGE_ARGS = {
     "participants": [
         {
             "cl_type": "lighthouse",
@@ -36,46 +17,46 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
         },
     ],
     "network_params": {
-        "network_id": constants.DEFAULT_L1_CHAIN_ID,
+        "network_id": constants.L1_CHAIN_ID,
         "prefunded_accounts": "",
         "preset": "minimal",
         "seconds_per_slot": 1,
     },
 }
 
-DEFAULT_POLYGON_POS_PARTICIPANT = {
+POLYGON_POS_PARTICIPANT = {
     "kind": types.PARTICIPANT_KIND.validator,
     "cl_type": types.CL_TYPE.heimdall,
-    "cl_image": DEFAULT_CL_IMAGES[types.CL_TYPE.heimdall],
-    "cl_db_image": DEFAULT_CL_DB_IMAGE,
+    "cl_image": constants.CL_IMAGES[types.CL_TYPE.heimdall],
+    "cl_db_image": constants.CL_DB_IMAGE,
     "cl_log_level": types.LOG_LEVEL.info,
     "el_type": types.EL_TYPE.bor,
-    "el_image": DEFAULT_EL_IMAGES[types.EL_TYPE.bor],
+    "el_image": constants.EL_IMAGES[types.EL_TYPE.bor],
     "el_log_level": types.LOG_LEVEL.info,
     "count": 1,
 }
 
-DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
+POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_sync_mode": types.BOR_SYNC_MODES.full,
 }
 
-DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
+POLYGON_POS_PACKAGE_ARGS = {
     "participants": [
-        DEFAULT_POLYGON_POS_PARTICIPANT
+        POLYGON_POS_PARTICIPANT
         | {
             "kind": types.PARTICIPANT_KIND.validator,
             "count": 2,
         },
-        DEFAULT_POLYGON_POS_PARTICIPANT
+        POLYGON_POS_PARTICIPANT
         | {
             "kind": types.PARTICIPANT_KIND.rpc,
             "count": 1,
         },
     ],
     "setup_images": {
-        "contract_deployer": DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE,
-        "el_genesis_builder": DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE,
-        "validator_config_generator": DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE,
+        "contract_deployer": constants.CONTRACT_DEPLOYER_IMAGE,
+        "el_genesis_builder": constants.EL_GENESIS_BUILDER_IMAGE,
+        "validator_config_generator": constants.VALIDATOR_CONFIG_GENERATOR_IMAGE,
     },
     "network_params": {
         # Admin account generated using `cast wallet new`.
@@ -86,11 +67,11 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "validator_stake_amount_eth": 10000,  # in ether
         "validator_top_up_fee_amount_eth": 2000,  # in ether
         # CL network params.
-        "cl_chain_id": constants.DEFAULT_CL_CHAIN_ID,
+        "cl_chain_id": constants.CL_CHAIN_ID,
         "cl_span_poll_interval": "0m15s",
         "cl_checkpoint_poll_interval": "1m0s",
         # EL network params.
-        "el_chain_id": constants.DEFAULT_EL_CHAIN_ID,
+        "el_chain_id": constants.EL_CHAIN_ID,
         "el_block_interval_seconds": 2,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
@@ -100,11 +81,11 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         types.ADDITIONAL_SERVICES.test_runner,
     ],
     "test_runner_params": {
-        "image": DEFAULT_E2E_TEST_IMAGE,
+        "image": constants.E2E_TEST_IMAGE,
     },
 }
 
-DEFAULT_DEV_ARGS = {
+DEV_ARGS = {
     "should_deploy_l1": True,
     "should_deploy_matic_contracts": True,
 }
@@ -138,9 +119,9 @@ def _parse_ethereum_args(plan, ethereum_args):
 
     # Set default params if not provided.
     if "network_params" not in ethereum_args:
-        ethereum_args = dict(DEFAULT_ETHEREUM_PACKAGE_ARGS)
+        ethereum_args = dict(ETHEREUM_PACKAGE_ARGS)
 
-    for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
+    for k, v in ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
         ethereum_args.get("network_params", {}).setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -188,10 +169,10 @@ def _parse_dev_args(plan, dev_args):
 
     # Set default params if not provided.
     if "should_deploy_l1" not in dev_args:
-        dev_args["should_deploy_l1"] = DEFAULT_DEV_ARGS.get("should_deploy_l1", True)
+        dev_args["should_deploy_l1"] = DEV_ARGS.get("should_deploy_l1", True)
 
     if "should_deploy_matic_contracts" not in dev_args:
-        dev_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS.get(
+        dev_args["should_deploy_matic_contracts"] = DEV_ARGS.get(
             "should_deploy_matic_contracts", True
         )
 
@@ -206,7 +187,7 @@ def _parse_participants(participants):
 
     # Set default participant if not provided.
     if len(participants) == 0:
-        participants = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])
+        participants = POLYGON_POS_PACKAGE_ARGS.get("participants", [])
 
     for p in participants:
         # Create a mutable copy of participant.
@@ -217,9 +198,9 @@ def _parse_participants(participants):
         cl_image = p.get("cl_image", "")
         if cl_type and not cl_image:
             if cl_type == types.CL_TYPE.heimdall:
-                p["cl_image"] = DEFAULT_CL_IMAGES[types.CL_TYPE.heimdall]
+                p["cl_image"] = constants.CL_IMAGES[types.CL_TYPE.heimdall]
             elif cl_type == types.CL_TYPE.heimdall_v2:
-                p["cl_image"] = DEFAULT_CL_IMAGES[types.CL_TYPE.heimdall_v2]
+                p["cl_image"] = constants.CL_IMAGES[types.CL_TYPE.heimdall_v2]
             else:
                 fail("Invalid CL client type: '{}'.".format(cl_type))
 
@@ -229,25 +210,25 @@ def _parse_participants(participants):
         if el_type and not el_image:
             if el_type == types.EL_TYPE.bor:
                 if cl_type == types.CL_TYPE.heimdall:
-                    p["el_image"] = DEFAULT_EL_IMAGES[types.EL_TYPE.bor]
+                    p["el_image"] = constants.EL_IMAGES[types.EL_TYPE.bor]
                 elif cl_type == types.CL_TYPE.heimdall_v2:
-                    p["el_image"] = DEFAULT_EL_IMAGES[
+                    p["el_image"] = constants.EL_IMAGES[
                         types.EL_TYPE.bor_modified_for_heimdall_v2
                     ]
                 else:
                     fail("Invalid CL client type: '{}'.".format(cl_type))
             elif el_type == types.EL_TYPE.erigon:
-                p["el_image"] = DEFAULT_EL_IMAGES[types.EL_TYPE.erigon]
+                p["el_image"] = constants.EL_IMAGES[types.EL_TYPE.erigon]
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
 
         # Fill in any missing fields with default values.
-        for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
+        for k, v in POLYGON_POS_PARTICIPANT.items():
             p.setdefault(k, v)
 
         # Fill in any missing fields with default values for bor participants.
         if el_type == types.EL_TYPE.bor:
-            for k, v in DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT.items():
+            for k, v in POLYGON_POS_EL_BOR_PARTICIPANT.items():
                 p.setdefault(k, v)
 
         # Set devnet CL type using the first participant CL type.
@@ -281,9 +262,9 @@ def _parse_setup_images(setup_images):
         setup_images = dict(setup_images)
     else:
         # Set default matic contracts params if not provided.
-        setup_images = dict(DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}))
+        setup_images = dict(POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}))
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}).items():
+    for k, v in POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}).items():
         setup_images.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -297,10 +278,10 @@ def _parse_network_params(network_params):
     else:
         # Set default network params if not provided.
         network_params = dict(
-            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
+            POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
         )
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
+    for k, v in POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
         network_params.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -310,7 +291,7 @@ def _parse_network_params(network_params):
 def _parse_additional_services(additional_services):
     # Set default additional services if not provided.
     if len(additional_services) == 0:
-        additional_services = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+        additional_services = POLYGON_POS_PACKAGE_ARGS.get(
             "additional_services", []
         )
     return additional_services
@@ -327,10 +308,10 @@ def _parse_test_runner_params(is_test_runner_deployed, test_runner_params):
     else:
         # Set default test runner params if not provided.
         test_runner_params = dict(
-            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {})
+            POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {})
         )
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {}).items():
+    for k, v in POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {}).items():
         test_runner_params.setdefault(k, v)
 
     # Sort the dict and return the result.

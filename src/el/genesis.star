@@ -42,9 +42,9 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
         image=setup_images.get("el_genesis_builder"),
         env_vars={
             "EL_CHAIN_ID": network_params.get("el_chain_id"),
-            "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
+            "DEFAULT_EL_CHAIN_ID": constants.EL_CHAIN_ID,
             "CL_CHAIN_ID": network_params.get("cl_chain_id"),
-            "DEFAULT_CL_CHAIN_ID": constants.DEFAULT_CL_CHAIN_ID,
+            "DEFAULT_CL_CHAIN_ID": constants.CL_CHAIN_ID,
             "ADMIN_ADDRESS": admin_address,
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
