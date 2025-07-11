@@ -1,5 +1,5 @@
-constants = import_module("./constants.star")
-math = import_module("../math/math.star")
+constants = import_module("./constants/constants.star")
+math = import_module("../utils/math/math.star")
 types = import_module("../types.star")
 
 

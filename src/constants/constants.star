@@ -1,5 +1,5 @@
-math = import_module("./math/math.star")
-types = import_module("./types.star")
+math = import_module("../utils/math/math.star")
+types = import_module("../types.star")
 
 # Docker images
 

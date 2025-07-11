@@ -19,7 +19,7 @@ Please be aware that the process may take some time; the more accounts that need
 ```bash
 export ACCOUNTS_NUMBER=1000
 export MNEMONIC="sibling lend brave explain wait orbit mom alcohol disorder message grace sun"
-bash generate.sh
+bash generate_prefunded_accounts.sh
 ```
 
 You will notice that executing the script will update the `accounts.star` file with the new accounts you just generated.

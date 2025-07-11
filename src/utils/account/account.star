@@ -1,4 +1,4 @@
-types = import_module("../types.star")
+types = import_module("../../types.star")
 
 
 def new(address, public_key, private_key):

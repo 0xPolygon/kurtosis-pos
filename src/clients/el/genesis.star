@@ -1,6 +1,6 @@
-constants = import_module("../constants.star")
-hex = import_module("../hex/hex.star")
-math = import_module("../math/math.star")
+constants = import_module("../../constants/constants.star")
+hex = import_module("../../utils/hex/hex.star")
+math = import_module("../../utils/math/math.star")
 
 
 EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"

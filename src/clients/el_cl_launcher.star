@@ -1,12 +1,12 @@
 cl_launcher = import_module("./cl/launcher.star")
 cl_shared = import_module("./cl/shared.star")
-constants = import_module("./constants.star")
+constants = import_module("../constants/constants.star")
 el_launcher = import_module("./el/launcher.star")
 el_shared = import_module("./el/shared.star")
 participant_module = import_module("./participant.star")
-prefunded_accounts = import_module("./prefunded_accounts/accounts.star")
-types = import_module("./src/types.star")
-wait = import_module("./wait/wait.star")
+prefunded_accounts = import_module("../constants/prefunded_accounts.star")
+types = import_module("../types.star")
+wait = import_module("../utils/wait/wait.star")
 
 
 VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/cl/validator"

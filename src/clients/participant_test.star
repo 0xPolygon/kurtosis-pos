@@ -1,5 +1,5 @@
 participant = import_module("participant.star")
-types = import_module("./types.star")
+types = import_module("../types.star")
 
 
 def test_new_participant(plan):

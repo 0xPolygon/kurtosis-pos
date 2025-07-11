@@ -1,7 +1,7 @@
-contract_util = import_module("../contracts/util.star")
+contract_util = import_module("../../contracts/util.star")
 heimdall_genesis = import_module("./heimdall/genesis.star")
 heimdall_v2_genesis = import_module("./heimdall_v2/genesis.star")
-types = import_module("../types.star")
+types = import_module("../../types.star")
 
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/cl/genesis/builder.sh"

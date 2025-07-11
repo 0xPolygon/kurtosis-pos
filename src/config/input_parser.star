@@ -1,4 +1,4 @@
-constants = import_module("./constants.star")
+constants = import_module("./constants/constants.star")
 defaults = import_module("./defaults.star")
 sanity_check = import_module("./sanity_check.star")
 types = import_module("../types.star")

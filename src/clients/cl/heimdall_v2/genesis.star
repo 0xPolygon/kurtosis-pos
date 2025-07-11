@@ -1,4 +1,4 @@
-constants = import_module("../../constants.star")
+constants = import_module("../../../constants/constants.star")
 
 
 def get_validator_data(validator_accounts):

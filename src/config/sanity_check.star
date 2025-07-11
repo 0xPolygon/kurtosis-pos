@@ -1,5 +1,5 @@
-math = import_module("../math/math.star")
-prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
+math = import_module("../utils/math/math.star")
+prefunded_accounts_module = import_module("../constants/prefunded_accounts.star")
 types = import_module("../types.star")
 
 

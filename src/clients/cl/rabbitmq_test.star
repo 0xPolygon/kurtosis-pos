@@ -1,5 +1,4 @@
 rabbitmq = import_module("rabbitmq.star")
-constants = import_module("../constants.star")
 
 
 def test_launch(plan):
