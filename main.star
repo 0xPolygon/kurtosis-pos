@@ -11,7 +11,7 @@ hex = import_module("./src/utils/hex/hex.star")
 input_parser = import_module("./src/config/input_parser.star")
 math = import_module("./src/utils/math/math.star")
 prefunded_accounts_module = import_module("./src/constants/prefunded_accounts.star")
-types = import_module("./src/types.star")
+enums = import_module("./src/enums.star")
 wait = import_module("./src/utils/wait/wait.star")
 wallet = import_module("./src/utils/wallet/wallet.star")
 
@@ -196,7 +196,7 @@ def get_validator_accounts(participants):
     id = 0
     for p in participants:
         for _ in range(p.get("count")):
-            is_validator = p.get("kind") == types.PARTICIPANT_KIND.validator
+            is_validator = p.get("kind") == enums.PARTICIPANT_KIND.validator
             if is_validator:
                 account = prefunded_accounts[id]
                 validator_accounts.append(account)

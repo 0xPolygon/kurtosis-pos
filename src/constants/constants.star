@@ -1,5 +1,5 @@
 math = import_module("../utils/math/math.star")
-types = import_module("../types.star")
+enums = import_module("../enums.star")
 
 # Docker images
 
@@ -8,14 +8,14 @@ EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
 VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.6.0-0.2.7"  # Based on 0xpolygon/heimdall:1.6.0 and 0xpolygon/heimdall-v2:0.2.7.
 
 EL_IMAGES = {
-    types.EL_TYPE.bor: "0xpolygon/bor:2.2.8",
-    types.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor:581a230ed-fix",  # There is no official image yet.
-    types.EL_TYPE.erigon: "erigontech/erigon:v3.0.13",
+    enums.EL_TYPE.bor: "0xpolygon/bor:2.2.8",
+    enums.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor:581a230ed-fix",  # There is no official image yet.
+    enums.EL_TYPE.erigon: "erigontech/erigon:v3.0.13",
 }
 
 CL_IMAGES = {
-    types.CL_TYPE.heimdall: "0xpolygon/heimdall:1.6.0",
-    types.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.7",
+    enums.CL_TYPE.heimdall: "0xpolygon/heimdall:1.6.0",
+    enums.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.7",
 }
 
 CL_DB_IMAGE = "rabbitmq:4.1.2"

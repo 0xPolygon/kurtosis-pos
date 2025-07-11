@@ -1,4 +1,4 @@
-types = import_module("../../types.star")
+enums = import_module("../../enums.star")
 
 
 def wait_for_l1_startup(plan, cl_rpc_url):
@@ -33,11 +33,11 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
     endpoint = ""
     key1 = ""
     key2 = ""
-    if cl_type == types.CL_TYPE.heimdall:
+    if cl_type == enums.CL_TYPE.heimdall:
         endpoint = "bor/latest-span"
         key1 = "result"
         key2 = "span_id"
-    elif cl_type == types.CL_TYPE.heimdall_v2:
+    elif cl_type == enums.CL_TYPE.heimdall_v2:
         endpoint = "bor/spans/latest"
         key1 = "span"
         key2 = "id"
@@ -45,7 +45,7 @@ def wait_for_l2_startup(plan, cl_api_url, cl_type):
         fail(
             'Wrong CL type: "{}". Allowed values: "{}."'.format(
                 cl_type,
-                [types.CL_TYPE.heimdall, types.CL_TYPE.heimdall_v2],
+                [enums.CL_TYPE.heimdall, enums.CL_TYPE.heimdall_v2],
             )
         )
 

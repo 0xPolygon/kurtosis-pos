@@ -1,6 +1,6 @@
 math = import_module("../utils/math/math.star")
 prefunded_accounts_module = import_module("../constants/prefunded_accounts.star")
-types = import_module("../types.star")
+enums = import_module("../enums.star")
 
 
 POLYGON_POS_PARAMS = {
@@ -37,8 +37,8 @@ POLYGON_POS_PARAMS = {
         "el_gas_limit",
     ],
     "additional_services": [
-        getattr(types.ADDITIONAL_SERVICES, field)
-        for field in dir(types.ADDITIONAL_SERVICES)
+        getattr(enums.ADDITIONAL_SERVICES, field)
+        for field in dir(enums.ADDITIONAL_SERVICES)
     ],
     "test_runner_params": [
         "image",
@@ -46,41 +46,41 @@ POLYGON_POS_PARAMS = {
 }
 
 VALID_PARTICIPANT_KINDS = [
-    types.PARTICIPANT_KIND.validator,
-    types.PARTICIPANT_KIND.rpc,
+    enums.PARTICIPANT_KIND.validator,
+    enums.PARTICIPANT_KIND.rpc,
 ]
 
-VALID_CL_CLIENTS = [types.CL_TYPE.heimdall, types.CL_TYPE.heimdall_v2]
-VALID_EL_CLIENTS = [types.EL_TYPE.bor, types.EL_TYPE.erigon]
+VALID_CL_CLIENTS = [enums.CL_TYPE.heimdall, enums.CL_TYPE.heimdall_v2]
+VALID_EL_CLIENTS = [enums.EL_TYPE.bor, enums.EL_TYPE.erigon]
 VALID_CLIENT_COMBINATIONS = {
-    types.CL_TYPE.heimdall: [
-        types.EL_TYPE.bor,
-        types.EL_TYPE.erigon,
+    enums.CL_TYPE.heimdall: [
+        enums.EL_TYPE.bor,
+        enums.EL_TYPE.erigon,
     ],
-    types.CL_TYPE.heimdall_v2: [
-        types.EL_TYPE.bor,
-        types.EL_TYPE.erigon,
+    enums.CL_TYPE.heimdall_v2: [
+        enums.EL_TYPE.bor,
+        enums.EL_TYPE.erigon,
     ],
 }
 
 VALID_CL_ENVIRONMENTS = [
-    types.CL_ENVIRONMENT.mainnet,
-    types.CL_ENVIRONMENT.mumbai,
-    types.CL_ENVIRONMENT.local,
+    enums.CL_ENVIRONMENT.mainnet,
+    enums.CL_ENVIRONMENT.mumbai,
+    enums.CL_ENVIRONMENT.local,
 ]
 
 VALID_LOG_LEVELS = [
-    types.LOG_LEVEL.error,
-    types.LOG_LEVEL.warn,
-    types.LOG_LEVEL.info,
-    types.LOG_LEVEL.debug,
-    types.LOG_LEVEL.trace,
+    enums.LOG_LEVEL.error,
+    enums.LOG_LEVEL.warn,
+    enums.LOG_LEVEL.info,
+    enums.LOG_LEVEL.debug,
+    enums.LOG_LEVEL.trace,
 ]
 
 VALID_BOR_SYNC_MODES = [
-    types.BOR_SYNC_MODES.full,
-    types.BOR_SYNC_MODES.snap,
-    types.BOR_SYNC_MODES.archive,
+    enums.BOR_SYNC_MODES.full,
+    enums.BOR_SYNC_MODES.snap,
+    enums.BOR_SYNC_MODES.archive,
 ]
 
 DEV_PARAMS = [
@@ -125,7 +125,7 @@ def sanity_check_polygon_args(plan, input_args):
 
     # Make sure test params are defined only if the test runner is deployed.
     additional_services = input_args.get("additional_services", [])
-    if types.ADDITIONAL_SERVICES.test_runner in additional_services:
+    if enums.ADDITIONAL_SERVICES.test_runner in additional_services:
         _validate_dict(input_args, "test_runner_params")
     else:
         test_runner_params = input_args.get("test_runner_params", {})
@@ -267,7 +267,7 @@ def _validate_participant(p):
     _validate_str(p, "el_log_level", VALID_LOG_LEVELS)
 
     # Validate sync mode.
-    if el_type == types.EL_TYPE.bor:
+    if el_type == enums.EL_TYPE.bor:
         _validate_str(p, "el_bor_sync_mode", VALID_BOR_SYNC_MODES)
     else:
         if p.get("el_bor_sync_mode"):
@@ -276,11 +276,11 @@ def _validate_participant(p):
     # Heimdall (v1) only supports "error", "info", "debug" or "none" log levels.
     # ERROR: Failed to parse default log level (pair *:trace, list *:trace): Expected either "info", "debug", "error" or "none" level, given trace
     heimdall_v1_log_levels = [
-        types.LOG_LEVEL.error,
-        types.LOG_LEVEL.info,
-        types.LOG_LEVEL.debug,
+        enums.LOG_LEVEL.error,
+        enums.LOG_LEVEL.info,
+        enums.LOG_LEVEL.debug,
     ]
-    if p.get("cl_type") == types.CL_TYPE.heimdall and p.get(
+    if p.get("cl_type") == enums.CL_TYPE.heimdall and p.get(
         "cl_log_level"
     ) not in heimdall_v1_log_levels + [""]:
         fail(
@@ -298,7 +298,7 @@ def validate_cl_environment(cl_environment, participants):
     devnet_cl_type = participants[0].get("cl_type")
 
     if cl_environment:
-        if devnet_cl_type != types.CL_TYPE.heimdall:
+        if devnet_cl_type != enums.CL_TYPE.heimdall:
             fail(
                 'Only heimdall (v1) supports the CL environment but found "{}" devnet CL type.'.format(
                     devnet_cl_type

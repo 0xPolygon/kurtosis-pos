@@ -5,7 +5,7 @@ el_launcher = import_module("./el/launcher.star")
 el_shared = import_module("./el/shared.star")
 participant_module = import_module("./participant.star")
 prefunded_accounts = import_module("../constants/prefunded_accounts.star")
-types = import_module("../types.star")
+enums = import_module("../enums.star")
 wait = import_module("../utils/wait/wait.star")
 
 
@@ -43,7 +43,7 @@ def launch(
     all_participants = []
     first_cl_context = None
     for _, participant in enumerate(participants):
-        is_validator = participant.get("kind") == types.PARTICIPANT_KIND.validator
+        is_validator = participant.get("kind") == enums.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
             plan.print(
                 "Launching participant {} with config: {}".format(
@@ -157,7 +157,7 @@ def _prepare_network_data(participants):
             el_static_nodes.append(enode_url)
 
             # Generate validator configurations.
-            is_validator = p.get("kind") == types.PARTICIPANT_KIND.validator
+            is_validator = p.get("kind") == enums.PARTICIPANT_KIND.validator
             if is_validator:
                 cl_node_name = _generate_cl_node_name(p, participant_index + 1)
 

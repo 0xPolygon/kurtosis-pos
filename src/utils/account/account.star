@@ -1,4 +1,4 @@
-types = import_module("../../types.star")
+enums = import_module("../../enums.star")
 
 
 def new(address, public_key, private_key):
@@ -27,15 +27,15 @@ def new_validator(
 
 def get_cl_validator_account(validator, devnet_cl_type):
     # Select the appropriate validator account based on the devnet CL type.
-    if devnet_cl_type == types.CL_TYPE.heimdall:
+    if devnet_cl_type == enums.CL_TYPE.heimdall:
         return validator.eth_tendermint
-    elif devnet_cl_type == types.CL_TYPE.heimdall_v2:
+    elif devnet_cl_type == enums.CL_TYPE.heimdall_v2:
         return validator.cometbft
     else:
         fail(
             'Wrong devnet CL type: "{}". Allowed values: "{}."'.format(
                 devnet_cl_type,
-                [types.CL_TYPE.heimdall, types.CL_TYPE.heimdall_v2],
+                [enums.CL_TYPE.heimdall, enums.CL_TYPE.heimdall_v2],
             )
         )
 

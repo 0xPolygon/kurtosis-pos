@@ -3,13 +3,13 @@ constants = import_module("../../constants/constants.star")
 context = import_module("./context.star")
 erigon_launcher = import_module("./erigon/launcher.star")
 shared = import_module("./shared.star")
-types = import_module("../../types.star")
+enums = import_module("../../enums.star")
 
 EL_CREDENTIALS_GENERATOR_FOLDER_PATH = "../../static_files/el/credentials"
 
 LAUNCHERS = {
-    types.EL_TYPE.bor: bor_launcher.launch,
-    types.EL_TYPE.erigon: erigon_launcher.launch,
+    enums.EL_TYPE.bor: bor_launcher.launch,
+    enums.EL_TYPE.erigon: erigon_launcher.launch,
 }
 
 

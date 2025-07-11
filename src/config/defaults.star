@@ -1,6 +1,6 @@
 constants = import_module("../constants/constants.star")
 math = import_module("../utils/math/math.star")
-types = import_module("../types.star")
+enums = import_module("../enums.star")
 
 
 ETHEREUM_PACKAGE_ARGS = {
@@ -25,31 +25,31 @@ ETHEREUM_PACKAGE_ARGS = {
 }
 
 POLYGON_POS_PARTICIPANT = {
-    "kind": types.PARTICIPANT_KIND.validator,
-    "cl_type": types.CL_TYPE.heimdall,
-    "cl_image": constants.CL_IMAGES[types.CL_TYPE.heimdall],
+    "kind": enums.PARTICIPANT_KIND.validator,
+    "cl_type": enums.CL_TYPE.heimdall,
+    "cl_image": constants.CL_IMAGES[enums.CL_TYPE.heimdall],
     "cl_db_image": constants.CL_DB_IMAGE,
-    "cl_log_level": types.LOG_LEVEL.info,
-    "el_type": types.EL_TYPE.bor,
-    "el_image": constants.EL_IMAGES[types.EL_TYPE.bor],
-    "el_log_level": types.LOG_LEVEL.info,
+    "cl_log_level": enums.LOG_LEVEL.info,
+    "el_type": enums.EL_TYPE.bor,
+    "el_image": constants.EL_IMAGES[enums.EL_TYPE.bor],
+    "el_log_level": enums.LOG_LEVEL.info,
     "count": 1,
 }
 
 POLYGON_POS_EL_BOR_PARTICIPANT = {
-    "el_bor_sync_mode": types.BOR_SYNC_MODES.full,
+    "el_bor_sync_mode": enums.BOR_SYNC_MODES.full,
 }
 
 POLYGON_POS_PACKAGE_ARGS = {
     "participants": [
         POLYGON_POS_PARTICIPANT
         | {
-            "kind": types.PARTICIPANT_KIND.validator,
+            "kind": enums.PARTICIPANT_KIND.validator,
             "count": 2,
         },
         POLYGON_POS_PARTICIPANT
         | {
-            "kind": types.PARTICIPANT_KIND.rpc,
+            "kind": enums.PARTICIPANT_KIND.rpc,
             "count": 1,
         },
     ],
@@ -78,7 +78,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         "el_gas_limit": math.pow(10, 7),
     },
     "additional_services": [
-        types.ADDITIONAL_SERVICES.test_runner,
+        enums.ADDITIONAL_SERVICES.test_runner,
     ],
     "test_runner_params": {
         "image": constants.E2E_TEST_IMAGE,

@@ -1,7 +1,7 @@
 constants = import_module("./constants/constants.star")
 defaults = import_module("./defaults.star")
 sanity_check = import_module("./sanity_check.star")
-types = import_module("../types.star")
+enums = import_module("../enums.star")
 
 
 def input_parser(plan, input_args):
@@ -63,7 +63,7 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     result["additional_services"] = _parse_additional_services(additional_services)
 
     is_test_runner_deployed = (
-        types.ADDITIONAL_SERVICES.test_runner in result["additional_services"]
+        enums.ADDITIONAL_SERVICES.test_runner in result["additional_services"]
     )
     test_runner_params = polygon_pos_args.get("test_runner_params", {})
     result["test_runner_params"] = _parse_test_runner_params(
@@ -110,10 +110,10 @@ def _parse_participants(participants):
         cl_type = p.get("cl_type", "")
         cl_image = p.get("cl_image", "")
         if cl_type and not cl_image:
-            if cl_type == types.CL_TYPE.heimdall:
-                p["cl_image"] = constants.CL_IMAGES[types.CL_TYPE.heimdall]
-            elif cl_type == types.CL_TYPE.heimdall_v2:
-                p["cl_image"] = constants.CL_IMAGES[types.CL_TYPE.heimdall_v2]
+            if cl_type == enums.CL_TYPE.heimdall:
+                p["cl_image"] = constants.CL_IMAGES[enums.CL_TYPE.heimdall]
+            elif cl_type == enums.CL_TYPE.heimdall_v2:
+                p["cl_image"] = constants.CL_IMAGES[enums.CL_TYPE.heimdall_v2]
             else:
                 fail("Invalid CL client type: '{}'.".format(cl_type))
 
@@ -121,17 +121,17 @@ def _parse_participants(participants):
         el_type = p.get("el_type", "")
         el_image = p.get("el_image", "")
         if el_type and not el_image:
-            if el_type == types.EL_TYPE.bor:
-                if cl_type == types.CL_TYPE.heimdall:
-                    p["el_image"] = constants.EL_IMAGES[types.EL_TYPE.bor]
-                elif cl_type == types.CL_TYPE.heimdall_v2:
+            if el_type == enums.EL_TYPE.bor:
+                if cl_type == enums.CL_TYPE.heimdall:
+                    p["el_image"] = constants.EL_IMAGES[enums.EL_TYPE.bor]
+                elif cl_type == enums.CL_TYPE.heimdall_v2:
                     p["el_image"] = constants.EL_IMAGES[
-                        types.EL_TYPE.bor_modified_for_heimdall_v2
+                        enums.EL_TYPE.bor_modified_for_heimdall_v2
                     ]
                 else:
                     fail("Invalid CL client type: '{}'.".format(cl_type))
-            elif el_type == types.EL_TYPE.erigon:
-                p["el_image"] = constants.EL_IMAGES[types.EL_TYPE.erigon]
+            elif el_type == enums.EL_TYPE.erigon:
+                p["el_image"] = constants.EL_IMAGES[enums.EL_TYPE.erigon]
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
 
@@ -140,7 +140,7 @@ def _parse_participants(participants):
             p.setdefault(k, v)
 
         # Fill in any missing fields with default values for bor participants.
-        if el_type == types.EL_TYPE.bor:
+        if el_type == enums.EL_TYPE.bor:
             for k, v in defaults.POLYGON_POS_EL_BOR_PARTICIPANT.items():
                 p.setdefault(k, v)
 

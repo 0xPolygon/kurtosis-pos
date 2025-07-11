@@ -1,5 +1,5 @@
 account = import_module("account.star")
-types = import_module("../../types.star")
+enums = import_module("../../enums.star")
 
 
 def test_new(plan):
@@ -112,11 +112,11 @@ def test_get_cl_validator_account(plan):
 
     test_cases = [
         (
-            (validator, types.CL_TYPE.heimdall),
+            (validator, enums.CL_TYPE.heimdall),
             eth_tendermint_account,
         ),
         (
-            (validator, types.CL_TYPE.heimdall_v2),
+            (validator, enums.CL_TYPE.heimdall_v2),
             cometbft_account,
         ),
     ]
