@@ -1,5 +1,5 @@
 account = import_module("account.star")
-constants = import_module("../config/constants.star")
+types = import_module("../config/types.star")
 
 
 def test_new(plan):
@@ -112,11 +112,11 @@ def test_get_cl_validator_account(plan):
 
     test_cases = [
         (
-            (validator, constants.CL_TYPE.heimdall),
+            (validator, types.CL_TYPE.heimdall),
             eth_tendermint_account,
         ),
         (
-            (validator, constants.CL_TYPE.heimdall_v2),
+            (validator, types.CL_TYPE.heimdall_v2),
             cometbft_account,
         ),
     ]

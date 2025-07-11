@@ -1,13 +1,13 @@
-constants = import_module("../config/constants.star")
 contract_util = import_module("../contracts/util.star")
 heimdall_genesis = import_module("./heimdall/genesis.star")
 heimdall_v2_genesis = import_module("./heimdall_v2/genesis.star")
+types = import_module("../config/types.star")
 
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/cl/genesis/builder.sh"
 HEIMDALL_GENESIS_TEMPLATE_FILE_PATH = {
-    constants.CL_TYPE.heimdall: "../../static_files/cl/heimdall/genesis.json",
-    constants.CL_TYPE.heimdall_v2: "../../static_files/cl/heimdall_v2/genesis.json",
+    types.CL_TYPE.heimdall: "../../static_files/cl/heimdall/genesis.json",
+    types.CL_TYPE.heimdall_v2: "../../static_files/cl/heimdall_v2/genesis.json",
 }
 
 
@@ -22,7 +22,7 @@ def generate(
     validators_number = len(validator_accounts)
 
     cl_genesis_data = {}
-    if devnet_cl_type == constants.CL_TYPE.heimdall:
+    if devnet_cl_type == types.CL_TYPE.heimdall:
         validator_data = heimdall_genesis.get_validator_data(validator_accounts)
         proposer = []
         if validators_number > 0:
@@ -35,7 +35,7 @@ def generate(
             "proposer": json.indent(json.encode(proposer)),
             "producer_count": len(validator_data.validator_set),
         }
-    elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
+    elif devnet_cl_type == types.CL_TYPE.heimdall_v2:
         validator_data = heimdall_v2_genesis.get_validator_data(validator_accounts)
         proposer = []
         if validators_number > 0:

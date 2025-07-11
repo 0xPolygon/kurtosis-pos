@@ -1,4 +1,4 @@
-constants = import_module("../config/constants.star")
+types = import_module("../config/types.star")
 
 
 def new(address, public_key, private_key):
@@ -27,15 +27,15 @@ def new_validator(
 
 def get_cl_validator_account(validator, devnet_cl_type):
     # Select the appropriate validator account based on the devnet CL type.
-    if devnet_cl_type == constants.CL_TYPE.heimdall:
+    if devnet_cl_type == types.CL_TYPE.heimdall:
         return validator.eth_tendermint
-    elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
+    elif devnet_cl_type == types.CL_TYPE.heimdall_v2:
         return validator.cometbft
     else:
         fail(
             'Wrong devnet CL type: "{}". Allowed values: "{}."'.format(
                 devnet_cl_type,
-                [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2],
+                [types.CL_TYPE.heimdall, types.CL_TYPE.heimdall_v2],
             )
         )
 

@@ -1,15 +1,15 @@
 cl_shared = import_module("./shared.star")
-constants = import_module("../config/constants.star")
 context = import_module("./context.star")
 el_launcher = import_module("../el/launcher.star")
 el_shared = import_module("../el/shared.star")
 heimdall_launcher = import_module("./heimdall/launcher.star")
 heimdall_v2_launcher = import_module("./heimdall_v2/launcher.star")
 rabbitmq = import_module("./rabbitmq.star")
+types = import_module("../config/types.star")
 
 LAUNCHERS = {
-    constants.CL_TYPE.heimdall: heimdall_launcher.launch,
-    constants.CL_TYPE.heimdall_v2: heimdall_v2_launcher.launch,
+    types.CL_TYPE.heimdall: heimdall_launcher.launch,
+    types.CL_TYPE.heimdall_v2: heimdall_v2_launcher.launch,
 }
 
 
