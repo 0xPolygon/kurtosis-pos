@@ -1,4 +1,4 @@
-name: kurtosis-deploy
+name: test
 
 on:
   pull_request:
@@ -14,10 +14,53 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 env:
-  ENCLAVE_NAME: pos
+  # unit test
+  KURTOSIS_TEST_VERSION: v0.0.5
+  GO_VERSION: 1.21
+
+  # kurtosis deploy
+  ENCLAVE_NAME: cdk
+  POLYCLI_VERSION: v0.1.82
+  E2E_REF: 45314f4f839e1ac54844b4f49c7436de6a9e29d5
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pre kurtosis run
+        uses: ./.github/actions/kurtosis-pre-run
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Run kurtosis linter
+        run: kurtosis lint .
+
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install kurtosis-test
+        run: |
+          git clone --branch ${{ env.KURTOSIS_TEST_VERSION }} https://github.com/ethereum-optimism/kurtosis-test.git /tmp/kurtosis-test
+          cd /tmp/kurtosis-test
+          go build -o kurtosis-test cli/main.go
+          cp kurtosis-test /usr/local/bin
+
+      - name: Run unit tests
+        run: kurtosis-test .
+  
   docker-build-pos-el-genesis-builder:
+    needs: [lint, unit]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -71,6 +114,7 @@ jobs:
           push: true
 
   docker-build-pos-validator-config-generator:
+    needs: [lint, unit]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -134,13 +178,13 @@ jobs:
           push: true
 
   run-without-args:
+    needs:
+      - lint
+      - unit
+      - docker-build-pos-el-genesis-builder
+      - docker-build-pos-validator-config-generator
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs:
-      [
-        docker-build-pos-el-genesis-builder,
-        docker-build-pos-validator-config-generator,
-      ]
     steps:
       - uses: actions/checkout@v4
 
@@ -171,6 +215,7 @@ jobs:
           enclave_name: ${{ env.ENCLAVE_NAME }}
 
   list-ymls:
+    needs: [lint, unit]
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
@@ -198,11 +243,11 @@ jobs:
 
   run-with-args:
     needs:
-      [
-        list-ymls,
-        docker-build-pos-el-genesis-builder,
-        docker-build-pos-validator-config-generator,
-      ]
+      - lint
+      - unit
+      - docker-build-pos-el-genesis-builder
+      - docker-build-pos-validator-config-generator
+      - list-ymls
     name: run-with-${{ matrix.file.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
