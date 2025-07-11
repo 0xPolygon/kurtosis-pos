@@ -74,7 +74,7 @@ jobs:
 
       - name: Retrieve tag from source code
         run: |
-          tag=$(cat src/config/input_parser.star | grep "leovct/pos-el-genesis-builder" | sed 's/.*:\(.*\)".*/\1/')
+          tag=$(cat src/constants/constants.star | grep "leovct/pos-el-genesis-builder" | sed 's/.*:\(.*\)".*/\1/')
           echo "TAG=${tag}" >> $GITHUB_ENV
           echo "TAG=$tag"
 
@@ -128,7 +128,7 @@ jobs:
 
       - name: Retrieve tag from source code
         run: |
-          tag=$(cat src/config/input_parser.star | grep "leovct/pos-validator-config-generator" | sed 's/.*:\(.*\)".*/\1/')
+          tag=$(cat src/constants/constants.star | grep "leovct/pos-validator-config-generator" | sed 's/.*:\(.*\)".*/\1/')
           heimdall_tag=$(echo "${tag}" | cut -d'-' -f1)
           heimdall_v2_tag=$(echo "${tag}" | cut -d'-' -f2)
           echo "TAG=${tag}" >> $GITHUB_ENV
