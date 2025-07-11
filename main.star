@@ -1,8 +1,9 @@
 account_util = import_module("./src/account/account.star")
 additional_services_launcher = import_module("./src/additional_services/launcher.star")
 cl_genesis = import_module("./src/cl/genesis.star")
-constants = import_module("./src/config/constants.star")
+constants = import_module("./src/constants.star")
 contract_deployer = import_module("./src/contracts/deployer.star")
+defaults = import_module("./src/config/defaults.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis = import_module("./src/el/genesis.star")
 el_shared = import_module("./src/el/shared.star")
@@ -212,9 +213,7 @@ def deploy_local_l1(
 ):
     # Sanity check the mnemonic used.
     # TODO: Remove this limitation.
-    l2_network_params = input_parser.POLYGON_POS_PACKAGE_ARGS.get(
-        "network_params"
-    )
+    l2_network_params = defaults.POLYGON_POS_PACKAGE_ARGS.get("network_params")
     default_l2_mnemonic = l2_network_params.get("preregistered_validator_keys_mnemonic")
     if preregistered_validator_keys_mnemonic != default_l2_mnemonic:
         fail("Using a different mnemonic is not supported for now.")

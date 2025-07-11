@@ -1,4 +1,4 @@
-constants = import_module("../config/constants.star")
+constants = import_module("../constants.star")
 
 
 def new(plan):

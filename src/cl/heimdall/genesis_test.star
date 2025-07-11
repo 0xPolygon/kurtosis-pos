@@ -1,6 +1,6 @@
 genesis = import_module("genesis.star")
 account = import_module("../../account/account.star")
-constants = import_module("../../config/constants.star")
+constants = import_module("../../constants.star")
 
 
 def test_get_validator_data_single_validator(plan):

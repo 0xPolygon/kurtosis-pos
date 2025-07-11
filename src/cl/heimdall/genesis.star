@@ -1,5 +1,5 @@
 account = import_module("../../account/account.star")
-constants = import_module("../../config/constants.star")
+constants = import_module("../../constants.star")
 
 
 def get_validator_data(validator_accounts):
