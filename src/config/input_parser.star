@@ -4,7 +4,7 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:ed58f8a"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.6.0-0.2.7"  # Based on 0xpolygon/heimdall:1.6.0 and 0xpolygon/heimdall-v2:0.2.7.
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.6.0-0.2.10"  # Based on 0xpolygon/heimdall:1.6.0 and 0xpolygon/heimdall-v2:0.2.10.
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:2.2.8",
@@ -14,7 +14,7 @@ DEFAULT_EL_IMAGES = {
 
 DEFAULT_CL_IMAGES = {
     constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.6.0",
-    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.7",
+    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.10",
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1.2"
