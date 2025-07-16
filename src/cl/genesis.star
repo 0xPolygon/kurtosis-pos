@@ -5,7 +5,6 @@ heimdall_v2_genesis = import_module("./heimdall_v2/genesis.star")
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/cl/genesis/builder.sh"
 HEIMDALL_GENESIS_TEMPLATE_FILE_PATH = {
-    constants.CL_TYPE.heimdall: "../../static_files/cl/heimdall/genesis.json",
     constants.CL_TYPE.heimdall_v2: "../../static_files/cl/heimdall_v2/genesis.json",
 }
 
