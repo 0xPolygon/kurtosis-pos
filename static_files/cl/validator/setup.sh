@@ -40,19 +40,7 @@ generate_cl_validator_config() {
 
   # Generate the validator key (or consensus key) using the execution key.
   local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${id}"
-  if [[ "${DEVNET_CL_TYPE}" == "heimdall" ]]; then
-    # Create an initial dummy configuration. It is needed by `heimdallcli` to run.
-    heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${id}"
-
-    # Generate the validator key from the execution key.
-    local tmp_dir="$(mktemp -d)"
-    pushd "${tmp_dir}"
-    heimdallcli generate-validatorkey --home "${cl_validator_config_path}" "${execution_key}"
-    mv priv_validator_key.json "${cl_validator_config_path}/config/"
-    popd
-    # Drop the temporary genesis.
-    rm "${cl_validator_config_path}/config/genesis.json"
-  elif [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
+  if [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
     # Make sure all required directories exist
     mkdir -p "${cl_validator_config_path}/config"
     mkdir -p "${cl_validator_config_path}/data"
@@ -81,10 +69,7 @@ generate_cl_validator_config() {
   fi
 
   # Retrieve and store the node identifier.
-  if [[ "${DEVNET_CL_TYPE}" == "heimdall" ]]; then
-    heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" --id "${id}" 2>"${cl_validator_config_path}/init.out"
-    node_id="$(jq --raw-output '.node_id' ${cl_validator_config_path}/init.out)"
-  elif [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
+  if [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
     heimdalld-v2 init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
     node_id="$(cat ${cl_validator_config_path}/init.out | jq --raw-output '.node_id')"
   else

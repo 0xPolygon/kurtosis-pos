@@ -26,7 +26,7 @@ runs:
       run: |
         case "${{ inputs.args_filename }}" in
           ""|*"additional-services"*|*"contract-deployer"*)
-            cl_type="heimdall"
+            cl_type="heimdall-v2"
             el_type="bor"
             ;;
           *)

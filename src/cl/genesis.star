@@ -22,34 +22,20 @@ def generate(
     validators_number = len(validator_accounts)
 
     cl_genesis_data = {}
-    if devnet_cl_type == constants.CL_TYPE.heimdall:
-        validator_data = heimdall_genesis.get_validator_data(validator_accounts)
-        proposer = []
-        if validators_number > 0:
-            proposer = validator_data.validator_set[0]
-        cl_genesis_data = {
-            "accounts": json.indent(json.encode(validator_data.accounts)),
-            "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
-            "signing_infos": json.indent(json.encode(validator_data.signing_infos)),
-            "validators": json.indent(json.encode(validator_data.validator_set)),
-            "proposer": json.indent(json.encode(proposer)),
-            "producer_count": len(validator_data.validator_set),
-        }
-    elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
-        validator_data = heimdall_v2_genesis.get_validator_data(validator_accounts)
-        proposer = []
-        if validators_number > 0:
-            proposer = validator_data.validator_set[0]
-        cl_genesis_data = {
-            "accounts": json.indent(json.encode(validator_data.accounts)),
-            "balances": json.indent(json.encode(validator_data.balances)),
-            "supply": json.indent(json.encode(validator_data.supply)),
-            "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
-            "validators": json.indent(json.encode(validator_data.validator_set)),
-            "proposer": json.indent(json.encode(proposer)),
-            "producer_count": len(validator_data.validator_set),
-            "total_voting_power": validator_data.total_voting_power,
-        }
+    validator_data = heimdall_v2_genesis.get_validator_data(validator_accounts)
+    proposer = []
+    if validators_number > 0:
+        proposer = validator_data.validator_set[0]
+    cl_genesis_data = {
+        "accounts": json.indent(json.encode(validator_data.accounts)),
+        "balances": json.indent(json.encode(validator_data.balances)),
+        "supply": json.indent(json.encode(validator_data.supply)),
+        "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
+        "validators": json.indent(json.encode(validator_data.validator_set)),
+        "proposer": json.indent(json.encode(proposer)),
+        "producer_count": len(validator_data.validator_set),
+        "total_voting_power": validator_data.total_voting_power,
+    }
 
     el_span_duration = network_params.get("el_span_duration")
     l1_matic_token_address = contract_util.get_address(

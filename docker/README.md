@@ -138,11 +138,9 @@ Note: We do not use the latest version of the [genesis contracts](https://github
 - [Docker Hub](https://hub.docker.com/r/leovct/pos-validator-config-generator)
 
 ```bash
-heimdall_version="1.6.0" # 2025/07/03
 heimdall_v2_version="0.2.7" # 2025/07/07
-image_name="leovct/pos-validator-config-generator:${heimdall_version}-${heimdall_v2_version}"
+image_name="leovct/pos-validator-config-generator:${heimdall_v2_version}"
 docker build \
-  --build-arg HEIMDALL_VERSION="${heimdall_version}" \
   --build-arg HEIMDALL_V2_VERSION="${heimdall_v2_version}" \
   --tag "${image_name}" \
   --file pos-validator-config-generator.Dockerfile \

@@ -12,7 +12,6 @@ EL_TYPE = struct(
 )
 
 CL_TYPE = struct(
-    heimdall="heimdall",
     heimdall_v2="heimdall-v2",
 )
 

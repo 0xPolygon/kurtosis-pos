@@ -10,7 +10,7 @@ This guide will explain how to use the dev parameters to save some time when re-
 Kurtosis added a new feature in the [v1.7.2](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.7.2) release called [kurtosis service update](https://docs.kurtosis.com/service-update) which serves the same purpose.
 
 ```bash
-kurtosis service update --image 0xpolygon/bor:2.0.1 pos l2-el-1-bor-heimdall-validator
+kurtosis service update --image 0xpolygon/bor:2.0.1 pos l2-el-1-bor-heimdall-v2-validator
 ```
 
 Note that this feature is even more powerful — it can update not only the container image, but also file artifacts mounted into the container, the command used to run the service, environment variables, the entrypoint, ports, and more.
@@ -22,7 +22,7 @@ Let's imagine you used the following configuration:
 polygon_pos_package:
   participants:
     - kind: validator
-      cl_type: heimdall
+      cl_type: heimdall-v2
       el_type: bor
       el_image: 0xpolygon/bor:2.0.0
       count: 2
@@ -72,7 +72,7 @@ The final configuration should look like the following:
 polygon_pos_package:
   participants:
     - kind: validator
-      cl_type: heimdall
+      cl_type: heimdall-v2
       el_type: bor
       el_image: 0xpolygon/bor:2.0.1
       count: 2
@@ -92,8 +92,8 @@ dev:
 Stop the validators to avoid any issues when deploying the L2 contracts.
 
 ```bash
-kurtosis service stop pos l2-el-1-bor-heimdall-validator
-kurtosis service stop pos l2-el-2-bor-heimdall-validator
+kurtosis service stop pos l2-el-1-bor-heimdall-v2-validator
+kurtosis service stop pos l2-el-2-bor-heimdall-v2-validator
 ```
 
 ## Re-deploy Only L2 Participants

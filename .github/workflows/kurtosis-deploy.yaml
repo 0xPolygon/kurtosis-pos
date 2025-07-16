@@ -85,18 +85,9 @@ jobs:
       - name: Retrieve tag from source code
         run: |
           tag=$(cat src/config/input_parser.star | grep "leovct/pos-validator-config-generator" | sed 's/.*:\(.*\)".*/\1/')
-          heimdall_tag=$(echo "${tag}" | cut -d'-' -f1)
           heimdall_v2_tag=$(echo "${tag}" | cut -d'-' -f2)
           echo "TAG=${tag}" >> $GITHUB_ENV
           echo "TAG=${tag}"
-
-          heimdall_tag_from_dockerfile=$(cat docker/pos-validator-config-generator.Dockerfile | grep "^ARG HEIMDALL_VERSION" | cut -d'"' -f2)
-          if [[ "${heimdall_tag_from_dockerfile}" != "${heimdall_tag}" ]]; then
-            echo "The heimdall tag in the Dockerfile: '${heimdall_tag_from_dockerfile}' does not match the tag in the source code: '${heimdall_tag}'."
-            exit 1
-          else
-            echo "The heimdall tag in the Dockerfile: '${heimdall_tag_from_dockerfile}' matches the tag in the source code: '${heimdall_tag}'."
-          fi
 
           heimdall_v2_tag_from_dockerfile=$(cat docker/pos-validator-config-generator.Dockerfile | grep "^ARG HEIMDALL_V2_VERSION" | cut -d'"' -f2)
           if [[ "${heimdall_v2_tag_from_dockerfile}" != "${heimdall_v2_tag}" ]]; then

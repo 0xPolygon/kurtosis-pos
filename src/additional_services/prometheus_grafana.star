@@ -78,12 +78,6 @@ def launch_panoptichain(
         l2_el_genesis_artifact=l2_el_genesis_artifact,
     )
 
-    heimdall_version_map = {
-        constants.CL_TYPE.heimdall: 1,
-        constants.CL_TYPE.heimdall_v2: 2,
-    }
-    heimdall_version = heimdall_version_map.get(l2_context.devnet_cl_type)
-
     panoptichain_config_artifact = plan.render_templates(
         name="panoptichain-config",
         config={
@@ -97,7 +91,6 @@ def launch_panoptichain(
                     "l1_rpcs": l1_rpcs,
                     "l2_rpcs": l2_el_rpcs,
                     "heimdall_urls": l2_cl_urls,
-                    "heimdall_version": heimdall_version,
                     "checkpoint_address": l1_root_chain_proxy_address,
                     "state_sync_sender_address": l1_state_sender_address,
                     "state_sync_receiver_address": l2_state_receiver_address,

@@ -16,8 +16,8 @@ def to_tendermint_public_key(account):
 
 
 def new_validator(
-    eth_tendermint_account,  # ETH/Tendermint account - used by heimdall validators
-    comebft_account,  # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key
+    eth_tendermint_account,  # ETH/Tendermint account.
+    comebft_account,  # CometBFT account (secp256k1), derived from the ETH private key.
 ):
     return struct(
         eth_tendermint=eth_tendermint_account,
@@ -27,15 +27,13 @@ def new_validator(
 
 def get_cl_validator_account(validator, devnet_cl_type):
     # Select the appropriate validator account based on the devnet CL type.
-    if devnet_cl_type == constants.CL_TYPE.heimdall:
-        return validator.eth_tendermint
-    elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
+    if devnet_cl_type == constants.CL_TYPE.heimdall_v2:
         return validator.cometbft
     else:
         fail(
             'Wrong devnet CL type: "{}". Allowed values: "{}."'.format(
                 devnet_cl_type,
-                [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2],
+                [constants.CL_TYPE.heimdall_v2],
             )
         )
 

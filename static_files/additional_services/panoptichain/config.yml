@@ -34,7 +34,6 @@ providers:
       heimdall_url: "{{$urls.heimdall}}"
       label: "{{$label}}"
       interval: 5s
-      version: {{$.heimdall_version}}
     {{end}}
 
 networks:
