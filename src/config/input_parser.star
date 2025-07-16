@@ -8,7 +8,6 @@ DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-gene
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "0xpolygon/bor:2.2.8",
-    constants.EL_TYPE.bor_modified_for_heimdall_v2: "leovct/bor:581a230ed-fix",  # There is no official image yet.
     constants.EL_TYPE.erigon: "erigontech/erigon:v3.0.14",
 }
 
@@ -227,14 +226,7 @@ def _parse_participants(participants):
         el_image = p.get("el_image", "")
         if el_type and not el_image:
             if el_type == constants.EL_TYPE.bor:
-                if cl_type == constants.CL_TYPE.heimdall:
-                    p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
-                elif cl_type == constants.CL_TYPE.heimdall_v2:
-                    p["el_image"] = DEFAULT_EL_IMAGES[
-                        constants.EL_TYPE.bor_modified_for_heimdall_v2
-                    ]
-                else:
-                    fail("Invalid CL client type: '{}'.".format(cl_type))
+                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
             elif el_type == constants.EL_TYPE.erigon:
                 p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.erigon]
             else:
