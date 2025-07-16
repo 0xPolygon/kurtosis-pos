@@ -70,7 +70,7 @@ generate_cl_validator_config() {
 
   # Retrieve and store the node identifier.
   if [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
-    heimdalld-v2 init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
+    heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
     node_id="$(cat ${cl_validator_config_path}/init.out | jq --raw-output '.node_id')"
   else
     echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
