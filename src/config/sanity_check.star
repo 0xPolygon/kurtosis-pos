@@ -109,7 +109,7 @@ def sanity_check_polygon_args(plan, input_args):
     network_params = input_args.get("network_params")
     cl_chain_id = network_params.get("cl_chain_id")
     el_chain_id = network_params.get("el_chain_id")
-    validate_chain_ids(cl_chain_id, el_chain_id)
+    _validate_chain_ids(cl_chain_id, el_chain_id)
 
     participants = input_args.get("participants")
     _validate_participants_count(participants)
@@ -117,7 +117,7 @@ def sanity_check_polygon_args(plan, input_args):
         _validate_participant(p)
 
     cl_environment = network_params.get("cl_environment")
-    validate_cl_environment(cl_environment)
+    _validate_cl_environment(cl_environment)
 
     # Make sure test params are defined only if the test runner is deployed.
     additional_services = input_args.get("additional_services", [])
@@ -216,7 +216,7 @@ def _validate_list_of_dict(input_args, category):
 
 
 # Heimdall-v2 expects that the cl chain id follows the standard "heimdall-<el_chain_id>".
-def validate_chain_ids(cl_chain_id, el_chain_id):
+def _validate_chain_ids(cl_chain_id, el_chain_id):
     if not cl_chain_id and not el_chain_id:
         return
 
@@ -273,7 +273,7 @@ def _validate_participant(p):
 
 # The CL environment is used to specify the height for applying specific selection algorithms, span
 # overrides, or hardforks. It also determines the default seeds.
-def validate_cl_environment(cl_environment):
+def _validate_cl_environment(cl_environment):
     if cl_environment:
         if cl_environment not in VALID_CL_ENVIRONMENTS:
             fail(
