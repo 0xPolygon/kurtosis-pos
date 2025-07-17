@@ -7,7 +7,7 @@ DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
 DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:0.2.10"  # Based on 0xpolygon/heimdall-v2:0.2.10.
 
 DEFAULT_EL_IMAGES = {
-    constants.EL_TYPE.bor: "0xpolygon/bor:2.2.8",
+    constants.EL_TYPE.bor: "0xpolygon/bor:2.2.9",
     constants.EL_TYPE.erigon: "erigontech/erigon:v3.0.14",
 }
 
