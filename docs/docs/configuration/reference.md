@@ -80,7 +80,7 @@ Default: two validators and one rpc.
 |----------------------------|--------|----------------------------------------------------|-------------------------------------------------|
 | contract_deployer          | string | leovct/pos-contract-deployer-node-20:ed58f8a       | Image used to deploy MATIC contracts to L1.     |
 | el_genesis_builder         | string | leovct/pos-el-genesis-builder:96a19dd              | Image used to create the L2 EL genesis file.    |
-| validator_config_generator | string | leovct/pos-validator-config-generator:1.6.0-0.2.7 | Image used to generate validator configs.       |
+| validator_config_generator | string | leovct/pos-validator-config-generator:1.6.0-0.2.10 | Image used to generate validator configs.       |
 
 ### `network_params`
 

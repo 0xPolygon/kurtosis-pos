@@ -7,7 +7,6 @@ PARTICIPANT_KIND = struct(
 
 EL_TYPE = struct(
     bor="bor",
-    bor_modified_for_heimdall_v2="bor-modified-for-heimdall-v2",
     erigon="erigon",
 )
 
