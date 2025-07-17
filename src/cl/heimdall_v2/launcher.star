@@ -26,6 +26,7 @@ def launch(
                 ),
                 data={
                     # Network params.
+                    "cl_environment": network_params.get("cl_environment"),
                     "span_poll_interval": network_params.get("cl_span_poll_interval"),
                     "checkpoint_poll_interval": network_params.get(
                         "cl_checkpoint_poll_interval"

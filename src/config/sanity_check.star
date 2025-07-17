@@ -117,7 +117,7 @@ def sanity_check_polygon_args(plan, input_args):
         _validate_participant(p)
 
     cl_environment = network_params.get("cl_environment")
-    validate_cl_environment(cl_environment, participants)
+    validate_cl_environment(cl_environment)
 
     # Make sure test params are defined only if the test runner is deployed.
     additional_services = input_args.get("additional_services", [])
@@ -272,11 +272,9 @@ def _validate_participant(p):
     _validate_strictly_positive_int(p, "count")
 
 
-# The CL environment is only used in Heimdall (v1) templates to specify the height for applying
-# specific selection algorithms, span overrides, or hardforks. It also determines the default seeds.
-def validate_cl_environment(cl_environment, participants):
-    devnet_cl_type = participants[0].get("cl_type")
-
+# The CL environment is used to specify the height for applying specific selection algorithms, span
+# overrides, or hardforks. It also determines the default seeds.
+def validate_cl_environment(cl_environment):
     if cl_environment:
         if cl_environment not in VALID_CL_ENVIRONMENTS:
             fail(
