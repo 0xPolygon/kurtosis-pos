@@ -48,7 +48,7 @@ To customize the L2 devnet, include a `polygon_pos_package` property in your arg
 polygon_pos_package:
   participants:
     - kind: validator
-      cl_type: heimdall
+      cl_type: heimdall-v2
       el_type: bor
       count: 2
   network_params:
@@ -65,12 +65,12 @@ Default: two validators and one rpc.
 | Field         | Type   | Default              | Description                                                                                 |
 |---------------|--------|----------------------|---------------------------------------------------------------------------------------------|
 | kind          | string | validator            | Role of the node in the network: `validator` or `rpc`.                                      |
-| cl_type       | string | heimdall             | Consensus Layer (CL) client type.                                                           |
-| cl_image      | string | 0xpolygon/heimdall:1.6.0 | Image for the CL client.                                                                |
+| cl_type       | string | heimdall-v2          | Consensus Layer (CL) client type.                                                           |
+| cl_image      | string | 0xpolygon/heimdall-v2:0.2.7 | Image for the CL client.                                                             |
 | cl_db_image   | string | rabbitmq:4.1.2       | Image for the CL database.                                                                  |
 | cl_log_level  | string | info                 | Log level for the CL client.                                                                |
 | el_type       | string | bor                  | Execution Layer (EL) client type.                                                           |
-| el_image      | string | 0xpolygon/bor:2.2.8  | Image for the EL client.                                                                    |
+| el_image      | string | leovct/bor:fad6a09-fix | Image for the EL client.                                                               |
 | el_log_level  | string | info                 | Log level for the EL client.                                                                |
 | count         | int    | 1                    | Number of nodes to spin up for this participant.                                            |
 

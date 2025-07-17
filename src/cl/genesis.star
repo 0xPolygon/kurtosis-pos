@@ -1,12 +1,10 @@
 constants = import_module("../config/constants.star")
 contract_util = import_module("../contracts/util.star")
-heimdall_genesis = import_module("./heimdall/genesis.star")
 heimdall_v2_genesis = import_module("./heimdall_v2/genesis.star")
 
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/cl/genesis/builder.sh"
 HEIMDALL_GENESIS_TEMPLATE_FILE_PATH = {
-    constants.CL_TYPE.heimdall: "../../static_files/cl/heimdall/genesis.json",
     constants.CL_TYPE.heimdall_v2: "../../static_files/cl/heimdall_v2/genesis.json",
 }
 
@@ -22,34 +20,20 @@ def generate(
     validators_number = len(validator_accounts)
 
     cl_genesis_data = {}
-    if devnet_cl_type == constants.CL_TYPE.heimdall:
-        validator_data = heimdall_genesis.get_validator_data(validator_accounts)
-        proposer = []
-        if validators_number > 0:
-            proposer = validator_data.validator_set[0]
-        cl_genesis_data = {
-            "accounts": json.indent(json.encode(validator_data.accounts)),
-            "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
-            "signing_infos": json.indent(json.encode(validator_data.signing_infos)),
-            "validators": json.indent(json.encode(validator_data.validator_set)),
-            "proposer": json.indent(json.encode(proposer)),
-            "producer_count": len(validator_data.validator_set),
-        }
-    elif devnet_cl_type == constants.CL_TYPE.heimdall_v2:
-        validator_data = heimdall_v2_genesis.get_validator_data(validator_accounts)
-        proposer = []
-        if validators_number > 0:
-            proposer = validator_data.validator_set[0]
-        cl_genesis_data = {
-            "accounts": json.indent(json.encode(validator_data.accounts)),
-            "balances": json.indent(json.encode(validator_data.balances)),
-            "supply": json.indent(json.encode(validator_data.supply)),
-            "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
-            "validators": json.indent(json.encode(validator_data.validator_set)),
-            "proposer": json.indent(json.encode(proposer)),
-            "producer_count": len(validator_data.validator_set),
-            "total_voting_power": validator_data.total_voting_power,
-        }
+    validator_data = heimdall_v2_genesis.get_validator_data(validator_accounts)
+    proposer = []
+    if validators_number > 0:
+        proposer = validator_data.validator_set[0]
+    cl_genesis_data = {
+        "accounts": json.indent(json.encode(validator_data.accounts)),
+        "balances": json.indent(json.encode(validator_data.balances)),
+        "supply": json.indent(json.encode(validator_data.supply)),
+        "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
+        "validators": json.indent(json.encode(validator_data.validator_set)),
+        "proposer": json.indent(json.encode(proposer)),
+        "producer_count": len(validator_data.validator_set),
+        "total_voting_power": validator_data.total_voting_power,
+    }
 
     el_span_duration = network_params.get("el_span_duration")
     l1_matic_token_address = contract_util.get_address(
