@@ -21,7 +21,7 @@ where `pos` is the name of the enclave, you can choosse any name you like.
 2. Retrieve the L2 RPC URL.
 
 ```bash
-export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-validator rpc)
+export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
 echo $ETH_RPC_URL
 ```
 

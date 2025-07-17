@@ -26,7 +26,7 @@ runs:
       run: |
         case "${{ inputs.args_filename }}" in
           ""|*"additional-services"*|*"contract-deployer"*)
-            cl_type="heimdall"
+            cl_type="heimdall-v2"
             el_type="bor"
             ;;
           *)
@@ -51,9 +51,7 @@ runs:
         elapsed_time=0
         milestone_count=0
         while [[ "${elapsed_time}" -lt "${{ inputs.timeout_seconds }}" ]];do
-          if [[ "${l2_cl_node_type}" == "heimdall" ]]; then
-            milestone_count=$(curl --silent "${l2_cl_api_url}/milestone/count" | jq --raw-output '.result.count')
-          elif [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
+          if [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
             milestone_count=$(curl --silent "${l2_cl_api_url}/milestones/count" | jq --raw-output '.count')
           else
             echo "Unsupported CL type: ${l2_cl_node_type}"
@@ -84,9 +82,7 @@ runs:
         elapsed_time=0
         checkpoint_count=0
         while [[ "${elapsed_time}" -lt "${{ inputs.timeout_seconds }}" ]]; do
-          if [[ "${l2_cl_node_type}" == "heimdall" ]]; then
-            checkpoint_count=$(curl --silent "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.result.result')
-          elif [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
+          if [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
             checkpoint_count=$(curl --silent "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.ack_count')
           else
             echo "Unsupported CL type: ${l2_cl_node_type}"

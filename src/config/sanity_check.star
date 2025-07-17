@@ -50,13 +50,9 @@ VALID_PARTICIPANT_KINDS = [
     constants.PARTICIPANT_KIND.rpc,
 ]
 
-VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall, constants.CL_TYPE.heimdall_v2]
+VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall_v2]
 VALID_EL_CLIENTS = [constants.EL_TYPE.bor, constants.EL_TYPE.erigon]
 VALID_CLIENT_COMBINATIONS = {
-    constants.CL_TYPE.heimdall: [
-        constants.EL_TYPE.bor,
-        constants.EL_TYPE.erigon,
-    ],
     constants.CL_TYPE.heimdall_v2: [
         constants.EL_TYPE.bor,
         constants.EL_TYPE.erigon,
@@ -113,7 +109,7 @@ def sanity_check_polygon_args(plan, input_args):
     network_params = input_args.get("network_params")
     cl_chain_id = network_params.get("cl_chain_id")
     el_chain_id = network_params.get("el_chain_id")
-    validate_chain_ids(cl_chain_id, el_chain_id)
+    _validate_chain_ids(cl_chain_id, el_chain_id)
 
     participants = input_args.get("participants")
     _validate_participants_count(participants)
@@ -121,7 +117,7 @@ def sanity_check_polygon_args(plan, input_args):
         _validate_participant(p)
 
     cl_environment = network_params.get("cl_environment")
-    validate_cl_environment(cl_environment, participants)
+    _validate_cl_environment(cl_environment)
 
     # Make sure test params are defined only if the test runner is deployed.
     additional_services = input_args.get("additional_services", [])
@@ -219,9 +215,8 @@ def _validate_list_of_dict(input_args, category):
                     )
 
 
-# For now, heimdall-v2 expects that the cl chain id follows the standard "heimdall-<el_chain_id>".
-# https://github.com/0xPolygon/heimdall-v2/issues/135
-def validate_chain_ids(cl_chain_id, el_chain_id):
+# Heimdall-v2 expects that the cl chain id follows the standard "heimdall-<el_chain_id>".
+def _validate_chain_ids(cl_chain_id, el_chain_id):
     if not cl_chain_id and not el_chain_id:
         return
 
@@ -273,38 +268,13 @@ def _validate_participant(p):
         if p.get("el_bor_sync_mode"):
             fail('The "el_bor_sync_mode" parameter is only valid for the bor EL client')
 
-    # Heimdall (v1) only supports "error", "info", "debug" or "none" log levels.
-    # ERROR: Failed to parse default log level (pair *:trace, list *:trace): Expected either "info", "debug", "error" or "none" level, given trace
-    heimdall_v1_log_levels = [
-        constants.LOG_LEVEL.error,
-        constants.LOG_LEVEL.info,
-        constants.LOG_LEVEL.debug,
-    ]
-    if p.get("cl_type") == constants.CL_TYPE.heimdall and p.get(
-        "cl_log_level"
-    ) not in heimdall_v1_log_levels + [""]:
-        fail(
-            'Heimdall (v1) does not support "{}" log level. Valid log levels are: "{}"'.format(
-                p.get("cl_log_level"), heimdall_v1_log_levels
-            )
-        )
-
     _validate_strictly_positive_int(p, "count")
 
 
-# The CL environment is only used in Heimdall (v1) templates to specify the height for applying
-# specific selection algorithms, span overrides, or hardforks. It also determines the default seeds.
-def validate_cl_environment(cl_environment, participants):
-    devnet_cl_type = participants[0].get("cl_type")
-
+# The CL environment is used to specify the height for applying specific selection algorithms, span
+# overrides, or hardforks. It also determines the default seeds.
+def _validate_cl_environment(cl_environment):
     if cl_environment:
-        if devnet_cl_type != constants.CL_TYPE.heimdall:
-            fail(
-                'Only heimdall (v1) supports the CL environment but found "{}" devnet CL type.'.format(
-                    devnet_cl_type
-                )
-            )
-
         if cl_environment not in VALID_CL_ENVIRONMENTS:
             fail(
                 'Invalid CL environment: "{}". Allowed values: {}.'.format(

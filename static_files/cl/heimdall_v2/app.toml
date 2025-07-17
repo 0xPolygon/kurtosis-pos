@@ -285,4 +285,4 @@ main_chain_max_gas_price = "400000000000"
 ##### Timeout Config #####
 no_ack_wait_time = "30m0s"
 
-chain = "{{.environment}}"
+chain = "{{.cl_environment}}"

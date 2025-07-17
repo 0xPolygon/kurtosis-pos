@@ -4,7 +4,7 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer-node-20:ed58f8a"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:1.6.0-0.2.10"  # Based on 0xpolygon/heimdall:1.6.0 and 0xpolygon/heimdall-v2:0.2.10.
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:0.2.10"  # Based on 0xpolygon/heimdall-v2:0.2.10.
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "leovct/bor:fad6a09-fix",  # Based on 0xpolygon/bor:2.2.9 with heimdall migration monitor fix (https://github.com/maticnetwork/bor/compare/master...leovct:bor:2.2.9-fix).
@@ -12,7 +12,6 @@ DEFAULT_EL_IMAGES = {
 }
 
 DEFAULT_CL_IMAGES = {
-    constants.CL_TYPE.heimdall: "0xpolygon/heimdall:1.6.0",
     constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.10",
 }
 
@@ -43,8 +42,8 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
 
 DEFAULT_POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
-    "cl_type": constants.CL_TYPE.heimdall,
-    "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall],
+    "cl_type": constants.CL_TYPE.heimdall_v2,
+    "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2],
     "cl_db_image": DEFAULT_CL_DB_IMAGE,
     "cl_log_level": constants.LOG_LEVEL.info,
     "el_type": constants.EL_TYPE.bor,
@@ -214,9 +213,7 @@ def _parse_participants(participants):
         cl_type = p.get("cl_type", "")
         cl_image = p.get("cl_image", "")
         if cl_type and not cl_image:
-            if cl_type == constants.CL_TYPE.heimdall:
-                p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall]
-            elif cl_type == constants.CL_TYPE.heimdall_v2:
+            if cl_type == constants.CL_TYPE.heimdall_v2:
                 p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2]
             else:
                 fail("Invalid CL client type: '{}'.".format(cl_type))

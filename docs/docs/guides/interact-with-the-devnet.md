@@ -25,7 +25,7 @@ where `pos` is the name of the enclave.
 Let's store the L2 RPC URL in an environment variable for use with `cast`.
 
 ```bash
-export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-validator rpc)
+export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
 echo $ETH_RPC_URL
 ```
 
@@ -75,7 +75,7 @@ polycli loadtest --rpc-url "$ETH_RPC_URL" --private-key "$pk" --verbosity 700 --
 Pretty often, you will want to check the output from the service. Here is how you can grab some logs:
 
 ```bash
-kurtosis service logs pos l2-el-1-bor-heimdall-validator --follow
+kurtosis service logs pos l2-el-1-bor-heimdall-v2-validator --follow
 ```
 
 ## Getting Shell Access
@@ -83,7 +83,7 @@ kurtosis service logs pos l2-el-1-bor-heimdall-validator --follow
 In other cases, if you see an error, you might want to get a shell in the service to be able to poke around.
 
 ```bash
-kurtosis service shell pos l2-el-1-bor-heimdall-validator
+kurtosis service shell pos l2-el-1-bor-heimdall-v2-validator
 ```
 
 ## Inspecting Genesis and Contracts Files

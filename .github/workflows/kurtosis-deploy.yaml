@@ -85,18 +85,9 @@ jobs:
       - name: Retrieve tag from source code
         run: |
           tag=$(cat src/config/input_parser.star | grep "leovct/pos-validator-config-generator" | sed 's/.*:\(.*\)".*/\1/')
-          heimdall_tag=$(echo "${tag}" | cut -d'-' -f1)
           heimdall_v2_tag=$(echo "${tag}" | cut -d'-' -f2)
           echo "TAG=${tag}" >> $GITHUB_ENV
           echo "TAG=${tag}"
-
-          heimdall_tag_from_dockerfile=$(cat docker/pos-validator-config-generator.Dockerfile | grep "^ARG HEIMDALL_VERSION" | cut -d'"' -f2)
-          if [[ "${heimdall_tag_from_dockerfile}" != "${heimdall_tag}" ]]; then
-            echo "The heimdall tag in the Dockerfile: '${heimdall_tag_from_dockerfile}' does not match the tag in the source code: '${heimdall_tag}'."
-            exit 1
-          else
-            echo "The heimdall tag in the Dockerfile: '${heimdall_tag_from_dockerfile}' matches the tag in the source code: '${heimdall_tag}'."
-          fi
 
           heimdall_v2_tag_from_dockerfile=$(cat docker/pos-validator-config-generator.Dockerfile | grep "^ARG HEIMDALL_V2_VERSION" | cut -d'"' -f2)
           if [[ "${heimdall_v2_tag_from_dockerfile}" != "${heimdall_v2_tag}" ]]; then
@@ -158,11 +149,6 @@ jobs:
 
       - name: Test state syncs
         run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
-
-      - name: Monitor milestones and checkpoints
-        uses: ./.github/actions/monitor-milestones-and-checkpoints
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
 
       - name: Post kurtosis run
         if: always()
@@ -245,13 +231,6 @@ jobs:
       - name: Test state syncs
         if: steps.check-test-runner.outputs.test_runner_deployed == 'true'
         run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
-
-      - name: Monitor milestones and checkpoints
-        if: ${{ !contains(matrix.file.name, 'heimdall-v2') }} # skip for heimdall-v2 as it takes more than 10 minutes to get the first checkpoint.
-        uses: ./.github/actions/monitor-milestones-and-checkpoints
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-          args_filename: ${{ matrix.file.path }}
 
       - name: Post kurtosis run
         if: always()
