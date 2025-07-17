@@ -31,7 +31,7 @@ witnessprotocol = true
     password = "{{.config_folder_path}}/password.txt"
     unlock = ["{{.address}}"]
 
-{{if eq .kind "validator"}}
+{{if and (eq .kind "validator") (ne .sync_mode "stateless")}}
 [miner]
     mine = true
     gaslimit = 45000000
