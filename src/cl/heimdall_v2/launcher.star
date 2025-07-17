@@ -114,7 +114,7 @@ def launch(
                         "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
                             cl_shared.CONFIG_FOLDER_PATH
                         ),
-                        # Heimdall-v2 requires that the `round` property of priv_validator_state.json is of type int32 whereas heimdall-v1 asks for a string.
+                        # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
                         'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
                             cl_shared.CONFIG_FOLDER_PATH
                         ),
