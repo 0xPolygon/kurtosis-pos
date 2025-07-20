@@ -1,38 +1,38 @@
 polygon_pos_package:
   participants:
-    # validator nodes
+    # Validator nodes
     - kind: validator
       cl_type: heimdall-v2
-      cl_image: local/heimdall-v2:876743c
+      cl_image: local/heimdall-v2:9e65c78
       el_type: bor
-      el_image: local/bor:52bb122
+      el_image: local/bor:d976a51
       count: 2
       el_bor_produce_witness: true
 
-    # rpc nodes
+    # RPC nodes
     - kind: rpc
       cl_type: heimdall-v2
-      cl_image: local/heimdall-v2:876743c
+      cl_image: local/heimdall-v2:9e65c78
       el_type: bor
-      el_image: local/bor:52bb122
+      el_image: local/bor:d976a51
       el_bor_produce_witness: true
       el_bor_sync_with_witness: false
       count: 2
 
     - kind: rpc
       cl_type: heimdall-v2
-      cl_image: local/heimdall-v2:876743c
+      cl_image: local/heimdall-v2:9e65c78
       el_type: bor
-      el_image: local/bor:52bb122
+      el_image: local/bor:d976a51
       el_bor_produce_witness: true
       el_bor_sync_with_witness: true
       count: 1
 
     - kind: rpc
       cl_type: heimdall-v2
-      cl_image: local/heimdall-v2:876743c
+      cl_image: local/heimdall-v2:9e65c78
       el_type: bor
-      el_image: local/bor:52bb122
+      el_image: local/bor:d976a51
       el_bor_produce_witness: false
       el_bor_sync_with_witness: false
       count: 1
