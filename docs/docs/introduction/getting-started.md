@@ -13,7 +13,7 @@ Make sure you have installed the [required tools](./installation.md)!
 1. Deploy a local Polygon PoS devnet.
 
 ```bash
-kurtosis run --enclave pos github.com/0xPolygon/kurtosis-polygon-pos
+kurtosis run --enclave pos github.com/0xPolygon/kurtosis-pos
 ```
 
 where `pos` is the name of the enclave, you can choosse any name you like.
@@ -46,6 +46,6 @@ You may want to generate a new wallet and fund it using the admin private key to
 kurtosis enclave rm --force pos
 ```
 
-You're now ready to start exploring and customizing your devnet!  
+You're now ready to start exploring and customizing your devnet!
 
 Check out the next sections for configuration options, usage guides, and more advanced workflows.
