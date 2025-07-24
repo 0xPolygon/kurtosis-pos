@@ -40,7 +40,7 @@ def launch_panoptichain(
     l2_el_genesis_artifact,
     contract_addresses_artifact,
 ):
-    # Retrive L1 rpc urls.
+    # Retrieve L1 rpc urls.
     l1_rpcs = {}
     if l1_context.all_participants:
         for p in l1_context.all_participants:
