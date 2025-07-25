@@ -1,5 +1,5 @@
 FROM node:20-bookworm
-LABEL description="Polygon PoS contracts deployment image (node-20)"
+LABEL description="Polygon PoS contracts deployment image"
 LABEL author="devtools@polygon.technology"
 
 ARG POS_CONTRACTS_BRANCH="anvil-pos"

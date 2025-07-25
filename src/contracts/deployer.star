@@ -9,11 +9,8 @@ def deploy_l1_contracts(
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
     contract_deployer_image = setup_images.get("contract_deployer")
-    contract_deployer_config_filepath = _determine_contract_deployer_config_filepath(
-        contract_deployer_image
-    )
     contract_deployer_config_artifact = plan.upload_files(
-        src=contract_deployer_config_filepath,
+        src=CONTRACTS_CONFIG_FILE_PATH,
         name="matic-contracts-l1-deployer-config",
     )
 
@@ -76,11 +73,8 @@ def deploy_l2_contracts_and_synchronise_l1_state(
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
     contract_deployer_image = setup_images.get("contract_deployer")
-    contract_deployer_config_filepath = _determine_contract_deployer_config_filepath(
-        contract_deployer_image
-    )
     contract_deployer_config_artifact = plan.upload_files(
-        src=contract_deployer_config_filepath,
+        src=CONTRACTS_CONFIG_FILE_PATH,
         name="matic-contracts-l2-deployer-config",
     )
 
@@ -128,29 +122,3 @@ def _format_validator_accounts(accounts):
             for account in accounts
         ]
     )
-
-
-def _determine_contract_deployer_config_filepath(contract_deployer_image):
-    # The contract deployer image follows the standard: leovct/pos-contract-deployer-<node-version>:<tag>
-    # where the node version can either be "node-16" or "node-20".
-    result = contract_deployer_image.removeprefix(
-        "leovct/pos-contract-deployer-"
-    ).split(
-        ":"
-    )  # ["<node-version>", "tag"]
-    if len(result) != 2:
-        fail(
-            'The contract deployer image does not follow the standard "leovct/pos-contract-deployer-<node-version>:<tag>": {}'.format(
-                contract_deployer_image
-            )
-        )
-
-    node_version = result[0]
-    supported_versions = ["node-16", "node-20"]
-    if node_version not in supported_versions:
-        fail(
-            'The contract deployer only supports "{}" but got: "{}"'.format(
-                supported_versions, node_version
-            )
-        )
-    return "{}/{}".format(CONTRACTS_CONFIG_FILE_PATH, node_version)
