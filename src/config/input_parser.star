@@ -8,7 +8,7 @@ DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-gene
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "leovct/bor:fad6a09-fix",  # Based on 0xpolygon/bor:2.2.9 with heimdall migration monitor fix (https://github.com/maticnetwork/bor/compare/master...leovct:bor:2.2.9-fix).
-    constants.EL_TYPE.erigon: "erigontech/erigon:v3.0.14",
+    constants.EL_TYPE.erigon: "erigontech/erigon:v3.0.15",
 }
 
 DEFAULT_CL_IMAGES = {
