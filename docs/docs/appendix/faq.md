@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Find answers to common questions and troubleshooting tips for the package.
 
-If your question isn't answered here, please check the [full documentation](../introduction/overview.md) or open an [issue](https://github.com/0xPolygon/kurtosis-polygon-pos/issues/new).
+If your question isn't answered here, please check the [full documentation](../introduction/overview.md) or open an [issue](https://github.com/0xPolygon/kurtosis-pos/issues/new).
 
 ## Common Questions
 

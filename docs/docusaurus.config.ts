@@ -17,12 +17,12 @@ const config: Config = {
   url: 'https://your-docusaurus-site.example.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/kurtosis-polygon-pos/',
+  baseUrl: '/kurtosis-pos/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: '0xPolygon', // Usually your GitHub org/user name.
-  projectName: 'kurtosis-polygon-pos', // Usually your repo name.
+  projectName: 'kurtosis-pos', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -45,7 +45,7 @@ const config: Config = {
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           editUrl:
-            'https://github.com/0xPolygon/kurtosis-polygon-pos/edit/main/docs',
+            'https://github.com/0xPolygon/kurtosis-pos/edit/main/docs',
         },
         blog: false, // Optional: disable the blog plugin
         theme: {
@@ -63,7 +63,7 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/0xPolygon/kurtosis-polygon-pos',
+          href: 'https://github.com/0xPolygon/kurtosis-pos',
           label: 'GitHub',
           position: 'right',
         },
