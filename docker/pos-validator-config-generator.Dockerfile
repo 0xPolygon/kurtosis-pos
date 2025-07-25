@@ -11,7 +11,7 @@ RUN apk add --no-cache git build-base \
   && make build
 
 
-FROM alpine:3.14
+FROM alpine:3.22
 LABEL description="CL genesis builder image"
 LABEL author="devtools@polygon.technology"
 
