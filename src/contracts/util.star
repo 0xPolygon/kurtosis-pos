@@ -2,9 +2,9 @@ ROOT_CONTRACTS_MAPPING = {
     # Core contracts.
     "l1_deposit_manager": ".root.DepositManager",
     "l1_deposit_manager_proxy": ".root.DepositManagerProxy",
-    # EventsHubProxy - only availaible with the contract-deployer-node-20.
+    # EventsHubProxy - only available with the contract-deployer-node-20.
     "l1_exit_nft": ".root.ExitNFT",
-    # Governance - only availaible with the contract-deployer-node-20.
+    # Governance - only available with the contract-deployer-node-20.
     "l1_governance_proxy": ".root.GovernanceProxy",
     "l1_registry": ".root.Registry",
     "l1_root_chain": ".root.RootChain",
@@ -14,7 +14,7 @@ ROOT_CONTRACTS_MAPPING = {
     "l1_stake_manager_proxy": ".root.StakeManagerProxy",
     "l1_staking_info": ".root.StakingInfo",
     "l1_state_sender": ".root.StateSender",
-    # ValidatorShare - only availaible with the contract-deployer-node-20.
+    # ValidatorShare - only available with the contract-deployer-node-20.
     "l1_withdraw_manager": ".root.WithdrawManager",
     "l1_withdraw_manager_proxy": ".root.WithdrawManagerProxy",
     "l1_erc20_predicate": ".root.ERC20Predicate",

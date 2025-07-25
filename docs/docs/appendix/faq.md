@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Find answers to common questions and troubleshooting tips for the package.
 
-If your question isn't answered here, please check the [full documentation](../introduction/overview.md) or open an [issue](https://github.com/0xPolygon/kurtosis-polygon-pos/issues/new).
+If your question isn't answered here, please check the [full documentation](../introduction/overview.md) or open an [issue](https://github.com/0xPolygon/kurtosis-pos/issues/new).
 
 ## Common Questions
 
@@ -113,7 +113,7 @@ WARNING: Container images with different architecture than expected(arm64):
 > leovct/pos-contract-deployer-node-20:ed58f8a - amd64
 > leovct/toolbox:0.0.8 - amd64
 > leovct/pos-el-genesis-builder:96a19dd - amd64
-> leovct/pos-validator-config-generator:1.6.0-0.2.10 - amd64
+> leovct/pos-validator-config-generator:1.6.0-0.2.14 - amd64
 > leovct/e2e:9fe80e1 - amd64
 ```
 
