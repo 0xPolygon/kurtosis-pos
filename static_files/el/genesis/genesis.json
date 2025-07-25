@@ -24,7 +24,7 @@
       "bhilaiBlock": 0,
       "veblopBlock": 384,
       "stateSyncConfirmationDelay": {
-        "256": 128
+        "0": 32
       },
       "period": {
         "0": {{.el_block_interval_seconds}}
