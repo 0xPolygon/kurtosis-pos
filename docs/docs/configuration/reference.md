@@ -70,17 +70,17 @@ Default: two validators and one rpc.
 | cl_db_image   | string | rabbitmq:4.1.2       | Image for the CL database.                                                                  |
 | cl_log_level  | string | info                 | Log level for the CL client.                                                                |
 | el_type       | string | bor                  | Execution Layer (EL) client type.                                                           |
-| el_image      | string | leovct/bor:fad6a09-fix | Image for the EL client.                                                               |
+| el_image      | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/bor:v2.2.9-fix | Image for the EL client.                                                        |
 | el_log_level  | string | info                 | Log level for the EL client.                                                                |
 | count         | int    | 1                    | Number of nodes to spin up for this participant.                                            |
 
 ### `setup_images`
 
-| Field                      | Type   | Default                                            | Description                                     |
-|----------------------------|--------|----------------------------------------------------|-------------------------------------------------|
-| contract_deployer          | string | leovct/pos-contract-deployer:ed58f8a.              | Image used to deploy MATIC contracts to L1.     |
-| el_genesis_builder         | string | leovct/pos-el-genesis-builder:96a19dd              | Image used to create the L2 EL genesis file.    |
-| validator_config_generator | string | leovct/pos-validator-config-generator:1.6.0-0.2.14 | Image used to generate validator configs.       |
+| Field                      | Type   | Default                                                      | Description                                     |
+|----------------------------|--------|--------------------------------------------------------------|-------------------------------------------------|
+| contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:ed58f8a.              | Image used to deploy MATIC contracts to L1.     |
+| el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd              | Image used to create the L2 EL genesis file.    |
+| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:1.6.0-0.2.14 | Image used to generate validator configs.       |
 
 ### `network_params`
 
@@ -117,6 +117,6 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 ### `test_runner_params`
 
-| Field                 | Type   | Default            | Description                                     |
-|-----------------------|--------|--------------------|-------------------------------------------------|
-| image                 | string | leovct/e2e:9fe80e1 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
+| Field                 | Type   | Default                      | Description                                                                                               |
+|-----------------------|--------|------------------------------|-----------------------------------------------------------------------------------------------------------|
+| image                 | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9fe80e1 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
