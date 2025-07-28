@@ -18,7 +18,7 @@ RUN apt-get update \
   && apt-get install --no-install-recommends --yes jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
-  # Install foundry (stable - 20/12/2024).
+  # Install foundry.
   && curl --silent --location --proto "=https" https://foundry.paradigm.xyz | bash \
   && /root/.foundry/bin/foundryup --install ${FOUNDRY_VERSION} \
   && cp /root/.foundry/bin/* /usr/local/bin \
