@@ -55,4 +55,6 @@ EL_CLIENT_CONFIG_PATH = "/etc/el"
 RABBITMQ_USERNAME = "guest"
 RABBITMQ_PASSWORD = "guest"
 
-TOOLBOX_IMAGE = "leovct/toolbox:0.0.8"
+TOOLBOX_IMAGE = (
+    "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.8"
+)
