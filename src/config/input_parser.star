@@ -2,12 +2,12 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "leovct/pos-contract-deployer:ed58f8a"
-DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "leovct/pos-el-genesis-builder:96a19dd"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "leovct/pos-validator-config-generator:0.2.15"  # Based on 0xpolygon/heimdall-v2:0.2.15.
+DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:ed58f8a"
+DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd"
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.2.15"  # Based on 0xpolygon/heimdall-v2:0.2.15.
 
 DEFAULT_EL_IMAGES = {
-    constants.EL_TYPE.bor: "leovct/bor:fad6a09-fix",  # Based on 0xpolygon/bor:2.2.9 with heimdall migration monitor fix (https://github.com/maticnetwork/bor/compare/master...leovct:bor:2.2.9-fix).
+    constants.EL_TYPE.bor: "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/bor:v2.2.9-fix",  # Based on 0xpolygon/bor:2.2.9 with heimdall migration monitor fix (https://github.com/maticnetwork/bor/compare/master...leovct:bor:2.2.9-fix).
     constants.EL_TYPE.erigon: "erigontech/erigon:v3.0.15",
 }
 
@@ -17,7 +17,9 @@ DEFAULT_CL_IMAGES = {
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1.2"
 
-DEFAULT_E2E_TEST_IMAGE = "leovct/e2e:f0bac2a"
+DEFAULT_E2E_TEST_IMAGE = (
+    "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:f0bac2a"
+)
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
