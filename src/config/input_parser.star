@@ -4,7 +4,7 @@ sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:ed58f8a"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.2.14"  # Based on 0xpolygon/heimdall-v2:0.2.14.
+DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.2.15"  # Based on 0xpolygon/heimdall-v2:0.2.15.
 
 DEFAULT_EL_IMAGES = {
     constants.EL_TYPE.bor: "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/bor:v2.2.9-fix",  # Based on 0xpolygon/bor:2.2.9 with heimdall migration monitor fix (https://github.com/maticnetwork/bor/compare/master...leovct:bor:2.2.9-fix).
@@ -12,7 +12,7 @@ DEFAULT_EL_IMAGES = {
 }
 
 DEFAULT_CL_IMAGES = {
-    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.14",
+    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.15",
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1.2"

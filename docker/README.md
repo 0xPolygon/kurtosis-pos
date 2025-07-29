@@ -123,7 +123,7 @@ Note: We do not use the latest version of the [genesis contracts](https://github
 ### Polygon PoS Validator Config Generator
 
 ```bash
-heimdall_v2_version="0.2.14" # 2025/07/23
+heimdall_v2_version="0.2.15" # 2025/07/28
 image_name="pos-validator-config-generator:${heimdall_v2_version}"
 docker build \
   --build-arg HEIMDALL_V2_VERSION="${heimdall_v2_version}" \
