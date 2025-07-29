@@ -15,7 +15,8 @@ syncmode = "{{.sync_mode}}"
         static-nodes = {{.static_nodes}}
 
 [heimdall]
-    url = "{{.cl_node_url}}"
+    url = "{{.cl_api_url}}"
+    ws-address = "{{.cl_ws_rpc_url}}"
 
 [accounts]
     allow-insecure-unlock = true

@@ -14,7 +14,7 @@ nodiscover = true
 staticpeers = "{{.static_nodes}}"
 
 # [heimdall]
-"bor.heimdall" = "{{.cl_node_url}}"
+"bor.heimdall" = "{{.cl_api_url}}"
 
 # [bor]
 "bor.milestone" = true
@@ -23,7 +23,7 @@ staticpeers = "{{.static_nodes}}"
 # [miner]
 {{if eq .kind "validator"}}
 mine = true
-"miner.gaslimit" = 30000000
+"miner.gaslimit" = 45000000
 # "miner.gasprice" = "25000000000" # TODO: Make this flag available in erigon.
 "miner.etherbase" = "{{.address}}"
 "miner.extradata" = "{{.node_name}}"
