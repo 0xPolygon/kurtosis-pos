@@ -75,36 +75,17 @@ The key insight was that the 501 error itself is a reliable indicator that we're
 
 ### Polygon PoS Contract Deployer
 
-#### Node 16
-
-- [Docker Hub](https://hub.docker.com/r/leovct/pos-contract-deployer-node-16)
-
-```bash
-matic_contracts_branch="mardizzone/node-16"
-matic_contracts_commit_sha="c4d8e12" # 2023/12/06
-image_name="leovct/pos-contract-deployer-node-16:${matic_contracts_commit_sha}"
-docker build \
-  --build-arg MATIC_CONTRACTS_BRANCH="${matic_contracts_branch}" \
-  --build-arg MATIC_CONTRACTS_TAG_OR_COMMIT_SHA="${matic_contracts_commit_sha}" \
-  --tag "${image_name}" \
-  --file pos-contract-deployer/node-16.Dockerfile \
-  .
-docker push "${image_name}"
-```
-
-#### Node 20
-
-- [Docker Hub](https://hub.docker.com/r/leovct/pos-contract-deployer-node-20)
+- [Docker Hub](https://hub.docker.com/r/leovct/pos-contract-deployer)
 
 ```bash
 pos_contracts_branch="anvil-pos"
 pos_contracts_commit_sha="ed58f8a" # 2025/03/27
-image_name="leovct/pos-contract-deployer-node-20:${pos_contracts_commit_sha}"
+image_name="leovct/pos-contract-deployer:${pos_contracts_commit_sha}"
 docker build \
   --build-arg POS_CONTRACTS_BRANCH="${pos_contracts_branch}" \
   --build-arg POS_CONTRACTS_TAG_OR_COMMIT_SHA="${pos_contracts_commit_sha}" \
   --tag "${image_name}" \
-  --file pos-contract-deployer/node-20.Dockerfile \
+  --file pos-contract-deployer.Dockerfile \
   .
 docker push "${image_name}"
 ```
@@ -133,7 +114,7 @@ Note: We do not use the latest version of the [genesis contracts](https://github
 - [Docker Hub](https://hub.docker.com/r/leovct/pos-validator-config-generator)
 
 ```bash
-heimdall_v2_version="0.2.14" # 2025/07/23
+heimdall_v2_version="0.2.15" # 2025/07/28
 image_name="leovct/pos-validator-config-generator:${heimdall_v2_version}"
 docker build \
   --build-arg HEIMDALL_V2_VERSION="${heimdall_v2_version}" \
