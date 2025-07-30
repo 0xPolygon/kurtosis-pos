@@ -32,7 +32,7 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && npm install --global truffle@${TRUFFLE_VERSION} \
-  && git clone --branch ${GENESIS_CONTRACTS_BRANCH} https://github.com/maticnetwork/genesis-contracts.git . \
+  && git clone --branch ${GENESIS_CONTRACTS_BRANCH} https://github.com/0xPolygon/genesis-contracts.git . \
   && git checkout ${GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA} \
   && git submodule init \
   && git submodule update \

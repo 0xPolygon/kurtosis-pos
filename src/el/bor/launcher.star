@@ -113,7 +113,7 @@ def launch(
 
 
 # Bor log level must be specified using an integer instead of a string.
-# https://github.com/maticnetwork/bor/blob/ceb62bb9d3b91b57579f674f5823f7becbd01df8/internal/cli/server/server.go#L86
+# https://github.com/0xPolygon/bor/blob/ceb62bb9d3b91b57579f674f5823f7becbd01df8/internal/cli/server/server.go#L86
 def log_level_to_int(log_level):
     map_log_level_to_int = {
         "trace": 5,

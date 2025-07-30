@@ -7,7 +7,7 @@ LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
 WORKDIR /opt/polygon-cli
 RUN apk add --no-cache git build-base \
-  && git clone --branch "v0.1.75" https://github.com/maticnetwork/polygon-cli.git . \
+  && git clone --branch "v0.1.75" https://github.com/0xPolygon/polygon-cli.git . \
   && make build
 
 
