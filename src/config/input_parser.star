@@ -18,7 +18,7 @@ DEFAULT_CL_IMAGES = {
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1.2"
 
 DEFAULT_E2E_TEST_IMAGE = (
-    "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:f0bac2a"
+    "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:457d3a5"
 )
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
