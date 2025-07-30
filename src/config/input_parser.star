@@ -7,7 +7,7 @@ DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonl
 DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.2.15"  # Based on 0xpolygon/heimdall-v2:0.2.15.
 
 DEFAULT_EL_IMAGES = {
-    constants.EL_TYPE.bor: "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/bor:v2.2.9-fix",  # Based on 0xpolygon/bor:2.2.9 with heimdall migration monitor fix (https://github.com/maticnetwork/bor/compare/master...leovct:bor:2.2.9-fix).
+    constants.EL_TYPE.bor: "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/bor:v2.2.9-fix",  # Based on 0xpolygon/bor:2.2.9 with heimdall migration monitor fix (https://github.com/0xPolygon/bor/compare/master...leovct:bor:2.2.9-fix).
     constants.EL_TYPE.erigon: "erigontech/erigon:v3.0.15",
 }
 
