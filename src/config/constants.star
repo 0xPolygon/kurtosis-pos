@@ -47,7 +47,7 @@ DEFAULT_EL_CHAIN_ID = "4927"
 DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".
 
 ADMIN_BALANCE_ETH = math.pow(10, 9)
-VALIDATORS_BALANCE_ETH = math.pow(10, 9)
+VALIDATORS_BALANCE_ETH = math.pow(10, 4)
 
 CL_CLIENT_CONFIG_PATH = "/etc/cl"
 EL_CLIENT_CONFIG_PATH = "/etc/el"
