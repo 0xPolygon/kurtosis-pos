@@ -94,7 +94,7 @@ The key insight was that the 501 error itself is a reliable indicator that we're
 
 ```bash
 pos_contracts_branch="anvil-pos"
-pos_contracts_commit_sha="ed58f8a" # 2025/03/27
+pos_contracts_commit_sha="d96d592" # 2025/08/01
 image_name="pos-contract-deployer:${pos_contracts_commit_sha}"
 docker build \
   --build-arg POS_CONTRACTS_BRANCH="${pos_contracts_branch}" \

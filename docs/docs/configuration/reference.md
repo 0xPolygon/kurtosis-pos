@@ -78,7 +78,7 @@ Default: two validators and one rpc.
 
 | Field                      | Type   | Default                                                      | Description                                     |
 |----------------------------|--------|--------------------------------------------------------------|-------------------------------------------------|
-| contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:ed58f8a.              | Image used to deploy MATIC contracts to L1.     |
+| contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592.              | Image used to deploy MATIC contracts to L1.     |
 | el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd              | Image used to create the L2 EL genesis file.    |
 | validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:1.6.0-0.2.14 | Image used to generate validator configs.       |
 
