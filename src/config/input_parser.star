@@ -2,7 +2,7 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:ed58f8a"
+DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592"
 DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd"
 DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.2.15"  # Based on 0xpolygon/heimdall-v2:0.2.15.
 
