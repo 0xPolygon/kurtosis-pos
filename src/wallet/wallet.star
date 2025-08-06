@@ -50,7 +50,7 @@ def send_erc20_tokens(
     receiver_address,
     rpc_url,
     funder_private_key,
-    token_amount="100",
+    token_amount="10000000000000000000",
 ):
     plan.run_sh(
         name="erc20-token-sender",
