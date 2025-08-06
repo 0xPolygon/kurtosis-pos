@@ -67,7 +67,7 @@ runs:
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
       with:
         workload_identity_provider: "projects/337907489413/locations/global/workloadIdentityPools/github-wif/providers/github"
-        service_account: "kurtosis-cdk-ci@prj-polygonlabs-devtools-dev.iam.gserviceaccount.com"
+        service_account: "kurtosis-pos-ci@prj-polygonlabs-devtools-dev.iam.gserviceaccount.com"
 
     - name: Configure Docker to use GCR
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
