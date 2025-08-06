@@ -12,13 +12,13 @@ DEFAULT_EL_IMAGES = {
 }
 
 DEFAULT_CL_IMAGES = {
-    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.15",
+    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.16",
 }
 
 DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1.2"
 
 DEFAULT_E2E_TEST_IMAGE = (
-    "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:457d3a5"
+    "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:50ebf3e"
 )
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
