@@ -8,11 +8,40 @@ on:
 permissions:
   contents: read
   actions: write
+  id-token: write
 
 env:
   ENCLAVE_NAME: pos
 
 jobs:
+  run-without-args:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pre kurtosis run
+        uses: ./.github/actions/kurtosis-pre-run
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+          pull_images_from_gcr: "false"
+
+      - name: Kurtosis run
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Test state syncs
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+
+      - name: Post kurtosis run
+        if: always()
+        uses: ./.github/actions/kurtosis-post-run
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+
   list-ymls:
     runs-on: ubuntu-latest
     timeout-minutes: 1
