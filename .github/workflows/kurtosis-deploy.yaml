@@ -37,7 +37,7 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,l1,l2 --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Post kurtosis run
         if: always()
@@ -114,7 +114,7 @@ jobs:
 
       - name: Test state syncs
         if: steps.check-test-runner.outputs.test_runner_deployed == 'true'
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,l1,l2 --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
 
       - name: Post kurtosis run
         if: always()
