@@ -59,7 +59,7 @@ def _generate_credentials(plan, el_node_name, private_key):
     )
     result = plan.run_sh(
         name="{}-credentials-generator".format(el_node_name),
-        image=constants.TOOLBOX_IMAGE,
+        image=constants.DEFAULT_IMAGES.get("toolbox_image"),
         env_vars={
             "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
             "PRIVATE_KEY": private_key,
