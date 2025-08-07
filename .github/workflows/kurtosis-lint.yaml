@@ -19,11 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
-        with:
-          docker_username: ${{ secrets.DOCKER_USERNAME }}
-          docker_token: ${{ secrets.DOCKER_TOKEN }}
+      - name: Install kurtosis
+        shell: bash
+        run: |
+          echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+          sudo apt update
+          sudo apt install -y kurtosis-cli=1.7.2
+          kurtosis analytics disable
 
       - name: Run kurtosis linter
         run: kurtosis lint .
@@ -33,4 +35,4 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: crate-ci/typos@392b78fe18a52790c53f42456e46124f77346842 # v1.34.0
+      - uses: crate-ci/typos@a9ccf76b53d1ace194871d216f9ff058599a86db # v1.35.1

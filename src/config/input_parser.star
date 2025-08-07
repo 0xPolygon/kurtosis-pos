@@ -2,35 +2,16 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592"
-DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd"
-DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE = "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.2.15"  # Based on 0xpolygon/heimdall-v2:0.2.15.
-
-DEFAULT_EL_IMAGES = {
-    constants.EL_TYPE.bor: "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/bor:v2.2.9-fix",  # Based on 0xpolygon/bor:2.2.9 with heimdall migration monitor fix (https://github.com/0xPolygon/bor/compare/master...leovct:bor:2.2.9-fix).
-    constants.EL_TYPE.erigon: "erigontech/erigon:v3.0.15",
-}
-
-DEFAULT_CL_IMAGES = {
-    constants.CL_TYPE.heimdall_v2: "0xpolygon/heimdall-v2:0.2.15",
-}
-
-DEFAULT_CL_DB_IMAGE = "rabbitmq:4.1.2"
-
-DEFAULT_E2E_TEST_IMAGE = (
-    "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:457d3a5"
-)
-
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
         {
             "cl_type": "lighthouse",
-            "cl_image": "ethpandaops/lighthouse:unstable-6135f41",
+            "cl_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
             "el_type": "geth",
-            "el_image": "ethereum/client-go:v1.15.11",
+            "el_image": constants.DEFAULT_IMAGES.get("l1_el_image"),
             "use_separate_vc": True,
             "vc_type": "lighthouse",
-            "vc_image": "ethpandaops/lighthouse:unstable-6135f41",
+            "vc_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
             "count": 1,
         },
     ],
@@ -45,11 +26,11 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
 DEFAULT_POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
     "cl_type": constants.CL_TYPE.heimdall_v2,
-    "cl_image": DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2],
-    "cl_db_image": DEFAULT_CL_DB_IMAGE,
+    "cl_image": constants.DEFAULT_IMAGES.get("l2_cl_heimdall_v2_image"),
+    "cl_db_image": constants.DEFAULT_IMAGES.get("l2_cl_db_image"),
     "cl_log_level": constants.LOG_LEVEL.info,
     "el_type": constants.EL_TYPE.bor,
-    "el_image": DEFAULT_EL_IMAGES[constants.EL_TYPE.bor],
+    "el_image": constants.DEFAULT_IMAGES.get("l2_el_bor_image"),
     "el_log_level": constants.LOG_LEVEL.info,
     "count": 1,
 }
@@ -74,9 +55,15 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         },
     ],
     "setup_images": {
-        "contract_deployer": DEFAULT_POS_CONTRACT_DEPLOYER_IMAGE,
-        "el_genesis_builder": DEFAULT_POS_EL_GENESIS_BUILDER_IMAGE,
-        "validator_config_generator": DEFAULT_POS_VALIDATOR_CONFIG_GENERATOR_IMAGE,
+        "contract_deployer": constants.DEFAULT_IMAGES.get(
+            "pos_contract_deployer_image"
+        ),
+        "el_genesis_builder": constants.DEFAULT_IMAGES.get(
+            "pos_el_genesis_builder_image"
+        ),
+        "validator_config_generator": constants.DEFAULT_IMAGES.get(
+            "pos_validator_config_generator_image"
+        ),
     },
     "network_params": {
         # Admin account generated using `cast wallet new`.
@@ -101,7 +88,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         constants.ADDITIONAL_SERVICES.test_runner,
     ],
     "test_runner_params": {
-        "image": DEFAULT_E2E_TEST_IMAGE,
+        "image": constants.DEFAULT_IMAGES.get("e2e_image"),
     },
 }
 
@@ -218,7 +205,7 @@ def _parse_participants(participants):
         cl_image = p.get("cl_image", "")
         if cl_type and not cl_image:
             if cl_type == constants.CL_TYPE.heimdall_v2:
-                p["cl_image"] = DEFAULT_CL_IMAGES[constants.CL_TYPE.heimdall_v2]
+                p["cl_image"] = constants.DEFAULT_IMAGES.get("l2_cl_heimdall_v2_image")
             else:
                 fail("Invalid CL client type: '{}'.".format(cl_type))
 
@@ -227,9 +214,9 @@ def _parse_participants(participants):
         el_image = p.get("el_image", "")
         if el_type and not el_image:
             if el_type == constants.EL_TYPE.bor:
-                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.bor]
+                p["el_image"] = constants.DEFAULT_IMAGES.get("l2_el_bor_image")
             elif el_type == constants.EL_TYPE.erigon:
-                p["el_image"] = DEFAULT_EL_IMAGES[constants.EL_TYPE.erigon]
+                p["el_image"] = constants.DEFAULT_IMAGES.get("l2_el_erigon_image")
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
 
