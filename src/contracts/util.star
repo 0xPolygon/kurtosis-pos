@@ -22,7 +22,7 @@ ROOT_CONTRACTS_MAPPING = {
     "l1_marketplace_predicate": ".root.predicates.MarketplacePredicate",
     # Tokens.
     "l1_matic_token": ".root.tokens.MaticToken",
-    "l1_matic_weth_": ".root.tokens.MaticWeth",
+    "l1_matic_weth": ".root.tokens.MaticWeth",
     "l1_erc721_token": ".root.tokens.RootERC721",
     "l1_erc20_token": ".root.tokens.TestToken",
 }
