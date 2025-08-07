@@ -12,6 +12,7 @@ permissions:
 
 env:
   ENCLAVE_NAME: pos
+  EXECUTION_THRESHOLD_SECONDS: 200
 
 jobs:
   run-without-args:
