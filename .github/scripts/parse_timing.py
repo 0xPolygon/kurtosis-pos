@@ -102,9 +102,9 @@ def main():
     print("Kurtosis execution times:")
     print(f"- raw: {raw_time}")
     print(f"- parsed: {parsed_time:.2f}s")
-    print(f"- threshold: {args.max_time:.1f}s")
+    print(f"- threshold: {args.threshold:.1f}s")
 
-    if parsed_time > args.max_time:
+    if parsed_time > args.threshold:
         print(f"❌ Error: execution time exceeds the threshold")
         sys.exit(1)
     else:
