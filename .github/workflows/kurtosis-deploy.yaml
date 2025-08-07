@@ -16,7 +16,6 @@ concurrency:
 
 env:
   ENCLAVE_NAME: pos
-  EXECUTION_THRESHOLD_SECONDS: 200
 
 jobs:
   run-without-args:
@@ -35,7 +34,7 @@ jobs:
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
 
       - name: Extract timing information
-        run: python3 .github/scripts/parse_timing.py run.log --threshold ${{ env.EXECUTION_THRESHOLD_SECONDS }}
+        run: python3 .github/scripts/parse_timing.py run.log
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -97,7 +96,7 @@ jobs:
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
 
       - name: Extract timing information
-        run: python3 .github/scripts/parse_timing.py run.log --threshold ${{ env.EXECUTION_THRESHOLD_SECONDS }}
+        run: python3 .github/scripts/parse_timing.py run.log --config-file=${{ matrix.file.path }}
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
