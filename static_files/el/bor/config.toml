@@ -5,13 +5,15 @@ verbosity = {{.log_level_to_int}}
 
 syncmode = "{{.sync_mode}}"
 
-{{if .sync_with_witness}}
-syncwithwitnesses = true
-{{end}}
+[witness]
+    {{if .sync_with_witness}}
+    syncwithwitnesses = true
+    {{end}}
 
-{{if .produce_witness}}
-witnessprotocol = true
-{{end}}
+    {{if .produce_witness}}
+    enable = true
+    producewitnesses = true
+    {{end}}
 
 [p2p]
     maxpeers = 200
