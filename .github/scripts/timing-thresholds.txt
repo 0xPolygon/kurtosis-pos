@@ -1,0 +1,16 @@
+# Timing thresholds for different environments (in seconds)
+# Format: <config-file-name>: <threshold_seconds>
+
+# Default threshold
+default: 210
+
+# Client configurations
+heimdall-v2-bor: 210
+heimdall-v2-erigon: 210
+heimdall-v2-bor-minimal: 180
+heimdall-v2-erigon-minimal: 180
+
+# Additional services configurations
+additional-services: 210
+prometheus-grafana: 210
+test-runner: 210
