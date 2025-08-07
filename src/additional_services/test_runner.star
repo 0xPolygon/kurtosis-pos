@@ -22,6 +22,11 @@ def launch(
         contract_name="l1_stake_manager_proxy",
         contract_addresses_artifact=contract_addresses_artifact,
     )
+    l1_staking_info_address = contract_util.get_address(
+        plan,
+        contract_name="l1_staking_info",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
     l1_matic_token_address = contract_util.get_address(
         plan,
         contract_name="l1_matic_token",
@@ -97,6 +102,7 @@ def launch(
                 # Contract addresses.
                 "L1_DEPOSIT_MANAGER_PROXY_ADDRESS": l1_deposit_manager_proxy_address,
                 "L1_STAKE_MANAGER_PROXY_ADDRESS": l1_stake_manager_proxy_address,
+                "L1_STAKING_INFO_ADDRESS": l1_staking_info_address,
                 "L1_MATIC_TOKEN_ADDRESS": l1_matic_token_address,
                 "L1_ERC20_TOKEN_ADDRESS": l1_erc20_token_address,
                 "L1_ERC721_TOKEN_ADDRESS": l1_erc721_token_address,
