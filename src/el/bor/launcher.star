@@ -106,7 +106,7 @@ def launch(
                         "cp -r /opt/data/credentials/keystore {}".format(
                             BOR_APP_DATA_FOLDER_PATH
                         ),
-                        # Start bor.
+                        # Start bor using the container proc manager script.
                         # Note: this command attempts to start Bor and retries if it fails.
                         # The retry mechanism addresses a race condition where Bor initially fails to
                         # resolve hostnames of other nodes, as services are created sequentially;

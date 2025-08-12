@@ -109,7 +109,7 @@ def launch(
                         "erigon init --datadir {} {}/genesis.json".format(
                             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
                         ),
-                        # Start erigon.
+                        # Start erigon using the container proc manager script.
                         # Note: this command attempts to start Erigon and retries if it fails.
                         # The retry mechanism addresses a race condition where Erigon initially fails to
                         # resolve hostnames of other nodes, as services are created sequentially;
