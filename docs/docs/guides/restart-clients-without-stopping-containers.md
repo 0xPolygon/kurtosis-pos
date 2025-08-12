@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Restart clients whitout stopping containers
 
-This guide will explain how to restart any client without stopping the container. For example, you would want to stop heimdall, perform some operations in the container and then restart the client.
+This guide will explain how to restart any CL/EL client without stopping the container. For example, you would want to stop heimdall, perform some operations in the container and then restart the client.
 
 :::info
 This guide assumes you have a running devnet, if that's not the case, you can head to the [Getting Started](../introduction/getting-started.md) section.
@@ -30,7 +30,7 @@ PID   USER     TIME  COMMAND
 
 In this example, the PID of the script process is 7.
 
-Third, stop the `heimdall` process.
+Third, stop the heimdall process.
 
 ```bash
 kill -s TRAP 7
@@ -48,7 +48,7 @@ PID   USER     TIME  COMMAND
    34 root      0:00 ps aux
 ```
 
-Notice that the container is still running. Indeed, the container proc manager script gratefully terminates the child process, heimdall, by sending a SIGTERM signal and then starts a dummy process to keep the container running.
+Notice that the heimdall process with PID 12 is now gone and the container is still running. Indeed, the container proc manager script gratefully terminates the child process, heimdall, by sending a SIGTERM signal and then starts a dummy process to keep the container running.
 
 We can now perform some operations in the container. For instance, we can clean up the database by removing stored data.
 
