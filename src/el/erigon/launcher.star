@@ -84,7 +84,7 @@ def launch(
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
                 # utils scripts
-                "/usr/local/share": (container_proc_manager_artifact),
+                "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
             cmd=[

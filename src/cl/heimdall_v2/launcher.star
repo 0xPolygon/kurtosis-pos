@@ -104,7 +104,7 @@ def launch(
                 "/opt/data/genesis": cl_genesis_artifact,
                 "/opt/data/config": cl_validator_config_artifact,
                 # utils scripts
-                "/usr/local/share": (container_proc_manager_artifact),
+                "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
             cmd=[
