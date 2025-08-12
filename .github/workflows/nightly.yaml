@@ -16,7 +16,7 @@ env:
 jobs:
   run-without-args:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -28,7 +28,10 @@ jobs:
           pull_images_from_gcr: "false"
 
       - name: Kurtosis run
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+
+      - name: Extract timing information
+        run: python3 .github/scripts/parse_timing.py run.log
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -72,7 +75,7 @@ jobs:
     needs: list-ymls
     name: run-with-${{ matrix.file.name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -87,7 +90,10 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file.path }} .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
+
+      - name: Extract timing information
+        run: python3 .github/scripts/parse_timing.py run.log --config-file ${{ matrix.file.path }}
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -129,7 +135,7 @@ jobs:
 
   run-with-external-l1:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -140,10 +146,10 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy L1
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@1bf08937f7ec376d5e281fef87dc1efc28aeefef # 2025-06-14 (>v5.0.1)
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@1bf08937f7ec376d5e281fef87dc1efc28aeefef # 2025-06-14 (>v5.0.1)
 
       - name: Deploy L2
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -166,7 +172,7 @@ jobs:
 
   run-with-cl-el-genesis:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -177,7 +183,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Kurtosis run for the first time
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -212,7 +218,7 @@ jobs:
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-3-bor-heimdall-v2-rpc
 
       - name: Kurtosis run for the second time
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
