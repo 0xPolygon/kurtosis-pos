@@ -124,6 +124,8 @@ def launch(
                         'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
                             cl_shared.CONFIG_FOLDER_PATH
                         ),
+                        # Make the container proc manager script executable.
+                        "chmod +x /usr/local/share/container-proc-manager.sh",
                         # Start heimdall using the container proc manager script.
                         "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
                             cl_shared.CONFIG_FOLDER_PATH,

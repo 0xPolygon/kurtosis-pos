@@ -111,6 +111,8 @@ def launch(
                         "erigon init --datadir {} {}/genesis.json".format(
                             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
                         ),
+                        # Make the container proc manager script executable.
+                        "chmod +x /usr/local/share/container-proc-manager.sh",
                         # Start erigon.
                         # Note: this command attempts to start Erigon and retries if it fails.
                         # The retry mechanism addresses a race condition where Erigon initially fails to
