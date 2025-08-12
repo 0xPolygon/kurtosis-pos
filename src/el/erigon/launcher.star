@@ -84,9 +84,7 @@ def launch(
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
                 # utils scripts
-                "/usr/local/share/container-proc-manager.sh": (
-                    container_proc_manager_artifact
-                ),
+                "/usr/local/share": (container_proc_manager_artifact),
             },
             entrypoint=["sh", "-c"],
             cmd=[
@@ -111,8 +109,6 @@ def launch(
                         "erigon init --datadir {} {}/genesis.json".format(
                             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
                         ),
-                        # Make the container proc manager script executable.
-                        "chmod +x /usr/local/share/container-proc-manager.sh",
                         # Start erigon.
                         # Note: this command attempts to start Erigon and retries if it fails.
                         # The retry mechanism addresses a race condition where Erigon initially fails to
