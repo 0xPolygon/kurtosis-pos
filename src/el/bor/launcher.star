@@ -20,6 +20,7 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
+    container_proc_manager_artifact,
 ):
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -100,11 +101,16 @@ def launch(
                 ),
             },
             files={
+                # bor config
                 BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
+                # utils scripts
+                "/usr/local/share/container-proc-manager.sh": (
+                    container_proc_manager_artifact
+                ),
             },
-            entrypoint=["sh", "-c"],
+            entrypoint=["/usr/local/share/container-proc-manager.sh"],
             cmd=["&&".join(bor_cmds)],
         ),
     )

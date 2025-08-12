@@ -10,6 +10,10 @@ wait = import_module("./wait/wait.star")
 
 VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/cl/validator"
 
+CONTAINER_PROC_MANAGER_FILE_PATH = (
+    "../../static_files/scripts/container-proc-manager.sh"
+)
+
 
 def launch(
     plan,
@@ -34,6 +38,14 @@ def launch(
     )
     cl_node_ids = _read_cl_persistent_peers(
         plan, cl_validator_config_artifacts.persistent_peers
+    )
+
+    # Generate file artifact for the container process manager.
+    # This script is used to stop any client process (e.g. heimdall, bor or erigon) running inside
+    # the container without stopping the container itself.
+    container_proc_manager_artifact = plan.upload_files(
+        name="container-proc-manager".format(cl_node_name),
+        src=CONTAINER_PROC_MANAGER_FILE_PATH,
     )
 
     # Start each participant.
@@ -65,6 +77,7 @@ def launch(
                     cl_validator_config_artifact,
                     cl_node_ids,
                     l1_rpc_url,
+                    container_proc_manager_artifact,
                 )
                 if not first_cl_context:
                     first_cl_context = cl_context
@@ -93,6 +106,7 @@ def launch(
                 el_account,
                 network_data.el_static_nodes,
                 el_chain_id,
+                container_proc_manager_artifact,
             )
 
             # Add the node to the all_participants array.

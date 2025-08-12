@@ -22,6 +22,7 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
+    container_proc_manager_artifact,
 ):
     erigon_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -105,11 +106,16 @@ def launch(
                 ),
             },
             files={
+                # erigon config
                 ERIGON_CONFIG_FOLDER_PATH: erigon_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
+                # utils scripts
+                "/usr/local/share/container-proc-manager.sh": (
+                    container_proc_manager_artifact
+                ),
             },
-            entrypoint=["sh", "-c"],
+            entrypoint=["/usr/local/share/container-proc-manager.sh"],
             cmd=["&&".join(erigon_cmds)],
             user=User(uid=0, gid=0),  # Run the container as root user.
         ),
