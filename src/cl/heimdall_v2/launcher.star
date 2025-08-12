@@ -108,7 +108,7 @@ def launch(
                     container_proc_manager_artifact
                 ),
             },
-            entrypoint=["/usr/local/share/container-proc-manager.sh"],
+            entrypoint=["sh", "-c"],
             cmd=[
                 "&& ".join(
                     [
@@ -124,8 +124,8 @@ def launch(
                         'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
                             cl_shared.CONFIG_FOLDER_PATH
                         ),
-                        # Start heimdall.
-                        "heimdalld start --all --bridge --rest-server --home {}".format(
+                        # Start heimdall using the container proc manager script.
+                        "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
                             cl_shared.CONFIG_FOLDER_PATH,
                         ),
                     ]

@@ -52,27 +52,6 @@ def launch(
         },
     )
 
-    bor_cmds = [
-        # Copy genesis file.
-        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
-            BOR_CONFIG_FOLDER_PATH
-        ),
-        # Copy node credentials.
-        "cp /opt/data/credentials/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
-        "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp -r /opt/data/credentials/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
-        # Start bor.
-        # Note: this command attempts to start Bor and retries if it fails.
-        # The retry mechanism addresses a race condition where Bor initially fails to
-        # resolve hostnames of other nodes, as services are created sequentially;
-        # after a 5-second delay, all services should be up, allowing Bor to start
-        # successfully. This is also why the port checks are disabled.
-        "while ! bor server --config {}/config.toml; do echo -e '\n❌ Bor failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
-            BOR_CONFIG_FOLDER_PATH
-        ),
-    ]
-
     return plan.add_service(
         name=el_node_name,
         config=ServiceConfig(
@@ -110,8 +89,38 @@ def launch(
                     container_proc_manager_artifact
                 ),
             },
+            entrypoint=["sh", "-c"],
             entrypoint=["/usr/local/share/container-proc-manager.sh"],
-            cmd=["&&".join(bor_cmds)],
+            cmd=[
+                "&&".join(
+                    [
+                        # Copy genesis file.
+                        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
+                            BOR_CONFIG_FOLDER_PATH
+                        ),
+                        # Copy node credentials.
+                        "cp /opt/data/credentials/password.txt {}".format(
+                            BOR_CONFIG_FOLDER_PATH
+                        ),
+                        "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
+                        "cp /opt/data/credentials/nodekey {}/nodekey".format(
+                            BOR_APP_DATA_FOLDER_PATH
+                        ),
+                        "cp -r /opt/data/credentials/keystore {}".format(
+                            BOR_APP_DATA_FOLDER_PATH
+                        ),
+                        # Start bor.
+                        # Note: this command attempts to start Bor and retries if it fails.
+                        # The retry mechanism addresses a race condition where Bor initially fails to
+                        # resolve hostnames of other nodes, as services are created sequentially;
+                        # after a 5-second delay, all services should be up, allowing Bor to start
+                        # successfully. This is also why the port checks are disabled.
+                        "while ! /usr/local/share/container-proc-manager.sh bor server --config {}/config.toml; do echo -e '\n❌ Bor failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
+                            BOR_CONFIG_FOLDER_PATH
+                        ),
+                    ]
+                )
+            ],
         ),
     )
 
