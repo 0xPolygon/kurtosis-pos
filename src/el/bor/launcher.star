@@ -90,7 +90,6 @@ def launch(
                 ),
             },
             entrypoint=["sh", "-c"],
-            entrypoint=["/usr/local/share/container-proc-manager.sh"],
             cmd=[
                 "&&".join(
                     [

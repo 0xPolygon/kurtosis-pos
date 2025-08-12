@@ -88,7 +88,7 @@ def launch(
                     container_proc_manager_artifact
                 ),
             },
-            entrypoint=["/usr/local/share/container-proc-manager.sh"],
+            entrypoint=["sh", "-c"],
             cmd=[
                 "&&".join(
                     [
