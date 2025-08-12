@@ -110,7 +110,7 @@ def launch(
             },
             entrypoint=["sh", "-c"],
             cmd=[
-                "&& ".join(
+                " && ".join(
                     [
                         # Copy CL validator config inside heimdall config folder.
                         "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(

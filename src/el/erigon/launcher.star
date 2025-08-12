@@ -90,7 +90,7 @@ def launch(
             },
             entrypoint=["sh", "-c"],
             cmd=[
-                "&&".join(
+                " && ".join(
                     [
                         # Copy genesis file.
                         "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
