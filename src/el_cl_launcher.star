@@ -44,7 +44,7 @@ def launch(
     # This script is used to stop any client process (e.g. heimdall, bor or erigon) running inside
     # the container without stopping the container itself.
     container_proc_manager_artifact = plan.upload_files(
-        name="container-proc-manager".format(cl_node_name),
+        name="container-proc-manager-script",
         src=CONTAINER_PROC_MANAGER_FILE_PATH,
     )
 
