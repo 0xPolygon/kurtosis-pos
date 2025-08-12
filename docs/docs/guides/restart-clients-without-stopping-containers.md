@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Restart clients whitout stopping containers
+# Restart clients without stopping containers
 
 This guide will explain how to restart any CL/EL client without stopping the container. For example, you would want to stop heimdall, perform some operations in the container and then restart the client.
 
