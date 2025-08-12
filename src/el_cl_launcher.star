@@ -10,9 +10,7 @@ wait = import_module("./wait/wait.star")
 
 VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/cl/validator"
 
-CONTAINER_PROC_MANAGER_FILE_PATH = (
-    "../../static_files/scripts/container-proc-manager.sh"
-)
+CONTAINER_PROC_MANAGER_FILE_PATH = "../static_files/scripts/container-proc-manager.sh"
 
 
 def launch(
