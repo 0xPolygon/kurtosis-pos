@@ -106,15 +106,18 @@ def launch(
                         "cp -r /opt/data/credentials/keystore {}".format(
                             BOR_APP_DATA_FOLDER_PATH
                         ),
-                        # Start bor using the container proc manager script.
+                        # Create bor startup script with retry logic.
                         # Note: this command attempts to start Bor and retries if it fails.
                         # The retry mechanism addresses a race condition where Bor initially fails to
                         # resolve hostnames of other nodes, as services are created sequentially;
                         # after a 5-second delay, all services should be up, allowing Bor to start
                         # successfully. This is also why the port checks are disabled.
-                        "/usr/local/share/container-proc-manager.sh 'while ! bor server --config {}/config.toml; do echo -e \"❌ Bor failed to start. Retrying in five seconds...\\n\"; sleep 5; done'".format(
+                        "cat > /tmp/start.sh << 'EOF'\n#!/bin/sh\nwhile ! bor server --config {}/config.toml; do\n  echo \"❌ Bor failed to start. Retrying in five seconds...\"\n  sleep 5\ndone\nEOF".format(
                             BOR_CONFIG_FOLDER_PATH
                         ),
+                        "chmod +x /tmp/start.sh",
+                        # Start bor using the container proc manager script.
+                        "/usr/local/share/container-proc-manager.sh /tmp/start.sh",
                     ]
                 )
             ],
