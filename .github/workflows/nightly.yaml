@@ -27,8 +27,10 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
           pull_images_from_gcr: "false"
 
-      - name: Kurtosis run
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+      - name: Run Starlark
+        run: |
+          set -o pipefail
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
 
       - name: Extract timing information
         run: python3 .github/scripts/parse_timing.py run.log
@@ -90,7 +92,9 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
+        run: |
+          set -o pipefail
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
 
       - name: Extract timing information
         run: python3 .github/scripts/parse_timing.py run.log --config-file ${{ matrix.file.path }}
@@ -182,7 +186,7 @@ jobs:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Kurtosis run for the first time
+      - name: Run Starlark for the first time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed .
 
       - name: Inspect enclave
@@ -217,7 +221,7 @@ jobs:
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-v2-validator
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-3-bor-heimdall-v2-rpc
 
-      - name: Kurtosis run for the second time
+      - name: Run Starlark for the second time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
       - name: Inspect enclave
