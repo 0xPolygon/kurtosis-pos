@@ -36,6 +36,17 @@ def launch(
         plan, cl_validator_config_artifacts.persistent_peers
     )
 
+    # Get the enode url of the first el participant.
+    participant = participants[0]
+    first_el_node_name = _generate_el_node_name(participant, 1)
+    first_el_enode_url = _generate_enode_url(
+        participant,
+        prefunded_accounts.PREFUNDED_ACCOUNTS[0].eth_tendermint.public_key.removeprefix(
+            "0x"
+        ),
+        first_el_node_name,
+    )
+
     # Start each participant.
     participant_index = 0
     validator_index = 0
@@ -81,6 +92,10 @@ def launch(
             else:
                 fail("No CL node deployed yet...")
 
+            # Determine the EL static nodes.
+            # We use a hub-and-spoke strategy where the first node starts as a hub and the others connect to it.
+            el_static_nodes = [] if participant_index == 0 else [first_el_enode_url]
+
             # Launch the EL node.
             el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
             el_context = el_launcher.launch(
@@ -91,7 +106,7 @@ def launch(
                 cl_api_url,
                 cl_ws_rpc_url,
                 el_account,
-                network_data.el_static_nodes,
+                el_static_nodes,
                 el_chain_id,
             )
 
@@ -140,8 +155,6 @@ def _prepare_network_data(participants):
     cl_validator_configs = []
     # An array of keystores for CL validators.
     cl_validator_keystores = []
-    # An array of EL enode URLs.
-    el_static_nodes = []
 
     # Iterate through all participants in the network and generate necessary configurations.
     participant_index = 0
@@ -150,14 +163,6 @@ def _prepare_network_data(participants):
         for _ in range(p.get("count")):
             el_node_name = _generate_el_node_name(p, participant_index + 1)
             account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
-
-            # Generate the EL enode url.
-            enode_url = _generate_enode_url(
-                p,
-                account.eth_tendermint.public_key.removeprefix("0x"),
-                el_node_name,
-            )
-            el_static_nodes.append(enode_url)
 
             # Generate validator configurations.
             is_validator = p.get("kind") == constants.PARTICIPANT_KIND.validator
@@ -194,7 +199,6 @@ def _prepare_network_data(participants):
     return struct(
         cl_validator_configs_str=";".join(cl_validator_configs),
         cl_validator_keystores=cl_validator_keystores,
-        el_static_nodes=el_static_nodes,
     )
 
 

@@ -62,13 +62,8 @@ def launch(
         "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
         "cp -r /opt/data/credentials/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
         # Start bor.
-        # Note: this command attempts to start Bor and retries if it fails.
-        # The retry mechanism addresses a race condition where Bor initially fails to
-        # resolve hostnames of other nodes, as services are created sequentially;
-        # after a 5-second delay, all services should be up, allowing Bor to start
-        # successfully. This is also why the port checks are disabled.
-        "while ! bor server --config {}/config.toml; do echo -e '\n❌ Bor failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
-            BOR_CONFIG_FOLDER_PATH
+        "bor server --config {}/config.toml --datadir {}".format(
+            BOR_CONFIG_FOLDER_PATH, BOR_APP_DATA_FOLDER_PATH
         ),
     ]
 
@@ -76,27 +71,22 @@ def launch(
         name=el_node_name,
         config=ServiceConfig(
             image=participant.get("el_image"),
-            # All port checks are disabled, see the comment above.
             ports={
                 el_shared.RPC_PORT_ID: PortSpec(
                     number=el_shared.RPC_PORT_NUMBER,
                     application_protocol="http",
-                    wait=None,
                 ),
                 el_shared.WS_PORT_ID: PortSpec(
                     number=el_shared.WS_PORT_NUMBER,
                     application_protocol="ws",
-                    wait=None,
                 ),
                 el_shared.DISCOVERY_PORT_ID: PortSpec(
                     number=el_shared.DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
-                    wait=None,
                 ),
                 el_shared.METRICS_PORT_ID: PortSpec(
                     number=el_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
-                    wait=None,
                 ),
             },
             files={
