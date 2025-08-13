@@ -16,6 +16,7 @@ def launch(
     l1_rpc_url,
     el_rpc_url,
     amqp_url,
+    container_proc_manager_artifact,
 ):
     heimdall_node_config_artifacts = plan.render_templates(
         name="{}-node-config".format(cl_node_name),
@@ -96,15 +97,18 @@ def launch(
                 ),
             },
             files={
+                # heimdall-v2 config
                 "{}/config".format(
                     cl_shared.CONFIG_FOLDER_PATH
                 ): heimdall_node_config_artifacts,
                 "/opt/data/genesis": cl_genesis_artifact,
                 "/opt/data/config": cl_validator_config_artifact,
+                # utils scripts
+                "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
             cmd=[
-                "&& ".join(
+                " && ".join(
                     [
                         # Copy CL validator config inside heimdall config folder.
                         "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
@@ -118,8 +122,8 @@ def launch(
                         'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
                             cl_shared.CONFIG_FOLDER_PATH
                         ),
-                        # Start heimdall.
-                        "heimdalld start --all --bridge --rest-server --home {}".format(
+                        # Start heimdall using the container proc manager script.
+                        "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
                             cl_shared.CONFIG_FOLDER_PATH,
                         ),
                     ]

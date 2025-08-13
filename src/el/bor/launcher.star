@@ -20,6 +20,7 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
+    container_proc_manager_artifact,
 ):
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -51,27 +52,6 @@ def launch(
         },
     )
 
-    bor_cmds = [
-        # Copy genesis file.
-        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
-            BOR_CONFIG_FOLDER_PATH
-        ),
-        # Copy node credentials.
-        "cp /opt/data/credentials/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
-        "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp -r /opt/data/credentials/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
-        # Start bor.
-        # Note: this command attempts to start Bor and retries if it fails.
-        # The retry mechanism addresses a race condition where Bor initially fails to
-        # resolve hostnames of other nodes, as services are created sequentially;
-        # after a 5-second delay, all services should be up, allowing Bor to start
-        # successfully. This is also why the port checks are disabled.
-        "while ! bor server --config {}/config.toml; do echo -e '\n❌ Bor failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
-            BOR_CONFIG_FOLDER_PATH
-        ),
-    ]
-
     return plan.add_service(
         name=el_node_name,
         config=ServiceConfig(
@@ -100,12 +80,47 @@ def launch(
                 ),
             },
             files={
+                # bor config
                 BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
+                # utils scripts
+                "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
-            cmd=["&&".join(bor_cmds)],
+            cmd=[
+                " && ".join(
+                    [
+                        # Copy genesis file.
+                        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
+                            BOR_CONFIG_FOLDER_PATH
+                        ),
+                        # Copy node credentials.
+                        "cp /opt/data/credentials/password.txt {}".format(
+                            BOR_CONFIG_FOLDER_PATH
+                        ),
+                        "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
+                        "cp /opt/data/credentials/nodekey {}/nodekey".format(
+                            BOR_APP_DATA_FOLDER_PATH
+                        ),
+                        "cp -r /opt/data/credentials/keystore {}".format(
+                            BOR_APP_DATA_FOLDER_PATH
+                        ),
+                        # Create bor startup script with retry logic.
+                        # Note: this command attempts to start Bor and retries if it fails.
+                        # The retry mechanism addresses a race condition where Bor initially fails to
+                        # resolve hostnames of other nodes, as services are created sequentially;
+                        # after a 5-second delay, all services should be up, allowing Bor to start
+                        # successfully. This is also why the port checks are disabled.
+                        "cat > /tmp/start.sh << 'EOF'\n#!/bin/sh\nwhile ! bor server --config {}/config.toml; do\n  echo \"❌ Bor failed to start. Retrying in five seconds...\"\n  sleep 5\ndone\nEOF".format(
+                            BOR_CONFIG_FOLDER_PATH
+                        ),
+                        "chmod +x /tmp/start.sh",
+                        # Start bor.
+                        "/usr/local/share/container-proc-manager.sh /tmp/start.sh",
+                    ]
+                )
+            ],
         ),
     )
 
