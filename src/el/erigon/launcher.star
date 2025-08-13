@@ -119,8 +119,8 @@ def launch(
                             ERIGON_CONFIG_FOLDER_PATH
                         ),
                         "chmod +x /tmp/start.sh",
-                        # Start erigon using the container proc manager script.
-                        "/usr/local/share/container-proc-manager.sh /tmp/start.sh",
+                        # Start erigon.
+                        "/tmp/start.sh",
                     ]
                 )
             ],

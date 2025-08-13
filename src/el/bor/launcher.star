@@ -116,8 +116,8 @@ def launch(
                             BOR_CONFIG_FOLDER_PATH
                         ),
                         "chmod +x /tmp/start.sh",
-                        # Start bor using the container proc manager script.
-                        "/usr/local/share/container-proc-manager.sh /tmp/start.sh",
+                        # Start bor.
+                        "/tmp/start.sh",
                     ]
                 )
             ],
