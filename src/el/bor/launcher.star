@@ -117,7 +117,7 @@ def launch(
                         ),
                         "chmod +x /tmp/start.sh",
                         # Start bor.
-                        "/tmp/start.sh",
+                        "/usr/local/share/container-proc-manager.sh /tmp/start.sh",
                     ]
                 )
             ],

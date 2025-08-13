@@ -120,7 +120,7 @@ def launch(
                         ),
                         "chmod +x /tmp/start.sh",
                         # Start erigon.
-                        "/tmp/start.sh",
+                        "/usr/local/share/container-proc-manager.sh /tmp/start.sh",
                     ]
                 )
             ],
