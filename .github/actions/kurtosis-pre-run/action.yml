@@ -87,6 +87,7 @@ runs:
         registry="europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/virtual"
         images=(
           "kurtosistech/engine:1.10.3"
+          "kurtosistech/core:1.10.3"
           "timberio/vector:0.45.0-debian"
           "traefik:2.10.6"
           "alpine:3.17"
