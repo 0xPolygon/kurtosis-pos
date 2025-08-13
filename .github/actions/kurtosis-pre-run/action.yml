@@ -97,7 +97,9 @@ runs:
           "mslipper/deployment-utils:latest"
         )
         for image in "${images[@]}"; do
-          echo "Pulling: $image"
-          docker pull "${registry}/${image}"
-          docker tag "${registry}/${image}" "${image}"
+          {
+            echo "Pulling: $image"
+            docker pull "${registry}/${image}"
+            docker tag "${registry}/${image}" "${image}"
+          } &
         done
