@@ -115,7 +115,7 @@ def launch(
                         # resolve hostnames of other nodes, as services are created sequentially;
                         # after a 5-second delay, all services should be up, allowing Erigon to start
                         # successfully. This is also why the port checks are disabled.
-                        "/usr/local/share/container-proc-manager.sh sh -c 'while ! erigon --config {}/config.toml; do echo -e \"\\n❌ Erigon failed to start. Retrying in five seconds...\\n\"; sleep 5; done'".format(
+                        "/usr/local/share/container-proc-manager.sh 'while ! erigon --config {}/config.toml; do echo -e \"❌ Erigon failed to start. Retrying in five seconds...\\n\"; sleep 5; done'".format(
                             ERIGON_CONFIG_FOLDER_PATH
                         ),
                     ]

@@ -112,7 +112,7 @@ def launch(
                         # resolve hostnames of other nodes, as services are created sequentially;
                         # after a 5-second delay, all services should be up, allowing Bor to start
                         # successfully. This is also why the port checks are disabled.
-                        "/usr/local/share/container-proc-manager.sh sh -c 'while ! bor server --config {}/config.toml; do echo -e \"\\n❌ Bor failed to start. Retrying in five seconds...\\n\"; sleep 5; done'".format(
+                        "/usr/local/share/container-proc-manager.sh 'while ! bor server --config {}/config.toml; do echo -e \"❌ Bor failed to start. Retrying in five seconds...\\n\"; sleep 5; done'".format(
                             BOR_CONFIG_FOLDER_PATH
                         ),
                     ]
