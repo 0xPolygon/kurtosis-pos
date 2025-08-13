@@ -78,7 +78,9 @@ runs:
     - name: Pre pull package images from GCR
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
       shell: bash
-      run: cat modified-images.txt | xargs -n 1 -P 8 docker pull
+      run: |
+        cat modified-images.txt | xargs -n 1 -P 8 docker pull
+        docker images
 
     - name: Pre pull kurtosis core images from GCR
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
@@ -88,6 +90,7 @@ runs:
         images=(
           "kurtosistech/engine:1.10.3"
           "kurtosistech/core:1.10.3"
+          "kurtosistech/files-artifacts-expander:1.10.3"
           "timberio/vector:0.45.0-debian"
           "traefik:2.10.6"
           "alpine:3.17"
@@ -103,3 +106,4 @@ runs:
             docker tag "${registry}/${image}" "${image}"
           } &
         done
+        docker images
