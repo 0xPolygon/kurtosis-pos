@@ -7,9 +7,9 @@ command_to_run="$*"
 
 echo "Starting process. Running command: $command_to_run" >&2
 
-# Start the specified command in the background and store its process ID (PID).
+# Start the specified command in the background, keep stdout/stderr connected and store its process ID (PID).
 # The "$!" variable holds the PID of the most recently executed background process.
-$command_to_run &
+$command_to_run 2>&1 &
 command_pid="$!"
 
 echo "PID $$ has started child process $command_pid" >&2
