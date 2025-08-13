@@ -103,6 +103,7 @@ runs:
             docker tag "${registry}/${image}" "${image}"
           } &
         done
+        wait
 
     - name: Display docker images
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
