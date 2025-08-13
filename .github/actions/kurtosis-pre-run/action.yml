@@ -78,9 +78,7 @@ runs:
     - name: Pre pull package images from GCR
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
       shell: bash
-      run: |
-        cat modified-images.txt | xargs -n 1 -P 8 docker pull
-        docker images
+      run: cat modified-images.txt | xargs -n 1 -P 8 docker pull
 
     - name: Pre pull kurtosis core images from GCR
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
@@ -101,9 +99,12 @@ runs:
         )
         for image in "${images[@]}"; do
           {
-            echo "Pulling: $image"
             docker pull "${registry}/${image}"
             docker tag "${registry}/${image}" "${image}"
           } &
         done
-        docker images
+
+    - name: Display docker images
+      if: ${{ inputs.pull_images_from_gcr == 'true' }}
+      shell: bash
+      run: docker images
