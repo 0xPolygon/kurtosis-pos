@@ -29,7 +29,7 @@ def derive_address_from_private_key(plan, private_key):
     return result.output
 
 
-def fund(plan, receiver_address, rpc_url, funder_private_key, value="10ether"):
+def fund(plan, receiver_address, rpc_url, funder_private_key, value="1000ether"):
     plan.run_sh(
         name="address-funder",
         description="Funding address on network {}".format(rpc_url),
@@ -50,7 +50,7 @@ def send_erc20_tokens(
     receiver_address,
     rpc_url,
     funder_private_key,
-    token_amount="10000000000000000000",
+    token_amount="1000000000000000000000",
 ):
     plan.run_sh(
         name="erc20-token-sender",

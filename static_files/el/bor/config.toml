@@ -48,14 +48,14 @@ syncmode = "{{.sync_mode}}"
         enabled = true
         host = "0.0.0.0"
         port = {{.rpc_port_number}}
-        api = ["admin", "eth", "net", "web3", "txpool", "bor"]
+        api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
         vhosts = ["*"]
         corsdomain = ["*"]
     [jsonrpc.ws]
         enabled = true
         host = "0.0.0.0"
         port = {{.ws_port_number}}
-        api = ["admin", "eth", "net", "web3", "txpool", "bor"]
+        api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
         origins = ["*"]
 
 [telemetry]

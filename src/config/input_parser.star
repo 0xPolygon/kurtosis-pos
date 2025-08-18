@@ -42,18 +42,7 @@ DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
-    "participants": [
-        DEFAULT_POLYGON_POS_PARTICIPANT
-        | {
-            "kind": constants.PARTICIPANT_KIND.validator,
-            "count": 2,
-        },
-        DEFAULT_POLYGON_POS_PARTICIPANT
-        | {
-            "kind": constants.PARTICIPANT_KIND.rpc,
-            "count": 1,
-        },
-    ],
+    "participants": [DEFAULT_POLYGON_POS_PARTICIPANT],
     "setup_images": {
         "contract_deployer": constants.DEFAULT_IMAGES.get(
             "pos_contract_deployer_image"
@@ -79,7 +68,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "cl_checkpoint_poll_interval": "1m0s",
         # EL network params.
         "el_chain_id": constants.DEFAULT_EL_CHAIN_ID,
-        "el_block_interval_seconds": 2,
+        "el_block_interval_seconds": 1,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
         "el_gas_limit": math.pow(10, 7),

@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install kurtosis
         shell: bash
@@ -34,5 +34,5 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: crate-ci/typos@a9ccf76b53d1ace194871d216f9ff058599a86db # v1.35.1
+      - uses: actions/checkout@v5
+      - uses: crate-ci/typos@a67079b4ae32e18c3f53d75368c52ce53b5fb56b # v1.35.4

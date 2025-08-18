@@ -20,9 +20,9 @@ env:
 jobs:
   run-without-args:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -31,7 +31,10 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Kurtosis run
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+
+      - name: Extract timing information
+        run: python3 .github/scripts/parse_timing.py run.log
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -51,7 +54,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: set-matrix
         run: |
           file_paths=$(ls -R ./.github/configs/{*,*/*}.yml | grep -Ev "nightly|stateless")
@@ -75,13 +78,13 @@ jobs:
     needs: [list-ymls]
     name: run-with-${{ matrix.file.name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         file: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -90,7 +93,10 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Kurtosis run
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file.path }} .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
+
+      - name: Extract timing information
+        run: python3 .github/scripts/parse_timing.py run.log --config-file=${{ matrix.file.path }}
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
