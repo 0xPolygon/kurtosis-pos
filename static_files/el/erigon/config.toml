@@ -50,5 +50,6 @@ allow-insecure-unlock = true
 # "ws.origins" = ["*"] # TODO: Make this flag available in erigon.
    
 # [telemetry]
+"metrics" = true
 "metrics.addr" = "0.0.0.0"
 "metrics.port" = {{.metrics_port_number}}

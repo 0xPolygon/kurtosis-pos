@@ -77,22 +77,27 @@ def launch(
                 cl_shared.REST_API_PORT_ID: PortSpec(
                     number=cl_shared.REST_API_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 cl_shared.GRPC_PORT_ID: PortSpec(
                     number=cl_shared.GRPC_PORT_NUMBER,
                     application_protocol="grpc",
+                    wait=None,
                 ),
                 cl_shared.NODE_LISTEN_PORT_ID: PortSpec(
                     number=cl_shared.NODE_LISTEN_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 cl_shared.RPC_PORT_ID: PortSpec(
                     number=cl_shared.RPC_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 cl_shared.METRICS_PORT_ID: PortSpec(
                     number=cl_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
             },
             files={
