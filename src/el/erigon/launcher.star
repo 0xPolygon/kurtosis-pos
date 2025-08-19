@@ -80,18 +80,22 @@ def launch(
                 el_shared.RPC_PORT_ID: PortSpec(
                     number=el_shared.RPC_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 el_shared.WS_PORT_ID: PortSpec(
                     number=el_shared.WS_PORT_NUMBER,
                     application_protocol="ws",
+                    wait=None,
                 ),
                 el_shared.DISCOVERY_PORT_ID: PortSpec(
                     number=el_shared.DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 el_shared.METRICS_PORT_ID: PortSpec(
                     number=el_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
             },
             files={
