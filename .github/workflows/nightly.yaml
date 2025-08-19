@@ -28,7 +28,9 @@ jobs:
           pull_images_from_gcr: "false"
 
       - name: Kurtosis run
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+        run: |
+          set -o pipefail
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
 
       - name: Extract timing information
         run: python3 .github/scripts/parse_timing.py run.log
@@ -90,7 +92,9 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
+        run: |
+          set -o pipefail
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
 
       - name: Extract timing information
         run: python3 .github/scripts/parse_timing.py run.log --config-file ${{ matrix.file.path }}
