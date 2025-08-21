@@ -1,6 +1,6 @@
 blockscout = import_module("./blockscout.star")
 constants = import_module("../config/constants.star")
-observability = import_module("./observability.star.star")
+observability = import_module("./observability.star")
 test_runner = import_module("./test_runner.star")
 tx_spammer = import_module("./tx_spammer.star")
 
