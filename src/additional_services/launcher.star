@@ -1,6 +1,6 @@
 blockscout = import_module("./blockscout.star")
 constants = import_module("../config/constants.star")
-prometheus_grafana = import_module("./prometheus_grafana.star")
+observability = import_module("./observability.star")
 test_runner = import_module("./test_runner.star")
 tx_spammer = import_module("./tx_spammer.star")
 
@@ -18,8 +18,8 @@ def launch(
     for svc in additional_services:
         if svc == constants.ADDITIONAL_SERVICES.blockscout:
             blockscout.launch(plan)
-        elif svc == constants.ADDITIONAL_SERVICES.prometheus_grafana:
-            prometheus_grafana.launch(
+        elif svc == constants.ADDITIONAL_SERVICES.observability:
+            observability.launch(
                 plan,
                 l1_context,
                 l2_context,

@@ -67,7 +67,7 @@ To monitor the devnet, add [Prometheus](https://prometheus.io/) and [Grafana](ht
 ```yaml
 polygon_pos_package:
   additional_services:
-    - prometheus_grafana
+    - observability
 ```
 
 After deploying, retrieve the service URLs with:
