@@ -3,6 +3,7 @@ constants = import_module("../config/constants.star")
 observability = import_module("./observability.star")
 test_runner = import_module("./test_runner.star")
 tx_spammer = import_module("./tx_spammer.star")
+status_checker = import_module("./status_checker.star")
 
 
 def launch(
@@ -39,5 +40,7 @@ def launch(
             )
         elif svc == constants.ADDITIONAL_SERVICES.tx_spammer:
             tx_spammer.launch(plan)
+        elif svc == constants.ADDITIONAL_SERVICES.status_checker:
+            status_checker.launch(plan)
         else:
             fail("Invalid additional service: %s" % (svc))
