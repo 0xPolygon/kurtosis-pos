@@ -40,7 +40,7 @@ def launch_panoptichain(
     l2_el_genesis_artifact,
     contract_addresses_artifact,
 ):
-    # Retrieve L1 rpc urls.
+    # Retrieve L1 RPC URLs.
     l1_rpcs = {}
     if l1_context.all_participants:
         for p in l1_context.all_participants:
@@ -48,7 +48,7 @@ def launch_panoptichain(
     else:
         l1_rpcs = {"external-l1": l1_context.rpc_url}
 
-    # Retrieve L2 EL and CL urls.
+    # Retrieve L2 EL and CL URLs.
     l2_el_rpcs = {
         p.el_context.service_name: p.el_context.rpc_http_url
         for p in l2_context.all_participants
