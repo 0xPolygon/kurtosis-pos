@@ -39,6 +39,7 @@ ADDITIONAL_SERVICES = struct(
     observability="observability",
     test_runner="test_runner",
     tx_spammer="tx_spammer",
+    status_checker="status_checker",
 )
 
 DEFAULT_IMAGES = {

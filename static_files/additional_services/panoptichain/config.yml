@@ -19,16 +19,16 @@ providers:
         checkpoint_address: "{{$.checkpoint_address}}"
     {{end}}
 
-    {{range $label, $url := .l2_rpcs}}
+    {{range $label, $urls := .l2_urls}}
     - name: "L2"
-      url: "{{$url}}"
+      url: "{{$urls.rpc}}"
       label: "{{$label}}"
       contracts:
         state_sync_receiver_address: "{{$.state_sync_receiver_address}}"
     {{end}}
 
   heimdall:
-    {{range $label, $urls := .heimdall_urls}}
+    {{range $label, $urls := .l2_urls}}
     - name: "L2"
       tendermint_url: "{{$urls.tendermint}}"
       heimdall_url: "{{$urls.heimdall}}"
