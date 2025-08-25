@@ -14,7 +14,7 @@ for key in $(echo $L2_URLS | jq -r 'keys[]'); do
   now=$(date +%s)
   dt=$((now - block_ts))
 
-  if [ $age -gt 120 ]; then
+  if [ $dt -gt 120 ]; then
     echo "ERROR: $key block number is stuck"
     error=1
   fi
