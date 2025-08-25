@@ -1,10 +1,11 @@
-ports_package = import_module("../package_io/ports.star")
-service_package = import_module("../../lib/service.star")
-
 STATUS_CHECKER_IMAGE = "ghcr.io/0xpolygon/status-checker:v0.2.8"
 
 
-def launch(plan, args):
+def launch(
+    plan,
+    l1_context,
+    l2_context,
+):
     # Retrieve L1 RPC URLs.
     l1_rpcs = {}
     if l1_context.all_participants:
@@ -41,7 +42,7 @@ def launch(plan, args):
     )
 
     plan.add_service(
-        name="status-checker" + args["deployment_suffix"],
+        name="status-checker",
         config=ServiceConfig(
             image=STATUS_CHECKER_IMAGE,
             files={
