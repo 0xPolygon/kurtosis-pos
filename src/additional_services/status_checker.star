@@ -37,7 +37,7 @@ def launch(
     )
 
     status_checker_checks_artifact = plan.upload_files(
-        src="../../static_files/additional_services/status-checker-config/checks",
+        src="../../static_files/additional_services/status-checker/checks",
         name="status-checker-checks",
     )
 
