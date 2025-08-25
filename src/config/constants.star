@@ -37,7 +37,7 @@ BOR_SYNC_MODES = struct(
 
 ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
-    prometheus_grafana="prometheus_grafana",
+    observability="observability",
     test_runner="test_runner",
     tx_spammer="tx_spammer",
 )

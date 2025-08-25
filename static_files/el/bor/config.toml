@@ -1,9 +1,10 @@
-identity = "{{.node_name}}"
 chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
+identity = "{{.node_name}}"
+syncmode = "{{.sync_mode}}"
 verbosity = {{.log_level_to_int}}
 
-syncmode = "{{.sync_mode}}"
+"bor.logs" = true
 
 [witness]
     {{if .sync_with_witness}}
