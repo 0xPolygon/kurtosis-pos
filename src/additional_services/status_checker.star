@@ -1,3 +1,5 @@
+config_util = import_module("../config/util.star")
+
 STATUS_CHECKER_IMAGE = "ghcr.io/0xpolygon/status-checker:v0.2.8"
 
 
@@ -6,23 +8,8 @@ def launch(
     l1_context,
     l2_context,
 ):
-    # Retrieve L1 RPC URLs.
-    l1_rpcs = {}
-    if l1_context.all_participants:
-        for p in l1_context.all_participants:
-            l1_rpcs[p.el_context.service_name] = p.el_context.rpc_http_url
-    else:
-        l1_rpcs = {"external-l1": l1_context.rpc_url}
-
-    # Retrieve L2 EL and CL URLs.
-    l2_urls = {
-        p.el_context.service_name: {
-            "rpc": p.el_context.rpc_http_url,
-            "heimdall": p.cl_context.api_url,
-            "tendermint": p.cl_context.rpc_url,
-        }
-        for p in l2_context.all_participants
-    }
+    l1_rpcs = config_util.l1_rpcs(l1_context)
+    l2_urls = config_util.l2_urls(l2_context)
 
     status_checker_config_artifact = plan.render_templates(
         name="status-checker-config",
@@ -55,8 +42,8 @@ def launch(
             },
             ports={"metrics": PortSpec(9090, application_protocol="http")},
             env_vars={
-                "L1_RPCS": l1_rpcs,
-                "L2_URLS": l2_urls,
+                "L1_RPCS": json.encode(l1_rpcs),
+                "L2_URLS": json.encode(l2_urls),
             },
         ),
     )
