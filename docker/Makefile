@@ -19,9 +19,6 @@ help: ## Display this help.
 
 ##@ Build
 
-.PHONY: build-all
-build-all: build-pos-contract-deployer build-pos-el-genesis-builder build-pos-validator-config-generator
-
 .PHONY: build-pos-contract-deployer
 build-pos-contract-deployer: ## Build PoS contract deployer image
 	docker build \
@@ -49,9 +46,6 @@ build-pos-validator-config-generator: ## Build PoS validator config generator im
 		.
 
 ##@ Push
-
-.PHONY: push-all
-push-all: auth push-pos-contract-deployer push-pos-el-genesis-builder push-pos-validator-config-generator
 
 auth: ## Authenticate with Google Cloud Registry
 	gcloud auth login
