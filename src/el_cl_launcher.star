@@ -39,8 +39,9 @@ def launch(
     )
 
     # Generate file artifact for the container process manager.
-    # This script is used to stop any client process (e.g. heimdall, bor or erigon) running inside
-    # the container without stopping the container itself.
+    # This script is used to stop heimdall client processes running inside the container without
+    # stopping the container itself.
+    # Note: It doesn't work well with EL clients such as bor and erigon unfortunately.
     container_proc_manager_artifact = plan.upload_files(
         name="container-proc-manager-script",
         src=CONTAINER_PROC_MANAGER_FILE_PATH,
@@ -104,7 +105,6 @@ def launch(
                 el_account,
                 network_data.el_static_nodes,
                 el_chain_id,
-                container_proc_manager_artifact,
             )
 
             # Add the node to the all_participants array.

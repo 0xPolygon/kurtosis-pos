@@ -22,7 +22,6 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
-    container_proc_manager_artifact,
 ):
     erigon_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -50,6 +49,33 @@ def launch(
             ),
         },
     )
+
+    erigon_cmds = [
+        # Copy genesis file.
+        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
+            ERIGON_CONFIG_FOLDER_PATH
+        ),
+        # Copy node credentials.
+        "cp /opt/data/credentials/password.txt {}".format(ERIGON_CONFIG_FOLDER_PATH),
+        "mkdir -p {}".format(ERIGON_APP_DATA_FOLDER_PATH),
+        "cp /opt/data/credentials/nodekey {}/nodekey".format(
+            ERIGON_APP_DATA_FOLDER_PATH
+        ),
+        "cp -r /opt/data/credentials/keystore {}".format(ERIGON_APP_DATA_FOLDER_PATH),
+        # Initialise erigon.
+        "erigon init --datadir {} {}/genesis.json".format(
+            ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
+        ),
+        # Start erigon.
+        # Note: this command attempts to start Erigon and retries if it fails.
+        # The retry mechanism addresses a race condition where Erigon initially fails to
+        # resolve hostnames of other nodes, as services are created sequentially;
+        # after a 5-second delay, all services should be up, allowing Erigon to start
+        # successfully. This is also why the port checks are disabled.
+        "while ! erigon --config {}/config.toml; do echo -e '\n❌ Erigon failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
+            ERIGON_CONFIG_FOLDER_PATH
+        ),
+    ]
 
     return plan.add_service(
         name=el_node_name,
@@ -83,47 +109,9 @@ def launch(
                 ERIGON_CONFIG_FOLDER_PATH: erigon_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
-                # utils scripts
-                "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
-            cmd=[
-                " && ".join(
-                    [
-                        # Copy genesis file.
-                        "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
-                            ERIGON_CONFIG_FOLDER_PATH
-                        ),
-                        # Copy node credentials.
-                        "cp /opt/data/credentials/password.txt {}".format(
-                            ERIGON_CONFIG_FOLDER_PATH
-                        ),
-                        "mkdir -p {}".format(ERIGON_APP_DATA_FOLDER_PATH),
-                        "cp /opt/data/credentials/nodekey {}/nodekey".format(
-                            ERIGON_APP_DATA_FOLDER_PATH
-                        ),
-                        "cp -r /opt/data/credentials/keystore {}".format(
-                            ERIGON_APP_DATA_FOLDER_PATH
-                        ),
-                        # Initialise erigon.
-                        "erigon init --datadir {} {}/genesis.json".format(
-                            ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
-                        ),
-                        # Create erigon startup script with retry logic.
-                        # Note: this command attempts to start Erigon and retries if it fails.
-                        # The retry mechanism addresses a race condition where Erigon initially fails to
-                        # resolve hostnames of other nodes, as services are created sequentially;
-                        # after a 5-second delay, all services should be up, allowing Erigon to start
-                        # successfully. This is also why the port checks are disabled.
-                        "cat > /tmp/start.sh << 'EOF'\n#!/bin/sh\nwhile ! erigon --config {}/config.toml; do\n  echo -e '\\n❌ Erigon failed to start. Retrying in five seconds...\\n'\n  sleep 5\ndone\nEOF".format(
-                            ERIGON_CONFIG_FOLDER_PATH
-                        ),
-                        "chmod +x /tmp/start.sh",
-                        # Start erigon.
-                        "/usr/local/share/container-proc-manager.sh /tmp/start.sh",
-                    ]
-                )
-            ],
+            cmd=["&&".join(erigon_cmds)],
             user=User(uid=0, gid=0),  # Run the container as root user.
         ),
     )
