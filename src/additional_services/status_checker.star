@@ -1,4 +1,4 @@
-config_util = import_module("../config/util.star")
+util = import_module("./util.star")
 
 STATUS_CHECKER_IMAGE = "ghcr.io/0xpolygon/status-checker:v0.2.8"
 
@@ -8,8 +8,8 @@ def launch(
     l1_context,
     l2_context,
 ):
-    l1_rpcs = config_util.l1_rpcs(l1_context)
-    l2_urls = config_util.l2_urls(l2_context)
+    l1_rpcs = util.l1_rpcs(l1_context)
+    l2_urls = util.l2_urls(l2_context)
 
     status_checker_config_artifact = plan.render_templates(
         name="status-checker-config",

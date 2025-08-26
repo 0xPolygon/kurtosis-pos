@@ -1,6 +1,6 @@
 contract_util = import_module("../contracts/util.star")
 constants = import_module("../config/constants.star")
-config_util = import_module("../config/util.star")
+util = import_module("./util.star")
 
 PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star@f5ce159aec728898e3deb827f6b921f8ecfc527f"
 PROMETHEUS_IMAGE = "prom/prometheus:v3.2.1"
@@ -68,8 +68,8 @@ def launch_panoptichain(
                 data={
                     "l1_chain_id": l1_context.chain_id,
                     "l2_chain_id": l2_context.el_chain_id,
-                    "l1_rpcs": config_util.l1_rpcs(l1_context),
-                    "l2_urls": config_util.l2_urls(l2_context),
+                    "l1_rpcs": util.l1_rpcs(l1_context),
+                    "l2_urls": util.l2_urls(l2_context),
                     "checkpoint_address": l1_root_chain_proxy_address,
                     "state_sync_sender_address": l1_state_sender_address,
                     "state_sync_receiver_address": l2_state_receiver_address,
