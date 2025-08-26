@@ -150,8 +150,8 @@ jobs:
 
       - name: Build local bor image
         run: |
-          bor_branch="stateless_sync"
-          bor_commit_sha="82899bd" # 2025/07/18
+          bor_branch="develop"
+          bor_commit_sha="8509ba2" # 2025/08/26
           image_name="local/bor:${bor_commit_sha}"
           git clone --branch "${bor_branch}" https://github.com/maticnetwork/bor.git
           pushd bor
@@ -160,8 +160,8 @@ jobs:
 
       - name: Build local heimdall-v2 image
         run: |
-          heimdall_v2_branch="stateless_sync"
-          heimdall_v2_commit_sha="1995663" # 2025/07/29
+          heimdall_v2_branch="develop"
+          heimdall_v2_commit_sha="c1a1c57" # 2025/08/26
           image_name="local/heimdall-v2:${heimdall_v2_commit_sha}"
           git clone --branch "${heimdall_v2_branch}" https://github.com/0xPolygon/heimdall-v2.git
           pushd heimdall-v2
