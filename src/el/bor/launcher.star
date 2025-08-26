@@ -100,7 +100,6 @@ def launch(
                 ),
             },
             files={
-                # bor config
                 BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,

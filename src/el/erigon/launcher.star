@@ -105,7 +105,6 @@ def launch(
                 ),
             },
             files={
-                # erigon config
                 ERIGON_CONFIG_FOLDER_PATH: erigon_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
