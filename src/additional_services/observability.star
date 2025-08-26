@@ -2,13 +2,10 @@ contract_util = import_module("../contracts/util.star")
 constants = import_module("../config/constants.star")
 
 PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star@f5ce159aec728898e3deb827f6b921f8ecfc527f"
-PROMETHEUS_IMAGE = "prom/prometheus:v3.2.1"
 
 GRAFANA_PACKAGE = "github.com/kurtosis-tech/grafana-package/main.star@c8ff0b52d25deb0bc4ec95971dcf25b2fca11287"
-GRAFANA_IMAGE = "grafana/grafana:11.6.0"
 GRAFANA_DASHBOARDS = "../../static_files/additional_services/grafana/dashboards"
 
-PANOPTICHAIN_IMAGE = "ghcr.io/0xpolygon/panoptichain:v4.1.1"
 PANOPTICHAIN_PORT = 9090
 PANOPTICHAIN_METRICS_PATH = "/metrics"
 
@@ -104,7 +101,7 @@ def launch_panoptichain(
     service = plan.add_service(
         name="panoptichain",
         config=ServiceConfig(
-            image=PANOPTICHAIN_IMAGE,
+            image=constants.DEFAULT_IMAGES.get("panoptichain_image"),
             ports={
                 "metrics": PortSpec(PANOPTICHAIN_PORT, application_protocol="http"),
             },
@@ -127,7 +124,7 @@ def launch_prometheus(plan, l2_participants, panoptichain_url):
         node_selectors=None,
         storage_tsdb_retention_time="1d",
         storage_tsdb_retention_size="512MB",
-        image=PROMETHEUS_IMAGE,
+        image=constants.DEFAULT_IMAGES.get("prometheus_image"),
     )
 
 
@@ -160,6 +157,6 @@ def launch_grafana(plan, prometheus_url):
         plan,
         prometheus_url,
         name="grafana",
-        image=GRAFANA_IMAGE,
+        image=constants.DEFAULT_IMAGES.get("grafana_image"),
         grafana_dashboards_files_artifact=grafana_dashboards_files_artifact,
     )
