@@ -12,6 +12,12 @@ def launch(
     contract_addresses_artifact,
 ):
     # Retrieve contract addresses.
+    # L1 contract addresses.
+    l1_governance_proxy_address = contract_util.get_address(
+        plan,
+        contract_name="l1_governance_proxy",
+        contract_addresses_artifact=contract_addresses_artifact,
+    )
     l1_deposit_manager_proxy_address = contract_util.get_address(
         plan,
         contract_name="l1_deposit_manager_proxy",
@@ -42,7 +48,7 @@ def launch(
         contract_name="l1_erc721_token",
         contract_addresses_artifact=contract_addresses_artifact,
     )
-
+    # L2 contract addresses.
     l2_state_receiver_address = contract_util.get_address(
         plan,
         contract_name="l2_state_receiver",
@@ -100,6 +106,7 @@ def launch(
                 "L2_CL_NODE_TYPE": l2_context.devnet_cl_type,
                 "L2_CL_API_URL": l2_cl_api_url,
                 # Contract addresses.
+                "L1_GOVERNANCE_PROXY_ADDRESS": l1_governance_proxy_address,
                 "L1_DEPOSIT_MANAGER_PROXY_ADDRESS": l1_deposit_manager_proxy_address,
                 "L1_STAKE_MANAGER_PROXY_ADDRESS": l1_stake_manager_proxy_address,
                 "L1_STAKING_INFO_ADDRESS": l1_staking_info_address,

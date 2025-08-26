@@ -28,7 +28,7 @@ def get_validator_data(validator_accounts):
         # Token balances.
         balances.append(
             {
-                "address": validator_account.cometbft.address.removeprefix("0x"),
+                "address": validator_account.cometbft.address,
                 "coins": [
                     {
                         "denom": "pol",
@@ -43,7 +43,7 @@ def get_validator_data(validator_accounts):
         # Dividends.
         dividends.append(
             {
-                "user": validator_account.cometbft.address.removeprefix("0x"),
+                "user": validator_account.cometbft.address,
                 "fee_amount": "0",
             }
         )
@@ -55,7 +55,7 @@ def get_validator_data(validator_accounts):
                 "end_epoch": "0",
                 "nonce": "1",
                 "pub_key": validator_account.cometbft.public_key,
-                "signer": validator_account.cometbft.address.removeprefix("0x"),
+                "signer": validator_account.cometbft.address,
                 "last_updated": "",
                 "jailed": False,
                 "val_id": validator_id,

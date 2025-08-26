@@ -214,12 +214,7 @@ jobs:
         run: |
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-validator
           kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-1-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-2-heimdall-v2-bor-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-2-validator
-
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-v2-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-v2-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-3-bor-heimdall-v2-rpc
 
       - name: Kurtosis run for the second time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
