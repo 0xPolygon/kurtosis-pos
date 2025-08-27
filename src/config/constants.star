@@ -40,6 +40,7 @@ ADDITIONAL_SERVICES = struct(
     observability="observability",
     test_runner="test_runner",
     tx_spammer="tx_spammer",
+    status_checker="status_checker",
 )
 
 DEFAULT_IMAGES = {
@@ -57,6 +58,10 @@ DEFAULT_IMAGES = {
     "pos_el_genesis_builder_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd",
     "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.0-beta",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.8",
+    # observability
+    "prometheus_image": "prom/prometheus:v3.2.1",
+    "grafana_image": "grafana/grafana:11.6.0",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v4.1.1",
 }
 
 DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
