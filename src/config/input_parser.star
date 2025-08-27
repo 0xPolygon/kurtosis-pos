@@ -79,6 +79,9 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "test_runner_params": {
         "image": constants.DEFAULT_IMAGES.get("e2e_image"),
     },
+    "status_checker_params": {
+        "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
+    },
 }
 
 DEFAULT_DEV_ARGS = {
@@ -151,6 +154,14 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     test_runner_params = polygon_pos_args.get("test_runner_params", {})
     result["test_runner_params"] = _parse_test_runner_params(
         is_test_runner_deployed, test_runner_params
+    )
+
+    is_status_checker_deployed = (
+        constants.ADDITIONAL_SERVICES.status_checker in result["additional_services"]
+    )
+    status_checker_params = polygon_pos_args.get("status_checker_params", {})
+    result["status_checker_params"] = _parse_status_checker_params(
+        is_status_checker_deployed, status_checker_params
     )
 
     # Sanity check and return the result.
@@ -303,6 +314,29 @@ def _parse_test_runner_params(is_test_runner_deployed, test_runner_params):
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(test_runner_params)
+
+
+def _parse_status_checker_params(is_status_checker_deployed, status_checker_params):
+    # If the status checker is not deployed, return an empty dict.
+    if not is_status_checker_deployed:
+        return {}
+
+    # Create a mutable copy of status_checker_params.
+    if status_checker_params:
+        status_checker_params = dict(status_checker_params)
+    else:
+        # Set default status checker params if not provided.
+        status_checker_params = dict(
+            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("status_checker_params", {})
+        )
+
+    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+        "status_checker_params", {}
+    ).items():
+        status_checker_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(status_checker_params)
 
 
 def _sort_dict_by_values(d):

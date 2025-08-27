@@ -1,10 +1,9 @@
 util = import_module("./util.star")
 
-STATUS_CHECKER_IMAGE = "ghcr.io/0xpolygon/status-checker:v0.2.8"
-
 
 def launch(
     plan,
+    status_checker_params,
     l1_context,
     l2_context,
 ):
@@ -31,7 +30,7 @@ def launch(
     plan.add_service(
         name="status-checker",
         config=ServiceConfig(
-            image=STATUS_CHECKER_IMAGE,
+            image=status_checker_params.get("image"),
             files={
                 "/etc/status-checker": Directory(
                     artifact_names=[status_checker_config_artifact]
