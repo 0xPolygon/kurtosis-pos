@@ -16,7 +16,12 @@
     "shanghaiBlock": 0,
     "cancunBlock": 0,
     "pragueBlock": 0,
+    "burntContract": {
+      "0": "0x000000000000000000000000000000000000dead"
+    },
     "bor": {
+      "agraBlock": 0,
+      "napoliBlock": 0,
       "jaipurBlock": 0,
       "delhiBlock": 0,
       "indoreBlock": 0,
