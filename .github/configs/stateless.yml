@@ -1,7 +1,4 @@
 polygon_pos_package:
-  network_params:
-    el_block_interval_seconds: 1
-
   participants:
     # Validator nodes
     - kind: validator
