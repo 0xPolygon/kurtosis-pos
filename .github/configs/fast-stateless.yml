@@ -1,7 +1,7 @@
 polygon_pos_package:
   network_params:
-    el_sprint_duration: 2
-    el_span_duration: 16
+    el_sprint_duration: 4
+    el_span_duration: 32
 
   participants:
     # Validator nodes
