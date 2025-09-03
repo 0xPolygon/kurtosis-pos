@@ -110,19 +110,32 @@ jq -n '[]' > "${VALIDATORS_CONFIG_FILE}"
 
 echo "Staking for each validator node..."
 IFS=';' read -ra validator_accounts <<< "${VALIDATOR_ACCOUNTS}"
+validator_index=0
 for account in "${validator_accounts[@]}"; do
   IFS=',' read -r address eth_public_key <<< "${account}"
+
+  # First validator stakes 10x more than the others
+  if [[ ${validator_index} -eq 0 ]]; then
+    stake_amount_eth=$((VALIDATOR_STAKE_AMOUNT_ETH * 10))
+    echo "First validator ${address} staking 10x amount: ${stake_amount_eth} ETH"
+  else
+    stake_amount_eth=${VALIDATOR_STAKE_AMOUNT_ETH}
+    echo "Validator ${address} staking regular amount: ${stake_amount_eth} ETH"
+  fi
+
   # Note: MaticStake requires the amount to be specified in wei, not in eth.
   forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
     scripts/matic-cli-scripts/stake.s.sol:MaticStake \
     --sig "run(address,bytes,uint256,uint256)" \
-    "${address}" "${eth_public_key}" "${VALIDATOR_STAKE_AMOUNT_ETH}000000000000000000" "${VALIDATOR_TOP_UP_FEE_AMOUNT_ETH}000000000000000000"
+    "${address}" "${eth_public_key}" "${stake_amount_eth}000000000000000000" "${VALIDATOR_TOP_UP_FEE_AMOUNT_ETH}000000000000000000"
 
   # Update the validator config file.
-  jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT_ETH}" --arg balance "${VALIDATOR_BALANCE}" \
+  jq --arg address "${address}" --arg stake "${stake_amount_eth}" --arg balance "${VALIDATOR_BALANCE}" \
     '. += [{"address": $address, "stake": ($stake | tonumber), "balance": ($balance | tonumber)}]' \
     "${VALIDATORS_CONFIG_FILE}" > "${VALIDATORS_CONFIG_FILE}.tmp"
   mv "${VALIDATORS_CONFIG_FILE}.tmp" "${VALIDATORS_CONFIG_FILE}"
+
+  ((validator_index++))
 done
 echo "exports = module.exports = $(< ${VALIDATORS_CONFIG_FILE})" > "${VALIDATORS_CONFIG_FILE}"
 
