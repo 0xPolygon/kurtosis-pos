@@ -3,36 +3,36 @@ polygon_pos_package:
     # Validator nodes
     - kind: validator
       cl_type: heimdall-v2
-      cl_image: local/heimdall-v2:63db22a
+      cl_image: local/heimdall-v2:3ba4f93
       el_type: bor
-      el_image: local/bor:0fe4b0d
+      el_image: local/bor:3d71e61
       count: 3
       el_bor_produce_witness: true
 
     # RPC nodes
     - kind: rpc
       cl_type: heimdall-v2
-      cl_image: local/heimdall-v2:63db22a
+      cl_image: local/heimdall-v2:3ba4f93
       el_type: bor
-      el_image: local/bor:0fe4b0d
+      el_image: local/bor:3d71e61
       el_bor_produce_witness: true
       el_bor_sync_with_witness: false
       count: 1
 
     - kind: rpc
       cl_type: heimdall-v2
-      cl_image: local/heimdall-v2:63db22a
+      cl_image: local/heimdall-v2:3ba4f93
       el_type: bor
-      el_image: local/bor:0fe4b0d
+      el_image: local/bor:3d71e61
       el_bor_produce_witness: true
       el_bor_sync_with_witness: true
       count: 1
 
     - kind: rpc
       cl_type: heimdall-v2
-      cl_image: local/heimdall-v2:63db22a
+      cl_image: local/heimdall-v2:3ba4f93
       el_type: bor
-      el_image: local/bor:0fe4b0d
+      el_image: local/bor:3d71e61
       el_bor_produce_witness: false
       el_bor_sync_with_witness: false
       count: 1

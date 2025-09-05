@@ -155,7 +155,7 @@ jobs:
       - name: Build local bor image
         run: |
           bor_branch="develop"
-          bor_commit_sha="0fe4b0d" # 2025/08/30
+          bor_commit_sha="3d71e61" # 2025/09/03
           image_name="local/bor:${bor_commit_sha}"
           git clone --branch "${bor_branch}" https://github.com/maticnetwork/bor.git
           pushd bor
@@ -165,7 +165,7 @@ jobs:
       - name: Build local heimdall-v2 image
         run: |
           heimdall_v2_branch="develop"
-          heimdall_v2_commit_sha="63db22a" # 2025/08/30
+          heimdall_v2_commit_sha="3ba4f93" # 2025/09/03
           image_name="local/heimdall-v2:${heimdall_v2_commit_sha}"
           git clone --branch "${heimdall_v2_branch}" https://github.com/0xPolygon/heimdall-v2.git
           pushd heimdall-v2
