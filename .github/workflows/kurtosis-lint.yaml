@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
           sudo apt update
-          sudo apt install -y kurtosis-cli=1.7.2
+          sudo apt install -y kurtosis-cli=1.11.1
           kurtosis analytics disable
 
       - name: Run kurtosis linter
@@ -35,4 +35,4 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
-      - uses: crate-ci/typos@87d57f0e994b0e73e3efb34a953ae275b86b5971 # v1.35.6
+      - uses: crate-ci/typos@b78a177368828715fce2264a81367bfc04e46e10 # v1.36.0
