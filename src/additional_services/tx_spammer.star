@@ -1,5 +1,5 @@
-contract_util = import_module("../contracts/util.star")
 constants = import_module("../config/constants.star")
+contract_util = import_module("../contracts/util.star")
 wallet_module = import_module("../wallet/wallet.star")
 
 TX_SPAMMER_FOLDER_PATH = "../../static_files/additional_services/tx-spammer"
@@ -8,19 +8,16 @@ TX_SPAMMER_SCRIPT_NAME = "loadtest.sh"
 
 def launch(
     plan,
-    test_runner_params,
     l1_context,
     l2_context,
     l2_network_params,
-    l2_el_genesis_artifact,
-    contract_addresses_artifact,
 ):
-    # Get rpc urls and funder private keys.
+    # Get rpc urls and funder private key.
     l1_rpc_url = l1_context.rpc_url
     l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
     funder_private_key = l2_network_params.get("admin_private_key")
 
-    # Start the tx spammer service on L1.
+    # Generate a new wallet and fund it with ETH on L1.
     l1_wallet = wallet_module.new(plan)
     wallet_module.fund(
         plan,
@@ -28,6 +25,8 @@ def launch(
         rpc_url=l1_rpc_url,
         funder_private_key=funder_private_key,
     )
+
+    # Start the tx spammer service on L1.
     tx_spammer_artifact = plan.upload_files(
         src="{}/{}".format(TX_SPAMMER_FOLDER_PATH, TX_SPAMMER_SCRIPT_NAME),
         name="tx-spammer-script",
@@ -40,7 +39,7 @@ def launch(
         rpc_url=l1_rpc_url,
     )
 
-    # Start the tx spammer service on L2.
+    # Generate a new wallet and fund it with ETH on L2.
     l2_wallet = wallet_module.new(plan)
     wallet_module.fund(
         plan,
@@ -48,6 +47,8 @@ def launch(
         rpc_url=l2_rpc_url,
         funder_private_key=funder_private_key,
     )
+
+    # Start the tx spammer service on L2.
     _start_tx_spammer_service(
         plan,
         name="l2-tx-spammer",
