@@ -29,12 +29,22 @@ def derive_address_from_private_key(plan, private_key):
     return result.output
 
 
-def fund(plan, receiver_address, rpc_url, funder_private_key, value="1000ether"):
+def fund(
+    plan,
+    receiver_address,
+    rpc_url,
+    funder_private_key,
+    value="1000ether",
+    gas_price="",
+):
+    cmd = "cast send --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --value ${VALUE} {} ${RECEIVER_ADDRESS}".format(
+        "--gas-price {}".format(gas_price) if gas_price != "" else ""
+    )
     plan.run_sh(
         name="address-funder",
         description="Funding address on network {}".format(rpc_url),
         image=constants.DEFAULT_IMAGES.get("toolbox_image"),
-        run="cast send --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --value ${VALUE} ${RECEIVER_ADDRESS}",
+        run=cmd,
         env_vars={
             "RPC_URL": rpc_url,
             "PRIVATE_KEY": funder_private_key,

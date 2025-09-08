@@ -47,6 +47,8 @@ def launch(
         receiver_address=l2_wallet.address,
         rpc_url=l2_rpc_url,
         funder_private_key=funder_private_key,
+        value="1000ether",
+        gas_price="25000000000",  # Note: Explicitly set the gas price on L2 because zero gas price transactions are not accepted on L2.
     )
 
     # Start the tx spammer service on L2.
