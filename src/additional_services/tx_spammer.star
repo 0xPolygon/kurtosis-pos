@@ -49,7 +49,6 @@ def launch(
         funder_private_key=funder_private_key,
         # Note: Explicitly set the gas price on L2 because zero gas price transactions are not accepted.
         extra_flags="--priority-gas-price 50gwei --gas-price 50gwei",
-        value="1000ether",
     )
 
     # Start the tx spammer service on L2.
