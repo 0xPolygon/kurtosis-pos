@@ -28,7 +28,6 @@ verbosity = {{.log_level_to_int}}
 [miner]
     mine = true
     gaslimit = 45000000
-    gasprice = "25000000000"
     etherbase = "{{.address}}"
     extradata = "{{.node_name}}"
 {{end}}
