@@ -38,12 +38,12 @@ while true; do
     --rpc-url "$RPC_URL" \
     --private-key "$PRIVATE_KEY" \
     --legacy \
-    --requests "50000" \
+    --requests "100" \
     --concurrency "10" \
     --rate-limit "50" \
     --eth-amount "$eth_amount" \
     --pretty-logs=false
 
-  log_info "Completed batch. Waiting 60 seconds before next batch."
-  sleep 60
+  log_info "Completed batch. Waiting 10 seconds before next batch."
+  sleep 10
 done
