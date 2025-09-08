@@ -46,7 +46,9 @@ def fund(
             "RPC_URL": rpc_url,
             "PRIVATE_KEY": funder_private_key,
             "VALUE": value,
-            "GAS_PRICE_FLAG": "--gas-price {}".format(gas_price)
+            "GAS_PRICE_FLAG": "--priority-gas-price {0} --max-fee-per-gas {0}".format(
+                gas_price
+            )
             if gas_price != ""
             else "",
             "RECEIVER_ADDRESS": receiver_address,
