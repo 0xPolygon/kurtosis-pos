@@ -2,7 +2,6 @@ constants = import_module("../config/constants.star")
 contract_util = import_module("../contracts/util.star")
 wallet_module = import_module("../wallet/wallet.star")
 
-TX_SPAMMER_FOLDER_PATH = "../../static_files/additional_services/tx-spammer"
 TX_SPAMMER_SCRIPT_NAME = "loadtest.sh"
 
 
@@ -28,7 +27,9 @@ def launch(
 
     # Start the tx spammer service on L1.
     tx_spammer_artifact = plan.upload_files(
-        src="{}/{}".format(TX_SPAMMER_FOLDER_PATH, TX_SPAMMER_SCRIPT_NAME),
+        src="../../static_files/additional_services/tx-spammer/{}".format(
+            TX_SPAMMER_SCRIPT_NAME
+        ),
         name="tx-spammer-script",
     )
     _start_tx_spammer_service(

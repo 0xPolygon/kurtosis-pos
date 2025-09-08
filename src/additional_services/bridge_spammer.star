@@ -2,6 +2,8 @@ constants = import_module("../config/constants.star")
 contract_util = import_module("../contracts/util.star")
 wallet_module = import_module("../wallet/wallet.star")
 
+BRIDGE_SPAMMER_SCRIPT_NAME = "bridge.sh"
+
 
 def launch(
     plan,
@@ -52,7 +54,9 @@ def launch(
 
     # Start the bridge spammer service on L1.
     bridge_spammer_config_artifact = plan.upload_files(
-        src="../../static_files/additional_services/bridge-spammer",
+        src="../../static_files/additional_services/bridge-spammer/{}".format(
+            BRIDGE_SPAMMER_SCRIPT_NAME
+        ),
         name="bridge-spammer-script",
     )
     plan.add_service(
@@ -60,9 +64,7 @@ def launch(
         config=ServiceConfig(
             image=constants.DEFAULT_IMAGES.get("toolbox_image"),
             files={
-                SCRIPT_FOLDER_PATH: Directory(
-                    artifact_names=[bridge_spammer_config_artifact]
-                ),
+                "/opt": Directory(artifact_names=[bridge_spammer_config_artifact]),
             },
             env_vars={
                 "PRIVATE_KEY": wallet.private_key,
@@ -73,6 +75,6 @@ def launch(
                 "L1_DEPOSIT_MANAGER_PROXY_ADDRESS": l1_deposit_manager_proxy_address,
             },
             entrypoint=["bash", "-c"],
-            cmd=["chmod +x {0}/{1} && {0}/{1}".format(SCRIPT_FOLDER_PATH, SCRIPT_NAME)],
+            cmd=["chmod +x /opt/{0} && /opt/{0}".format(BRIDGE_SPAMMER_SCRIPT_NAME)],
         ),
     )
