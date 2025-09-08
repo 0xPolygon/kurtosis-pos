@@ -36,6 +36,7 @@ BOR_SYNC_MODES = struct(
 
 ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
+    bridge_spammer="bridge_spammer",
     observability="observability",
     test_runner="test_runner",
     tx_spammer="tx_spammer",
