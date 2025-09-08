@@ -35,22 +35,18 @@ def fund(
     rpc_url,
     funder_private_key,
     value="1000ether",
-    gas_price="",
+    extra_flags="",  # optional string of additional cast flags
 ):
     plan.run_sh(
         name="address-funder",
         description="Funding address on network {}".format(rpc_url),
         image=constants.DEFAULT_IMAGES.get("toolbox_image"),
-        run="cast send --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --value ${VALUE} ${GAS_PRICE_FLAG} ${RECEIVER_ADDRESS}",
+        run="cast send --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --value ${VALUE} ${EXTRA_FLAGS} ${RECEIVER_ADDRESS}",
         env_vars={
             "RPC_URL": rpc_url,
             "PRIVATE_KEY": funder_private_key,
             "VALUE": value,
-            "GAS_PRICE_FLAG": "--priority-gas-price {0} --max-fee-per-gas {0}".format(
-                gas_price
-            )
-            if gas_price != ""
-            else "",
+            "EXTRA_FLAGS": extra_flags,
             "RECEIVER_ADDRESS": receiver_address,
         },
     )
