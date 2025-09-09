@@ -62,17 +62,22 @@ polygon_pos_package:
 
 Default: two validators and one rpc.
 
-| Field        | Type   | Default                                                                        | Description                                            |
-| ------------ | ------ | ------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| kind         | string | validator                                                                      | Role of the node in the network: `validator` or `rpc`. |
-| cl_type      | string | heimdall-v2                                                                    | Consensus Layer (CL) client type.                      |
-| cl_image     | string | 0xpolygon/heimdall-v2:0.2.7                                                    | Image for the CL client.                               |
-| cl_db_image  | string | rabbitmq:4.1.2                                                                 | Image for the CL database.                             |
-| cl_log_level | string | info                                                                           | Log level for the CL client.                           |
-| el_type      | string | bor                                                                            | Execution Layer (EL) client type.                      |
-| el_image     | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/bor:v2.2.9-fix | Image for the EL client.                               |
-| el_log_level | string | info                                                                           | Log level for the EL client.                           |
-| count        | int    | 1                                                                              | Number of nodes to spin up for this participant.       |
+| Field                       | Type   | Default                                                                        | Description                                              |
+| --------------------------- | ------ | ------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| kind                        | string | validator                                                                      | Role of the node in the network: `validator` or `rpc`.   |
+| cl_type                     | string | heimdall-v2                                                                    | Consensus Layer (CL) client type.                        |
+| cl_image                    | string | 0xpolygon/heimdall-v2:0.2.7                                                    | Image for the CL client.                                 |
+| cl_db_image                 | string | rabbitmq:4.1.2                                                                 | Image for the CL database.                               |
+| cl_log_level                | string | info                                                                           | Log level for the CL client.                             |
+| cl_min_retain_blocks        | int    | 0                                                                              | Minimal distance from current height to retain height    |
+| cl_compact                  | bool   | false                                                                          | Compaction enabling.                                     |
+| cl_compaction_interval      | int    | 1000                                                                           | Minimal blocks necessary to run a new compaction routine |
+| cl_storage_pruning_interval | string | 1m0s                                                                           | Interval between prune routines.                         |
+| cl_indexer_pruning_enabled  | bool   | false                                                                          | Pruning enabling.                                        |
+| el_type                     | string | bor                                                                            | Execution Layer (EL) client type.                        |
+| el_image                    | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/bor:v2.2.9-fix | Image for the EL client.                                 |
+| el_log_level                | string | info                                                                           | Log level for the EL client.                             |
+| count                       | int    | 1                                                                              | Number of nodes to spin up for this participant.         |
 
 ### `setup_images`
 
@@ -98,6 +103,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | cl_environment                        | string | mainnet                | CL environment.                                                    |
 | cl_span_poll_interval                 | string | 0m15s                  | Span poll interval on the CL chain.                                |
 | cl_checkpoint_poll_interval           | string | 1m0s                   | Checkpoint poll interval on the CL chain.                          |
+| cl_max_age_num_blocks                 | int    | 100000                 | Genesis evidence setting, useful to set smaller pruning intervals  |
 | el_chain_id                           | string | "4927"                 | EL network ID.                                                     |
 | el_block_interval_seconds             | int    | 2                      | Seconds per block on the EL chain.                                 |
 | el_sprint_duration                    | int    | 16                     | Duration of an EL sprint (blocks).                                 |
