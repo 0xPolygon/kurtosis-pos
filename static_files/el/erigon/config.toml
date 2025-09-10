@@ -26,7 +26,7 @@ mine = true
 "miner.gaslimit" = 45000000
 # "miner.gasprice" = "25000000000" # TODO: Make this flag available in erigon.
 "miner.etherbase" = "{{.address}}"
-"miner.extradata" = "{{.node_name}}"
+"miner.extradata" = "{{.extradata}}"
 "miner.sigfile" = "{{.data_folder_path}}/nodekey"
 {{end}}
 

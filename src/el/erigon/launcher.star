@@ -37,6 +37,7 @@ def launch(
                     "address": el_account.eth_tendermint.address,
                     "cl_api_url": cl_api_url,
                     "log_level": participant.get("el_log_level"),
+                    "extradata": "bor-{}".format(id),
                     # network params.
                     "el_chain_id": el_chain_id,
                     "static_nodes": ",".join(el_static_nodes),

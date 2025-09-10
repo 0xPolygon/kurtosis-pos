@@ -29,7 +29,7 @@ verbosity = {{.log_level_to_int}}
     mine = true
     gaslimit = 45000000
     etherbase = "{{.address}}"
-    extradata = "{{.node_name}}"
+    extradata = "{{.extradata}}"
 {{end}}
 
 [jsonrpc]
