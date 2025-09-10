@@ -44,7 +44,7 @@ def launch(
                     # all other nodes as static peers. If a peer is not yet online, the node panics
                     # because it cannot resolve or connect. To avoid this, we use a hub-and-spoke
                     # model where all nodes connect only to the first node (the bootnode).
-                    "static_nodes": "" if id == 0 else el_static_nodes[0],
+                    "static_nodes": "" if id == 1 else el_static_nodes[0],
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,
                     "ws_port_number": el_shared.WS_PORT_NUMBER,
