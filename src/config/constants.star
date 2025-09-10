@@ -36,6 +36,7 @@ BOR_SYNC_MODES = struct(
 
 ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
+    bridge_spammer="bridge_spammer",
     observability="observability",
     test_runner="test_runner",
     tx_spammer="tx_spammer",
@@ -53,7 +54,7 @@ DEFAULT_IMAGES = {
     "l2_el_erigon_image": "erigontech/erigon:v3.0.16",
     "l2_cl_db_image": "rabbitmq:4.1.4",
     # utilities
-    "e2e_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:026adc0",
+    "e2e_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:457b3a9",
     "pos_contract_deployer_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592",
     "pos_el_genesis_builder_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd",
     "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.0-beta",
