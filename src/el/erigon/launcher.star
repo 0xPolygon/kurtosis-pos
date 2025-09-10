@@ -67,7 +67,7 @@ def launch(
             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
         ),
         # Start erigon.
-        "erigon --config {}/config.toml",
+        "erigon --config {}/config.toml".format(ERIGON_CONFIG_FOLDER_PATH),
     ]
 
     return plan.add_service(

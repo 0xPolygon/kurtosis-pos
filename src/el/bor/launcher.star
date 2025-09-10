@@ -62,7 +62,7 @@ def launch(
         "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
         "cp -r /opt/data/credentials/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
         # Start bor.
-        "bor server --config {}/config.toml",
+        "bor server --config {}/config.toml".format(BOR_CONFIG_FOLDER_PATH),
     ]
 
     return plan.add_service(
