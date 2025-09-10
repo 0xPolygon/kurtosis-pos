@@ -93,6 +93,7 @@ def launch(
         funder_private_key=funder_private_key,
     )
 
+    # Start the test runner service.
     plan.add_service(
         name="test-runner",
         config=ServiceConfig(

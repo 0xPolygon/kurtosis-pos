@@ -119,7 +119,7 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 | Field | Type   | Default                                                                     | Description                                                                                               |
 | ----- | ------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:026adc0 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
+| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:457b3a9 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
 
 ### `status_checker_params`
 
