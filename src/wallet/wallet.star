@@ -34,7 +34,7 @@ def fund(
     receiver_address,
     rpc_url,
     funder_private_key,
-    value="1000ether",
+    value="1000000ether",
     extra_flags="",  # optional string of additional cast flags
 ):
     plan.run_sh(
@@ -58,7 +58,7 @@ def send_erc20_tokens(
     receiver_address,
     rpc_url,
     funder_private_key,
-    token_amount="1000000000000000000000",
+    token_amount="1000000000000000000000000", # cast to-unit 1000000ether wei
 ):
     plan.run_sh(
         name="erc20-token-sender",
