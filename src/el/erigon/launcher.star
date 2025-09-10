@@ -14,6 +14,7 @@ ERIGON_APP_DATA_FOLDER_PATH = "/var/lib/erigon"
 def launch(
     plan,
     el_node_name,
+    id,
     participant,
     el_genesis_artifact,
     el_credentials_artifact,
@@ -39,7 +40,11 @@ def launch(
                     "log_level": participant.get("el_log_level"),
                     # network params.
                     "el_chain_id": el_chain_id,
-                    "static_nodes": ",".join(el_static_nodes),
+                    # Erigon nodes cannot be started sequentially when each node is configured with
+                    # all other nodes as static peers. If a peer is not yet online, the node panics
+                    # because it cannot resolve or connect. To avoid this, we use a hub-and-spoke
+                    # model where all nodes connect only to the first node (the bootnode).
+                    "static_nodes": "" if id == 0 else el_static_nodes[0],
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,
                     "ws_port_number": el_shared.WS_PORT_NUMBER,
@@ -67,14 +72,7 @@ def launch(
             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
         ),
         # Start erigon.
-        # Note: this command attempts to start Erigon and retries if it fails.
-        # The retry mechanism addresses a race condition where Erigon initially fails to
-        # resolve hostnames of other nodes, as services are created sequentially;
-        # after a 5-second delay, all services should be up, allowing Erigon to start
-        # successfully. This is also why the port checks are disabled.
-        "while ! erigon --config {}/config.toml; do echo -e '\n❌ Erigon failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
-            ERIGON_CONFIG_FOLDER_PATH
-        ),
+        "erigon --config {}/config.toml".format(ERIGON_CONFIG_FOLDER_PATH),
     ]
 
     return plan.add_service(
