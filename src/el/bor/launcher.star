@@ -20,6 +20,7 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
+    container_proc_manager_artifact,
 ):
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -61,8 +62,10 @@ def launch(
         "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
         "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
         "cp -r /opt/data/credentials/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
-        # Start bor.
-        "bor server --config {}/config.toml".format(BOR_CONFIG_FOLDER_PATH),
+        # Start bor using the container proc manager script.
+        "/usr/local/share/container-proc-manager.sh bor server --config {}/config.toml".format(
+            BOR_CONFIG_FOLDER_PATH
+        ),
     ]
 
     return plan.add_service(
@@ -93,9 +96,12 @@ def launch(
                 ),
             },
             files={
+                # bor config
                 BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
+                # utils scripts
+                "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
             cmd=["&&".join(bor_cmds)],
