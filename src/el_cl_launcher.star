@@ -105,6 +105,7 @@ def launch(
                 el_account,
                 network_data.el_static_nodes,
                 el_chain_id,
+                container_proc_manager_artifact,
             )
 
             # Add the node to the all_participants array.
