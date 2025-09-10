@@ -12,6 +12,7 @@ BOR_APP_DATA_FOLDER_PATH = "/var/lib/bor"
 def launch(
     plan,
     el_node_name,
+    id,
     participant,
     el_genesis_artifact,
     el_credentials_artifact,

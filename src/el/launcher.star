@@ -35,6 +35,7 @@ def launch(
     service = launch_method(
         plan,
         el_node_name,
+        id,
         participant,
         el_genesis_artifact,
         el_credentials_artifact,
