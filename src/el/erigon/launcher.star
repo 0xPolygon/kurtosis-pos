@@ -67,7 +67,14 @@ def launch(
             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
         ),
         # Start erigon.
-        "erigon --config {}/config.toml".format(ERIGON_CONFIG_FOLDER_PATH),
+        # Note: this command attempts to start Erigon and retries if it fails.
+        # The retry mechanism addresses a race condition where Erigon initially fails to
+        # resolve hostnames of other nodes, as services are created sequentially;
+        # after a 5-second delay, all services should be up, allowing Erigon to start
+        # successfully. This is also why the port checks are disabled.
+        "while ! erigon --config {}/config.toml; do echo -e '\n❌ Erigon failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
+            ERIGON_CONFIG_FOLDER_PATH
+        ),
     ]
 
     return plan.add_service(
