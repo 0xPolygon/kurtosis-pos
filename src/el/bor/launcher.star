@@ -12,6 +12,7 @@ BOR_APP_DATA_FOLDER_PATH = "/var/lib/bor"
 def launch(
     plan,
     el_node_name,
+    id,
     participant,
     el_genesis_artifact,
     el_credentials_artifact,
@@ -38,6 +39,7 @@ def launch(
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
+                    "extradata": "bor-{}".format(id),
                     "sync_mode": participant.get("el_bor_sync_mode"),
                     # network params
                     "static_nodes": str(el_static_nodes),

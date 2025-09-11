@@ -14,6 +14,7 @@ ERIGON_APP_DATA_FOLDER_PATH = "/var/lib/erigon"
 def launch(
     plan,
     el_node_name,
+    id,
     participant,
     el_genesis_artifact,
     el_credentials_artifact,
@@ -37,6 +38,7 @@ def launch(
                     "address": el_account.eth_tendermint.address,
                     "cl_api_url": cl_api_url,
                     "log_level": participant.get("el_log_level"),
+                    "extradata": "erigon-{}".format(id),
                     # network params.
                     "el_chain_id": el_chain_id,
                     "static_nodes": ",".join(el_static_nodes),
