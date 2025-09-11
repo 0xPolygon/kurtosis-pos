@@ -23,6 +23,7 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
+    container_proc_manager_artifact,
 ):
     erigon_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
