@@ -1,0 +1,42 @@
+polygon_pos_package:
+  participants:
+    # Validator nodes
+    - kind: validator
+      cl_type: heimdall-v2
+      cl_image: local/heimdall-v2:82ead2c
+      el_type: bor
+      el_image: local/bor:e3c09a2
+      count: 3
+      el_bor_produce_witness: true
+
+    # RPC nodes
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: local/heimdall-v2:82ead2c
+      el_type: bor
+      el_image: local/bor:e3c09a2
+      el_bor_produce_witness: true
+      el_bor_sync_with_witness: false
+      count: 1
+
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: local/heimdall-v2:82ead2c
+      el_type: bor
+      el_image: local/bor:e3c09a2
+      el_bor_produce_witness: true
+      el_bor_sync_with_witness: true
+      count: 1
+
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: local/heimdall-v2:82ead2c
+      el_type: bor
+      el_image: local/bor:e3c09a2
+      el_bor_produce_witness: false
+      el_bor_sync_with_witness: false
+      count: 1
+
+  additional_services:
+    - observability
+    - test_runner
