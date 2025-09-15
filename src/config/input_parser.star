@@ -29,7 +29,7 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_image": constants.DEFAULT_IMAGES.get("l2_cl_heimdall_v2_image"),
     "cl_db_image": constants.DEFAULT_IMAGES.get("l2_cl_db_image"),
     "cl_min_retain_blocks": 0,
-    "cl_compact": False,
+    "cl_compact_enabled": False,
     "cl_compaction_interval": 1000,
     "cl_storage_pruning_interval": "10m0s",
     "cl_indexer_pruning_enabled": False,

@@ -11,7 +11,7 @@ POLYGON_POS_PARAMS = {
         "cl_log_level",
         "cl_db_image",
         "cl_min_retain_blocks",
-        "cl_compact",
+        "cl_compact_enabled",
         "cl_compaction_interval",
         "cl_storage_pruning_interval",
         "cl_indexer_pruning_enabled",

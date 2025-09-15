@@ -121,13 +121,6 @@ def launch(
                 "L2_ERC721_TOKEN_ADDRESS": l2_erc721_token_address,
                 # Bridge tests parameters.
                 "TIMEOUT_SECONDS": "600",
-                # Prune Test Params
-                "L2_CL_PRUNE_INTERVAL": l2_context.all_participants[0].metadata.get(
-                    "cl_storage_pruning_interval"
-                ),
-                "L2_CL_RETAIN_BLOCKS": str(
-                    l2_context.all_participants[0].metadata.get("cl_min_retain_blocks")
-                ),
             },
             entrypoint=["bash", "-c"],
             cmd=["sleep infinity"],

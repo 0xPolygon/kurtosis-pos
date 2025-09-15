@@ -61,7 +61,7 @@ def launch(
                     "moniker": cl_node_name,
                     "log_level": participant.get("cl_log_level"),
                     "persistent_peers": cl_node_ids,
-                    "cl_compact": participant.get("cl_compact"),
+                    "cl_compact_enabled": participant.get("cl_compact_enabled"),
                     "cl_compaction_interval": participant.get("cl_compaction_interval"),
                     "cl_storage_pruning_interval": participant.get(
                         "cl_storage_pruning_interval"

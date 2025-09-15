@@ -7,7 +7,6 @@ def new_participant(
     cl_type,
     el_context,
     cl_context,
-    metadata,
 ):
     return struct(
         kind=kind,
@@ -15,5 +14,4 @@ def new_participant(
         cl_type=cl_type,
         el_context=el_context,
         cl_context=cl_context,
-        metadata=metadata,
     )

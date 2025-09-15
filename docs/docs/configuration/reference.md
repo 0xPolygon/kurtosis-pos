@@ -70,7 +70,7 @@ Default: a single validator.
 | cl_db_image                 | string | rabbitmq:4.1.4              | Image for the CL database                                |
 | cl_log_level                | string | info                        | Log level for the CL client                              |
 | cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height    |
-| cl_compact                  | bool   | false                       | Compaction enabling.                                     |
+| cl_compact_enabled          | bool   | false                       | Compaction enabling.                                     |
 | cl_compaction_interval      | int    | 1000                        | Minimal blocks necessary to run a new compaction routine |
 | cl_storage_pruning_interval | string | 1m0s                        | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |

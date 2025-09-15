@@ -462,7 +462,7 @@ discard_abci_responses = false
 # and save on storage space. Setting this to true is most benefits when used in combination
 # with pruning as it will phyisically delete the entries marked for deletion.
 # false by default (forcing compaction is disabled).
-compact = {{ if .cl_compact }}true{{ else }}false{{ end }}
+compact = {{ if .cl_compact_enabled }}true{{ else }}false{{ end }}
 
 # To avoid forcing compaction every time, this parameter instructs CometBFT to wait 
 # the given amount of blocks to be pruned before triggering compaction.
