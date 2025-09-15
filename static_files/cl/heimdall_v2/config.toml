@@ -476,8 +476,7 @@ compaction_interval = {{.cl_compaction_interval}}
 # The time period between automated background pruning operations.
 interval = "{{.cl_storage_pruning_interval}}"
 
-# Indexer pruning enabling. Note that this has not been tested in production
-# It should be enabled on full nodes to confirm it is not impacting performance. 
+# Indexer pruning enabling.
 indexer_pruning_enabled = {{ if .cl_indexer_pruning_enabled }}true{{ else }}false{{ end }}
 
 
