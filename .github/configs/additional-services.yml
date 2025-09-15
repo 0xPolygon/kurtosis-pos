@@ -1,6 +1,8 @@
 polygon_pos_package:
   additional_services:
     # - blockscout
+    - bridge_spammer
+    - status_checker
     - observability
     - test_runner
-    # - tx_spammer
+    - tx_spammer

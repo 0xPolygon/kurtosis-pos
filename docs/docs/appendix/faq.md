@@ -114,7 +114,7 @@ WARNING: Container images with different architecture than expected(arm64):
 > europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.8 - amd64
 > europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd - amd64
 > europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:1.6.0-0.2.14 - amd64
-> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:026adc0 - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9cf122d - amd64
 ```
 
 **Solution:** Pull the image by specifying the `amd64` platform.

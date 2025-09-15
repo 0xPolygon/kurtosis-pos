@@ -1,8 +1,10 @@
 blockscout = import_module("./blockscout.star")
+bridge_spammer = import_module("./bridge_spammer.star")
 constants = import_module("../config/constants.star")
 observability = import_module("./observability.star")
 test_runner = import_module("./test_runner.star")
 tx_spammer = import_module("./tx_spammer.star")
+status_checker = import_module("./status_checker.star")
 
 
 def launch(
@@ -18,6 +20,10 @@ def launch(
     for svc in additional_services:
         if svc == constants.ADDITIONAL_SERVICES.blockscout:
             blockscout.launch(plan)
+        elif svc == constants.ADDITIONAL_SERVICES.bridge_spammer:
+            bridge_spammer.launch(
+                plan, l1_context, l2_network_params, contract_addresses_artifact
+            )
         elif svc == constants.ADDITIONAL_SERVICES.observability:
             observability.launch(
                 plan,
@@ -38,6 +44,9 @@ def launch(
                 contract_addresses_artifact,
             )
         elif svc == constants.ADDITIONAL_SERVICES.tx_spammer:
-            tx_spammer.launch(plan)
+            tx_spammer.launch(plan, l1_context, l2_context, l2_network_params)
+        elif svc == constants.ADDITIONAL_SERVICES.status_checker:
+            status_checker_params = polygon_pos_args.get("status_checker_params")
+            status_checker.launch(plan, status_checker_params, l1_context, l2_context)
         else:
             fail("Invalid additional service: %s" % (svc))

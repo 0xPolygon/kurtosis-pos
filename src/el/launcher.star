@@ -22,6 +22,7 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
+    container_proc_manager_artifact,
 ):
     el_node_name = generate_name(participant, id)
 
@@ -35,6 +36,7 @@ def launch(
     service = launch_method(
         plan,
         el_node_name,
+        id,
         participant,
         el_genesis_artifact,
         el_credentials_artifact,
@@ -43,6 +45,7 @@ def launch(
         el_account,
         el_static_nodes,
         el_chain_id,
+        container_proc_manager_artifact,
     )
     return context.new_context(
         service_name=el_node_name,
