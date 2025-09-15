@@ -63,8 +63,12 @@ def launch(
                     "persistent_peers": cl_node_ids,
                     "cl_compact": participant.get("cl_compact"),
                     "cl_compaction_interval": participant.get("cl_compaction_interval"),
-                    "cl_storage_pruning_interval": participant.get("cl_storage_pruning_interval"),
-                    "cl_indexer_pruning_enabled": participant.get("cl_indexer_pruning_enabled"),
+                    "cl_storage_pruning_interval": participant.get(
+                        "cl_storage_pruning_interval"
+                    ),
+                    "cl_indexer_pruning_enabled": participant.get(
+                        "cl_indexer_pruning_enabled"
+                    ),
                     # Port numbers.
                     "proxy_app_port_number": cl_shared.PROXY_LISTEN_PORT_NUMBER,
                     "rpc_port_number": cl_shared.RPC_PORT_NUMBER,
