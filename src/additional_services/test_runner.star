@@ -68,6 +68,7 @@ def launch(
     # Retrieve L2 urls.
     l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
     l2_cl_api_url = l2_context.all_participants[0].cl_context.api_url
+    l2_cl_rpc_url = l2_context.all_participants[0].cl_context.cl_rpc_url
 
     # Generate a new wallet, fund it with ETH, MATIC and some ERC20 tokens on L1.
     funder_private_key = l2_network_params.get("admin_private_key")
@@ -106,6 +107,7 @@ def launch(
                 "L2_RPC_URL": l2_rpc_url,
                 "L2_CL_NODE_TYPE": l2_context.devnet_cl_type,
                 "L2_CL_API_URL": l2_cl_api_url,
+                "L2_CL_RPC_URL": l2_cl_rpc_url,
                 # Contract addresses.
                 "L1_GOVERNANCE_PROXY_ADDRESS": l1_governance_proxy_address,
                 "L1_DEPOSIT_MANAGER_PROXY_ADDRESS": l1_deposit_manager_proxy_address,

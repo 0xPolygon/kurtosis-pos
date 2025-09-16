@@ -75,6 +75,9 @@ def generate(
                 data={
                     # chain params
                     "cl_chain_id": network_params.get("cl_chain_id"),
+                    "cl_max_age_num_blocks": network_params.get(
+                        "cl_max_age_num_blocks"
+                    ),
                     "el_chain_id": network_params.get("el_chain_id"),
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_span_duration": el_span_duration,
