@@ -21,6 +21,15 @@ def generate(
 
     cl_genesis_data = {}
     validator_data = heimdall_v2_genesis.get_validator_data(validator_accounts)
+
+    # Generate a bad selected producers list containing empty, duplicate and invalid entries.
+    bad_selected_producers = [{}, {}, {}, {"val_id": 88}]
+    bad_selected_producers.extend(validator_data.validator_set)
+    bad_selected_producers.extend(validator_data.validator_set)
+    bad_selected_producers.extend(
+        [{"val_id": 100}, {}, {"val_id": 101}, {"val_id": 102}, {}, {}]
+    )
+
     proposer = []
     if validators_number > 0:
         proposer = validator_data.validator_set[0]
@@ -32,6 +41,7 @@ def generate(
         "validators": json.indent(json.encode(validator_data.validator_set)),
         "proposer": json.indent(json.encode(proposer)),
         "producer_count": len(validator_data.validator_set),
+        "selected_producers": json.indent(json.encode(bad_selected_producers)),
         "total_voting_power": validator_data.total_voting_power,
     }
 
