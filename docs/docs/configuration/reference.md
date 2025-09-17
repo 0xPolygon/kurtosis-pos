@@ -66,7 +66,7 @@ Default: a single validator.
 | --------------------------- | ------ | --------------------------- | -------------------------------------------------------- |
 | kind                        | string | validator                   | Role of the node in the network: `validator` or `rpc`    |
 | cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
-| cl_image                    | string | 0xpolygon/heimdall-v2:0.3.0 | Image for the CL client                                  |
+| cl_image                    | string | 0xpolygon/heimdall-v2:0.3.1 | Image for the CL client                                  |
 | cl_db_image                 | string | rabbitmq:4.1.4              | Image for the CL database                                |
 | cl_log_level                | string | info                        | Log level for the CL client                              |
 | cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height    |
@@ -85,7 +85,7 @@ Default: a single validator.
 | -------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.0 | Image used to generate validator configs    |
+| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.1 | Image used to generate validator configs    |
 
 ### `network_params`
 
