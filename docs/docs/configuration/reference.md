@@ -75,7 +75,7 @@ Default: a single validator.
 | cl_storage_pruning_interval | string | 1m0s                        | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.2.10        | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.2.11        | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | count                       | int    | 1                           | Number of nodes to spin up for this participant          |
 
