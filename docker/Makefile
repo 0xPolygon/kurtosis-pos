@@ -50,7 +50,7 @@ build-pos-validator-config-generator: ## Build PoS validator config generator im
 auth: ## Authenticate with Google Cloud Registry
 	gcloud auth login
 	gcloud config set project prj-polygonlabs-devtools-dev
-	gcloud auth configure-docker
+	gcloud auth configure-docker europe-west2-docker.pkg.dev
 
 .PHONY: push-pos-contract-deployer
 push-pos-contract-deployer: ## Push PoS contract deployer image to GCR
