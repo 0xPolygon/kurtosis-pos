@@ -49,7 +49,7 @@ DEFAULT_IMAGES = {
     # "l1_cl_image": "sigp/lighthouse:v7.1.0",
     "l1_cl_image": "ethpandaops/lighthouse:unstable-8ec2640",  # 2025-09-03 - works with the latest version of the ethereum package and the minimal preset
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.3.0",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.3.1",
     "l2_el_bor_image": "0xpolygon/bor:2.2.10",
     "l2_el_erigon_image": "erigontech/erigon:v3.1.0",
     "l2_cl_db_image": "rabbitmq:4.1.4",
@@ -57,7 +57,7 @@ DEFAULT_IMAGES = {
     "e2e_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9cf122d",
     "pos_contract_deployer_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592",
     "pos_el_genesis_builder_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd",
-    "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.0",
+    "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.1",
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.8",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.8",
     # observability
