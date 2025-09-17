@@ -18,7 +18,6 @@ staticpeers = "{{.static_nodes}}"
 
 # [bor]
 "bor.milestone" = true
-"bor.waypoints" = false
 
 # [miner]
 {{if eq .kind "validator"}}
