@@ -53,6 +53,7 @@ def launch(
         rpc_url=http_rpc_url,
         ws_rpc_url=ws_rpc_url,
         metrics_url=service.ports[cl_shared.METRICS_PORT_ID].url,
+        cl_rpc_url=service.ports[cl_shared.RPC_PORT_ID].url,
     )
 
 
