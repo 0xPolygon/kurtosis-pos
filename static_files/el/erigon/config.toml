@@ -17,9 +17,6 @@ staticpeers = "{{.static_nodes}}"
 # [heimdall]
 "bor.heimdall" = "{{.cl_api_url}}"
 
-# [bor]
-"bor.milestone" = true
-
 # [miner]
 {{if eq .kind "validator"}}
 mine = true
