@@ -7,6 +7,7 @@ syncmode = "{{.sync_mode}}"
 
 {{if .sync_with_witness}}
 syncwithwitnesses = true
+parallelstatelessimport = true
 {{end}}
 
 {{if .produce_witness}}
