@@ -51,7 +51,7 @@ DEFAULT_IMAGES = {
     "l1_cl_image": "ethpandaops/lighthouse:unstable-8ec2640",  # 2025-09-03 - works with the latest version of the ethereum package and the minimal preset
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.3.1",
-    "l2_el_bor_image": "0xpolygon/bor:2.2.10",
+    "l2_el_bor_image": "0xpolygon/bor:2.2.11",
     "l2_el_erigon_image": "erigontech/erigon:v3.0.16",
     "l2_cl_db_image": "rabbitmq:4.1.4",
     # utilities
