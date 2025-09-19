@@ -133,4 +133,4 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 | Field | Type   | Default                                 | Description                              |
 | ----- | ------ | --------------------------------------- | ---------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:v0.2.9 | Image used to deploy the status checker. |
+| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9 | Image used to deploy the status checker. |
