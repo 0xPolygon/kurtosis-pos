@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Find answers to common questions and troubleshooting tips for the package.
 
-If your question isn't answered here, please check the [full documentation](../introduction/overview.md) or open an [issue](https://github.com/0xPolygon/kurtosis-polygon-pos/issues/new).
+If your question isn't answered here, please check the [full documentation](../introduction/overview.md) or open an [issue](https://github.com/0xPolygon/kurtosis-pos/issues/new).
 
 ## Common Questions
 
@@ -67,7 +67,7 @@ To monitor the devnet, add [Prometheus](https://prometheus.io/) and [Grafana](ht
 ```yaml
 polygon_pos_package:
   additional_services:
-    - prometheus_grafana
+    - observability
 ```
 
 After deploying, retrieve the service URLs with:
@@ -102,7 +102,7 @@ When deploying the devnet on an `arm64` architecture, you may encounter the foll
 ```bash
 There was an error validating Starlark code
 ...
-Caused by: Tried pulling image 'leovct/pos-contract-deployer-node-20:ed58f8a' with platform '' but failed
+Caused by: Tried pulling image 'europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592' with platform '' but failed
 ...
 ```
 
@@ -110,15 +110,15 @@ Some of our images are built for `amd64` only. That's why you see a warning like
 
 ```bash
 WARNING: Container images with different architecture than expected(arm64):
-> leovct/pos-contract-deployer-node-20:ed58f8a - amd64
-> leovct/toolbox:0.0.8 - amd64
-> leovct/pos-el-genesis-builder:96a19dd - amd64
-> leovct/pos-validator-config-generator:1.6.0-0.2.10 - amd64
-> leovct/e2e:9fe80e1 - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592 - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.8 - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:1.6.0-0.2.14 - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9cf122d - amd64
 ```
 
 **Solution:** Pull the image by specifying the `amd64` platform.
 
 ```bash
-docker pull --platform linux/amd64 leovct/pos-contract-deployer-node-20:ed58f8a
+docker pull --platform linux/amd64 europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592
 ```

@@ -2,9 +2,9 @@ ROOT_CONTRACTS_MAPPING = {
     # Core contracts.
     "l1_deposit_manager": ".root.DepositManager",
     "l1_deposit_manager_proxy": ".root.DepositManagerProxy",
-    # EventsHubProxy - only availaible with the contract-deployer-node-20.
+    # EventsHubProxy.
     "l1_exit_nft": ".root.ExitNFT",
-    # Governance - only availaible with the contract-deployer-node-20.
+    # Governance.
     "l1_governance_proxy": ".root.GovernanceProxy",
     "l1_registry": ".root.Registry",
     "l1_root_chain": ".root.RootChain",
@@ -14,16 +14,16 @@ ROOT_CONTRACTS_MAPPING = {
     "l1_stake_manager_proxy": ".root.StakeManagerProxy",
     "l1_staking_info": ".root.StakingInfo",
     "l1_state_sender": ".root.StateSender",
-    # ValidatorShare - only availaible with the contract-deployer-node-20.
+    # ValidatorShare.
     "l1_withdraw_manager": ".root.WithdrawManager",
     "l1_withdraw_manager_proxy": ".root.WithdrawManagerProxy",
-    "l1_erc20_predicate": ".root.ERC20Predicate",
-    "l1_erc721_predicate": ".root.ERC721Predicate",
-    "l1_marketplace_predicate": ".root.MarketplacePredicate",
+    "l1_erc20_predicate": ".root.predicates.ERC20Predicate",
+    "l1_erc721_predicate": ".root.predicates.ERC721Predicate",
+    "l1_marketplace_predicate": ".root.predicates.MarketplacePredicate",
     # Tokens.
     "l1_matic_token": ".root.tokens.MaticToken",
-    "l1_matic_weth_": ".root.tokens.MaticWeth",
-    "l1_erc721_token": ".root.RootERC721",
+    "l1_matic_weth": ".root.tokens.MaticWeth",
+    "l1_erc721_token": ".root.tokens.RootERC721",
     "l1_erc20_token": ".root.tokens.TestToken",
 }
 
@@ -33,7 +33,7 @@ CHILD_CONTRACTS_MAPPING = {
     # Tokens.
     "l2_matic_token": ".child.tokens.MaticToken",
     "l2_matic_weth": ".child.tokens.MaticWeth",
-    "l2_erc721_token": ".child.RootERC721",
+    "l2_erc721_token": ".child.tokens.RootERC721",
     "l2_erc20_token": ".child.tokens.TestToken",
 }
 

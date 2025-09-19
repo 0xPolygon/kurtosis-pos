@@ -10,6 +10,11 @@ POLYGON_POS_PARAMS = {
         "cl_image",
         "cl_log_level",
         "cl_db_image",
+        "cl_min_retain_blocks",
+        "cl_compact_enabled",
+        "cl_compaction_interval",
+        "cl_storage_pruning_interval",
+        "cl_indexer_pruning_enabled",
         "el_type",
         "el_image",
         "el_log_level",
@@ -33,6 +38,7 @@ POLYGON_POS_PARAMS = {
         "cl_environment",
         "cl_span_poll_interval",
         "cl_checkpoint_poll_interval",
+        "cl_max_age_num_blocks",
         "el_chain_id",
         "el_block_interval_seconds",
         "el_sprint_duration",
@@ -44,6 +50,9 @@ POLYGON_POS_PARAMS = {
         for field in dir(constants.ADDITIONAL_SERVICES)
     ],
     "test_runner_params": [
+        "image",
+    ],
+    "status_checker_params": [
         "image",
     ],
 }
@@ -123,7 +132,7 @@ def sanity_check_polygon_args(plan, input_args):
     cl_environment = network_params.get("cl_environment")
     _validate_cl_environment(cl_environment)
 
-    # Make sure test params are defined only if the test runner is deployed.
+    # Make sure test runner params are defined only if the test runner is deployed.
     additional_services = input_args.get("additional_services", [])
     if constants.ADDITIONAL_SERVICES.test_runner in additional_services:
         _validate_dict(input_args, "test_runner_params")
@@ -132,6 +141,16 @@ def sanity_check_polygon_args(plan, input_args):
         if test_runner_params:
             fail(
                 "`test_runner_params` must be empty when the test runner is not deployed."
+            )
+
+    # Make sure status checker params are defined only if the status checker is deployed.
+    if constants.ADDITIONAL_SERVICES.status_checker in additional_services:
+        _validate_dict(input_args, "status_checker_params")
+    else:
+        status_checker_params = input_args.get("status_checker_params", {})
+        if status_checker_params:
+            fail(
+                "`status_checker_params` must be empty when the status checker is not deployed."
             )
 
     plan.print("Sanity check passed")

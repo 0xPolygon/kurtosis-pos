@@ -1,18 +1,21 @@
-identity = "{{.node_name}}"
 chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
+identity = "{{.node_name}}"
+syncmode = "{{.sync_mode}}"
 verbosity = {{.log_level_to_int}}
 
-syncmode = "{{.sync_mode}}"
+"bor.logs" = true
 
-# {{if .sync_with_witness}}
-# syncwithwitnesses = true
-# parallelstatelessimport = true
-# {{end}}
+[witness]
+    {{if .sync_with_witness}}
+    syncwithwitnesses = true
+    parallelstatelessimport = true
+    {{end}}
 
-# {{if .produce_witness}}
-# witnessprotocol = true
-# {{end}}
+    {{if .produce_witness}}
+    enable = true
+    producewitnesses = true
+    {{end}}
 
 [p2p]
     maxpeers = 200
@@ -36,9 +39,8 @@ syncmode = "{{.sync_mode}}"
 [miner]
     mine = true
     gaslimit = 45000000
-    gasprice = "25000000000"
     etherbase = "{{.address}}"
-    extradata = "{{.node_name}}"
+    extradata = "{{.extradata}}"
 {{end}}
 
 [jsonrpc]
@@ -47,29 +49,16 @@ syncmode = "{{.sync_mode}}"
         enabled = true
         host = "0.0.0.0"
         port = {{.rpc_port_number}}
-        api = ["admin", "eth", "net", "web3", "txpool", "bor"]
+        api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
         vhosts = ["*"]
         corsdomain = ["*"]
     [jsonrpc.ws]
         enabled = true
         host = "0.0.0.0"
         port = {{.ws_port_number}}
-        api = ["admin", "eth", "net", "web3", "txpool", "bor"]
+        api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
         origins = ["*"]
 
 [telemetry]
     metrics = true
     prometheus-addr = "0.0.0.0:{{.metrics_port_number}}"
-
-[witness]
-{{if .sync_with_witness}}
-    enable = true
-    syncwithwitnesses = true
-    parallelstatelessimport = true
-{{end}}
-{{if .produce_witness}}
-    witnessprotocol = true
-{{end}}
-    fastforwardthreshold = 6400
-    prunethreshold = 64000
-    pruneinterval = "2m0s"

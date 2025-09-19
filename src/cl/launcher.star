@@ -20,6 +20,7 @@ def launch(
     config_artifact,
     node_ids,
     l1_rpc_url,
+    container_proc_manager_artifact,
 ):
     rabbitmq_name = "rabbitmq-l2-cl-{}-{}".format(id, participant.get("kind"))
     rabbitmq_image = participant.get("cl_db_image")
@@ -40,6 +41,7 @@ def launch(
         l1_rpc_url,
         el_rpc_url,
         rabbitmq_url,
+        container_proc_manager_artifact,
     )
     http_rpc_url = service.ports[cl_shared.RPC_PORT_ID].url
     (_, _, rpc_host_port) = http_rpc_url.partition("://")
@@ -51,6 +53,7 @@ def launch(
         rpc_url=http_rpc_url,
         ws_rpc_url=ws_rpc_url,
         metrics_url=service.ports[cl_shared.METRICS_PORT_ID].url,
+        cl_rpc_url=service.ports[cl_shared.RPC_PORT_ID].url,
     )
 
 

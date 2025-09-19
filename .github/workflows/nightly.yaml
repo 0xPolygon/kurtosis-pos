@@ -8,21 +8,60 @@ on:
 permissions:
   contents: read
   actions: write
+  id-token: write
 
 env:
   ENCLAVE_NAME: pos
 
 jobs:
+  run-without-args:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Pre kurtosis run
+        uses: ./.github/actions/kurtosis-pre-run
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+          pull_images_from_gcr: "false"
+
+      - name: Kurtosis run
+        run: |
+          set -o pipefail
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+
+      - name: Extract timing information
+        run: python3 .github/scripts/parse_timing.py run.log
+
+      - name: Inspect enclave
+        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Test state syncs
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
+
+      - name: Monitor milestones and checkpoints
+        uses: ./.github/actions/monitor-milestones-and-checkpoints
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+
+      - name: Post kurtosis run
+        if: always()
+        uses: ./.github/actions/kurtosis-post-run
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+
   list-ymls:
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: set-matrix
         run: |
-          file_paths=$(ls -R ./.github/configs/nightly/{*,*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
+          file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
           echo "file_paths=${file_paths}"
 
           matrix=$(echo "${file_paths}" | while read -r file_path; do
@@ -43,13 +82,13 @@ jobs:
     needs: list-ymls
     name: run-with-${{ matrix.file.name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         file: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -58,7 +97,12 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Run Starlark
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=${{ matrix.file.path }} .
+        run: |
+          set -o pipefail
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
+
+      - name: Extract timing information
+        run: python3 .github/scripts/parse_timing.py run.log --config-file ${{ matrix.file.path }}
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -81,11 +125,12 @@ jobs:
           echo "test_runner_deployed=${test_runner_deployed}" >> $GITHUB_OUTPUT
 
       - name: Test state syncs
-        if: steps.check-test-runner.outputs.test_runner_deployed == 'true'
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        if: steps.check-test-runner.outputs.test_runner_deployed == 'true' && !contains(matrix.file.name, 'additional-services')
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
 
       - name: Monitor milestones and checkpoints
-        if: ${{ !contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why checkpoints are not being created in this case.
+        # TODO: Understand why checkpoints are not being created in heimdall-v2/erigon devnets.
+        if: ${{ !contains(matrix.file.name, 'heimdall-v2-erigon') && !contains(matrix.file.name, 'additional-services') }}
         uses: ./.github/actions/monitor-milestones-and-checkpoints
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
@@ -100,9 +145,9 @@ jobs:
 
   run-with-external-l1:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -111,16 +156,16 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy L1
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@1bf08937f7ec376d5e281fef87dc1efc28aeefef # 2025-06-14 (>v5.0.1)
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@1bf08937f7ec376d5e281fef87dc1efc28aeefef # 2025-06-14 (>v5.0.1)
 
       - name: Deploy L2
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
 
       # TODO: Understand why checkpoints are not being created in this case.
       # - name: Monitor milestones and checkpoints
@@ -137,9 +182,9 @@ jobs:
 
   run-with-cl-el-genesis:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -148,7 +193,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Kurtosis run for the first time
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -175,21 +220,16 @@ jobs:
         run: |
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-validator
           kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-1-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-2-heimdall-v2-bor-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-2-validator
-
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-v2-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-2-bor-heimdall-v2-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-3-bor-heimdall-v2-rpc
 
       - name: Kurtosis run for the second time
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
 
       - name: Monitor milestones and checkpoints
         uses: ./.github/actions/monitor-milestones-and-checkpoints

@@ -12,6 +12,7 @@ BOR_APP_DATA_FOLDER_PATH = "/var/lib/bor"
 def launch(
     plan,
     el_node_name,
+    id,
     participant,
     el_genesis_artifact,
     el_credentials_artifact,
@@ -20,6 +21,7 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
+    container_proc_manager_artifact,
 ):
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -38,6 +40,7 @@ def launch(
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
+                    "extradata": "bor-{}".format(id),
                     "sync_mode": participant.get("el_bor_sync_mode"),
                     "produce_witness": participant.get("el_bor_produce_witness"),
                     "sync_with_witness": participant.get("el_bor_sync_with_witness"),
@@ -63,13 +66,8 @@ def launch(
         "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
         "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
         "cp -r /opt/data/credentials/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
-        # Start bor.
-        # Note: this command attempts to start Bor and retries if it fails.
-        # The retry mechanism addresses a race condition where Bor initially fails to
-        # resolve hostnames of other nodes, as services are created sequentially;
-        # after a 5-second delay, all services should be up, allowing Bor to start
-        # successfully. This is also why the port checks are disabled.
-        "while ! bor server --config {}/config.toml; do echo -e '\n❌ Bor failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
+        # Start bor using the container proc manager script.
+        "/usr/local/share/container-proc-manager.sh bor server --config {}/config.toml".format(
             BOR_CONFIG_FOLDER_PATH
         ),
     ]
@@ -83,28 +81,27 @@ def launch(
                 el_shared.RPC_PORT_ID: PortSpec(
                     number=el_shared.RPC_PORT_NUMBER,
                     application_protocol="http",
-                    wait=None,
                 ),
                 el_shared.WS_PORT_ID: PortSpec(
                     number=el_shared.WS_PORT_NUMBER,
                     application_protocol="ws",
-                    wait=None,
                 ),
                 el_shared.DISCOVERY_PORT_ID: PortSpec(
                     number=el_shared.DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
-                    wait=None,
                 ),
                 el_shared.METRICS_PORT_ID: PortSpec(
                     number=el_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
-                    wait=None,
                 ),
             },
             files={
+                # bor config
                 BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/credentials": el_credentials_artifact,
+                # utils scripts
+                "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
             cmd=["&&".join(bor_cmds)],
@@ -113,7 +110,7 @@ def launch(
 
 
 # Bor log level must be specified using an integer instead of a string.
-# https://github.com/maticnetwork/bor/blob/ceb62bb9d3b91b57579f674f5823f7becbd01df8/internal/cli/server/server.go#L86
+# https://github.com/0xPolygon/bor/blob/ceb62bb9d3b91b57579f674f5823f7becbd01df8/internal/cli/server/server.go#L86
 def log_level_to_int(log_level):
     map_log_level_to_int = {
         "trace": 5,

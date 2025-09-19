@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # Build L2 EL genesis file.
-# For reference: https://github.com/maticnetwork/genesis-contracts
+# For reference: https://github.com/0xPolygon/genesis-contracts
 
 EL_GENESIS_ALLOC_FILE="/opt/genesis-contracts/genesis.json"
 EL_GENESIS_FILE="/opt/data/genesis/genesis.json"

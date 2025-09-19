@@ -93,11 +93,12 @@ echo "VALIDATOR_BALANCE: ${VALIDATOR_BALANCE}"
 echo "VALIDATOR_STAKE_AMOUNT_ETH: ${VALIDATOR_STAKE_AMOUNT_ETH}"
 echo "VALIDATOR_TOP_UP_FEE_AMOUNT_ETH: ${VALIDATOR_TOP_UP_FEE_AMOUNT_ETH}"
 
-# Increase the validator threshold.
-echo "Increasing the validator threshold..."
-validators_count=$(echo -n "$VALIDATOR_ACCOUNTS" | tr -cd ';' | wc -c | xargs)
-validators_count=$((validators_count + 1))
-calldata=$(cast calldata "updateValidatorThreshold(uint)" "${validators_count}")
+# Update the validator threshold to type(uint256).max.
+# Fixes "add new validator" test case in the e2e repo.
+# This is necessary to add more validators to the validator set after the initial deployment.
+echo "Updating the validator threshold to type(uint256).max..."
+validator_threshold=$(cast max-uint)
+calldata=$(cast calldata "updateValidatorThreshold(uint)" "${validator_threshold}")
 
 governance_proxy_address=$(jq -r '.root.GovernanceProxy' "${CONTRACT_ADDRESSES_FILE}")
 stake_manager_proxy_address=$(jq -r '.root.StakeManagerProxy' "${CONTRACT_ADDRESSES_FILE}")
@@ -105,12 +106,12 @@ cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
   "${governance_proxy_address}" "update(address,bytes)" "${stake_manager_proxy_address}" "${calldata}"
 
 # Create the validator config file.
-jq -n '[]' >"${VALIDATORS_CONFIG_FILE}"
+jq -n '[]' > "${VALIDATORS_CONFIG_FILE}"
 
 echo "Staking for each validator node..."
-IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
+IFS=';' read -ra validator_accounts <<< "${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
-  IFS=',' read -r address eth_public_key <<<"${account}"
+  IFS=',' read -r address eth_public_key <<< "${account}"
   # Note: MaticStake requires the amount to be specified in wei, not in eth.
   forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
     scripts/matic-cli-scripts/stake.s.sol:MaticStake \
@@ -120,10 +121,10 @@ for account in "${validator_accounts[@]}"; do
   # Update the validator config file.
   jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT_ETH}" --arg balance "${VALIDATOR_BALANCE}" \
     '. += [{"address": $address, "stake": ($stake | tonumber), "balance": ($balance | tonumber)}]' \
-    "${VALIDATORS_CONFIG_FILE}" >"${VALIDATORS_CONFIG_FILE}.tmp"
+    "${VALIDATORS_CONFIG_FILE}" > "${VALIDATORS_CONFIG_FILE}.tmp"
   mv "${VALIDATORS_CONFIG_FILE}.tmp" "${VALIDATORS_CONFIG_FILE}"
 done
-echo "exports = module.exports = $(<${VALIDATORS_CONFIG_FILE})" >"${VALIDATORS_CONFIG_FILE}"
+echo "exports = module.exports = $(< ${VALIDATORS_CONFIG_FILE})" > "${VALIDATORS_CONFIG_FILE}"
 
 if [[ -s "${VALIDATORS_CONFIG_FILE}" ]]; then
   echo "Validators config created successfully."

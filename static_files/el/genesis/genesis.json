@@ -16,34 +16,43 @@
     "shanghaiBlock": 0,
     "cancunBlock": 0,
     "pragueBlock": 0,
+    "burntContract": {
+      "0": "0x000000000000000000000000000000000000dead"
+    },
     "bor": {
+      "agraBlock": 0,
+      "napoliBlock": 0,
       "jaipurBlock": 0,
       "delhiBlock": 0,
       "indoreBlock": 0,
       "ahmedabadBlock": 0,
       "bhilaiBlock": 0,
-      "veblopBlock": 384,
+      "rioBlock": 256,
       "stateSyncConfirmationDelay": {
-        "256": 128
+        "0": 32
       },
       "period": {
         "0": {{.el_block_interval_seconds}}
       },
       "producerDelay": {
         "0": 2,
-        "384": 1
+        "256": 1
       },
       "sprint": {
         "0": {{.el_sprint_duration}}
       },
       "backupMultiplier": {
         "0": 2,
-        "384": 2
+        "256": 2
       },
       "validatorContract": "0x0000000000000000000000000000000000001000",
       "stateReceiverContract": "0x0000000000000000000000000000000000001001",
       "burntContract": {
         "0": "0x000000000000000000000000000000000000dead"
+      },
+      "coinbase": {
+        "0": "0x0000000000000000000000000000000000000000",
+        "256": "0x000000000000000000000000000000000000ba5e"
       }
     },
     "nonce": "0x0"

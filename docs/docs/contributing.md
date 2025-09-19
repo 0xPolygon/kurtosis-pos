@@ -57,4 +57,4 @@ Then visit http://localhost:3000.
 ## Need Help?
 
 - Check the [full documentation](./introduction/overview.md).
-- Open an [issue](https://github.com/0xPolygon/kurtosis-polygon-pos/issues/new).
+- Open an [issue](https://github.com/0xPolygon/kurtosis-pos/issues/new).
