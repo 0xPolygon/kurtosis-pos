@@ -32,7 +32,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     continue
   fi
 
-  # Get milestone id, start block and hash
+  # Get milestone id, end block and hash
   id=$(echo "$milestone" | jq -r '.milestone_id')
   if [[ -z "$id" || "$id" == "null" ]]; then
     echo "ERROR: $key response missing milestone id"
@@ -40,9 +40,9 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     continue
   fi
 
-  start_block=$(echo "$milestone" | jq -r '.start_block')
-  if [[ -z "$start_block" || "$start_block" == "null" ]]; then
-    echo "ERROR: $key response missing milestone start block"
+  end_block=$(echo "$milestone" | jq -r '.end_block')
+  if [[ -z "$end_block" || "$end_block" == "null" ]]; then
+    echo "ERROR: $key response missing milestone end block"
     error=1
     continue
   fi
@@ -56,10 +56,10 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   milestone_block_hash=$(echo "$hash_base64" | base64 --decode | xxd -p | tr -d '\n' | sed 's/^/0x/')
   milestone_block_hash_lc=${milestone_block_hash,,}
 
-  # Get the Bor block at milestone's start block
-  bor_block=$(cast block "$start_block" --json)
+  # Get the Bor block at milestone's end block
+  bor_block=$(cast block "$end_block" --json)
   if [[ -z "$bor_block" || "$bor_block" == "null" ]]; then
-    echo "ERROR: $key unable to retrieve the block $start_block"
+    echo "ERROR: $key unable to retrieve the block $end_block"
     error=1
     continue
   fi
@@ -76,7 +76,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   # Compare milestone block hash with Bor block hash
   # Report an error if they do not match (node is diverged / on a wrong fork)
   if [[ "$milestone_block_hash_lc" != "$bor_block_hash_lc" ]]; then
-    echo "ERROR: $key bor block hash for block $start_block ($bor_block_hash_lc) does not match expected block hash from milestone $id ($milestone_block_hash_lc)"
+    echo "ERROR: $key bor block hash for block $end_block ($bor_block_hash_lc) does not match expected block hash from milestone $id ($milestone_block_hash_lc)"
     error=1
     continue
   fi
