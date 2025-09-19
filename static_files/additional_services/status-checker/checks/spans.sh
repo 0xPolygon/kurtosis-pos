@@ -15,6 +15,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   bor_rpc=$(echo "$L2_URLS" | jq -r --arg k "$key" '.[$k].rpc')
 
   # Get the timestamp of the latest span's end block.
+  # There should be at least one span so this check should always succeed.
   latest_span_id=$(curl -s "$heimdall_api/bor/spans/latest" | jq -r '.span.id')
   current_span_id=$((latest_span_id - 1))
   end_block=$(curl -s "$heimdall_api/bor/spans/$current_span_id" | jq -r '.span.end_block')
