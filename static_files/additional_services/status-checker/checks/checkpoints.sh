@@ -50,6 +50,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   if [[ "$dt" -gt "$stuck_threshold_seconds" ]]; then
     echo "ERROR: $key checkpoint is stuck at id $id"
     error=1
+    continue
   fi
 done
 
