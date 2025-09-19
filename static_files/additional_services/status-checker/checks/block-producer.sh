@@ -83,7 +83,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     producer=$(cast rpc bor_getAuthor "$block_hex" --rpc-url "$rpc" | tr '[:upper:]' '[:lower:]' | sed 's/"//g')
 
     # Get the expected block producer from Heimdall
-    expected_producer=$(echo "$span" | jq -r '.span.selected_producers[0].signer' | tr '[:upper:]' '[:lower:]')
+    expected_producer=$(echo "$span" | jq -r '.selected_producers[0].signer' | tr '[:upper:]' '[:lower:]')
 
     # Compare the producers
     if [[ "$producer" != "$expected_producer" ]]; then
