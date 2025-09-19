@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-# This script checks that blocks are progressing on Bor.
+# Check that blocks are progressing on Bor.
 # Blocks should be produced every one second.
+
+# Threshold, in seconds, after which a block is considered stuck.
+threshold_seconds=30
 
 # shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
@@ -10,14 +13,33 @@ now=$(date +%s)
 error=0
 
 for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
+  # Get the rpc url
   rpc=$(echo "$L2_URLS" | jq -r --arg k "$key" '.[$k].rpc')
-  hex_ts=$(cast block --rpc-url "$rpc" --json | jq -r '.timestamp')
-  block_ts=$((hex_ts))
+  if [[ -z "$rpc" || "$rpc" == "null" ]]; then
+    echo "ERROR: $key rpc is empty"
+    error=1
+    continue
+  fi
 
+  # Get the timestamp of the latest block
+  block=$(cast block latest --rpc-url "$rpc" --json)
+  if [[ -z "$block" || "$block" == "null" ]]; then
+    echo "ERROR: $key unable to retrieve the last block"
+    error=1
+    continue
+  fi
+
+  # Retrieve block number and timestamp
+  hex_block_number=$(echo "$block" | jq -r '.number')
+  block_number=$((hex_block_number))
+  hex_ts=$(echo "$block" | jq -r '.timestamp')
+  ts=$((hex_ts))
+
+  # Check that the block is not too old
   now=$(date +%s)
-  dt=$((now - block_ts))
-  if [[ "$dt" -gt 60 ]]; then
-    echo "ERROR: $key block number is stuck"
+  dt=$((now - ts))
+  if [[ "$dt" -gt "$threshold_seconds" ]]; then
+    echo "ERROR: $key block number is stuck at block number $block_number"
     error=1
   fi
 done
