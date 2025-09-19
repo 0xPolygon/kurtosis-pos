@@ -12,20 +12,32 @@ error=0
 
 for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   heimdall_api=$(echo "$L2_URLS" | jq -r --arg k "$key" '.[$k].heimdall')
-  bor_rpc=$(echo "$L2_URLS" | jq -r --arg k "$key" '.[$k].rpc')
+  if [[ -z "$heimdall_api" || "$heimdall_api" == "null" ]]; then
+    echo "ERROR: heimdall api is empty for $key"
+    exit 0
+  fi
 
-  # Get the timestamp of the latest span's end block.
-  # There should be at least one span so this check should always succeed.
+  bor_rpc=$(echo "$L2_URLS" | jq -r --arg k "$key" '.[$k].rpc')
+  if [[ -z "$bor_rpc" || "$bor_rpc" == "null" ]]; then
+    echo "ERROR: bor rpc is empty for $key"
+    exit 0
+  fi
+
+  # Get the timestamp of the current span's start block.
   latest_span_id=$(curl -s "$heimdall_api/bor/spans/latest" | jq -r '.span.id')
   current_span_id=$((latest_span_id - 1))
-  end_block=$(curl -s "$heimdall_api/bor/spans/$current_span_id" | jq -r '.span.end_block')
-  block_ts_hex=$(cast block "$end_block" --rpc-url "$bor_rpc" --json | jq -r '.timestamp')
+  start_block=$(curl -s "$heimdall_api/bor/spans/$current_span_id" | jq -r '.span.start_block')
+  block_ts_hex=$(cast block "$start_block" --rpc-url "$bor_rpc" --json | jq -r '.timestamp')
   block_ts=$((block_ts_hex))
+  if [[ -z "$block_ts" || "$block_ts" == "null" ]]; then
+    echo "ERROR: unable to retrieve start block timestamp for span $current_span_id for $key"
+    exit 1
+  fi
 
   now=$(date +%s)
   dt=$((now - block_ts))
   if [[ "$dt" -gt 200 ]]; then
-    echo "ERROR: span is stuck"
+    echo "ERROR: span is stuck for $key"
     error=1
   fi
 done

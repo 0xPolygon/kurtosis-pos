@@ -32,7 +32,18 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
 
   # Retrieve milestone id and timestamp
   id=$(echo "$milestone" | jq -r '.milestone_id')
+  if [[ -z "$id" || "$id" == "null" ]]; then
+    echo "ERROR: $key response missing milestone id"
+    error=1
+    continue
+  fi
+
   ts=$(echo "$milestone" | jq -r '.timestamp')
+  if [[ -z "$ts" || "$ts" == "null" ]]; then
+    echo "ERROR: $key response missing milestone timestamp"
+    error=1
+    continue
+  fi
 
   # Check that the milestone is not too old
   now=$(date +%s)
