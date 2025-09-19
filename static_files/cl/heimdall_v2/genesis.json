@@ -160,7 +160,7 @@
       "max_bytes": 0
     },
     "evidence": {
-      "max_age_num_blocks": 100000,
+      "max_age_num_blocks": {{.cl_max_age_num_blocks}},
       "max_age_duration": 172800000000000,
       "max_bytes": 1048576
     },

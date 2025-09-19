@@ -51,7 +51,7 @@ halt-time = 0
 # with the unbonding (safety threshold) period, state pruning and state sync
 # snapshot parameters to determine the correct minimum value of
 # ResponseCommit.RetainHeight.
-min-retain-blocks = 0
+min-retain-blocks = {{.cl_min_retain_blocks}}
 
 # InterBlockCache enables inter-block caching.
 inter-block-cache = true

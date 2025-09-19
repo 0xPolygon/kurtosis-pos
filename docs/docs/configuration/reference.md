@@ -62,17 +62,22 @@ polygon_pos_package:
 
 Default: a single validator.
 
-| Field        | Type   | Default                     | Description                                           |
-| ------------ | ------ | --------------------------- | ----------------------------------------------------- |
-| kind         | string | validator                   | Role of the node in the network: `validator` or `rpc` |
-| cl_type      | string | heimdall-v2                 | Consensus Layer (CL) client type                      |
-| cl_image     | string | 0xpolygon/heimdall-v2:0.3.0 | Image for the CL client                               |
-| cl_db_image  | string | rabbitmq:4.1.4              | Image for the CL database                             |
-| cl_log_level | string | info                        | Log level for the CL client                           |
-| el_type      | string | bor                         | Execution Layer (EL) client type                      |
-| el_image     | string | 0xpolygon/bor:2.2.10        | Image for the EL client                               |
-| el_log_level | string | info                        | Log level for the EL client                           |
-| count        | int    | 1                           | Number of nodes to spin up for this participant       |
+| Field                       | Type   | Default                     | Description                                              |
+| --------------------------- | ------ | --------------------------- | -------------------------------------------------------- |
+| kind                        | string | validator                   | Role of the node in the network: `validator` or `rpc`    |
+| cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
+| cl_image                    | string | 0xpolygon/heimdall-v2:0.3.1 | Image for the CL client                                  |
+| cl_db_image                 | string | rabbitmq:4.1.4              | Image for the CL database                                |
+| cl_log_level                | string | info                        | Log level for the CL client                              |
+| cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height    |
+| cl_compact_enabled          | bool   | false                       | Compaction enabling.                                     |
+| cl_compaction_interval      | int    | 1000                        | Minimal blocks necessary to run a new compaction routine |
+| cl_storage_pruning_interval | string | 1m0s                        | Interval between prune routines.                         |
+| cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
+| el_type                     | string | bor                         | Execution Layer (EL) client type                         |
+| el_image                    | string | 0xpolygon/bor:2.2.11        | Image for the EL client                                  |
+| el_log_level                | string | info                        | Log level for the EL client                              |
+| count                       | int    | 1                           | Number of nodes to spin up for this participant          |
 
 ### `setup_images`
 
@@ -80,7 +85,7 @@ Default: a single validator.
 | -------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.0 | Image used to generate validator configs    |
+| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.1 | Image used to generate validator configs    |
 
 ### `network_params`
 
@@ -98,6 +103,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | cl_environment                        | string | mainnet                | CL environment                                                     |
 | cl_span_poll_interval                 | string | 0m15s                  | Span poll interval on the CL chain                                 |
 | cl_checkpoint_poll_interval           | string | 1m0s                   | Checkpoint poll interval on the CL chain                           |
+| cl_max_age_num_blocks                 | int    | 100000                 | Genesis evidence setting, useful to set smaller pruning intervals  |
 | el_chain_id                           | string | "4927"                 | EL network ID                                                      |
 | el_block_interval_seconds             | int    | 1                      | Seconds per block on the EL chain                                  |
 | el_sprint_duration                    | int    | 16                     | Duration of an EL sprint (blocks)                                  |
@@ -125,6 +131,6 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 ### `status_checker_params`
 
-| Field | Type   | Default                                                                     | Description                                                                                               |
-| ----- | ------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Field | Type   | Default                                 | Description                              |
+| ----- | ------ | --------------------------------------- | ---------------------------------------- |
 | image | string | ghcr.io/0xpolygon/status-checker:v0.2.8 | Image used to deploy the status checker. |
