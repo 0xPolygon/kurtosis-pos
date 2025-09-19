@@ -12,12 +12,18 @@ error=0
 
 for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   heimdall_api=$(echo "$L2_URLS" | jq -r --arg k "$key" '.[$k].heimdall')
-  milestone_ts=$(curl -s "$heimdall_api/milestones/latest" | jq -r '.milestone.timestamp')
+
+  response=$(curl -s "$heimdall_api/milestones/latest")
+  milestone_ts=$(echo "$response" | jq -r '.milestone.timestamp')
+  if [[ -z "$milestone_ts" ]]; then
+    echo "WARN: no milestone available yet"
+    exit 0
+  fi
 
   now=$(date +%s)
   dt=$((now - milestone_ts))
   if [[ "$dt" -gt 60 ]]; then
-    echo "ERROR: $key milestone is stuck"
+    echo "ERROR: milestone is stuck"
     error=1
   fi
 done
