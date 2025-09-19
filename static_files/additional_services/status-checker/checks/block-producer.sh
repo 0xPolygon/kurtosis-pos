@@ -5,9 +5,6 @@
 # shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
 
-# shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
-
 error=0
 
 for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
