@@ -57,7 +57,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   milestone_block_hash_lc=${milestone_block_hash,,}
 
   # Get the Bor block at milestone's end block
-  bor_block=$(cast block "$end_block" --rpc-url "$rpc_url" --json)
+  bor_block=$(cast block "$end_block" --rpc-url "$rpc" --json)
   if [[ -z "$bor_block" || "$bor_block" == "null" ]]; then
     echo "ERROR: $key unable to retrieve the block $end_block"
     error=1
