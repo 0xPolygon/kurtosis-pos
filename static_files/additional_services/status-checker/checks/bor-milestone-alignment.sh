@@ -57,7 +57,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   milestone_block_hash_lc=${milestone_block_hash,,}
 
   # Get the Bor block at milestone's start block
-  bor_block=$(curl -s "$heimdall_api/bor/blocks/$start_block" | jq -r '.block')
+  bor_block=$(cast block "$start_block" --json)
   if [[ -z "$bor_block" || "$bor_block" == "null" ]]; then
     echo "ERROR: $key unable to retrieve the block $start_block"
     error=1
