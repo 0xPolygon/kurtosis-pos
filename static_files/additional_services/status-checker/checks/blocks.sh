@@ -29,7 +29,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     continue
   fi
 
-  # Retrieve block number and timestamp
+  # Get block number and timestamp
   hex_block_number=$(echo "$block" | jq -r '.number')
   if [[ -z "$hex_block_number" || "$hex_block_number" == "null" ]]; then
     echo "ERROR: $key response missing block number"

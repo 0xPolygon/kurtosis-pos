@@ -21,7 +21,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     continue
   fi
 
-  # Fetch the last checkpoint
+  # Get the last checkpoint
   checkpoint=$(curl -s "$heimdall_api/checkpoints/latest" | jq -r '.checkpoint')
   if [[ -z "$checkpoint" || "$checkpoint" == "null" ]]; then
     echo "ERROR: $key unable to retrieve the last checkpoint"
@@ -29,7 +29,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     continue
   fi
 
-  # Retrieve checkpoint id and timestamp
+  # Get checkpoint id and timestamp
   id=$(echo "$checkpoint" | jq -r '.id')
   if [[ -z "$id" || "$id" == "null" ]]; then
     echo "ERROR: $key response missing checkpoint id"

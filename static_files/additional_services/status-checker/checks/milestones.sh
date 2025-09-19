@@ -22,7 +22,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     continue
   fi
 
-  # Fetch the last milestone
+  # Get the last milestone
   milestone=$(curl -s "$heimdall_api/milestones/latest" | jq -r '.milestone')
   if [[ -z "$milestone" || "$milestone" == "null" ]]; then
     echo "ERROR: $key unable to retrieve the last milestone"
@@ -30,7 +30,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     continue
   fi
 
-  # Retrieve milestone id and timestamp
+  # Get milestone id and timestamp
   id=$(echo "$milestone" | jq -r '.milestone_id')
   if [[ -z "$id" || "$id" == "null" ]]; then
     echo "ERROR: $key response missing milestone id"
