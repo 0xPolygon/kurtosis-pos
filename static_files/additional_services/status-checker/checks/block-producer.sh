@@ -33,7 +33,11 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   fi
 
   # Get the current span - the one before the latest one
-  current_span_id=$((latest_span_id - 1))
+  if [[ "$latest_span_id" -eq 0 ]]; then
+    current_span_id=0
+  else
+    current_span_id=$((latest_span_id - 1))
+  fi
   current_span=$(curl -s "$heimdall_api/bor/spans/$current_span_id" | jq -r '.span')
   if [[ -z "$current_span" || "$current_span" == "null" ]]; then
     echo "ERROR: $key unable to retrieve the current span $current_span_id"
@@ -57,7 +61,12 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   fi
 
   # Get the previous span - the one before the current one
-  previous_span_id=$((current_span_id - 1))
+  if [[ "$current_span_id" -eq 0 || "$current_span_id" -eq 1 ]]; then
+    previous_span_id=0
+  else
+    previous_span_id=$((current_span_id - 1))
+  fi
+
   previous_span=$(curl -s "$heimdall_api/bor/spans/$previous_span_id" | jq -r '.span')
   if [[ -z "$previous_span" || "$previous_span" == "null" ]]; then
     echo "ERROR: $key unable to retrieve the previous span $previous_span_id"
