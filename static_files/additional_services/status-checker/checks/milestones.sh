@@ -5,7 +5,7 @@
 # Most of the time, they are produced every 2 blocks.
 
 # Threshold, in seconds, after which a milestone is considered stuck.
-threshold_seconds=60
+stuck_threshold_seconds=60
 
 # shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
@@ -48,7 +48,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
   # Check that the milestone is not too old
   now=$(date +%s)
   dt=$((now - ts))
-  if [[ "$dt" -gt "$threshold_seconds" ]]; then
+  if [[ "$dt" -gt "$stuck_threshold_seconds" ]]; then
     echo "ERROR: $key milestones is stuck at id $id"
     error=1
   fi

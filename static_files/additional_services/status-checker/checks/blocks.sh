@@ -4,7 +4,7 @@
 # Blocks should be produced every one second.
 
 # Threshold, in seconds, after which a block is considered stuck.
-threshold_seconds=30
+stuck_threshold_seconds=30
 
 # shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
@@ -31,14 +31,25 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
 
   # Retrieve block number and timestamp
   hex_block_number=$(echo "$block" | jq -r '.number')
+  if [[ -z "$hex_block_number" || "$hex_block_number" == "null" ]]; then
+    echo "ERROR: $key response missing block number"
+    error=1
+    continue
+  fi
   block_number=$((hex_block_number))
+
   hex_ts=$(echo "$block" | jq -r '.timestamp')
+  if [[ -z "$hex_ts" || "$hex_ts" == "null" ]]; then
+    echo "ERROR: $key response missing block timestamp"
+    error=1
+    continue
+  fi
   ts=$((hex_ts))
 
   # Check that the block is not too old
   now=$(date +%s)
   dt=$((now - ts))
-  if [[ "$dt" -gt "$threshold_seconds" ]]; then
+  if [[ "$dt" -gt "$stuck_threshold_seconds" ]]; then
     echo "ERROR: $key block number is stuck at block number $block_number"
     error=1
   fi
