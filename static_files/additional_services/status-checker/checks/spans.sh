@@ -37,11 +37,19 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     continue
   fi
 
-  # Get the start block of the current span (the one before the latest one)
+  # Get the current span - the one before the latest one
   current_span_id=$((latest_span_id - 1))
-  start_block=$(curl -s "$heimdall_api/bor/spans/$current_span_id" | jq -r '.span.start_block')
+  current_span=$(curl -s "$heimdall_api/bor/spans/$current_span_id" | jq -r '.span')
+  if [[ -z "$current_span" || "$current_span" == "null" ]]; then
+    echo "ERROR: $key unable to retrieve the current span $current_span_id"
+    error=1
+    continue
+  fi
+
+  # Get the start block of the current span
+  start_block=$(echo "$current_span" | jq -r '.start_block')
   if [[ -z "$start_block" || "$start_block" == "null" ]]; then
-    echo "ERROR: $key unable to retrieve start block for span $current_span_id"
+    echo "ERROR: $key missing start block for span $current_span_id"
     error=1
     continue
   fi
