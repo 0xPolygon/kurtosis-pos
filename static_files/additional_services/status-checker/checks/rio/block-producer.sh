@@ -2,8 +2,8 @@
 
 # Check that the last 30 blocks are produced by the expected block producer.
 
-# shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
+# shellcheck source=static_files/additional_services/status-checker/checks/../lib.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
 
 error=0
 

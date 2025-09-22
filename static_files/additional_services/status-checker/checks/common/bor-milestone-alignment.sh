@@ -2,8 +2,8 @@
 
 # Check that each Bor node is aligned with the latest Heimdall milestone.
 
-# shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
+# shellcheck source=static_files/additional_services/status-checker/checks/../lib.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
 
 error=0
 
