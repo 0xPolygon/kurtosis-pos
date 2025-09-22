@@ -31,7 +31,7 @@ handle_error() {
 trap handle_error ERR
 
 # Continuously send load to the rpc.
-eth_amount=$(cast to-unit 1gwei wei)
+amount=$(cast to-unit 1gwei wei)
 while true; do
   log_info "Sending transactions to the rpc"
   polycli loadtest \
@@ -41,7 +41,7 @@ while true; do
     --requests "100" \
     --concurrency "10" \
     --rate-limit "50" \
-    --eth-amount-in-wei "$eth_amount" \
+    --eth-amount-in-wei "$amount" \
     --pretty-logs=false
 
   log_info "Completed batch. Waiting 10 seconds before next batch."
