@@ -81,10 +81,13 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
     # Check if the block is in the current span
     # If not, we assume the block is in the previous span
     span=""
+    span_id=""
     if [[ "$n" -gt "$start_block" && "$n" -lt "$end_block" ]]; then
       span="$current_span"
+      span_id="$current_span_id"
     else
       span="$previous_span"
+      span_id="$previous_span_id"
     fi
 
     # Get the block producer from Bor
@@ -96,7 +99,7 @@ for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
 
     # Compare the producers
     if [[ "$producer" != "$expected_producer" ]]; then
-      echo "❌ $key block $n producer mismatch: got $producer, expected $expected_producer"
+      echo "ERROR: $key block $n (span $span_id) producer mismatch: got $producer, expected $expected_producer"
       error=1
       continue
     fi
