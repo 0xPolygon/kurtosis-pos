@@ -6,8 +6,8 @@
 # Threshold, in seconds, after which a block is considered stuck.
 stuck_threshold_seconds=30
 
-# shellcheck source=static_files/additional_services/status-checker/checks/../lib.sh
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
+# shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
 
 now=$(date +%s)
 error=0

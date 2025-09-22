@@ -23,14 +23,17 @@ def launch(
         },
     )
 
+    lib_artifact = plan.upload_files(
+        src="../../static_files/additional_services/status-checker/checks/lib.sh",
+        name="status-checker-lib",
+    )
     common_checks_artifact = plan.upload_files(
         src="../../static_files/additional_services/status-checker/checks/common",
         name="status-checker-common-checks",
     )
-    status_checker_artifacts = [common_checks_artifact]
+    status_checker_artifacts = [lib_artifact, common_checks_artifact]
 
-    rio_block = get_rio_block(plan, l2_el_genesis_artifact)
-    rio_enabled = rio_block != "null"
+    rio_enabled = get_rio_block(plan, l2_el_genesis_artifact) != "null"
     if rio_enabled:
         rio_checks_artifact = plan.upload_files(
             src="../../static_files/additional_services/status-checker/checks/rio",
