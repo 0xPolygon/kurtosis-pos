@@ -6,6 +6,7 @@ def launch(
     status_checker_params,
     l1_context,
     l2_context,
+    l2_el_genesis_artifact,
 ):
     l1_rpcs = util.l1_rpcs(l1_context)
     l2_urls = util.l2_urls(l2_context)
@@ -27,6 +28,7 @@ def launch(
         name="status-checker-checks",
     )
 
+    rio_block = get_rio_block(plan, l2_el_genesis_artifact)
     plan.add_service(
         name="status-checker",
         config=ServiceConfig(
@@ -43,6 +45,19 @@ def launch(
             env_vars={
                 "L1_RPCS": json.encode(l1_rpcs),
                 "L2_URLS": json.encode(l2_urls),
+                "RIO_HF_ENABLED": rio_block != "null",
             },
         ),
     )
+
+
+def get_rio_block(plan, l2_el_genesis_artifact):
+    result = plan.run_sh(
+        name="rio-block-reader",
+        description="Reading rio block from the L2 EL genesis",
+        files={
+            "/tmp": l2_el_genesis_artifact,
+        },
+        run="jq --raw-output '.config.bor.rioBlock' /tmp/genesis.json | tr -d '\n'",
+    )
+    return result.output
