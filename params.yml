@@ -1,7 +1,0 @@
-polygon_pos_package:
-  additional_services:
-    # - blockscout
-    - bridge_spammer
-    - status_checker
-    - test_runner
-    - tx_spammer
