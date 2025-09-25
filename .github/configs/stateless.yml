@@ -24,6 +24,16 @@ polygon_pos_package:
       cl_image: local/heimdall-v2:c7f35e8
       el_type: bor
       el_image: local/bor:461b0dc
+      el_bor_produce_witness: false
+      el_bor_sync_with_witness: false
+      count: 1
+
+    # RPC and stateless nodes
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: local/heimdall-v2:c7f35e8
+      el_type: bor
+      el_image: local/bor:461b0dc
       el_bor_produce_witness: true
       el_bor_sync_with_witness: true
       count: 1
@@ -34,7 +44,7 @@ polygon_pos_package:
       el_type: bor
       el_image: local/bor:461b0dc
       el_bor_produce_witness: false
-      el_bor_sync_with_witness: false
+      el_bor_sync_with_witness: true
       count: 1
 
   additional_services:
