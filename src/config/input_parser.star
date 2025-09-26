@@ -18,8 +18,19 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "network_params": {
         "network_id": constants.DEFAULT_L1_CHAIN_ID,
         "prefunded_accounts": "",
-        "preset": "minimal",
         "seconds_per_slot": 1,
+        # The "minimal" preset is useful for rapid testing and development.
+        # It takes 192 seconds to get to finalized epoch vs 1536 seconds with mainnet defaults.
+        "preset": "minimal",
+        # Ethereum hard fork configurations.
+        # Supported fork epochs are documented in `static_files/genesis-generation-config/el-cl/values.env.tmpl`
+        # in the ethereum package repository.
+        "altair_fork_epoch": 0,
+        "bellatrix_fork_epoch": 0,
+        "capella_fork_epoch": 0,
+        "deneb_fork_epoch": 1,
+        "electra_fork_epoch": 2,
+        "fulu_fork_epoch": 3,
     },
 }
 
