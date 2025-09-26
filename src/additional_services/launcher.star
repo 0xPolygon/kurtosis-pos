@@ -47,6 +47,12 @@ def launch(
             tx_spammer.launch(plan, l1_context, l2_context, l2_network_params)
         elif svc == constants.ADDITIONAL_SERVICES.status_checker:
             status_checker_params = polygon_pos_args.get("status_checker_params")
-            status_checker.launch(plan, status_checker_params, l1_context, l2_context)
+            status_checker.launch(
+                plan,
+                status_checker_params,
+                l1_context,
+                l2_context,
+                l2_el_genesis_artifact,
+            )
         else:
             fail("Invalid additional service: %s" % (svc))
