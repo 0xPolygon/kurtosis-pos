@@ -7,7 +7,7 @@ GENESIS_CONTRACTS_BRANCH := master
 GENESIS_CONTRACTS_COMMIT_SHA := 96a19dd # 2025/01/08
 POS_EL_GENESIS_BUILDER_IMAGE_NAME := pos-el-genesis-builder:$(GENESIS_CONTRACTS_COMMIT_SHA)
 
-HEIMDALL_V2_VERSION := 0.3.0-beta # 2025/08/21
+HEIMDALL_V2_VERSION := 0.3.1 # 2025/09/10
 POS_VALIDATOR_CONFIG_IMAGE_NAME := pos-validator-config-generator:$(HEIMDALL_V2_VERSION)
 
 # GCR registry
@@ -50,7 +50,7 @@ build-pos-validator-config-generator: ## Build PoS validator config generator im
 auth: ## Authenticate with Google Cloud Registry
 	gcloud auth login
 	gcloud config set project prj-polygonlabs-devtools-dev
-	gcloud auth configure-docker
+	gcloud auth configure-docker europe-west2-docker.pkg.dev
 
 .PHONY: push-pos-contract-deployer
 push-pos-contract-deployer: ## Push PoS contract deployer image to GCR

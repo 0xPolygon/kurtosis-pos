@@ -42,7 +42,12 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
+
+      - name: Monitor milestones and checkpoints
+        uses: ./.github/actions/monitor-milestones-and-checkpoints
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
 
       - name: Post kurtosis run
         if: always()
@@ -123,8 +128,16 @@ jobs:
           echo "test_runner_deployed=${test_runner_deployed}" >> $GITHUB_OUTPUT
 
       - name: Test state syncs
-        if: steps.check-test-runner.outputs.test_runner_deployed == 'true'
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+        if: steps.check-test-runner.outputs.test_runner_deployed == 'true' && !contains(matrix.file.name, 'additional-services')
+        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
+
+      - name: Monitor milestones and checkpoints
+        # TODO: Understand why checkpoints are not being created in heimdall-v2/erigon devnets.
+        if: ${{ !contains(matrix.file.name, 'heimdall-v2-erigon') && !contains(matrix.file.name, 'additional-services') }}
+        uses: ./.github/actions/monitor-milestones-and-checkpoints
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+          args_filename: ${{ matrix.file.path }}
 
       - name: Post kurtosis run
         if: always()

@@ -23,6 +23,7 @@ def launch(
     el_account,
     el_static_nodes,
     el_chain_id,
+    container_proc_manager_artifact,
 ):
     erigon_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -38,6 +39,7 @@ def launch(
                     "address": el_account.eth_tendermint.address,
                     "cl_api_url": cl_api_url,
                     "log_level": participant.get("el_log_level"),
+                    "extradata": "erigon-{}".format(id),
                     # network params.
                     "el_chain_id": el_chain_id,
                     # Erigon nodes cannot be started sequentially when each node is configured with

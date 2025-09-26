@@ -1,0 +1,14 @@
+polygon_pos_package:
+  participants:
+    - kind: validator
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.0-beta3
+      el_type: bor
+      el_image: 0xpolygon/bor:2.3.0-beta4
+      count: 4
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.0-beta3
+      el_type: bor
+      el_image: 0xpolygon/bor:2.3.0-beta4
+      count: 2
