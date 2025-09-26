@@ -31,7 +31,7 @@ ethereum_package:
 | cl_type  | string | lighthouse                              | Consensus Layer (CL) client type |
 | cl_image | string | ethpandaops/lighthouse:unstable-8ec2640 | Image for the CL client          |
 | el_type  | string | geth                                    | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.16.3              | Image for the EL client          |
+| el_image | string | ethereum/client-go:v1.16.4              | Image for the EL client          |
 
 ### `network_params`
 
