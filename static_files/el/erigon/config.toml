@@ -1,7 +1,8 @@
 identity = "{{.node_name}}"
 networkid = "{{.el_chain_id}}"
 datadir = "{{.data_folder_path}}"
-verbosity = "{{.log_level}}"
+"log.console.verbosity" = "{{.log_level}}"
+"log.dir.verbosity" = "{{.log_level}}"
 
 no-downloader = true
 nat = "none"
