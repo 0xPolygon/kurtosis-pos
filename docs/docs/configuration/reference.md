@@ -31,7 +31,7 @@ ethereum_package:
 | cl_type  | string | lighthouse                              | Consensus Layer (CL) client type |
 | cl_image | string | ethpandaops/lighthouse:unstable-8ec2640 | Image for the CL client          |
 | el_type  | string | geth                                    | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.16.3              | Image for the EL client          |
+| el_image | string | ethereum/client-go:v1.16.4              | Image for the EL client          |
 
 ### `network_params`
 
@@ -75,7 +75,7 @@ Default: a single validator.
 | cl_storage_pruning_interval | string | 1m0s                        | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.2.10        | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.2.11        | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | count                       | int    | 1                           | Number of nodes to spin up for this participant          |
 
@@ -133,4 +133,4 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 | Field | Type   | Default                                 | Description                              |
 | ----- | ------ | --------------------------------------- | ---------------------------------------- |
-| image | string | ghcr.io/0xpolygon/status-checker:v0.2.8 | Image used to deploy the status checker. |
+| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9 | Image used to deploy the status checker. |

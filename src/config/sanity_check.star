@@ -125,6 +125,13 @@ def sanity_check_polygon_args(plan, input_args):
     for p in participants:
         _validate_participant(p)
 
+    setup_images = input_args.get("setup_images")
+    validator_config_generator_image = setup_images.get("validator_config_generator")
+    heimdall_v2_image = participants[0].get("cl_image")
+    _validate_validator_config_generator_image(
+        validator_config_generator_image, heimdall_v2_image
+    )
+
     cl_environment = network_params.get("cl_environment")
     _validate_cl_environment(cl_environment)
 
@@ -288,6 +295,17 @@ def _validate_participant(p):
             fail('The "el_bor_sync_mode" parameter is only valid for the bor EL client')
 
     _validate_strictly_positive_int(p, "count")
+
+
+def _validate_validator_config_generator_image(image, heimdall_v2_image):
+    validator_config_generator_tag = image.split(":")[1]
+    heimdall_v2_tag = heimdall_v2_image.split(":")[1]
+    if validator_config_generator_tag != heimdall_v2_tag:
+        fail(
+            'The pos_validator_config_generator image tag "{}" must match the heimdall-v2 image tag "{}".'.format(
+                validator_config_generator_tag, heimdall_v2_tag
+            )
+        )
 
 
 # The CL environment is used to specify the height for applying specific selection algorithms, span
