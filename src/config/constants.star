@@ -52,7 +52,7 @@ DEFAULT_IMAGES = {
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.3.1",
     "l2_el_bor_image": "0xpolygon/bor:2.2.11",
-    "l2_el_erigon_image": "erigontech/erigon:v3.0.16",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.0.16",
     "l2_cl_db_image": "rabbitmq:4.1.4",
     # utilities
     "e2e_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9cf122d",
