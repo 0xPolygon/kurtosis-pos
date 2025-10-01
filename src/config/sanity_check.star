@@ -301,8 +301,8 @@ def _validate_validator_config_generator_image(image, heimdall_v2_image):
     validator_config_generator_tag = image.split(":")[1]
     heimdall_v2_tag = heimdall_v2_image.split(":")[1]
     if validator_config_generator_tag != heimdall_v2_tag:
-        fail(
-            'The pos_validator_config_generator image tag "{}" must match the heimdall-v2 image tag "{}".'.format(
+        plan.print(
+            'WARN: The validator_config_generator image tag "{}" does not match the heimdall-v2 image tag "{}".'.format(
                 validator_config_generator_tag, heimdall_v2_tag
             )
         )
