@@ -133,7 +133,7 @@ def sanity_check_polygon_args(plan, input_args):
     validator_config_generator_image = setup_images.get("validator_config_generator")
     heimdall_v2_image = participants[0].get("cl_image")
     _validate_validator_config_generator_image(
-        validator_config_generator_image, heimdall_v2_image
+        plan, validator_config_generator_image, heimdall_v2_image
     )
 
     cl_environment = network_params.get("cl_environment")
@@ -302,12 +302,12 @@ def _validate_participant(p):
     _validate_strictly_positive_int(p, "count")
 
 
-def _validate_validator_config_generator_image(image, heimdall_v2_image):
+def _validate_validator_config_generator_image(plan, image, heimdall_v2_image):
     validator_config_generator_tag = image.split(":")[1]
     heimdall_v2_tag = heimdall_v2_image.split(":")[1]
     if validator_config_generator_tag != heimdall_v2_tag:
-        fail(
-            'The pos_validator_config_generator image tag "{}" must match the heimdall-v2 image tag "{}".'.format(
+        plan.print(
+            'WARN: The validator_config_generator image tag "{}" does not match the heimdall-v2 image tag "{}".'.format(
                 validator_config_generator_tag, heimdall_v2_tag
             )
         )
