@@ -3,8 +3,12 @@ polygon_pos_package:
     - kind: validator
       cl_type: heimdall-v2
       el_type: erigon
-      count: 4
+      el_image: local/erigon:v3-local # local img
+      count: 2
     - kind: rpc
       cl_type: heimdall-v2
       el_type: erigon
+      el_image: local/erigon:v3-local # local img
       count: 2
+  additional_services:
+    - test_runner

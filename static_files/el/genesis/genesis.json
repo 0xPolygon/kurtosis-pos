@@ -22,6 +22,7 @@
       "indoreBlock": 0,
       "ahmedabadBlock": 0,
       "bhilaiBlock": 0,
+      "stateSyncBlock": 0,
       "stateSyncConfirmationDelay": {
         "0": 32
       },

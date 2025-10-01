@@ -17,8 +17,8 @@ staticpeers = "{{.static_nodes}}"
 "bor.heimdall" = "{{.cl_api_url}}"
 
 # [bor]
-"bor.milestone" = true
-"bor.waypoints" = false
+# "bor.milestone" = true
+# "bor.waypoints" = false
 
 # [miner]
 {{if eq .kind "validator"}}
@@ -48,7 +48,7 @@ allow-insecure-unlock = true
 "ws.port" = {{.ws_port_number}}
 # "ws.api" = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
 # "ws.origins" = ["*"] # TODO: Make this flag available in erigon.
-   
+
 # [telemetry]
 "metrics.addr" = "0.0.0.0"
 "metrics.port" = {{.metrics_port_number}}
