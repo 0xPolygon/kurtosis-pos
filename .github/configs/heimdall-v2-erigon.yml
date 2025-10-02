@@ -2,13 +2,15 @@ polygon_pos_package:
   participants:
     - kind: validator
       cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.0
       el_type: erigon
-      el_image: local/erigon:v3-local # local img
+      el_image: 0xpolygon/erigon:v3.0.18-test
       count: 2
     - kind: rpc
       cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.0
       el_type: erigon
-      el_image: local/erigon:v3-local # local img
+      el_image: 0xpolygon/erigon:v3.0.18-test
       count: 2
   additional_services:
     - test_runner
