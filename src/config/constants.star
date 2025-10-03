@@ -46,9 +46,7 @@ ADDITIONAL_SERVICES = struct(
 DEFAULT_IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.16.4",
-    # "l1_cl_image": "sigp/lighthouse:v7.1.0",
-    # We use an unstable build of lighthouse as a new release has not been cut yet for the fusaka hardfork
-    "l1_cl_image": "ethpandaops/lighthouse:unstable-ffa7b2b",  # 2025-09-25
+    "l1_cl_image": "sigp/lighthouse:v8.0.0-rc.0",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.3.1",
     "l2_el_bor_image": "0xpolygon/bor:2.2.11",
