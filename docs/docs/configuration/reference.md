@@ -26,12 +26,12 @@ ethereum_package:
 
 ### `participants`
 
-| Field    | Type   | Default                                 | Description                      |
-| -------- | ------ | --------------------------------------- | -------------------------------- |
-| cl_type  | string | lighthouse                              | Consensus Layer (CL) client type |
-| cl_image | string | ethpandaops/lighthouse:unstable-8ec2640 | Image for the CL client          |
-| el_type  | string | geth                                    | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.16.3              | Image for the EL client          |
+| Field    | Type   | Default                     | Description                      |
+| -------- | ------ | --------------------------- | -------------------------------- |
+| cl_type  | string | lighthouse                  | Consensus Layer (CL) client type |
+| cl_image | string | sigp/lighthouse:v8.0.0-rc.0 | Image for the CL client          |
+| el_type  | string | geth                        | Execution Layer (EL) client type |
+| el_image | string | ethereum/client-go:v1.16.4  | Image for the EL client          |
 
 ### `network_params`
 
@@ -53,7 +53,7 @@ polygon_pos_package:
       count: 2
   network_params:
     el_block_interval_seconds: 2
-    el_gas_limit: 10_000_000
+    el_gas_limit: 45_000_000
   additional_services:
     - observability
 ```
@@ -108,7 +108,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | el_block_interval_seconds             | int    | 1                      | Seconds per block on the EL chain                                  |
 | el_sprint_duration                    | int    | 16                     | Duration of an EL sprint (blocks)                                  |
 | el_span_duration                      | int    | 128                    | Duration of an EL span (blocks).                                   |
-| el_gas_limit                          | int    | 10_000_000             | EL gas limit                                                       |
+| el_gas_limit                          | int    | 45_000_000             | EL gas limit                                                       |
 
 ### `additional_services`
 

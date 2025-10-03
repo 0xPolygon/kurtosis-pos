@@ -5,21 +5,42 @@ sanity_check = import_module("./sanity_check.star")
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "participants": [
         {
+            # General
+            "count": 1,
+            # Consensus client
             "cl_type": "lighthouse",
             "cl_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
+            # Execution client
             "el_type": "geth",
             "el_image": constants.DEFAULT_IMAGES.get("l1_el_image"),
+            # Validator client
             "use_separate_vc": True,
             "vc_type": "lighthouse",
             "vc_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
-            "count": 1,
+            # Fulu hard fork config
+            # In PeerDAS, a supernode is a node that custodies and samples all data columns (i.e. holds full awareness
+            # of the erasure-coded blob data) and helps with distributed blob building — computing proofs and
+            # broadcasting data on behalf of the proposer.
+            # Since we don't enable perfect PeerDAS in the config, we need to have at least one supernode.
+            "supernode": True,
         },
     ],
     "network_params": {
         "network_id": constants.DEFAULT_L1_CHAIN_ID,
         "prefunded_accounts": "",
-        "preset": "minimal",
         "seconds_per_slot": 1,
+        # The "minimal" preset is useful for rapid testing and development.
+        # It takes 192 seconds to get to finalized epoch vs 1536 seconds with mainnet defaults.
+        "preset": "minimal",
+        # Ethereum hard fork configurations.
+        # Supported fork epochs are documented in `static_files/genesis-generation-config/el-cl/values.env.tmpl`.
+        # in the ethereum package repository.
+        "altair_fork_epoch": 0,
+        "bellatrix_fork_epoch": 0,
+        "capella_fork_epoch": 0,
+        "deneb_fork_epoch": 1,
+        "electra_fork_epoch": 2,
+        "fulu_fork_epoch": 3,  # Requires a supernode or perfect PeerDAS to be enabled.
     },
 }
 
@@ -75,7 +96,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "el_block_interval_seconds": 1,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
-        "el_gas_limit": math.pow(10, 7),
+        "el_gas_limit": 45000000,
     },
     "additional_services": [
         constants.ADDITIONAL_SERVICES.test_runner,

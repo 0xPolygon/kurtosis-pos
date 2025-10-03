@@ -45,13 +45,12 @@ ADDITIONAL_SERVICES = struct(
 
 DEFAULT_IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.16.3",
-    # "l1_cl_image": "sigp/lighthouse:v7.1.0",
-    "l1_cl_image": "ethpandaops/lighthouse:unstable-8ec2640",  # 2025-09-03 - works with the latest version of the ethereum package and the minimal preset
+    "l1_el_image": "ethereum/client-go:v1.16.4",
+    "l1_cl_image": "sigp/lighthouse:v8.0.0-rc.0",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.3.1",
     "l2_el_bor_image": "0xpolygon/bor:2.2.11",
-    "l2_el_erigon_image": "erigontech/erigon:v3.0.16",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.0.18",
     "l2_cl_db_image": "rabbitmq:4.1.4",
     # utilities
     "e2e_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9cf122d",
