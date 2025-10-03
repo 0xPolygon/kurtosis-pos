@@ -53,7 +53,7 @@ polygon_pos_package:
       count: 2
   network_params:
     el_block_interval_seconds: 2
-    el_gas_limit: 10_000_000
+    el_gas_limit: 45_000_000
   additional_services:
     - observability
 ```
@@ -108,7 +108,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | el_block_interval_seconds             | int    | 1                      | Seconds per block on the EL chain                                  |
 | el_sprint_duration                    | int    | 16                     | Duration of an EL sprint (blocks)                                  |
 | el_span_duration                      | int    | 128                    | Duration of an EL span (blocks).                                   |
-| el_gas_limit                          | int    | 10_000_000             | EL gas limit                                                       |
+| el_gas_limit                          | int    | 45_000_000             | EL gas limit                                                       |
 
 ### `additional_services`
 
