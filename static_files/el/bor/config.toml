@@ -6,6 +6,17 @@ verbosity = {{.log_level_to_int}}
 
 "bor.logs" = true
 
+[witness]
+    fastforwardthreshold=30
+    {{if .sync_with_witness}}
+    syncwithwitnesses = true
+    {{end}}
+
+    {{if .produce_witness}}
+    enable = true
+    producewitnesses = true
+    {{end}}
+
 [p2p]
     maxpeers = 200
     bind = "0.0.0.0"
@@ -24,7 +35,7 @@ verbosity = {{.log_level_to_int}}
     password = "{{.config_folder_path}}/password.txt"
     unlock = ["{{.address}}"]
 
-{{if eq .kind "validator"}}
+{{if and (eq .kind "validator") (ne .sync_mode "stateless")}}
 [miner]
     mine = true
     gaslimit = 45000000
