@@ -95,6 +95,15 @@ def launch(
 
             # Launch the EL node.
             el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
+
+            # Build custom static-nodes for this participant
+            # Hardcoded: node 4 only peers with Erigon nodes 5 and 6
+            # Other nodes exclude node 4
+            custom_static_nodes = _build_custom_static_nodes(
+                network_data.el_static_nodes,
+                participant_index + 1,
+            )
+
             el_context = el_launcher.launch(
                 plan,
                 participant,
@@ -103,7 +112,7 @@ def launch(
                 cl_api_url,
                 cl_ws_rpc_url,
                 el_account,
-                network_data.el_static_nodes,
+                custom_static_nodes,
                 el_chain_id,
                 container_proc_manager_artifact,
             )
@@ -209,6 +218,35 @@ def _prepare_network_data(participants):
         cl_validator_keystores=cl_validator_keystores,
         el_static_nodes=el_static_nodes,
     )
+
+
+def _build_custom_static_nodes(all_static_nodes, current_node_id):
+    """
+    Build custom static-nodes list for a specific node.
+    Hardcoded logic:
+    - Node 4: Only peers with Erigon nodes (indices 5 and 6)
+    - All other nodes: Exclude node 4 from their peers
+    """
+    # Node 4 only connects to Erigon nodes 5 and 6
+    if current_node_id == 4:
+        # Return only nodes 5 and 6 (indices 4 and 5 in 0-based array)
+        custom_nodes = []
+        # if len(all_static_nodes) > 2:
+        #     custom_nodes.append(all_static_nodes[2])  # Node 3
+        if len(all_static_nodes) > 4:
+            custom_nodes.append(all_static_nodes[4])  # Node 5
+        if len(all_static_nodes) > 5:
+            custom_nodes.append(all_static_nodes[5])  # Node 6
+        return custom_nodes
+
+    # All other nodes: include all nodes except node 4
+    custom_nodes = []
+    for i, node in enumerate(all_static_nodes):
+        # Skip node 4 (index 3 in 0-based array)
+        if i != 3:
+            custom_nodes.append(node)
+
+    return custom_nodes
 
 
 def _generate_enode_url(participant, eth_public_key, el_node_name):
