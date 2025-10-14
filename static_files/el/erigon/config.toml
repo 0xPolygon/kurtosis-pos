@@ -3,6 +3,8 @@ networkid = "{{.el_chain_id}}"
 datadir = "{{.data_folder_path}}"
 "log.console.verbosity" = "{{.log_level}}"
 "log.dir.verbosity" = "{{.log_level}}"
+"log.console.json" = {{.log_format == "json"}}
+"log.dir.json" = {{.log_format == "json"}}
 
 no-downloader = true
 nat = "none"

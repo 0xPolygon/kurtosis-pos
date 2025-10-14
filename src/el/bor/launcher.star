@@ -40,6 +40,7 @@ def launch(
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
+                    "log_format": participant.get("el_log_format"),
                     "extradata": "bor-{}".format(id),
                     "sync_mode": participant.get("el_bor_sync_mode"),
                     # network params

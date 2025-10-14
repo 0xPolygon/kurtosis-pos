@@ -60,6 +60,7 @@ def launch(
                     # Node params.
                     "moniker": cl_node_name,
                     "log_level": participant.get("cl_log_level"),
+                    "log_format": participant.get("cl_log_format"),
                     "persistent_peers": cl_node_ids,
                     "cl_compact_enabled": participant.get("cl_compact_enabled"),
                     "cl_compaction_interval": participant.get("cl_compaction_interval"),
