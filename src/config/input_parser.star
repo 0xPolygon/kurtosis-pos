@@ -3,6 +3,7 @@ math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
+    "global_log_level": constants.LOG_LEVEL.info,
     "participants": [
         {
             # General
@@ -26,7 +27,6 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
         },
     ],
     "network_params": {
-        "global_log_level": constants.LOG_LEVEL.info,
         "network_id": constants.DEFAULT_L1_CHAIN_ID,
         "prefunded_accounts": "",
         "seconds_per_slot": 1,
