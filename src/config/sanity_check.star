@@ -9,6 +9,7 @@ POLYGON_POS_PARAMS = {
         "cl_type",
         "cl_image",
         "cl_log_level",
+        "cl_log_format",
         "cl_db_image",
         "cl_min_retain_blocks",
         "cl_compact_enabled",
@@ -18,6 +19,7 @@ POLYGON_POS_PARAMS = {
         "el_type",
         "el_image",
         "el_log_level",
+        "el_log_format",
         "el_bor_sync_mode",
         "count",
     ],
@@ -27,6 +29,8 @@ POLYGON_POS_PARAMS = {
         "validator_config_generator",
     ],
     "network_params": [
+        "log_level",
+        "log_format",
         "admin_private_key",
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount_eth",
@@ -124,6 +128,8 @@ def sanity_check_polygon_args(plan, input_args):
     cl_chain_id = network_params.get("cl_chain_id")
     el_chain_id = network_params.get("el_chain_id")
     _validate_chain_ids(cl_chain_id, el_chain_id)
+    _validate_str(network_params, "log_level", VALID_LOG_LEVELS)
+    _validate_str(network_params, "log_format", VALID_LOG_FORMATS)
 
     participants = input_args.get("participants")
     _validate_participants_count(participants)
