@@ -83,8 +83,8 @@ VALID_LOG_LEVELS = [
 ]
 
 VALID_LOG_FORMATS = [
-    constants.LOG_LEVEL.text,
-    constants.LOG_LEVEL.json,
+    constants.LOG_FORMAT.text,
+    constants.LOG_FORMAT.json,
 ]
 
 VALID_BOR_SYNC_MODES = [
