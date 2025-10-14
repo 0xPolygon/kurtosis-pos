@@ -49,7 +49,7 @@ verbosity = {{.log_level_to_int}}
         origins = ["*"]
 
 [logging]
-    json = {{.log_format == 'json'}}
+    json = {{.json_log_enabled}}
 
 [telemetry]
     metrics = true
