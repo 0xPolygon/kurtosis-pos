@@ -55,9 +55,11 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_storage_pruning_interval": constants.CL_STORAGE_PRUNING_INTERVAL,
     "cl_indexer_pruning_enabled": constants.CL_INDEXER_PRUNING_ENABLED,
     "cl_log_level": constants.LOG_LEVEL.info,
+    "cl_log_format": constants.LOG_FORMAT.text,
     "el_type": constants.EL_TYPE.bor,
     "el_image": constants.DEFAULT_IMAGES.get("l2_el_bor_image"),
     "el_log_level": constants.LOG_LEVEL.info,
+    "el_log_format": constants.LOG_FORMAT.text,
     "count": 1,
 }
 
@@ -79,6 +81,9 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         ),
     },
     "network_params": {
+        # Global log parameters.
+        "log_level": constants.LOG_LEVEL.info,
+        "log_format": constants.LOG_FORMAT.text,
         # Admin account generated using `cast wallet new`.
         # This private key is used to deploy Polygon PoS contracts on both L1 and L2.
         "admin_private_key": "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea",
@@ -160,15 +165,19 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     # Parse the polygon pos input args and set defaults if needed.
     result = {}
 
+    network_params = polygon_pos_args.get("network_params", {})
+    result["network_params"] = _parse_network_params(network_params)
+
     participants = polygon_pos_args.get("participants", [])
-    result["participants"] = _parse_participants(participants)
+    global_log_level = network_params.get("log_level", "")
+    global_log_format = network_params.get("log_format", "")
+    result["participants"] = _parse_participants(
+        participants, global_log_level, global_log_format
+    )
     devnet_cl_type = _get_devnet_cl_type(result["participants"])
 
     setup_images = polygon_pos_args.get("setup_images", {})
     result["setup_images"] = _parse_setup_images(setup_images)
-
-    network_params = polygon_pos_args.get("network_params", {})
-    result["network_params"] = _parse_network_params(network_params)
 
     additional_services = polygon_pos_args.get("additional_services", [])
     result["additional_services"] = _parse_additional_services(additional_services)
@@ -213,7 +222,7 @@ def _parse_dev_args(plan, dev_args):
     return _sort_dict_by_values(dev_args)
 
 
-def _parse_participants(participants):
+def _parse_participants(participants, global_log_level, global_log_format):
     devnet_cl_type = ""
     participants_with_defaults = []
 
@@ -244,6 +253,23 @@ def _parse_participants(participants):
                 p["el_image"] = constants.DEFAULT_IMAGES.get("l2_el_erigon_image")
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
+
+        # Set log levels to global log level if not provided.
+        cl_log_level = p.get("cl_log_level", "")
+        el_log_level = p.get("el_log_level", "")
+        if global_log_level:
+            if not cl_log_level:
+                p["cl_log_level"] = global_log_level
+            if not el_log_level:
+                p["el_log_level"] = global_log_level
+
+        cl_log_format = p.get("cl_log_format", "")
+        el_log_format = p.get("el_log_format", "")
+        if global_log_format:
+            if not cl_log_format:
+                p["cl_log_format"] = global_log_format
+            if not el_log_format:
+                p["el_log_format"] = global_log_format
 
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
