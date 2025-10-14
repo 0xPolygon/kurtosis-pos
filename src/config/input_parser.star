@@ -69,6 +69,8 @@ DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
+    "global_log_level": constants.LOG_LEVEL.info,
+    "global_log_format": constants.LOG_FORMAT.text,
     "participants": [DEFAULT_POLYGON_POS_PARTICIPANT],
     "setup_images": {
         "contract_deployer": constants.DEFAULT_IMAGES.get(
@@ -82,9 +84,6 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         ),
     },
     "network_params": {
-        # Global log parameters.
-        "log_level": constants.LOG_LEVEL.info,
-        "log_format": constants.LOG_FORMAT.text,
         # Admin account generated using `cast wallet new`.
         # This private key is used to deploy Polygon PoS contracts on both L1 and L2.
         "admin_private_key": "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea",
@@ -166,12 +165,10 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     # Parse the polygon pos input args and set defaults if needed.
     result = {}
 
-    network_params = polygon_pos_args.get("network_params", {})
-    result["network_params"] = _parse_network_params(network_params)
+    global_log_level = polygon_pos_args.get("global_log_level", "")
+    global_log_format = polygon_pos_args.get("global_log_format", "")
 
     participants = polygon_pos_args.get("participants", [])
-    global_log_level = network_params.get("log_level", "")
-    global_log_format = network_params.get("log_format", "")
     result["participants"] = _parse_participants(
         participants, global_log_level, global_log_format
     )
@@ -179,6 +176,9 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     setup_images = polygon_pos_args.get("setup_images", {})
     result["setup_images"] = _parse_setup_images(setup_images)
+
+    network_params = polygon_pos_args.get("network_params", {})
+    result["network_params"] = _parse_network_params(network_params)
 
     additional_services = polygon_pos_args.get("additional_services", [])
     result["additional_services"] = _parse_additional_services(additional_services)

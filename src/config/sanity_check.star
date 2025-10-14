@@ -4,6 +4,8 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 
 
 POLYGON_POS_PARAMS = {
+    "global_log_level",
+    "global_log_format",
     "participants": [
         "kind",
         "cl_type",
@@ -29,8 +31,6 @@ POLYGON_POS_PARAMS = {
         "validator_config_generator",
     ],
     "network_params": [
-        "log_level",
-        "log_format",
         "admin_private_key",
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount_eth",
@@ -118,6 +118,8 @@ def sanity_check_polygon_args(plan, input_args):
             )
 
     # Validate keys.
+    _validate_str(input_args, "global_log_level", VALID_LOG_LEVELS)
+    _validate_str(input_args, "global_log_format", VALID_LOG_FORMATS)
     _validate_list_of_dict(input_args, "participants")
     _validate_dict(input_args, "setup_images")
     _validate_dict(input_args, "network_params")
@@ -128,8 +130,6 @@ def sanity_check_polygon_args(plan, input_args):
     cl_chain_id = network_params.get("cl_chain_id")
     el_chain_id = network_params.get("el_chain_id")
     _validate_chain_ids(cl_chain_id, el_chain_id)
-    _validate_str(network_params, "log_level", VALID_LOG_LEVELS)
-    _validate_str(network_params, "log_format", VALID_LOG_FORMATS)
 
     participants = input_args.get("participants")
     _validate_participants_count(participants)
