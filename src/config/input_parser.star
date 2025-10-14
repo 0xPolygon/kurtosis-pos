@@ -55,12 +55,8 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_compaction_interval": constants.CL_COMPACTION_INTERVAL,
     "cl_storage_pruning_interval": constants.CL_STORAGE_PRUNING_INTERVAL,
     "cl_indexer_pruning_enabled": constants.CL_INDEXER_PRUNING_ENABLED,
-    "cl_log_level": constants.LOG_LEVEL.info,
-    "cl_log_format": constants.LOG_FORMAT.text,
     "el_type": constants.EL_TYPE.bor,
     "el_image": constants.DEFAULT_IMAGES.get("l2_el_bor_image"),
-    "el_log_level": constants.LOG_LEVEL.info,
-    "el_log_format": constants.LOG_FORMAT.text,
     "count": 1,
 }
 
@@ -165,8 +161,12 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     # Parse the polygon pos input args and set defaults if needed.
     result = {}
 
-    global_log_level = polygon_pos_args.get("global_log_level", constants.LOG_LEVEL.info)
-    global_log_format = polygon_pos_args.get("global_log_format", constants.LOG_FORMAT.text)
+    global_log_level = polygon_pos_args.get(
+        "global_log_level", constants.LOG_LEVEL.info
+    )
+    global_log_format = polygon_pos_args.get(
+        "global_log_format", constants.LOG_FORMAT.text
+    )
     result["global_log_level"] = global_log_level
     result["global_log_format"] = global_log_format
 
