@@ -4,8 +4,8 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 
 
 POLYGON_POS_PARAMS = {
-    "global_log_level",
-    "global_log_format",
+    "global_log_level": [],
+    "global_log_format": [],
     "participants": [
         "kind",
         "cl_type",
