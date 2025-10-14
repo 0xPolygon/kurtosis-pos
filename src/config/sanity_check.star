@@ -82,6 +82,11 @@ VALID_LOG_LEVELS = [
     constants.LOG_LEVEL.trace,
 ]
 
+VALID_LOG_FORMATS = [
+    constants.LOG_LEVEL.text,
+    constants.LOG_LEVEL.json,
+]
+
 VALID_BOR_SYNC_MODES = [
     constants.BOR_SYNC_MODES.full,
     constants.BOR_SYNC_MODES.snap,
@@ -286,6 +291,8 @@ def _validate_participant(p):
 
     _validate_str(p, "cl_log_level", VALID_LOG_LEVELS)
     _validate_str(p, "el_log_level", VALID_LOG_LEVELS)
+    _validate_str(p, "cl_log_format", VALID_LOG_FORMATS)
+    _validate_str(p, "el_log_format", VALID_LOG_FORMATS)
 
     # Validate sync mode.
     if el_type == constants.EL_TYPE.bor:
