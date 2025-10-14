@@ -166,7 +166,14 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     result = {}
 
     global_log_level = polygon_pos_args.get("global_log_level", "")
+    if "global_log_level" not in polygon_pos_args:
+        result["global_log_level"] = constants.LOG_LEVEL.info
+        global_log_level = constants.LOG_LEVEL.info
+
     global_log_format = polygon_pos_args.get("global_log_format", "")
+    if "global_log_format" not in polygon_pos_args:
+        result["global_log_format"] = constants.LOG_FORMAT.text
+        global_log_format = constants.LOG_FORMAT.text
 
     participants = polygon_pos_args.get("participants", [])
     result["participants"] = _parse_participants(
