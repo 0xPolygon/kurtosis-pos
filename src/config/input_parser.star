@@ -26,6 +26,7 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
         },
     ],
     "network_params": {
+        "global_log_level": constants.LOG_LEVEL.info,
         "network_id": constants.DEFAULT_L1_CHAIN_ID,
         "prefunded_accounts": "",
         "seconds_per_slot": 1,
