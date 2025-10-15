@@ -27,7 +27,7 @@
       "indoreBlock": 0,
       "ahmedabadBlock": 0,
       "bhilaiBlock": 0,
-      "rioBlock": 0,
+      "rioBlock": 256,
       "stateSyncConfirmationDelay": {
         "0": 32
       },
@@ -35,13 +35,15 @@
         "0": {{.el_block_interval_seconds}}
       },
       "producerDelay": {
-        "0": 2
+        "0": 2,
+        "256": 1
       },
       "sprint": {
         "0": {{.el_sprint_duration}}
       },
       "backupMultiplier": {
-        "0": 2
+        "0": 2,
+        "256": 2
       },
       "validatorContract": "0x0000000000000000000000000000000000001000",
       "stateReceiverContract": "0x0000000000000000000000000000000000001001",
@@ -49,7 +51,8 @@
         "0": "0x000000000000000000000000000000000000dead"
       },
       "coinbase": {
-        "0": "0x000000000000000000000000000000000000ba5e"
+        "0": "0x0000000000000000000000000000000000000000",
+        "256": "0x000000000000000000000000000000000000ba5e"
       }
     },
     "nonce": "0x0"
