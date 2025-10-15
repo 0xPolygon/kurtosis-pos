@@ -82,6 +82,10 @@ for ((i = start_span_id; i <= end_span_id; i++)); do
     echo "ERROR: Span ${i} has ${current_span_selected_producers_count} selected producers (expected: 1)"
   fi
 
+  # TODO: Check if the selected producer is in the list of active producers
+  # TODO: Check if the selected producer is different from the previous span's producer - in our devnet, producers should be rotated in the following way: 1, 2, 3, 1, 2, 3, 1...
+  # TODO: Check if producers are rotated too frequently - in our devnet, producers should be rotated every span (128 blocks)
+
   # Update previous span end block for the next iteration
   previous_span_end_block="${current_span_end_block}"
 done
