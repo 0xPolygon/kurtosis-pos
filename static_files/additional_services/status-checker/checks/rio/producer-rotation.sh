@@ -15,7 +15,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
 
 heimdall_api="$(kurtosis port print pos l2-cl-1-heimdall-v2-bor-validator http)"
 
-# Retrieve the last span checked from a temp file.
+# Retrieve the last span checked from a temp file
 temp_file="/tmp/producer_rotation_check.log"
 last_checked_span_id=-1
 previous_span_end_block=""
