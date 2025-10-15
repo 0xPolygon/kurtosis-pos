@@ -3,6 +3,7 @@ math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
+    "global_log_level": constants.LOG_LEVEL.info,
     "participants": [
         {
             # General
@@ -54,10 +55,8 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_compaction_interval": constants.CL_COMPACTION_INTERVAL,
     "cl_storage_pruning_interval": constants.CL_STORAGE_PRUNING_INTERVAL,
     "cl_indexer_pruning_enabled": constants.CL_INDEXER_PRUNING_ENABLED,
-    "cl_log_level": constants.LOG_LEVEL.info,
     "el_type": constants.EL_TYPE.bor,
     "el_image": constants.DEFAULT_IMAGES.get("l2_el_bor_image"),
-    "el_log_level": constants.LOG_LEVEL.info,
     "count": 1,
 }
 
@@ -66,6 +65,8 @@ DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
+    "global_log_level": constants.LOG_LEVEL.info,
+    "global_log_format": constants.LOG_FORMAT.text,
     "participants": [DEFAULT_POLYGON_POS_PARTICIPANT],
     "setup_images": {
         "contract_deployer": constants.DEFAULT_IMAGES.get(
@@ -160,8 +161,19 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     # Parse the polygon pos input args and set defaults if needed.
     result = {}
 
+    global_log_level = polygon_pos_args.get(
+        "global_log_level", constants.LOG_LEVEL.info
+    )
+    global_log_format = polygon_pos_args.get(
+        "global_log_format", constants.LOG_FORMAT.text
+    )
+    result["global_log_level"] = global_log_level
+    result["global_log_format"] = global_log_format
+
     participants = polygon_pos_args.get("participants", [])
-    result["participants"] = _parse_participants(participants)
+    result["participants"] = _parse_participants(
+        participants, global_log_level, global_log_format
+    )
     devnet_cl_type = _get_devnet_cl_type(result["participants"])
 
     setup_images = polygon_pos_args.get("setup_images", {})
@@ -213,7 +225,7 @@ def _parse_dev_args(plan, dev_args):
     return _sort_dict_by_values(dev_args)
 
 
-def _parse_participants(participants):
+def _parse_participants(participants, global_log_level, global_log_format):
     devnet_cl_type = ""
     participants_with_defaults = []
 
@@ -244,6 +256,23 @@ def _parse_participants(participants):
                 p["el_image"] = constants.DEFAULT_IMAGES.get("l2_el_erigon_image")
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
+
+        # Set log levels to global log level if not provided.
+        cl_log_level = p.get("cl_log_level", "")
+        el_log_level = p.get("el_log_level", "")
+        if global_log_level:
+            if not cl_log_level:
+                p["cl_log_level"] = global_log_level
+            if not el_log_level:
+                p["el_log_level"] = global_log_level
+
+        cl_log_format = p.get("cl_log_format", "")
+        el_log_format = p.get("el_log_format", "")
+        if global_log_format:
+            if not cl_log_format:
+                p["cl_log_format"] = global_log_format
+            if not el_log_format:
+                p["el_log_format"] = global_log_format
 
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
