@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Check if a producer has been rotated before the end of its span by comparing the start and end blocks of consecutive spans.
-# Under normal conditions, a producer should produce for the entire span length.
-# If a producer is not active, behind, has crashed or is producing blocks after the threshold, etc, it may be replaced by another producer, also called a rotation.
-# A span has ended normally if the start block of the next span is equal to the end block of the current span + 1.
-# If not, the current span has been replaced by the next span at its start block.
+# This script performs multiple checks on spans:
+# - Producer rotation detection
+# - Overlapping spans detection
+# - Span length is equal to 128 blocks
+# - Selected producers count is equal to 1
 
 # shellcheck source=static_files/additional_services/status-checker/checks/lib.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
@@ -50,14 +50,39 @@ for ((i = start_span_id; i <= end_span_id; i++)); do
   current_span=$(get_span "$i")
   current_span_start_block=$(echo "${current_span}" | jq -r '.start_block')
   current_span_end_block=$(echo "${current_span}" | jq -r '.end_block')
+  current_span_length=$((current_span_end_block - current_span_start_block + 1))
+  current_span_selected_producers_count=$(echo "${current_span}" | jq -r '.selected_producers | length')
 
-  # Only check for rotation if we have a previous span to compare against
+  # Only check for producer rotations and overlaps if we have a previous span to compare against
   if [[ -n "${previous_span_end_block}" ]]; then
+    # Check for producer rotation
+    # A span has ended normally if the start block of the next span is equal to the end block of the current span + 1.
+    # If not, the current span has been replaced by the next span at its start block, also called a rotation.
     expected_start_block=$((previous_span_end_block + 1))
     if [[ ${current_span_start_block} -ne ${expected_start_block} ]]; then
       echo "WARN: Producer rotation detected! span $((i-1)) was replaced by span ${i} (expected start: ${expected_start_block}, actual: ${current_span_start_block})"
     fi
+
+    # Check for overlapping spans
+    if [[ ${current_span_start_block} -le ${previous_span_end_block} ]]; then
+      echo "ERROR: Overlapping spans detected! span $((i-1)) (end: ${previous_span_end_block}) overlaps with span ${i} (start: ${current_span_start_block})"
+    fi
   fi
+
+  # Check if the span length is as expected
+  expected_span_length=128
+  if [[ ${current_span_length} -lt ${expected_span_length} ]]; then
+    echo "ERROR: Span ${i} is shorter than expected (length: ${current_span_length}, expected: ${expected_span_length})"
+  elif [[ ${current_span_length} -gt ${expected_span_length} ]]; then
+    echo "WARN: Span ${i} is longer than expected (length: ${current_span_length}, expected: ${expected_span_length})"
+  fi
+
+  # Check if there is only one selected producer
+  if [[ ${current_span_selected_producers_count} -ne 1 ]]; then
+    echo "ERROR: Span ${i} has ${current_span_selected_producers_count} selected producers (expected: 1)"
+  fi
+
+  # Update previous span end block for the next iteration
   previous_span_end_block="${current_span_end_block}"
 done
 
