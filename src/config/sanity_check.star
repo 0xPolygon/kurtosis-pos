@@ -4,11 +4,14 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 
 
 POLYGON_POS_PARAMS = {
+    "global_log_level": [],
+    "global_log_format": [],
     "participants": [
         "kind",
         "cl_type",
         "cl_image",
         "cl_log_level",
+        "cl_log_format",
         "cl_db_image",
         "cl_min_retain_blocks",
         "cl_compact_enabled",
@@ -18,7 +21,7 @@ POLYGON_POS_PARAMS = {
         "el_type",
         "el_image",
         "el_log_level",
-        # Bor specific parameters.
+        "el_log_format",
         "el_bor_sync_mode",
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
@@ -85,6 +88,11 @@ VALID_LOG_LEVELS = [
     constants.LOG_LEVEL.trace,
 ]
 
+VALID_LOG_FORMATS = [
+    constants.LOG_FORMAT.text,
+    constants.LOG_FORMAT.json,
+]
+
 VALID_BOR_SYNC_MODES = [
     constants.BOR_SYNC_MODES.full,
     constants.BOR_SYNC_MODES.snap,
@@ -113,6 +121,8 @@ def sanity_check_polygon_args(plan, input_args):
             )
 
     # Validate keys.
+    _validate_str(input_args, "global_log_level", VALID_LOG_LEVELS)
+    _validate_str(input_args, "global_log_format", VALID_LOG_FORMATS)
     _validate_list_of_dict(input_args, "participants")
     _validate_dict(input_args, "setup_images")
     _validate_dict(input_args, "network_params")
@@ -290,6 +300,8 @@ def _validate_participant(p):
 
     _validate_str(p, "cl_log_level", VALID_LOG_LEVELS)
     _validate_str(p, "el_log_level", VALID_LOG_LEVELS)
+    _validate_str(p, "cl_log_format", VALID_LOG_FORMATS)
+    _validate_str(p, "el_log_format", VALID_LOG_FORMATS)
 
     # Validate bor specific parameters.
     if el_type == constants.EL_TYPE.bor:

@@ -59,6 +59,9 @@ verbosity = {{.log_level_to_int}}
         api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
         origins = ["*"]
 
+[log]
+    json = {{.json_log_enabled}}
+
 [telemetry]
     metrics = true
     prometheus-addr = "0.0.0.0:{{.metrics_port_number}}"

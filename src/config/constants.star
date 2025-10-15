@@ -28,6 +28,11 @@ LOG_LEVEL = struct(
     trace="trace",
 )
 
+LOG_FORMAT = struct(
+    text="text",
+    json="json",
+)
+
 BOR_SYNC_MODES = struct(
     full="full",
     snap="snap",
