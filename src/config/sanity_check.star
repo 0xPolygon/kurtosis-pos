@@ -150,6 +150,11 @@ def sanity_check_polygon_args(plan, input_args):
     additional_services = input_args.get("additional_services", [])
     if constants.ADDITIONAL_SERVICES.test_runner in additional_services:
         _validate_dict(input_args, "test_runner_params")
+        test_runner_params = input_args.get("test_runner_params")
+        if not "image" in test_runner_params:
+            fail(
+                '`test_runner_params` must include the "image" field when the test runner is deployed'
+            )
     else:
         test_runner_params = input_args.get("test_runner_params", {})
         if test_runner_params:
@@ -160,6 +165,11 @@ def sanity_check_polygon_args(plan, input_args):
     # Make sure status checker params are defined only if the status checker is deployed.
     if constants.ADDITIONAL_SERVICES.status_checker in additional_services:
         _validate_dict(input_args, "status_checker_params")
+        status_checker_params = input_args.get("status_checker_params")
+        if not "image" in status_checker_params:
+            fail(
+                '`status_checker_params` must include the "image" field when the status checker is deployed'
+            )
     else:
         status_checker_params = input_args.get("status_checker_params", {})
         if status_checker_params:

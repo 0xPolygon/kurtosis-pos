@@ -105,9 +105,10 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "test_runner_params": {
         "image": constants.DEFAULT_IMAGES.get("e2e_image"),
     },
-    "status_checker_params": {
-        "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
-    },
+}
+
+DEFAULT_STATUS_CHECKER_ARGS = {
+    "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
 }
 
 DEFAULT_DEV_ARGS = {
@@ -384,9 +385,7 @@ def _parse_status_checker_params(is_status_checker_deployed, status_checker_para
             DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("status_checker_params", {})
         )
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
-        "status_checker_params", {}
-    ).items():
+    for k, v in DEFAULT_STATUS_CHECKER_ARGS.items():
         status_checker_params.setdefault(k, v)
 
     # Sort the dict and return the result.
