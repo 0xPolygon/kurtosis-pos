@@ -4,8 +4,8 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 
 
 POLYGON_POS_PARAMS = {
-    "global_log_level": [],
-    "global_log_format": [],
+    "log_level": [],
+    "log_format": [],
     "participants": [
         "kind",
         "cl_type",
@@ -118,8 +118,8 @@ def sanity_check_polygon_args(plan, input_args):
             )
 
     # Validate keys.
-    _validate_str(input_args, "global_log_level", VALID_LOG_LEVELS)
-    _validate_str(input_args, "global_log_format", VALID_LOG_FORMATS)
+    _validate_str(input_args, "log_level", VALID_LOG_LEVELS)
+    _validate_str(input_args, "log_format", VALID_LOG_FORMATS)
     _validate_list_of_dict(input_args, "participants")
     _validate_dict(input_args, "setup_images")
     _validate_dict(input_args, "network_params")
