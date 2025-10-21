@@ -29,9 +29,9 @@ ethereum_package:
 | Field    | Type   | Default                     | Description                      |
 | -------- | ------ | --------------------------- | -------------------------------- |
 | cl_type  | string | lighthouse                  | Consensus Layer (CL) client type |
-| cl_image | string | sigp/lighthouse:v8.0.0-rc.0 | Image for the CL client          |
+| cl_image | string | sigp/lighthouse:v8.0.0-rc.1 | Image for the CL client          |
 | el_type  | string | geth                        | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.16.4  | Image for the EL client          |
+| el_image | string | ethereum/client-go:v1.16.5  | Image for the EL client          |
 
 ### `network_params`
 
@@ -75,7 +75,7 @@ Default: a single validator.
 | cl_storage_pruning_interval | string | 1m0s                        | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.2.11        | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.3.4         | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | count                       | int    | 1                           | Number of nodes to spin up for this participant          |
 
@@ -127,7 +127,7 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 | Field | Type   | Default                                                                     | Description                                                                                               |
 | ----- | ------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9cf122d | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
+| image | string | ghcr.io/agglayer/e2e:16fc898 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
 
 ### `status_checker_params`
 
