@@ -1,16 +1,16 @@
 input_parser = import_module("./input_parser.star")
 
 
-def test_parse_polygon_pos_args_with_global_log_params(plan):
+def test_parse_polygon_pos_args_with_log_params(plan):
     args = {
-        "global_log_level": "debug",
-        "global_log_format": "json",
+        "log_level": "debug",
+        "log_format": "json",
         "participants": [],
     }
     (parsed_args, _) = input_parser._parse_polygon_pos_args(plan, args)
 
-    expect.eq(parsed_args["global_log_level"], "debug")
-    expect.eq(parsed_args["global_log_format"], "json")
+    expect.eq(parsed_args["log_level"], "debug")
+    expect.eq(parsed_args["log_format"], "json")
 
     participants = parsed_args["participants"]
     expect.eq(len(participants), 1)
@@ -21,14 +21,14 @@ def test_parse_polygon_pos_args_with_global_log_params(plan):
     expect.eq(participant0["cl_log_format"], "json")
 
 
-def test_parse_polygon_pos_args_without_global_log_params(plan):
+def test_parse_polygon_pos_args_without_log_params(plan):
     args = {
         "participants": [],
     }
     (parsed_args, _) = input_parser._parse_polygon_pos_args(plan, args)
 
-    expect.eq(parsed_args["global_log_level"], "info")
-    expect.eq(parsed_args["global_log_format"], "text")
+    expect.eq(parsed_args["log_level"], "info")
+    expect.eq(parsed_args["log_format"], "text")
 
     participants = parsed_args["participants"]
     expect.eq(len(participants), 1)
