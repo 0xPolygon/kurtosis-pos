@@ -1,7 +1,26 @@
+constants = import_module("./constants.star")
 input_parser = import_module("./input_parser.star")
 
 
-def test_parse_polygon_pos_args_with_log_params(plan):
+def test_parse_empty_args(plan):
+    input_parser.input_parser(plan, {})
+
+
+def test_parse_additional_services(plan):
+    args = {
+        "additional_services": [
+            constants.ADDITIONAL_SERVICES.blockscout,
+            constants.ADDITIONAL_SERVICES.bridge_spammer,
+            constants.ADDITIONAL_SERVICES.observability,
+            constants.ADDITIONAL_SERVICES.test_runner,
+            constants.ADDITIONAL_SERVICES.tx_spammer,
+            constants.ADDITIONAL_SERVICES.status_checker,
+        ]
+    }
+    input_parser.input_parser(plan, args)
+
+
+def test_parse_polygon_pos_args_with_global_log_params(plan):
     args = {
         "log_level": "debug",
         "log_format": "json",
