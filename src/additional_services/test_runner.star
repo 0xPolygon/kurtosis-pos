@@ -120,7 +120,7 @@ def launch(
                 "L2_ERC20_TOKEN_ADDRESS": l2_erc20_token_address,
                 "L2_ERC721_TOKEN_ADDRESS": l2_erc721_token_address,
                 # Bridge tests parameters.
-                "TIMEOUT_SECONDS": "900",
+                "TIMEOUT_SECONDS": "600",
             },
             entrypoint=["bash", "-c"],
             cmd=["sleep infinity"],

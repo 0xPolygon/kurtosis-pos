@@ -85,7 +85,7 @@ jobs:
     needs: [list-ymls]
     name: run-with-${{ matrix.file.name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
