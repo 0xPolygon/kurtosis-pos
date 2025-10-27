@@ -4,11 +4,14 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 
 
 POLYGON_POS_PARAMS = {
+    "log_level": [],
+    "log_format": [],
     "participants": [
         "kind",
         "cl_type",
         "cl_image",
         "cl_log_level",
+        "cl_log_format",
         "cl_db_image",
         "cl_min_retain_blocks",
         "cl_compact_enabled",
@@ -18,7 +21,7 @@ POLYGON_POS_PARAMS = {
         "el_type",
         "el_image",
         "el_log_level",
-        # Bor specific parameters.
+        "el_log_format",
         "el_bor_sync_mode",
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
@@ -85,6 +88,11 @@ VALID_LOG_LEVELS = [
     constants.LOG_LEVEL.trace,
 ]
 
+VALID_LOG_FORMATS = [
+    constants.LOG_FORMAT.text,
+    constants.LOG_FORMAT.json,
+]
+
 VALID_BOR_SYNC_MODES = [
     constants.BOR_SYNC_MODES.full,
     constants.BOR_SYNC_MODES.snap,
@@ -113,6 +121,8 @@ def sanity_check_polygon_args(plan, input_args):
             )
 
     # Validate keys.
+    _validate_str(input_args, "log_level", VALID_LOG_LEVELS)
+    _validate_str(input_args, "log_format", VALID_LOG_FORMATS)
     _validate_list_of_dict(input_args, "participants")
     _validate_dict(input_args, "setup_images")
     _validate_dict(input_args, "network_params")
@@ -129,6 +139,13 @@ def sanity_check_polygon_args(plan, input_args):
     for p in participants:
         _validate_participant(p)
 
+    setup_images = input_args.get("setup_images")
+    validator_config_generator_image = setup_images.get("validator_config_generator")
+    heimdall_v2_image = participants[0].get("cl_image")
+    _validate_validator_config_generator_image(
+        plan, validator_config_generator_image, heimdall_v2_image
+    )
+
     cl_environment = network_params.get("cl_environment")
     _validate_cl_environment(cl_environment)
 
@@ -136,6 +153,11 @@ def sanity_check_polygon_args(plan, input_args):
     additional_services = input_args.get("additional_services", [])
     if constants.ADDITIONAL_SERVICES.test_runner in additional_services:
         _validate_dict(input_args, "test_runner_params")
+        test_runner_params = input_args.get("test_runner_params")
+        if not "image" in test_runner_params:
+            fail(
+                '`test_runner_params` must include the "image" field when the test runner is deployed'
+            )
     else:
         test_runner_params = input_args.get("test_runner_params", {})
         if test_runner_params:
@@ -146,6 +168,11 @@ def sanity_check_polygon_args(plan, input_args):
     # Make sure status checker params are defined only if the status checker is deployed.
     if constants.ADDITIONAL_SERVICES.status_checker in additional_services:
         _validate_dict(input_args, "status_checker_params")
+        status_checker_params = input_args.get("status_checker_params")
+        if not "image" in status_checker_params:
+            fail(
+                '`status_checker_params` must include the "image" field when the status checker is deployed'
+            )
     else:
         status_checker_params = input_args.get("status_checker_params", {})
         if status_checker_params:
@@ -283,6 +310,8 @@ def _validate_participant(p):
 
     _validate_str(p, "cl_log_level", VALID_LOG_LEVELS)
     _validate_str(p, "el_log_level", VALID_LOG_LEVELS)
+    _validate_str(p, "cl_log_format", VALID_LOG_FORMATS)
+    _validate_str(p, "el_log_format", VALID_LOG_FORMATS)
 
     # Validate bor specific parameters.
     if el_type == constants.EL_TYPE.bor:
@@ -293,6 +322,17 @@ def _validate_participant(p):
         _fail_if_not_bor_el_type(p, "el_bor_sync_with_witness")
 
     _validate_strictly_positive_int(p, "count")
+
+
+def _validate_validator_config_generator_image(plan, image, heimdall_v2_image):
+    validator_config_generator_tag = image.split(":")[1]
+    heimdall_v2_tag = heimdall_v2_image.split(":")[1]
+    if validator_config_generator_tag != heimdall_v2_tag:
+        plan.print(
+            'WARN: The validator_config_generator image tag "{}" does not match the heimdall-v2 image tag "{}".'.format(
+                validator_config_generator_tag, heimdall_v2_tag
+            )
+        )
 
 
 # The CL environment is used to specify the height for applying specific selection algorithms, span

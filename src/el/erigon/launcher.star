@@ -1,3 +1,4 @@
+constants = import_module("../../config/constants.star")
 el_shared = import_module("../shared.star")
 
 
@@ -39,6 +40,8 @@ def launch(
                     "address": el_account.eth_tendermint.address,
                     "cl_api_url": cl_api_url,
                     "log_level": participant.get("el_log_level"),
+                    "json_log_enabled": participant.get("el_log_format")
+                    == constants.LOG_FORMAT.json,
                     "extradata": "erigon-{}".format(id),
                     # network params.
                     "el_chain_id": el_chain_id,

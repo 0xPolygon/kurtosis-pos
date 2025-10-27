@@ -1,3 +1,4 @@
+constants = import_module("../../config/constants.star")
 el_shared = import_module("../shared.star")
 
 # The folder where the bor template config is stored in the repository.
@@ -40,6 +41,8 @@ def launch(
                     "log_level_to_int": log_level_to_int(
                         participant.get("el_log_level")
                     ),
+                    "json_log_enabled": participant.get("el_log_format")
+                    == constants.LOG_FORMAT.json,
                     "extradata": "bor-{}".format(id),
                     "sync_mode": participant.get("el_bor_sync_mode"),
                     "produce_witness": participant.get("el_bor_produce_witness"),

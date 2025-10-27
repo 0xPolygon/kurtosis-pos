@@ -28,6 +28,11 @@ LOG_LEVEL = struct(
     trace="trace",
 )
 
+LOG_FORMAT = struct(
+    text="text",
+    json="json",
+)
+
 BOR_SYNC_MODES = struct(
     full="full",
     snap="snap",
@@ -46,21 +51,20 @@ ADDITIONAL_SERVICES = struct(
 
 DEFAULT_IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.16.3",
-    # "l1_cl_image": "sigp/lighthouse:v7.1.0",
-    "l1_cl_image": "ethpandaops/lighthouse:unstable-8ec2640",  # 2025-09-03 - works with the latest version of the ethereum package and the minimal preset
+    "l1_el_image": "ethereum/client-go:v1.16.5",
+    "l1_cl_image": "sigp/lighthouse:v8.0.0-rc.1",
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.3.1",
-    "l2_el_bor_image": "0xpolygon/bor:2.2.11",
-    "l2_el_erigon_image": "erigontech/erigon:v3.0.16",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.4.2",
+    "l2_el_bor_image": "0xpolygon/bor:2.3.4",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.0.18",
     "l2_cl_db_image": "rabbitmq:4.1.4",
     # utilities
-    "e2e_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9cf122d",
+    "e2e_image": "ghcr.io/agglayer/e2e:16fc898",
     "pos_contract_deployer_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592",
     "pos_el_genesis_builder_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd",
-    "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.1",
-    "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.8",
-    "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.8",
+    "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.4.2",
+    "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
+    "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # observability
     "prometheus_image": "prom/prometheus:v3.2.1",
     "grafana_image": "grafana/grafana:11.6.0",

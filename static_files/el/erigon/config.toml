@@ -3,6 +3,8 @@ networkid = "{{.el_chain_id}}"
 datadir = "{{.data_folder_path}}"
 "log.console.verbosity" = "{{.log_level}}"
 "log.dir.verbosity" = "{{.log_level}}"
+"log.console.json" = {{.json_log_enabled}}
+"log.dir.json" = {{.json_log_enabled}}
 
 no-downloader = true
 nat = "none"
@@ -16,10 +18,6 @@ staticpeers = "{{.static_nodes}}"
 
 # [heimdall]
 "bor.heimdall" = "{{.cl_api_url}}"
-
-# [bor]
-"bor.milestone" = true
-"bor.waypoints" = false
 
 # [miner]
 {{if eq .kind "validator"}}

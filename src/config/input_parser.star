@@ -3,23 +3,45 @@ math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
+    "global_log_level": constants.LOG_LEVEL.info,
     "participants": [
         {
+            # General
+            "count": 1,
+            # Consensus client
             "cl_type": "lighthouse",
             "cl_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
+            # Execution client
             "el_type": "geth",
             "el_image": constants.DEFAULT_IMAGES.get("l1_el_image"),
+            # Validator client
             "use_separate_vc": True,
             "vc_type": "lighthouse",
             "vc_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
-            "count": 1,
+            # Fulu hard fork config
+            # In PeerDAS, a supernode is a node that custodies and samples all data columns (i.e. holds full awareness
+            # of the erasure-coded blob data) and helps with distributed blob building — computing proofs and
+            # broadcasting data on behalf of the proposer.
+            # Since we don't enable perfect PeerDAS in the config, we need to have at least one supernode.
+            "supernode": True,
         },
     ],
     "network_params": {
         "network_id": constants.DEFAULT_L1_CHAIN_ID,
         "prefunded_accounts": "",
-        "preset": "minimal",
         "seconds_per_slot": 1,
+        # The "minimal" preset is useful for rapid testing and development.
+        # It takes 192 seconds to get to finalized epoch vs 1536 seconds with mainnet defaults.
+        "preset": "minimal",
+        # Ethereum hard fork configurations.
+        # Supported fork epochs are documented in `static_files/genesis-generation-config/el-cl/values.env.tmpl`.
+        # in the ethereum package repository.
+        "altair_fork_epoch": 0,
+        "bellatrix_fork_epoch": 0,
+        "capella_fork_epoch": 0,
+        "deneb_fork_epoch": 1,
+        "electra_fork_epoch": 2,
+        "fulu_fork_epoch": 3,  # Requires a supernode or perfect PeerDAS to be enabled.
     },
 }
 
@@ -33,10 +55,8 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_compaction_interval": constants.CL_COMPACTION_INTERVAL,
     "cl_storage_pruning_interval": constants.CL_STORAGE_PRUNING_INTERVAL,
     "cl_indexer_pruning_enabled": constants.CL_INDEXER_PRUNING_ENABLED,
-    "cl_log_level": constants.LOG_LEVEL.info,
     "el_type": constants.EL_TYPE.bor,
     "el_image": constants.DEFAULT_IMAGES.get("l2_el_bor_image"),
-    "el_log_level": constants.LOG_LEVEL.info,
     "count": 1,
 }
 
@@ -47,6 +67,8 @@ DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
+    "log_level": constants.LOG_LEVEL.info,
+    "log_format": constants.LOG_FORMAT.text,
     "participants": [DEFAULT_POLYGON_POS_PARTICIPANT],
     "setup_images": {
         "contract_deployer": constants.DEFAULT_IMAGES.get(
@@ -77,7 +99,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "el_block_interval_seconds": 1,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
-        "el_gas_limit": math.pow(10, 7),
+        "el_gas_limit": 45000000,
     },
     "additional_services": [
         constants.ADDITIONAL_SERVICES.test_runner,
@@ -85,9 +107,10 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "test_runner_params": {
         "image": constants.DEFAULT_IMAGES.get("e2e_image"),
     },
-    "status_checker_params": {
-        "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
-    },
+}
+
+DEFAULT_STATUS_CHECKER_ARGS = {
+    "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
 }
 
 DEFAULT_DEV_ARGS = {
@@ -141,8 +164,13 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     # Parse the polygon pos input args and set defaults if needed.
     result = {}
 
+    log_level = polygon_pos_args.get("log_level", constants.LOG_LEVEL.info)
+    log_format = polygon_pos_args.get("log_format", constants.LOG_FORMAT.text)
+    result["log_level"] = log_level
+    result["log_format"] = log_format
+
     participants = polygon_pos_args.get("participants", [])
-    result["participants"] = _parse_participants(participants)
+    result["participants"] = _parse_participants(participants, log_level, log_format)
     devnet_cl_type = _get_devnet_cl_type(result["participants"])
 
     setup_images = polygon_pos_args.get("setup_images", {})
@@ -194,7 +222,7 @@ def _parse_dev_args(plan, dev_args):
     return _sort_dict_by_values(dev_args)
 
 
-def _parse_participants(participants):
+def _parse_participants(participants, log_level, log_format):
     devnet_cl_type = ""
     participants_with_defaults = []
 
@@ -225,6 +253,23 @@ def _parse_participants(participants):
                 p["el_image"] = constants.DEFAULT_IMAGES.get("l2_el_erigon_image")
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
+
+        # Set log levels to global log level if not provided.
+        cl_log_level = p.get("cl_log_level", "")
+        el_log_level = p.get("el_log_level", "")
+        if log_level:
+            if not cl_log_level:
+                p["cl_log_level"] = log_level
+            if not el_log_level:
+                p["el_log_level"] = log_level
+
+        cl_log_format = p.get("cl_log_format", "")
+        el_log_format = p.get("el_log_format", "")
+        if log_format:
+            if not cl_log_format:
+                p["cl_log_format"] = log_format
+            if not el_log_format:
+                p["el_log_format"] = log_format
 
         # Fill in any missing fields with default values.
         for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
@@ -336,9 +381,7 @@ def _parse_status_checker_params(is_status_checker_deployed, status_checker_para
             DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("status_checker_params", {})
         )
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
-        "status_checker_params", {}
-    ).items():
+    for k, v in DEFAULT_STATUS_CHECKER_ARGS.items():
         status_checker_params.setdefault(k, v)
 
     # Sort the dict and return the result.

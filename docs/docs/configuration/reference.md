@@ -26,12 +26,12 @@ ethereum_package:
 
 ### `participants`
 
-| Field    | Type   | Default                                 | Description                      |
-| -------- | ------ | --------------------------------------- | -------------------------------- |
-| cl_type  | string | lighthouse                              | Consensus Layer (CL) client type |
-| cl_image | string | ethpandaops/lighthouse:unstable-8ec2640 | Image for the CL client          |
-| el_type  | string | geth                                    | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.16.3              | Image for the EL client          |
+| Field    | Type   | Default                     | Description                      |
+| -------- | ------ | --------------------------- | -------------------------------- |
+| cl_type  | string | lighthouse                  | Consensus Layer (CL) client type |
+| cl_image | string | sigp/lighthouse:v8.0.0-rc.1 | Image for the CL client          |
+| el_type  | string | geth                        | Execution Layer (EL) client type |
+| el_image | string | ethereum/client-go:v1.16.5  | Image for the EL client          |
 
 ### `network_params`
 
@@ -53,7 +53,7 @@ polygon_pos_package:
       count: 2
   network_params:
     el_block_interval_seconds: 2
-    el_gas_limit: 10_000_000
+    el_gas_limit: 45_000_000
   additional_services:
     - observability
 ```
@@ -66,7 +66,7 @@ Default: a single validator.
 | --------------------------- | ------ | --------------------------- | -------------------------------------------------------- |
 | kind                        | string | validator                   | Role of the node in the network: `validator` or `rpc`    |
 | cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
-| cl_image                    | string | 0xpolygon/heimdall-v2:0.3.1 | Image for the CL client                                  |
+| cl_image                    | string | 0xpolygon/heimdall-v2:0.4.2 | Image for the CL client                                  |
 | cl_db_image                 | string | rabbitmq:4.1.4              | Image for the CL database                                |
 | cl_log_level                | string | info                        | Log level for the CL client                              |
 | cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height    |
@@ -75,7 +75,7 @@ Default: a single validator.
 | cl_storage_pruning_interval | string | 1m0s                        | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.2.11        | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.3.4         | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | count                       | int    | 1                           | Number of nodes to spin up for this participant          |
 
@@ -85,7 +85,7 @@ Default: a single validator.
 | -------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.3.1 | Image used to generate validator configs    |
+| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.4.2 | Image used to generate validator configs    |
 
 ### `network_params`
 
@@ -108,7 +108,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | el_block_interval_seconds             | int    | 1                      | Seconds per block on the EL chain                                  |
 | el_sprint_duration                    | int    | 16                     | Duration of an EL sprint (blocks)                                  |
 | el_span_duration                      | int    | 128                    | Duration of an EL span (blocks).                                   |
-| el_gas_limit                          | int    | 10_000_000             | EL gas limit                                                       |
+| el_gas_limit                          | int    | 45_000_000             | EL gas limit                                                       |
 
 ### `additional_services`
 
@@ -127,10 +127,10 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 | Field | Type   | Default                                                                     | Description                                                                                               |
 | ----- | ------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/e2e:9cf122d | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
+| image | string | ghcr.io/agglayer/e2e:16fc898 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
 
 ### `status_checker_params`
 
 | Field | Type   | Default                                 | Description                              |
 | ----- | ------ | --------------------------------------- | ---------------------------------------- |
-| image | string | ghcr.io/0xpolygon/status-checker:v0.2.8 | Image used to deploy the status checker. |
+| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9 | Image used to deploy the status checker. |
