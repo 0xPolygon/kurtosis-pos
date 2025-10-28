@@ -10,6 +10,7 @@ verbosity = {{.log_level_to_int}}
     fastforwardthreshold=30
     {{if .sync_with_witness}}
     syncwithwitnesses = true
+    parallel-stateless-import = true
     {{end}}
 
     {{if .produce_witness}}
