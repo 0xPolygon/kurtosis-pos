@@ -28,6 +28,7 @@
       "ahmedabadBlock": 0,
       "bhilaiBlock": 0,
       "rioBlock": 256,
+      "madhugiriBlock": 300,
       "stateSyncConfirmationDelay": {
         "0": 32
       },
