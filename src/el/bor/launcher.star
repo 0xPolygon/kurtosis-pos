@@ -97,6 +97,10 @@ def launch(
                     number=el_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
                 ),
+                "pprof": PortSpec(
+                    number=6060,
+                    application_protocol="http",
+                ),
             },
             files={
                 # bor config

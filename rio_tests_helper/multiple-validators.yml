@@ -1,0 +1,74 @@
+polygon_pos_package:
+  participants:
+    # 4 validators.
+    - kind: validator
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.3.3
+      el_bor_produce_witness: true
+      el_bor_sync_with_witness: false
+      count: 4
+
+    # 3 validators using stateless sync. Any of them having sync issue will cause the test to fail.
+    - kind: validator
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.3.3
+      el_bor_sync_mode: stateless
+      el_bor_produce_witness: true
+      el_bor_sync_with_witness: false
+      count: 4
+
+    # # 1 validator with Bor 2.2.10.
+    # - kind: validator
+    #   cl_type: heimdall-v2
+    #   cl_image: 0xpolygon/heimdall-v2:0.4.2
+    #   el_type: bor
+    #   el_image: 0xpolygon/bor:2.2.10
+    #   el_bor_produce_witness: false
+    #   el_bor_sync_with_witness: false
+    #   count: 1
+
+    # 3 RPC nodes.
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.3.3
+      el_bor_produce_witness: false
+      el_bor_sync_with_witness: false
+      count: 1
+
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.3.3
+      el_bor_produce_witness: true
+      el_bor_sync_with_witness: false
+      count: 1
+
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.3.3
+      el_bor_sync_mode: stateless
+      el_bor_produce_witness: true
+      el_bor_sync_with_witness: true
+      count: 1
+
+    - kind: rpc
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.2
+      el_type: erigon
+      el_image: erigontech/erigon:v3.0.17
+      el_bor_produce_witness: false
+      el_bor_sync_with_witness: false
+      el_log_level: info
+      count: 1
+
+  additional_services:
+    - observability
