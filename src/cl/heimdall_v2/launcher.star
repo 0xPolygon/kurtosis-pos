@@ -75,6 +75,7 @@ def launch(
                     "rpc_port_number": cl_shared.RPC_PORT_NUMBER,
                     "p2p_listen_port_number": cl_shared.NODE_LISTEN_PORT_NUMBER,
                     "metrics_port_number": cl_shared.METRICS_PORT_NUMBER,
+                    "pprof_port_number": cl_shared.PPROF_PORT_NUMBER,
                 },
             ),
         },
@@ -128,8 +129,8 @@ def launch(
                     number=cl_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                "pprof": PortSpec(
-                    number=6060,
+                cl_shared.PPROF_PORT_ID: PortSpec(
+                    number=cl_shared.PPROF_PORT_NUMBER,
                     application_protocol="http",
                 ),
             },

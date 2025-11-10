@@ -20,3 +20,6 @@ METRICS_PORT_NUMBER = 26660
 CONFIG_FOLDER_PATH = "/etc/heimdall"
 # The folder where the heimdall app stores data inside the service.
 APP_DATA_FOLDER_PATH = "/var/lib/heimdall"
+
+PPROF_PORT_ID = "pprof"
+PPROF_PORT_NUMBER = 6060
