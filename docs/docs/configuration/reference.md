@@ -75,7 +75,7 @@ Default: a single validator.
 | cl_storage_pruning_interval | string | 1m0s                        | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.3.4         | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.4.0-beta4   | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | count                       | int    | 1                           | Number of nodes to spin up for this participant          |
 
@@ -127,7 +127,7 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 | Field | Type   | Default                                                                     | Description                                                                                               |
 | ----- | ------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| image | string | ghcr.io/agglayer/e2e:16fc898 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
+| image | string | ghcr.io/agglayer/e2e:9fd2d09 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
 
 ### `status_checker_params`
 
