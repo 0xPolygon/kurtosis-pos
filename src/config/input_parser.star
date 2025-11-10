@@ -96,7 +96,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "cl_max_age_num_blocks": 100000,
         # EL network params.
         "el_chain_id": constants.DEFAULT_EL_CHAIN_ID,
-        "el_block_interval_seconds": 2,
+        "el_block_interval_seconds": 1,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
         "el_gas_limit": 45000000,
