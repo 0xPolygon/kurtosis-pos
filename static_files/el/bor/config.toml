@@ -69,7 +69,7 @@ verbosity = {{.log_level_to_int}}
 
 [pprof]
   pprof = true                      # Enable the pprof HTTP server
-  port = "{{.pprof_port_number}}"   # pprof HTTP server listening port
+  port = {{.pprof_port_number}}   # pprof HTTP server listening port
   addr = "0.0.0.0"                  # pprof HTTP server listening interface
   memprofilerate = 524288           # Turn on memory profiling with the given rate
   blockprofilerate = 0              # Turn on block profiling with the given rate
