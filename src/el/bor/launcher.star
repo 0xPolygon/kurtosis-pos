@@ -98,8 +98,8 @@ def launch(
                     number=el_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                "pprof": PortSpec(
-                    number=6060,
+                el_shared.PPROF_PORT_ID: PortSpec(
+                    number=el_shared.PPROF_PORT_NUMBER,
                     application_protocol="http",
                 ),
             },

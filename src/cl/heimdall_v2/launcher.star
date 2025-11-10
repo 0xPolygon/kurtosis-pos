@@ -128,8 +128,8 @@ def launch(
                     number=cl_shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                "pprof": PortSpec(
-                    number=6060,
+                cl_shared.PPROF_PORT_ID: PortSpec(
+                    number=cl_shared.PPROF_PORT_NUMBER,
                     application_protocol="http",
                 ),
             },
