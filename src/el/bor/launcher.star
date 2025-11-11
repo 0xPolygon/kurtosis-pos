@@ -56,7 +56,9 @@ def launch(
                     "discovery_port_number": el_shared.DISCOVERY_PORT_NUMBER,
                     "metrics_port_number": el_shared.METRICS_PORT_NUMBER,
                     "pprof_port_number": el_shared.PPROF_PORT_NUMBER,
-                    "ethstats_server_secret": polygon_pos_args.get("ethstats_server_params").get("ws_secret"),
+                    "ethstats_server_secret": polygon_pos_args.get(
+                        "ethstats_server_params"
+                    ).get("ws_secret"),
                 },
             ),
         },

@@ -72,7 +72,6 @@ POLYGON_POS_PARAMS = {
         "image",
         "ws_secret",
     ],
-
 }
 
 VALID_PARTICIPANT_KINDS = [

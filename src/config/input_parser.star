@@ -429,6 +429,7 @@ def _parse_ethstats_server_params(is_ethstats_server_deployed, ethstats_server_p
     # Sort the dict and return the result.
     return _sort_dict_by_values(ethstats_server_params)
 
+
 def _sort_dict_by_values(d):
     sorted_items = sorted(d.items(), key=lambda x: x[0])
     return {k: v for k, v in sorted_items}
