@@ -47,6 +47,7 @@ ADDITIONAL_SERVICES = struct(
     test_runner="test_runner",
     tx_spammer="tx_spammer",
     status_checker="status_checker",
+    ethstats_server="ethstats_server",
 )
 
 DEFAULT_IMAGES = {
@@ -65,6 +66,7 @@ DEFAULT_IMAGES = {
     "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.4.2",
     "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
+    "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # observability
     "prometheus_image": "prom/prometheus:v3.2.1",
     "grafana_image": "grafana/grafana:11.6.0",
@@ -89,6 +91,8 @@ CL_COMPACT_ENABLED = False
 CL_COMPACTION_INTERVAL = 1000
 CL_STORAGE_PRUNING_INTERVAL = "10m0s"
 CL_INDEXER_PRUNING_ENABLED = False
+
+ETHSTATS_SERVER_WS_SECRET="sharedsecret"
 
 EL_HARD_FORK_BLOCKS = {
     "jaipur": 0,

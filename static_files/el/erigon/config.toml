@@ -9,6 +9,9 @@ datadir = "{{.data_folder_path}}"
 no-downloader = true
 nat = "none"
 
+ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:3000"
+
+
 # [p2p]
 maxpeers = 200
 port = {{.discovery_port_number}}

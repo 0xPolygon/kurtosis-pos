@@ -68,6 +68,11 @@ POLYGON_POS_PARAMS = {
     "status_checker_params": [
         "image",
     ],
+    "ethstats_server_params": [
+        "image",
+        "ws_secret",
+    ],
+
 }
 
 VALID_PARTICIPANT_KINDS = [
@@ -188,6 +193,21 @@ def sanity_check_polygon_args(plan, input_args):
         if status_checker_params:
             fail(
                 "`status_checker_params` must be empty when the status checker is not deployed."
+            )
+
+    # Make sure ethstats server params are defined only if the ethstats server is deployed.
+    if constants.ADDITIONAL_SERVICES.ethstats_server in additional_services:
+        _validate_dict(input_args, "ethstats_server_params")
+        ethstats_server_params = input_args.get("ethstats_server_params")
+        if not "image" in ethstats_server_params:
+            fail(
+                '`ethstats_server_params` must include the "image" field when the status checker is deployed'
+            )
+    else:
+        ethstats_server_params = input_args.get("ethstats_server_params", {})
+        if ethstats_server_params:
+            fail(
+                "`ethstats_server_params` must be empty when the status checker is not deployed."
             )
 
     plan.print("Sanity check passed")

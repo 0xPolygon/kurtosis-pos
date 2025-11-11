@@ -6,3 +6,4 @@ polygon_pos_package:
     - observability
     - test_runner
     - tx_spammer
+    - ethstats_server

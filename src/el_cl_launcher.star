@@ -97,6 +97,7 @@ def launch(
             el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
             el_context = el_launcher.launch(
                 plan,
+                polygon_pos_args,
                 participant,
                 participant_index + 1,
                 el_genesis_artifact,

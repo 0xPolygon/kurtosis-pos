@@ -14,6 +14,7 @@ LAUNCHERS = {
 
 def launch(
     plan,
+    polygon_pos_args,
     participant,
     id,
     el_genesis_artifact,
@@ -35,6 +36,7 @@ def launch(
     launch_method = _get_launcher(participant)
     service = launch_method(
         plan,
+        polygon_pos_args,
         el_node_name,
         id,
         participant,

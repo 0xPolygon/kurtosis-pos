@@ -5,7 +5,7 @@ observability = import_module("./observability.star")
 test_runner = import_module("./test_runner.star")
 tx_spammer = import_module("./tx_spammer.star")
 status_checker = import_module("./status_checker.star")
-
+ethstats_server = import_module("./ethstats_server.star")
 
 def launch(
     plan,
@@ -48,5 +48,8 @@ def launch(
         elif svc == constants.ADDITIONAL_SERVICES.status_checker:
             status_checker_params = polygon_pos_args.get("status_checker_params")
             status_checker.launch(plan, status_checker_params, l1_context, l2_context)
+        elif svc == constants.ADDITIONAL_SERVICES.ethstats_server:
+            ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
+            ethstats_server.launch(plan, ethstats_server_params)
         else:
             fail("Invalid additional service: %s" % (svc))
