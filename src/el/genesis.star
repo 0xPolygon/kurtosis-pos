@@ -26,6 +26,14 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                     "el_gas_limit_hex": hex.int_to_hex(
                         network_params.get("el_gas_limit")
                     ),
+                    # Hardfork configurations
+                    "jaipur_fork_block": network_params.get("jaipur_fork_block"),
+                    "delhi_fork_block": network_params.get("delhi_fork_block"),
+                    "indore_fork_block": network_params.get("indore_fork_block"),
+                    "ahmedabad_fork_block": network_params.get("ahmedabad_fork_block"),
+                    "bhilai_fork_block": network_params.get("bhilai_fork_block"),
+                    "rio_fork_block": network_params.get("rio_fork_block"),
+                    "madhugiri_fork_block": network_params.get("madhugiri_fork_block"),
                 },
             )
         },
