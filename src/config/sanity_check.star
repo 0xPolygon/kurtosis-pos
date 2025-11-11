@@ -25,13 +25,6 @@ POLYGON_POS_PARAMS = {
         "el_bor_sync_mode",
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
-        "jaipur_fork_block",
-        "delhi_fork_block",
-        "indore_fork_block",
-        "ahmedabad_fork_block",
-        "bhilai_fork_block",
-        "rio_fork_block",
-        "madhugiri_fork_block",
         "count",
     ],
     "setup_images": [
@@ -44,16 +37,26 @@ POLYGON_POS_PARAMS = {
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount_eth",
         "validator_top_up_fee_amount_eth",
+        # consensus layer
         "cl_chain_id",
         "cl_environment",
         "cl_span_poll_interval",
         "cl_checkpoint_poll_interval",
         "cl_max_age_num_blocks",
+        # execution layer
         "el_chain_id",
         "el_block_interval_seconds",
         "el_sprint_duration",
         "el_span_duration",
         "el_gas_limit",
+        # hardforks
+        "jaipur_fork_block",
+        "delhi_fork_block",
+        "indore_fork_block",
+        "ahmedabad_fork_block",
+        "bhilai_fork_block",
+        "rio_fork_block",
+        "madhugiri_fork_block",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
