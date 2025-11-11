@@ -100,6 +100,14 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "el_sprint_duration": 16,
         "el_span_duration": 128,
         "el_gas_limit": 45000000,
+        # Polygon PoS hard fork configurations
+        "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
+        "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),
+        "indore_fork_block": constants.EL_HARD_FORK_BLOCKS.get("indore"),
+        "ahmedabad_fork_block": constants.EL_HARD_FORK_BLOCKS.get("ahmedabad"),
+        "bhilai_fork_block": constants.EL_HARD_FORK_BLOCKS.get("bhilai"),
+        "rio_fork_block": constants.EL_HARD_FORK_BLOCKS.get("rio"),
+        "madhugiri_fork_block": constants.EL_HARD_FORK_BLOCKS.get("madhugiri"),
     },
     "additional_services": [
         constants.ADDITIONAL_SERVICES.test_runner,

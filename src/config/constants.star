@@ -89,3 +89,13 @@ CL_COMPACT_ENABLED = False
 CL_COMPACTION_INTERVAL = 1000
 CL_STORAGE_PRUNING_INTERVAL = "10m0s"
 CL_INDEXER_PRUNING_ENABLED = False
+
+EL_HARD_FORK_BLOCKS = {
+    "jaipur": 0,
+    "delhi": 0,
+    "indore": 0,
+    "ahmedabad": 0,
+    "bhilai": 0,
+    "rio": 256,
+    "madhugiri": 300,
+}
