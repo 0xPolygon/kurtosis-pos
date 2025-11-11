@@ -60,15 +60,15 @@ polygon_pos_package:
       el_bor_sync_with_witness: true
       count: 1
 
-    - kind: rpc
-      cl_type: heimdall-v2
-      cl_image: 0xpolygon/heimdall-v2:0.4.2
-      el_type: erigon
-      el_image: erigontech/erigon:v3.0.17
-      el_bor_produce_witness: false
-      el_bor_sync_with_witness: false
-      el_log_level: info
-      count: 1
+    # - kind: rpc
+    #   cl_type: heimdall-v2
+    #   cl_image: 0xpolygon/heimdall-v2:0.4.2
+    #   el_type: erigon
+    #   el_image: erigontech/erigon:v3.0.17
+    #   el_bor_produce_witness: false
+    #   el_bor_sync_with_witness: false
+    #   el_log_level: info
+    #   count: 1
 
   additional_services:
     - observability

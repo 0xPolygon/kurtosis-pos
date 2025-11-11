@@ -75,14 +75,14 @@ verbosity = {{.log_level_to_int}}
   blockprofilerate = 0              # Turn on block profiling with the given rate
 
 [cache]
-  cache = 1024             # Megabytes of memory allocated to internal caching (recommended for mainnet = 4096, default suitable for amoy/devnet)
-  gc = 0                  # Percentage of cache memory allowance to use for trie pruning (default = 25% full mode, 0% archive mode)
+  cache = 4096             # Megabytes of memory allocated to internal caching (recommended for mainnet = 4096, default suitable for amoy/devnet)
+  gc = 25                  # Percentage of cache memory allowance to use for trie pruning (default = 25% full mode, 0% archive mode)
   snapshot = 10            # Percentage of cache memory allowance to use for snapshot caching (default = 10% full mode, 20% archive mode)
   database = 50            # Percentage of cache memory allowance to use for database io
-  trie = 15                # Percentage of cache memory allowance to use for trie caching (default = 15% full mode, 30% archive mode)
+  trie = 40                # Percentage of cache memory allowance to use for trie caching (default = 15% full mode, 30% archive mode)
   noprefetch = false       # Disable heuristic state prefetch during block import (less CPU and disk IO, more time waiting for data)
   preimages = false        # Enable recording the SHA3/keccak preimages of trie keys
-  txlookuplimit = 2350000  # Number of recent blocks to maintain transactions index for (soon to be deprecated, use history.transactions instead)
+  txlookuplimit = 0  # Number of recent blocks to maintain transactions index for (soon to be deprecated, use history.transactions instead)
   triesinmemory = 128      # Number of block states (tries) to keep in memory
   blocklogs = 32           # Size (in number of blocks) of the log cache for filtering
   timeout = "1h0m0s"       # Time after which the Merkle Patricia Trie is stored to disc from memory
