@@ -107,7 +107,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "ahmedabad_fork_block": constants.EL_HARD_FORK_BLOCKS.get("ahmedabad"),
         "bhilai_fork_block": constants.EL_HARD_FORK_BLOCKS.get("bhilai"),
         "rio_fork_block": constants.EL_HARD_FORK_BLOCKS.get("rio"),
-        "madhugiri_fork_block": 300,
+        "madhugiri_fork_block": constants.EL_HARD_FORK_BLOCKS.get("madhugiri"),
     },
     "additional_services": [
         constants.ADDITIONAL_SERVICES.test_runner,
