@@ -25,6 +25,13 @@ POLYGON_POS_PARAMS = {
         "el_bor_sync_mode",
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
+        "jaipur_fork_block",
+        "delhi_fork_block",
+        "indore_fork_block",
+        "ahmedabad_fork_block",
+        "bhilai_fork_block",
+        "rio_fork_block",
+        "madhugiri_fork_block",
         "count",
     ],
     "setup_images": [
