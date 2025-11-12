@@ -2,7 +2,7 @@ chain = "{{.config_folder_path}}/genesis.json"
 datadir = "{{.data_folder_path}}"
 identity = "{{.node_name}}"
 syncmode = "full"   # Blockchain sync mode (only "full" sync supported)
-{{- if eq .sync_mode "archive" }}
+{{- if eq .kind "archive" }}
 gcmode = "archive"  # Blockchain garbage collection mode ("full", "archive")
 snapshot = true     # Enables the snapshot-database mode
 {{- else }}
@@ -22,7 +22,6 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
     syncwithwitnesses = true
     parallel-stateless-import = true
     {{- end }}
-
     {{- if .produce_witness }}
     enable = true
     producewitnesses = true
@@ -55,7 +54,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
 {{- end }}
 
 [jsonrpc]
-    txfeecap = 0.4194304    # Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap)
+    txfeecap = 0.4194304 # Set a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap)
     ipcpath = "{{.data_folder_path}}/bor.ipc"
     [jsonrpc.http]
         enabled = true
@@ -89,30 +88,34 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   cache = 4096             # Megabytes of memory allocated to internal caching (recommended for mainnet = 4096, default suitable for amoy/devnet)
   gc = 0                   # Percentage of cache memory allowance to use for trie pruning (default = 25% full mode, 0% archive mode)
   snapshot = 35            # Percentage of cache memory allowance to use for snapshot caching (default = 10% full mode, 20% archive mode)
-  database = 50            # Percentage of cache memory allowance to use for database io
+  database = 50            # Percentage of cache memory allowance to use for database io (default = 50%)
   trie = 15                # Percentage of cache memory allowance to use for trie caching (default = 15% full mode, 30% archive mode)
   noprefetch = false       # Disable heuristic state prefetch during block import (less CPU and disk IO, more time waiting for data)
-  {{- if eq .kind "rpc" }}
-  preimages = true         # Enable recording the SHA3/keccak preimages of trie keys
-  triesinmemory = 128      # Number of block states (tries) to keep in memory
-  {{- else }}
+  {{- if eq .kind "validator" }}
   preimages = false        # Enable recording the SHA3/keccak preimages of trie keys
   triesinmemory = 1        # Number of block states (tries) to keep in memory
+  {{- else }}
+  preimages = true         # Enable recording the SHA3/keccak preimages of trie keys
+  triesinmemory = 128      # Number of block states (tries) to keep in memory
   {{- end }}
   txlookuplimit = 2350000  # Number of recent blocks to maintain transactions index for (soon to be deprecated, use history.transactions instead)
   blocklogs = 32           # Size (in number of blocks) of the log cache for filtering
   timeout = "1h0m0s"       # Time after which the Merkle Patricia Trie is stored to disc from memory
   fdlimit = 0              # Raise the open file descriptor resource limit (default = system fd limit)
-#   addresscachesizes= ""    # Address-specific cache sizes for biased caching in MB (format: address=sizeMB,address=sizeMB, e.g. 0x1234...=1024,0x5678...=512)
+# addresscachesizes= ""    # Address-specific cache sizes for biased caching in MB (format: address=sizeMB,address=sizeMB, e.g. 0x1234...=1024,0x5678...=512)
 
 [history]                  # For historical data retention related flags
-  logs = 2350000           # Number of recent blocks to maintain log search index for (default = about 2 months, 0 = entire chain)
+  logs = 2350000           # Number of recent blocks to maintain log search index for (default = about 2 months - 2350000, 0 = entire chain)
   {{- if eq .kind "validator" }}
-  transactions = 1024     # Number of recent blocks to maintain transactions index for (default = about 2 months, 0 = entire chain)
   "logs.disable" = true   # Do not maintain log search index
   state = 1024            # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
-  {{- else }}
-  transactions = 2350000   # Number of recent blocks to maintain transactions index for (default = about 2 months, 0 = entire chain)
-  "logs.disable" = false   # Do not maintain log search index
-  state = 90000            # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
+  transactions = 1024     # Number of recent blocks to maintain transactions index for (default = about 2 months - 2350000, 0 = entire chain)
+  {{- else if eq .kind "rpc"}}
+  "logs.disable" = false # Maintain log search index
+  state = 90000          # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
+  transactions = 2350000   # Number of recent blocks to maintain transactions index for (default = about 2 months - 2350000, 0 = entire chain)
+  {{- else if eq .kind "archive" }}
+  "logs.disable" = false # Maintain log search index
+  state = 0              # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
+  transactions = 0       # Number of recent blocks to maintain transactions index for (default = about 2 months - 2350000, 0 = entire chain)
   {{- end }}
