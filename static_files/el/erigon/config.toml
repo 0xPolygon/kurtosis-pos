@@ -9,7 +9,7 @@ datadir = "{{.data_folder_path}}"
 no-downloader = true
 nat = "none"
 
-ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:3000"
+ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
 
 
 # [p2p]

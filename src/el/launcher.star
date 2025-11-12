@@ -34,9 +34,9 @@ def launch(
 
     # Launch node.
     launch_method = _get_launcher(participant)
+    ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
     service = launch_method(
         plan,
-        polygon_pos_args,
         el_node_name,
         id,
         participant,
@@ -48,6 +48,7 @@ def launch(
         el_static_nodes,
         el_chain_id,
         container_proc_manager_artifact,
+        ethstats_server_params,
     )
     return context.new_context(
         service_name=el_node_name,

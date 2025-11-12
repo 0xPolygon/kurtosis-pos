@@ -1,3 +1,6 @@
+constants = import_module("../config/constants.star")
+
+
 def launch(
     plan,
     ethstats_server_params,
@@ -6,11 +9,13 @@ def launch(
         name="ethstats-server",
         config=ServiceConfig(
             image=ethstats_server_params.get("image"),
-            ports={"http": PortSpec(3000, application_protocol="http")},
+            ports={
+                "http": PortSpec(
+                    constants.ETHSTATS_SERVER_PORT_NUMBER, application_protocol="http"
+                )
+            },
             env_vars={
                 "WS_SECRET": ethstats_server_params.get("ws_secret"),
             },
         ),
     )
-
-    return service.ports["http"].url.replace("http://", "")

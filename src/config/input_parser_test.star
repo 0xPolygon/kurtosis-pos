@@ -15,7 +15,7 @@ def test_parse_additional_services(plan):
             constants.ADDITIONAL_SERVICES.observability,
             constants.ADDITIONAL_SERVICES.status_checker,
             constants.ADDITIONAL_SERVICES.test_runner,
-            constants.ADDITIONAL_SERVICES.tx_spammer,            
+            constants.ADDITIONAL_SERVICES.tx_spammer,
         ]
     }
     input_parser.input_parser(plan, args)

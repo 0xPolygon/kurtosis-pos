@@ -12,7 +12,6 @@ BOR_APP_DATA_FOLDER_PATH = "/var/lib/bor"
 
 def launch(
     plan,
-    polygon_pos_args,
     el_node_name,
     id,
     participant,
@@ -24,6 +23,7 @@ def launch(
     el_static_nodes,
     el_chain_id,
     container_proc_manager_artifact,
+    ethstats_server_params,
 ):
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
@@ -50,15 +50,14 @@ def launch(
                     "sync_with_witness": participant.get("el_bor_sync_with_witness"),
                     # network params
                     "static_nodes": str(el_static_nodes),
+                    "ethstats_server_secret": ethstats_server_params.get("ws_secret"),
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,
                     "ws_port_number": el_shared.WS_PORT_NUMBER,
                     "discovery_port_number": el_shared.DISCOVERY_PORT_NUMBER,
                     "metrics_port_number": el_shared.METRICS_PORT_NUMBER,
                     "pprof_port_number": el_shared.PPROF_PORT_NUMBER,
-                    "ethstats_server_secret": polygon_pos_args.get(
-                        "ethstats_server_params"
-                    ).get("ws_secret"),
+                    "ethstats_server_port_number": constants.ETHSTATS_SERVER_PORT_NUMBER,
                 },
             ),
         },
