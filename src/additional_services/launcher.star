@@ -1,11 +1,11 @@
 blockscout = import_module("./blockscout.star")
 bridge_spammer = import_module("./bridge_spammer.star")
 constants = import_module("../config/constants.star")
+ethstats_server = import_module("./ethstats_server.star")
 observability = import_module("./observability.star")
+status_checker = import_module("./status_checker.star")
 test_runner = import_module("./test_runner.star")
 tx_spammer = import_module("./tx_spammer.star")
-status_checker = import_module("./status_checker.star")
-ethstats_server = import_module("./ethstats_server.star")
 
 
 def launch(
