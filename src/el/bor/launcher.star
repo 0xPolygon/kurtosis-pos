@@ -15,13 +15,13 @@ def launch(
     el_node_name,
     id,
     participant,
+    network_params,
     el_genesis_artifact,
     el_credentials_artifact,
     cl_api_url,
     cl_ws_rpc_url,
     el_account,
     el_static_nodes,
-    el_chain_id,
     container_proc_manager_artifact,
 ):
     bor_node_config_artifact = plan.render_templates(
@@ -49,6 +49,7 @@ def launch(
                     "sync_with_witness": participant.get("el_bor_sync_with_witness"),
                     # network params
                     "static_nodes": str(el_static_nodes),
+                    "el_gas_limit": network_params.get("el_gas_limit"),
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,
                     "ws_port_number": el_shared.WS_PORT_NUMBER,

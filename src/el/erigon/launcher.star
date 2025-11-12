@@ -17,13 +17,13 @@ def launch(
     el_node_name,
     id,
     participant,
+    network_params,
     el_genesis_artifact,
     el_credentials_artifact,
     cl_api_url,
     cl_ws_rpc_url,
     el_account,
     el_static_nodes,
-    el_chain_id,
     container_proc_manager_artifact,
 ):
     erigon_node_config_artifact = plan.render_templates(
@@ -44,7 +44,8 @@ def launch(
                     == constants.LOG_FORMAT.json,
                     "extradata": "erigon-{}".format(id),
                     # network params.
-                    "el_chain_id": el_chain_id,
+                    "el_chain_id": network_params.get("el_chain_id"),
+                    "el_gas_limit": network_params.get("el_gas_limit"),
                     "static_nodes": ",".join(el_static_nodes),
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,

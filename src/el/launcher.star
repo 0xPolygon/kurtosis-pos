@@ -16,12 +16,12 @@ def launch(
     plan,
     participant,
     id,
+    network_params,
     el_genesis_artifact,
     cl_api_url,
     cl_ws_rpc_url,
     el_account,
     el_static_nodes,
-    el_chain_id,
     container_proc_manager_artifact,
 ):
     el_node_name = generate_name(participant, id)
@@ -38,13 +38,13 @@ def launch(
         el_node_name,
         id,
         participant,
+        network_params,
         el_genesis_artifact,
         el_credentials_artifact,
         cl_api_url,
         cl_ws_rpc_url,
         el_account,
         el_static_nodes,
-        el_chain_id,
         container_proc_manager_artifact,
     )
     return context.new_context(

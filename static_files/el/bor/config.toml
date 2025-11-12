@@ -46,7 +46,7 @@ verbosity = {{.log_level_to_int}}
 {{- if and (eq .kind "validator") (ne .sync_mode "stateless") }}
 [miner]
     mine = true
-    gaslimit = 60000000
+    gaslimit = {{.el_gas_limit}}
     etherbase = "{{.address}}"
     extradata = "{{.extradata}}"
 {{- end }}

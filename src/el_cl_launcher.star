@@ -23,7 +23,6 @@ def launch(
     devnet_cl_type,
 ):
     network_params = polygon_pos_args.get("network_params")
-    el_chain_id = network_params.get("el_chain_id")
 
     # Prepare network data and generate validator configs.
     network_data = _prepare_network_data(participants)
@@ -99,12 +98,12 @@ def launch(
                 plan,
                 participant,
                 participant_index + 1,
+                network_params,
                 el_genesis_artifact,
                 cl_api_url,
                 cl_ws_rpc_url,
                 el_account,
                 network_data.el_static_nodes,
-                el_chain_id,
                 container_proc_manager_artifact,
             )
 
