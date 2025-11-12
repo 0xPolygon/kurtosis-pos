@@ -14,7 +14,6 @@ LAUNCHERS = {
 
 def launch(
     plan,
-    polygon_pos_args,
     participant,
     id,
     el_genesis_artifact,
@@ -24,6 +23,7 @@ def launch(
     el_static_nodes,
     el_chain_id,
     container_proc_manager_artifact,
+    ethstats_server_params,
 ):
     el_node_name = generate_name(participant, id)
 
@@ -34,7 +34,6 @@ def launch(
 
     # Launch node.
     launch_method = _get_launcher(participant)
-    ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
     service = launch_method(
         plan,
         el_node_name,
