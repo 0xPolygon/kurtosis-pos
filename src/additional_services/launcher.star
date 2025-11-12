@@ -25,6 +25,9 @@ def launch(
             bridge_spammer.launch(
                 plan, l1_context, l2_network_params, contract_addresses_artifact
             )
+        elif svc == constants.ADDITIONAL_SERVICES.ethstats_server:
+            ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
+            ethstats_server.launch(plan, ethstats_server_params)
         elif svc == constants.ADDITIONAL_SERVICES.observability:
             observability.launch(
                 plan,
@@ -33,6 +36,9 @@ def launch(
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
+        elif svc == constants.ADDITIONAL_SERVICES.status_checker:
+            status_checker_params = polygon_pos_args.get("status_checker_params")
+            status_checker.launch(plan, status_checker_params, l1_context, l2_context)
         elif svc == constants.ADDITIONAL_SERVICES.test_runner:
             test_runner_params = polygon_pos_args.get("test_runner_params")
             test_runner.launch(
@@ -46,11 +52,5 @@ def launch(
             )
         elif svc == constants.ADDITIONAL_SERVICES.tx_spammer:
             tx_spammer.launch(plan, l1_context, l2_context, l2_network_params)
-        elif svc == constants.ADDITIONAL_SERVICES.status_checker:
-            status_checker_params = polygon_pos_args.get("status_checker_params")
-            status_checker.launch(plan, status_checker_params, l1_context, l2_context)
-        elif svc == constants.ADDITIONAL_SERVICES.ethstats_server:
-            ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
-            ethstats_server.launch(plan, ethstats_server_params)
         else:
             fail("Invalid additional service: %s" % (svc))
