@@ -5,10 +5,11 @@
 default: 210
 
 # Client configurations
-heimdall-v2-bor: 210
-heimdall-v2-erigon: 210
 heimdall-v2-bor-minimal: 180
 heimdall-v2-erigon-minimal: 180
+heimdall-v2-bor: 210
+heimdall-v2-erigon: 210
+heimdall-v2-bor-rio: 300
 
 # Additional services configurations
 additional-services: 210
