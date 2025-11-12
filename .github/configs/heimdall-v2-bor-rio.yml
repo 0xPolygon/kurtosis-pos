@@ -1,51 +1,47 @@
 polygon_pos_package:
   participants:
-    # Validator nodes
+    # Bor validator nodes (7 validators, 3 active block producers)
     - kind: validator
+      count: 7
+      el_bor_produce_witness: true
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
       el_image: 0xpolygon/bor:2.4.0-beta4
-      count: 3
-      el_bor_produce_witness: true
 
-    # RPC nodes
+    # Bor RPC nodes (2 rpc nodes, one stateless, one stateful)
     - kind: rpc
-      cl_type: heimdall-v2
-      cl_image: 0xpolygon/heimdall-v2:0.4.2
-      el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta4
-      el_bor_produce_witness: true
-      el_bor_sync_with_witness: false
       count: 1
+      el_bor_sync_with_witness: true
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.4.0-beta4
 
     - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: false
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.0
       el_type: bor
       el_image: 0xpolygon/bor:2.4.0-beta4
-      el_bor_produce_witness: false
-      el_bor_sync_with_witness: false
-      count: 1
 
-    # RPC and stateless nodes
-    - kind: rpc
+    # Bor archive node
+    - kind: archive
+      count: 1
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
       el_image: 0xpolygon/bor:2.4.0-beta4
-      el_bor_produce_witness: true
-      el_bor_sync_with_witness: true
-      count: 1
-
-    - kind: rpc
-      cl_type: heimdall-v2
-      cl_image: 0xpolygon/heimdall-v2:0.4.2
-      el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta4
-      el_bor_produce_witness: false
-      el_bor_sync_with_witness: true
-      count: 1
+    
+    # TODO: Erigon RPC node (stateful)
+    # - kind: rpc
+    #   count: 1
+    #   el_bor_sync_with_witness: false
+    #   cl_type: heimdall-v2
+    #   cl_image: 0xpolygon/heimdall-v2:0.4.0
+    #   el_type: erigon
+    #   el_image: 0xpolygon/erigon:v3.0.18
 
   additional_services:
     - observability
