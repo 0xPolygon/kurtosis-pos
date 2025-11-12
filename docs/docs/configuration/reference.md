@@ -118,17 +118,17 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | ----------------- | ------------------------------------------------------------------------------------------------------------ |
 | `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                             |
 | `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                          |
+| `ethstats_server` | Visual interface for tracking network status                                                                 |
 | `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) |
+| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                 |
 | `test_runner`     | Run [agglayer/e2e](https://github.com/agglayer/e2e) end-to-end tests against the devnet                      |
 | `tx_spammer`      | Send transactions to the network to simulate load                                                            |
-| `status_checker`  | Perform fegular status checks to track and monitor the health of the network                                 |
-| `ethstats_server` | This is a visual interface for tracking network status                                                       |
 
-### `test_runner_params`
+### `ethstats_server_params`
 
-| Field | Type   | Default                      | Description                                                                                               |
-| ----- | ------ | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
-| image | string | ghcr.io/agglayer/e2e:9fd2d09 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
+| Field | Type   | Default                                                                                 | Description                               |
+| ----- | ------ | --------------------------------------------------------------------------------------- | ----------------------------------------- |
+| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server. |
 
 ### `status_checker_params`
 
@@ -136,8 +136,9 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | ----- | ------ | ------------------------------------------------------------------------------------ | ---------------------------------------- |
 | image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9 | Image used to deploy the status checker. |
 
-### `ethstats_server_params`
 
-| Field | Type   | Default                                                                                 | Description                               |
-| ----- | ------ | --------------------------------------------------------------------------------------- | ----------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server. |
+### `test_runner_params`
+
+| Field | Type   | Default                      | Description                                                                                               |
+| ----- | ------ | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
+| image | string | ghcr.io/agglayer/e2e:9fd2d09 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
