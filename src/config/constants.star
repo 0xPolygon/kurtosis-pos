@@ -47,6 +47,7 @@ ADDITIONAL_SERVICES = struct(
     test_runner="test_runner",
     tx_spammer="tx_spammer",
     status_checker="status_checker",
+    ethstats_server="ethstats_server",
 )
 
 DEFAULT_IMAGES = {
@@ -69,6 +70,7 @@ DEFAULT_IMAGES = {
     "prometheus_image": "prom/prometheus:v3.2.1",
     "grafana_image": "grafana/grafana:11.6.0",
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v4.1.1",
+    "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 
 DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
@@ -89,6 +91,9 @@ CL_COMPACT_ENABLED = False
 CL_COMPACTION_INTERVAL = 1000
 CL_STORAGE_PRUNING_INTERVAL = "10m0s"
 CL_INDEXER_PRUNING_ENABLED = False
+
+ETHSTATS_SERVER_PORT_NUMBER = 3000
+ETHSTATS_SERVER_WS_SECRET = "sharedsecret"
 
 EL_HARD_FORK_BLOCKS = {
     "jaipur": 0,

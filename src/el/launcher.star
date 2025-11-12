@@ -23,6 +23,7 @@ def launch(
     el_account,
     el_static_nodes,
     container_proc_manager_artifact,
+    ethstats_server_params,
 ):
     el_node_name = generate_name(participant, id)
 
@@ -46,6 +47,7 @@ def launch(
         el_account,
         el_static_nodes,
         container_proc_manager_artifact,
+        ethstats_server_params,
     )
     return context.new_context(
         service_name=el_node_name,

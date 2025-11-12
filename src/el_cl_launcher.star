@@ -94,6 +94,7 @@ def launch(
 
             # Launch the EL node.
             el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
+            ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
             el_context = el_launcher.launch(
                 plan,
                 participant,
@@ -105,6 +106,7 @@ def launch(
                 el_account,
                 network_data.el_static_nodes,
                 container_proc_manager_artifact,
+                ethstats_server_params,
             )
 
             # Add the node to the all_participants array.
