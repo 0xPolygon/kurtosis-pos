@@ -66,11 +66,11 @@ DEFAULT_IMAGES = {
     "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.4.2",
     "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
-    "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # observability
     "prometheus_image": "prom/prometheus:v3.2.1",
     "grafana_image": "grafana/grafana:11.6.0",
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v4.1.1",
+    "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 
 DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
