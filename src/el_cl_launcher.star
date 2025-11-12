@@ -140,7 +140,7 @@ def launch(
 
     # Return the L2 context.
     return struct(
-        el_chain_id=el_chain_id,
+        el_chain_id=network_params.get("el_chain_id"),
         devnet_cl_type=devnet_cl_type,
         all_participants=all_participants,
     )
