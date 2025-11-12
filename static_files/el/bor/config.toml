@@ -6,7 +6,10 @@ verbosity = {{.log_level_to_int}}
 
 "bor.logs" = true
 
+ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
+
 [witness]
+    witnessapi = true
     fastforwardthreshold=30
     {{if .sync_with_witness}}
     syncwithwitnesses = true

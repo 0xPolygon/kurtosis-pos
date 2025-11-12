@@ -53,3 +53,29 @@ def test_sanity_check_with_test_runner(plan):
             "image": constants.DEFAULT_IMAGES.get("test_runner_image"),
         },
     }
+
+
+def test_sanity_check_with_ethstats_server_missing_image(plan):
+    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+        "additional_services": [
+            constants.ADDITIONAL_SERVICES.ethstats_server,
+            constants.ADDITIONAL_SERVICES.test_runner,  # test_runner_params is defined in the default args so we have to include it here to avoid failing on that first
+        ],
+        "ethstats_server_params": {},
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        '`ethstats_server_params` must include the "image" field when the status checker is deployed',
+    )
+
+
+def test_sanity_check_with_ethstats_server(plan):
+    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+        "additional_services": [
+            constants.ADDITIONAL_SERVICES.ethstats_server,
+            constants.ADDITIONAL_SERVICES.test_runner,
+        ],
+        "ethstats_server_params": {
+            "image": constants.DEFAULT_IMAGES.get("ethstats_server_image"),
+        },
+    }
