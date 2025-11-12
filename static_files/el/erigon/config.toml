@@ -22,7 +22,7 @@ staticpeers = "{{.static_nodes}}"
 # [miner]
 {{if eq .kind "validator"}}
 mine = true
-"miner.gaslimit" = 45000000
+"miner.gaslimit" = 60000000
 # "miner.gasprice" = "25000000000" # TODO: Make this flag available in erigon.
 "miner.etherbase" = "{{.address}}"
 "miner.extradata" = "{{.extradata}}"

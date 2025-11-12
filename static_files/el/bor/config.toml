@@ -39,12 +39,13 @@ verbosity = {{.log_level_to_int}}
 {{if and (eq .kind "validator") (ne .sync_mode "stateless")}}
 [miner]
     mine = true
-    gaslimit = 45000000
+    gaslimit = 60000000
     etherbase = "{{.address}}"
     extradata = "{{.extradata}}"
 {{end}}
 
 [jsonrpc]
+    txfeecap = 0.4194304  # Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap)
     ipcpath = "{{.data_folder_path}}/bor.ipc"
     [jsonrpc.http]
         enabled = true
@@ -69,15 +70,15 @@ verbosity = {{.log_level_to_int}}
 
 [pprof]
   pprof = true                      # Enable the pprof HTTP server
-  port = {{.pprof_port_number}}   # pprof HTTP server listening port
+  port = {{.pprof_port_number}}     # pprof HTTP server listening port
   addr = "0.0.0.0"                  # pprof HTTP server listening interface
   memprofilerate = 524288           # Turn on memory profiling with the given rate
   blockprofilerate = 0              # Turn on block profiling with the given rate
 
 [cache]
-  cache = 1024             # Megabytes of memory allocated to internal caching (recommended for mainnet = 4096, default suitable for amoy/devnet)
-  gc = 0                  # Percentage of cache memory allowance to use for trie pruning (default = 25% full mode, 0% archive mode)
-  snapshot = 10            # Percentage of cache memory allowance to use for snapshot caching (default = 10% full mode, 20% archive mode)
+  cache = 4096             # Megabytes of memory allocated to internal caching (recommended for mainnet = 4096, default suitable for amoy/devnet)
+  gc = 0                   # Percentage of cache memory allowance to use for trie pruning (default = 25% full mode, 0% archive mode)
+  snapshot = 35            # Percentage of cache memory allowance to use for snapshot caching (default = 10% full mode, 20% archive mode)
   database = 50            # Percentage of cache memory allowance to use for database io
   trie = 15                # Percentage of cache memory allowance to use for trie caching (default = 15% full mode, 30% archive mode)
   noprefetch = false       # Disable heuristic state prefetch during block import (less CPU and disk IO, more time waiting for data)
