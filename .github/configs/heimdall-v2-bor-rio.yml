@@ -36,6 +36,7 @@ polygon_pos_package:
       el_image: 0xpolygon/bor:2.4.0-beta4
       el_bor_produce_witness: true
       el_bor_sync_with_witness: true
+      el_bor_sync_mode: archive
       count: 1
 
     - kind: rpc

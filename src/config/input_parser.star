@@ -99,7 +99,15 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "el_block_interval_seconds": 1,
         "el_sprint_duration": 16,
         "el_span_duration": 128,
-        "el_gas_limit": 45000000,
+        "el_gas_limit": 60000000,
+        # Polygon PoS hard fork configurations
+        "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
+        "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),
+        "indore_fork_block": constants.EL_HARD_FORK_BLOCKS.get("indore"),
+        "ahmedabad_fork_block": constants.EL_HARD_FORK_BLOCKS.get("ahmedabad"),
+        "bhilai_fork_block": constants.EL_HARD_FORK_BLOCKS.get("bhilai"),
+        "rio_fork_block": constants.EL_HARD_FORK_BLOCKS.get("rio"),
+        "madhugiri_fork_block": constants.EL_HARD_FORK_BLOCKS.get("madhugiri"),
     },
     "additional_services": [
         constants.ADDITIONAL_SERVICES.test_runner,
@@ -111,6 +119,11 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
 
 DEFAULT_STATUS_CHECKER_ARGS = {
     "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
+}
+
+DEFAULT_ETHSTATS_SERVER_ARGS = {
+    "image": constants.DEFAULT_IMAGES.get("ethstats_server_image"),
+    "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
 }
 
 DEFAULT_DEV_ARGS = {
@@ -196,6 +209,14 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     status_checker_params = polygon_pos_args.get("status_checker_params", {})
     result["status_checker_params"] = _parse_status_checker_params(
         is_status_checker_deployed, status_checker_params
+    )
+
+    is_ethstats_server_deployed = (
+        constants.ADDITIONAL_SERVICES.ethstats_server in result["additional_services"]
+    )
+    ethstats_server_params = polygon_pos_args.get("ethstats_server_params", {})
+    result["ethstats_server_params"] = _parse_ethstats_server_params(
+        is_ethstats_server_deployed, ethstats_server_params
     )
 
     # Sanity check and return the result.
@@ -386,6 +407,27 @@ def _parse_status_checker_params(is_status_checker_deployed, status_checker_para
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(status_checker_params)
+
+
+def _parse_ethstats_server_params(is_ethstats_server_deployed, ethstats_server_params):
+    # If the status checker is not deployed, return an empty dict.
+    if not is_ethstats_server_deployed:
+        return {}
+
+    # Create a mutable copy of ethstats_server_params.
+    if ethstats_server_params:
+        ethstats_server_params = dict(ethstats_server_params)
+    else:
+        # Set default status checker params if not provided.
+        ethstats_server_params = dict(
+            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("ethstats_server_params", {})
+        )
+
+    for k, v in DEFAULT_ETHSTATS_SERVER_ARGS.items():
+        ethstats_server_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(ethstats_server_params)
 
 
 def _sort_dict_by_values(d):

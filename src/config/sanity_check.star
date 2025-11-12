@@ -37,16 +37,26 @@ POLYGON_POS_PARAMS = {
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount_eth",
         "validator_top_up_fee_amount_eth",
+        # consensus layer
         "cl_chain_id",
         "cl_environment",
         "cl_span_poll_interval",
         "cl_checkpoint_poll_interval",
         "cl_max_age_num_blocks",
+        # execution layer
         "el_chain_id",
         "el_block_interval_seconds",
         "el_sprint_duration",
         "el_span_duration",
         "el_gas_limit",
+        # hardforks
+        "jaipur_fork_block",
+        "delhi_fork_block",
+        "indore_fork_block",
+        "ahmedabad_fork_block",
+        "bhilai_fork_block",
+        "rio_fork_block",
+        "madhugiri_fork_block",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
@@ -57,6 +67,10 @@ POLYGON_POS_PARAMS = {
     ],
     "status_checker_params": [
         "image",
+    ],
+    "ethstats_server_params": [
+        "image",
+        "ws_secret",
     ],
 }
 
@@ -178,6 +192,21 @@ def sanity_check_polygon_args(plan, input_args):
         if status_checker_params:
             fail(
                 "`status_checker_params` must be empty when the status checker is not deployed."
+            )
+
+    # Make sure ethstats server params are defined only if the ethstats server is deployed.
+    if constants.ADDITIONAL_SERVICES.ethstats_server in additional_services:
+        _validate_dict(input_args, "ethstats_server_params")
+        ethstats_server_params = input_args.get("ethstats_server_params")
+        if not "image" in ethstats_server_params:
+            fail(
+                '`ethstats_server_params` must include the "image" field when the status checker is deployed'
+            )
+    else:
+        ethstats_server_params = input_args.get("ethstats_server_params", {})
+        if ethstats_server_params:
+            fail(
+                "`ethstats_server_params` must be empty when the status checker is not deployed."
             )
 
     plan.print("Sanity check passed")

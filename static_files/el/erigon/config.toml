@@ -9,6 +9,9 @@ datadir = "{{.data_folder_path}}"
 no-downloader = true
 nat = "none"
 
+ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
+
+
 # [p2p]
 maxpeers = 200
 port = {{.discovery_port_number}}
@@ -22,7 +25,7 @@ staticpeers = "{{.static_nodes}}"
 # [miner]
 {{if eq .kind "validator"}}
 mine = true
-"miner.gaslimit" = 45000000
+"miner.gaslimit" = {{.el_gas_limit}}
 # "miner.gasprice" = "25000000000" # TODO: Make this flag available in erigon.
 "miner.etherbase" = "{{.address}}"
 "miner.extradata" = "{{.extradata}}"
