@@ -19,7 +19,7 @@ polycli loadtest \
         --mode contract-call \
         --concurrency 100 \
         --requests 1 \
-        --contract-address "$elephant_addr" \
+        --contract-address "0x32ac76fdbf38b50d584dd943dacda4b07fdcbfc7" \
         --gas-price 26000000000 \
         --gas-limit 10000000 \
         --sending-accounts-file private-keys.txt \
@@ -29,11 +29,11 @@ polycli loadtest \
 # SLOAD / SSTORE injection
 polycli loadtest \
         --rpc-url "$rpc_url" \
-        --rate-limit "1" \
+        --rate-limit "6" \
         --mode contract-call \
         --concurrency 100 \
-        --requests 100 \
-        --contract-address "$elephant_addr" \
+        --requests 1 \
+        --contract-address "0x32ac76fdbf38b50d584dd943dacda4b07fdcbfc7" \
         --gas-price 26000000000 \
         --gas-limit 10000000 \
         --sending-accounts-file private-keys.txt \

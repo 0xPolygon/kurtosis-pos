@@ -77,6 +77,7 @@ POLYGON_POS_PARAMS = {
 VALID_PARTICIPANT_KINDS = [
     constants.PARTICIPANT_KIND.validator,
     constants.PARTICIPANT_KIND.rpc,
+    constants.PARTICIPANT_KIND.archive,
 ]
 
 VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall_v2]

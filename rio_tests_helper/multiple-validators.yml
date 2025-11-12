@@ -5,7 +5,7 @@ polygon_pos_package:
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta5
+      el_image: bor:local
       el_bor_produce_witness: true
       el_bor_sync_with_witness: false
       count: 4
@@ -15,7 +15,7 @@ polygon_pos_package:
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta5
+      el_image: bor:local
       el_bor_sync_mode: stateless
       el_bor_produce_witness: true
       el_bor_sync_with_witness: false
@@ -36,7 +36,7 @@ polygon_pos_package:
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta5
+      el_image: bor:local
       el_bor_produce_witness: false
       el_bor_sync_with_witness: false
       count: 1
@@ -45,7 +45,7 @@ polygon_pos_package:
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta5
+      el_image: bor:local
       el_bor_produce_witness: true
       el_bor_sync_with_witness: false
       count: 1
@@ -54,11 +54,19 @@ polygon_pos_package:
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta5
+      el_image: bor:local
       el_bor_sync_mode: stateless
       el_bor_produce_witness: true
       el_bor_sync_with_witness: true
       count: 1
+
+    # Bor archive node
+    - kind: archive
+      count: 1
+      cl_type: heimdall-v2
+      cl_image: 0xpolygon/heimdall-v2:0.4.2
+      el_type: bor
+      el_image: bor:local
 
     # - kind: rpc
     #   cl_type: heimdall-v2
