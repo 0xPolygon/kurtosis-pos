@@ -3,6 +3,7 @@ math = import_module("../math/math.star")
 PARTICIPANT_KIND = struct(
     validator="validator",
     rpc="rpc",
+    archive="archive",
 )
 
 EL_TYPE = struct(
