@@ -1,6 +1,6 @@
 polygon_pos_package:
   participants:
-    # Validator nodes (7 validators, 3 active block producers)
+    # Bor validator nodes (7 validators, 3 active block producers)
     - kind: validator
       count: 7
       el_bor_produce_witness: true
@@ -9,7 +9,7 @@ polygon_pos_package:
       el_type: bor
       el_image: 0xpolygon/bor:2.4.0-beta4
 
-    # RPC nodes (2 rpc nodes, one stateless, one stateful)
+    # Bor RPC nodes (2 rpc nodes, one stateless, one stateful)
     - kind: rpc
       count: 1
       el_bor_sync_with_witness: true
@@ -26,13 +26,22 @@ polygon_pos_package:
       el_type: bor
       el_image: 0xpolygon/bor:2.4.0-beta4
 
-    # Archive node
+    # Bor archive node
     - kind: archive
       count: 1
       cl_type: heimdall-v2
       cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
       el_image: 0xpolygon/bor:2.4.0-beta4
+    
+    # TODO: Erigon RPC node (stateful)
+    # - kind: rpc
+    #   count: 1
+    #   el_bor_sync_with_witness: false
+    #   cl_type: heimdall-v2
+    #   cl_image: 0xpolygon/heimdall-v2:0.4.0
+    #   el_type: bor
+    #   el_image: 0xpolygon/erigon:v3.0.18
 
   additional_services:
     - observability
