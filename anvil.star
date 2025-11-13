@@ -25,6 +25,7 @@ def run(plan, args):
                         "--balance {}".format(constants.ADMIN_BALANCE_ETH),
                         '--mnemonic "{}"'.format(args.get("mnemonic")),
                         "--dump-state /tmp/state_dump.json",
+                        "--no-mining",
                     ]
                 )
             ],
