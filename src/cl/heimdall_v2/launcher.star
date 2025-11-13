@@ -83,31 +83,29 @@ def launch(
         },
     )
 
-    heimdall_v2_cmds = []
-    is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
-    if is_validator:
-        heimdall_v2_cmds = [
-            # Copy CL validator config inside heimdall config folder.
-            "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
-                cl_shared.CONFIG_FOLDER_PATH
-            ),
-            "mkdir {}/data".format(cl_shared.CONFIG_FOLDER_PATH),
-            "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
-                cl_shared.CONFIG_FOLDER_PATH
-            ),
-            # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
-            'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
-                cl_shared.CONFIG_FOLDER_PATH
-            ),
-        ]
+    validator_cmds = [
+        # Copy CL validator config inside heimdall config folder.
+        "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
+            cl_shared.CONFIG_FOLDER_PATH
+        ),
+        "mkdir {}/data".format(cl_shared.CONFIG_FOLDER_PATH),
+        "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
+            cl_shared.CONFIG_FOLDER_PATH
+        ),
+        # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
+        'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
+            cl_shared.CONFIG_FOLDER_PATH
+        ),
+    ]
 
-    heimdall_v2_cmds.append(
+    heimdall_v2_cmds = [
         # Start heimdall using the container proc manager script.
-        heimdall_cmd="/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
+        "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
             cl_shared.CONFIG_FOLDER_PATH,
         )
-    )
+    ]
 
+    is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
     return plan.add_service(
         name="{}".format(cl_node_name),
         config=ServiceConfig(
@@ -144,11 +142,17 @@ def launch(
                     cl_shared.CONFIG_FOLDER_PATH
                 ): heimdall_node_config_artifacts,
                 "/opt/data/genesis": cl_genesis_artifact,
-                "/opt/data/config": cl_validator_config_artifact,
                 # utils scripts
                 "/usr/local/share": container_proc_manager_artifact,
-            },
+            }
+            | (
+                {"/opt/data/config": cl_validator_config_artifact}
+                if is_validator
+                else {}
+            ),
             entrypoint=["sh", "-c"],
-            cmd=["&&".join(heimdall_v2_cmds)],
+            cmd=[
+                "&&".join((validator_cmds if is_validator else []) + heimdall_v2_cmds)
+            ],
         ),
     )

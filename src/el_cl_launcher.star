@@ -65,9 +65,9 @@ def launch(
                 participant_index + 1,
                 network_params,
                 cl_genesis_artifact,
-                cl_validator_config_artifacts.configs[
-                    validator_index
-                ] if is_validator else None,
+                cl_validator_config_artifacts.configs[validator_index]
+                if is_validator
+                else None,
                 cl_node_ids,
                 l1_rpc_url,
                 container_proc_manager_artifact,
