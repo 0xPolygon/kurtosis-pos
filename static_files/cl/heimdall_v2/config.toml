@@ -56,6 +56,7 @@ log_format = "{{.log_format}}"
 # Path to the JSON file containing the initial validator set and other meta data
 genesis_file = "config/genesis.json"
 
+{{if eq .kind "validator"}}
 # Path to the JSON file containing the private key to use as a validator in the consensus protocol
 priv_validator_key_file = "config/priv_validator_key.json"
 
@@ -65,6 +66,7 @@ priv_validator_state_file = "data/priv_validator_state.json"
 # TCP or UNIX socket address for CometBFT to listen on for
 # connections from an external PrivValidator process
 priv_validator_laddr = ""
+{{end}}
 
 # Path to the JSON file containing the private key to use for node authentication in the p2p protocol
 node_key_file = "config/node_key.json"

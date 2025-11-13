@@ -59,6 +59,7 @@ def launch(
                 data={
                     # Node params.
                     "moniker": cl_node_name,
+                    "kind": participant.get("kind"),
                     "log_level": participant.get("cl_log_level"),
                     "log_format": participant.get("cl_log_format"),
                     "persistent_peers": cl_node_ids,
@@ -81,28 +82,30 @@ def launch(
         },
     )
 
-    heimdall_cmds = [
-        " && ".join(
-            [
-                # Copy CL validator config inside heimdall config folder.
-                "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
-                    cl_shared.CONFIG_FOLDER_PATH
-                ),
-                "mkdir {}/data".format(cl_shared.CONFIG_FOLDER_PATH),
-                "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
-                    cl_shared.CONFIG_FOLDER_PATH
-                ),
-                # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
-                'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
-                    cl_shared.CONFIG_FOLDER_PATH
-                ),
-                # Start heimdall using the container proc manager script.
-                "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
-                    cl_shared.CONFIG_FOLDER_PATH,
-                ),
-            ]
+    heimdall_v2_cmds = []
+    is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
+    if is_validator:
+        heimdallv2_cmds = [
+            # Copy CL validator config inside heimdall config folder.
+            "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
+                cl_shared.CONFIG_FOLDER_PATH
+            ),
+            "mkdir {}/data".format(cl_shared.CONFIG_FOLDER_PATH),
+            "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
+                cl_shared.CONFIG_FOLDER_PATH
+            ),
+            # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
+            'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
+                cl_shared.CONFIG_FOLDER_PATH
+            ),
+        ]
+
+    heimdallv2_cmds.append(
+        # Start heimdall using the container proc manager script.
+        heimdall_cmd="/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
+            cl_shared.CONFIG_FOLDER_PATH,
         )
-    ]
+    )
 
     return plan.add_service(
         name="{}".format(cl_node_name),
@@ -145,6 +148,6 @@ def launch(
                 "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
-            cmd=["&&".join(heimdall_cmds)],
+            cmd=["&&".join(heimdallv2_cmds)],
         ),
     )
