@@ -86,7 +86,7 @@ def launch(
     heimdall_v2_cmds = []
     is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
     if is_validator:
-        heimdallv2_cmds = [
+        heimdall_v2_cmds = [
             # Copy CL validator config inside heimdall config folder.
             "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
                 cl_shared.CONFIG_FOLDER_PATH
@@ -101,7 +101,7 @@ def launch(
             ),
         ]
 
-    heimdallv2_cmds.append(
+    heimdall_v2_cmds.append(
         # Start heimdall using the container proc manager script.
         heimdall_cmd="/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
             cl_shared.CONFIG_FOLDER_PATH,
@@ -149,6 +149,6 @@ def launch(
                 "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
-            cmd=["&&".join(heimdallv2_cmds)],
+            cmd=["&&".join(heimdall_v2_cmds)],
         ),
     )
