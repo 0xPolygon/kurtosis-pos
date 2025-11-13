@@ -1,6 +1,6 @@
 account_util = import_module("./src/account/account.star")
 additional_services_launcher = import_module("./src/additional_services/launcher.star")
-anvil = import_module("./anvil.star")
+anvil = import_module("./src/l1/anvil.star")
 cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/config/constants.star")
 contract_deployer = import_module("./src/contracts/deployer.star")

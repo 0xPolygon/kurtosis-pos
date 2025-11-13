@@ -1,7 +1,7 @@
-constants = import_module("./src/config/constants.star")
-hex = import_module("./src/hex/hex.star")
-math = import_module("./src/math/math.star")
-prefunded_accounts_module = import_module("./src/prefunded_accounts/accounts.star")
+constants = import_module("../config/constants.star")
+hex = import_module("../hex/hex.star")
+math = import_module("../math/math.star")
+prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 
 
 ANVIL_PORT_ID = "http"
@@ -13,7 +13,7 @@ def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
         name="l1-anvil-genesis",
         config={
             "genesis.json": struct(
-                template=read_file(src="./static_files/anvil/genesis.json"),
+                template=read_file(src="../../static_files/anvil/genesis.json"),
                 data={
                     "admin_address": admin_address,
                     "admin_balance_wei": hex.int_to_hex(
@@ -42,11 +42,13 @@ def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
                         "anvil",
                         "--chain-id {}".format(anvil_args.get("network_id")),
                         "--block-time {}".format(anvil_args.get("block_time")),
-                        "--slots-in-an-epoch {}".format(anvil_args.get("slots_in_epoch")),
-                        '--mnemonic "{}"'.format(
-                            preregistered_validator_keys_mnemonic
+                        "--slots-in-an-epoch {}".format(
+                            anvil_args.get("slots_in_epoch")
                         ),
-                        "--accounts {}".format(len(prefunded_accounts_module.PREFUNDED_ACCOUNTS)),
+                        '--mnemonic "{}"'.format(preregistered_validator_keys_mnemonic),
+                        "--accounts {}".format(
+                            len(prefunded_accounts_module.PREFUNDED_ACCOUNTS)
+                        ),
                         "--balance {}".format(constants.ADMIN_BALANCE_ETH),
                         "--load-state /opt/anvil/genesis.json",
                         "--dump-state /tmp/state_dump.json",
