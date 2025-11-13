@@ -25,7 +25,7 @@ runs:
       shell: bash
       run: |
         case "${{ inputs.args_filename }}" in
-          ""|*"additional-services"*|*"contract-deployer"*)
+          ""|*"additional-services"*|*"contract-deployer"*|*"anvil"*|*"ethereum-package"*)
             cl_type="heimdall-v2"
             el_type="bor"
             ;;
