@@ -1,4 +1,5 @@
 cl_shared = import_module("../shared.star")
+constants = import_module("../../config/constants.star")
 
 
 # The folder where the heimdall templates are stored in the repository.
