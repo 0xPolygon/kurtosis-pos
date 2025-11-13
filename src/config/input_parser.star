@@ -15,7 +15,6 @@ DEFAULT_ANVIL_ARGS = {
     "network_id": constants.DEFAULT_L1_CHAIN_ID,
     "block_time": 1,
     "slots_in_epoch": 1,  # block_time * slots_in_epoch = total seconds to transition a block from latest to safest
-    "mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
 }
 
 
@@ -103,6 +102,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         # This private key is used to deploy Polygon PoS contracts on both L1 and L2.
         "admin_private_key": "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea",
         # Validators params.
+        # Mnemonic for generating validator keys.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount_eth": 10000,  # in ether
         "validator_top_up_fee_amount_eth": 2000,  # in ether

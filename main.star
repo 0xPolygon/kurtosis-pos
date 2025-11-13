@@ -66,7 +66,12 @@ def run(plan, args):
                 all_participants=l1.all_participants,
             )
         elif l1_backend == constants.L1_BACKEND.anvil:
-            rpc_url = anvil.run(plan, l1_args)
+            rpc_url = anvil.run(
+                plan,
+                l1_args,
+                l2_network_params.get("preregistered_validator_keys_mnemonic"),
+                admin_address,
+            )
             l1_context = struct(
                 chain_id=l1_args.get("network_id"),
                 private_key=admin_private_key,
