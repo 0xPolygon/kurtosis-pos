@@ -1,10 +1,10 @@
 polygon_pos_package:
   participants:
     - kind: validator
-      cl_type: heimdall-v2
       el_type: bor
+      cl_type: heimdall-v2
       count: 4
     - kind: rpc
-      cl_type: heimdall-v2
       el_type: bor
+      cl_type: heimdall-v2
       count: 2
