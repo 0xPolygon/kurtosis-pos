@@ -140,9 +140,7 @@ def input_parser(plan, input_args):
 
     plan.print("Parsing the L2 input args")
     polygon_pos_input_args = input_args.get("polygon_pos_package", {})
-    (polygon_pos_args, devnet_cl_type) = _parse_polygon_pos_args(
-        plan, polygon_pos_input_args
-    )
+    polygon_pos_args = _parse_polygon_pos_args(plan, polygon_pos_input_args)
     plan.print("L2 input args parsed: {}".format(str(polygon_pos_args)))
 
     plan.print("Parsing the dev input args")
@@ -150,7 +148,7 @@ def input_parser(plan, input_args):
     dev_args = _parse_dev_args(plan, dev_input_args)
     plan.print("Dev input args parsed: {}".format(str(dev_args)))
 
-    return (ethereum_args, polygon_pos_args, dev_args, devnet_cl_type)
+    return (ethereum_args, polygon_pos_args, dev_args)
 
 
 def _parse_ethereum_args(plan, ethereum_args):
@@ -184,7 +182,6 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     participants = polygon_pos_args.get("participants", [])
     result["participants"] = _parse_participants(participants, log_level, log_format)
-    devnet_cl_type = _get_devnet_cl_type(result["participants"])
 
     setup_images = polygon_pos_args.get("setup_images", {})
     result["setup_images"] = _parse_setup_images(setup_images)
@@ -221,7 +218,7 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     # Sanity check and return the result.
     sanity_check.sanity_check_polygon_args(plan, result)
-    return (_sort_dict_by_values(result), devnet_cl_type)
+    return _sort_dict_by_values(result)
 
 
 def _parse_dev_args(plan, dev_args):
@@ -244,7 +241,6 @@ def _parse_dev_args(plan, dev_args):
 
 
 def _parse_participants(participants, log_level, log_format):
-    devnet_cl_type = ""
     participants_with_defaults = []
 
     # Set default participant if not provided.
@@ -301,28 +297,11 @@ def _parse_participants(participants, log_level, log_format):
             for k, v in DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT.items():
                 p.setdefault(k, v)
 
-        # Set devnet CL type using the first participant CL type.
-        if devnet_cl_type == "":
-            devnet_cl_type = p.get("cl_type")
-
-        # Make sure that CL types have not been mixed.
-        if p.get("cl_type") != devnet_cl_type:
-            fail(
-                'Mixing different CL types is not supported. Got "{}" and "{}".'.format(
-                    devnet_cl_type, cl_type
-                )
-            )
-
         # Assign the modified dictionary back to the list.
         participants_with_defaults.append(p)
 
     # Sort each participant dictionary and return the result
     return [_sort_dict_by_values(p) for p in participants_with_defaults]
-
-
-def _get_devnet_cl_type(participants):
-    # Determine the devnet CL type to be able to select the appropriate validator address format later.
-    return participants[0].get("cl_type")
 
 
 def _parse_setup_images(setup_images):
