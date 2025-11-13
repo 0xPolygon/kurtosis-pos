@@ -260,15 +260,13 @@ def _parse_dev_args(plan, dev_args):
     # Create a mutable copy of dev_args.
     if dev_args:
         dev_args = dict(dev_args)
+    else:
+        # Set default dev args if not provided.
+        dev_args = dict(DEFAULT_DEV_ARGS)
 
     # Set default params if not provided.
-    if "should_deploy_l1" not in dev_args:
-        dev_args["should_deploy_l1"] = DEFAULT_DEV_ARGS.get("should_deploy_l1", True)
-
-    if "should_deploy_matic_contracts" not in dev_args:
-        dev_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS.get(
-            "should_deploy_matic_contracts", True
-        )
+    for k, v in DEFAULT_DEV_ARGS.items():
+        dev_args.setdefault(k, v)
 
     # Sanity check and return the result.
     sanity_check.sanity_check_dev_args(plan, dev_args)
