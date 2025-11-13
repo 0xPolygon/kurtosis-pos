@@ -1,5 +1,6 @@
 account_util = import_module("./src/account/account.star")
 additional_services_launcher = import_module("./src/additional_services/launcher.star")
+anvil = import_module("./anvil.star")
 cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/config/constants.star")
 contract_deployer = import_module("./src/contracts/deployer.star")
@@ -19,7 +20,7 @@ ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@a43368eb30
 def run(plan, args):
     # Parse input arguments.
     (
-        ethereum_args,
+        l1_args,
         polygon_pos_args,
         dev_args,
         devnet_cl_type,
@@ -36,32 +37,45 @@ def run(plan, args):
     # Deploy a local L1 if needed.
     # Otherwise, use the provided rpc url.
     if dev_args.get("should_deploy_l1"):
+        l1_backend = dev_args.get("l1_backend")
         plan.print(
-            "Deploying a local L1 with the following input args: {}".format(
-                ethereum_args
+            "Deploying a local L1 with backend: {} with the following input args: {}".format(
+                l1_backend, l1_args
             )
         )
-        l1 = deploy_local_l1(
-            plan,
-            ethereum_args,
-            l2_network_params.get("preregistered_validator_keys_mnemonic"),
-            admin_address,
-        )
-        prefunded_accounts_count = len(l1.pre_funded_accounts)
-        if prefunded_accounts_count < 13:
-            fail(
-                "The L1 package did not prefund enough accounts. Expected at least 13 accounts but got {}".format(
-                    prefunded_accounts_count
+        if l1_backend == constants.L1_BACKEND.ethereum_package:
+            l1 = deploy_ethereum_package(
+                plan,
+                l1_args,
+                l2_network_params.get("preregistered_validator_keys_mnemonic"),
+                admin_address,
+            )
+            prefunded_accounts_count = len(l1.pre_funded_accounts)
+            if prefunded_accounts_count < 13:
+                fail(
+                    "The L1 package did not prefund enough accounts. Expected at least 13 accounts but got {}".format(
+                        prefunded_accounts_count
+                    )
                 )
+            if len(l1.all_participants) < 1:
+                fail("The L1 package did not start any participants.")
+            l1_context = struct(
+                chain_id=l1.network_id,
+                private_key=admin_private_key,
+                rpc_url=l1.all_participants[0].el_context.rpc_http_url,
+                all_participants=l1.all_participants,
             )
-        if len(l1.all_participants) < 1:
-            fail("The L1 package did not start any participants.")
-        l1_context = struct(
-            chain_id=l1.network_id,
-            private_key=admin_private_key,
-            rpc_url=l1.all_participants[0].el_context.rpc_http_url,
-            all_participants=l1.all_participants,
-        )
+        elif l1_backend == constants.L1_BACKEND.anvil:
+            rpc_url = anvil.run(plan, l1_args)
+            l1_context = struct(
+                chain_id=l1_args.get("network_id"),
+                private_key=admin_private_key,
+                rpc_url=rpc_url,
+                all_participants=None,
+            )
+        else:
+            fail('Unsupported L1 backend: "{}".'.format(l1_backend))
+
     else:
         plan.print("Using an external l1")
         l1_rpc_url = dev_args.get("l1_rpc_url")
@@ -206,7 +220,7 @@ def get_validator_accounts(participants):
     return validator_accounts
 
 
-def deploy_local_l1(
+def deploy_ethereum_package(
     plan, ethereum_args, preregistered_validator_keys_mnemonic, admin_address
 ):
     # Sanity check the mnemonic used.

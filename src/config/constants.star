@@ -1,5 +1,10 @@
 math = import_module("../math/math.star")
 
+L1_BACKEND = struct(
+    anvil="anvil",  # lightweight devnet
+    ethereum_package="ethereum-package",  # complete devnet with multi-client support
+)
+
 PARTICIPANT_KIND = struct(
     validator="validator",
     rpc="rpc",
@@ -55,6 +60,7 @@ DEFAULT_IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.16.5",
     "l1_cl_image": "sigp/lighthouse:v8.0.0-rc.1",
+    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.4.4",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.4.2",
     "l2_el_bor_image": "0xpolygon/bor:2.4.0-beta4",

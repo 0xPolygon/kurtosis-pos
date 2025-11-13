@@ -74,6 +74,11 @@ POLYGON_POS_PARAMS = {
     ],
 }
 
+VALID_L1_BACKENDS = [
+    constants.L1_BACKEND.anvil,
+    constants.L1_BACKEND.ethereum_package,
+]
+
 VALID_PARTICIPANT_KINDS = [
     constants.PARTICIPANT_KIND.validator,
     constants.PARTICIPANT_KIND.rpc,
@@ -116,6 +121,7 @@ VALID_BOR_SYNC_MODES = [
 ]
 
 DEV_PARAMS = [
+    "l1_backend",
     "should_deploy_l1",  # boolean
     "l1_rpc_url",
     "should_deploy_matic_contracts",  # boolean
@@ -222,9 +228,15 @@ def sanity_check_dev_args(plan, input_args):
             )
 
     # Validate values.
-    should_deploy_l1 = input_args.get("should_deploy_l1")
-    should_deploy_matic_contracts = input_args.get("should_deploy_matic_contracts")
+    l1_backend = input_args.get("l1_backend")
+    if l1_backend not in VALID_L1_BACKENDS:
+        fail(
+            'Invalid L1 backend: "{}". Allowed values: {}.'.format(
+                l1_backend, VALID_L1_BACKENDS
+            )
+        )
 
+    should_deploy_l1 = input_args.get("should_deploy_l1")
     if not should_deploy_l1:
         l1_rpc_url = input_args.get("l1_rpc_url")
         if l1_rpc_url == "":
@@ -232,6 +244,7 @@ def sanity_check_dev_args(plan, input_args):
                 "`dev.l1_rpc_url` must be specified when `dev.should_deploy_l1` is set to false!"
             )
 
+    should_deploy_matic_contracts = input_args.get("should_deploy_matic_contracts")
     if not should_deploy_matic_contracts:
         l2_el_genesis_filepath = input_args.get("l2_el_genesis_filepath")
         if l2_el_genesis_filepath == "":

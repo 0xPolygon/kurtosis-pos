@@ -2,6 +2,23 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
+
+DEFAULT_DEV_ARGS = {
+    "l1_backend": constants.L1_BACKEND.ethereum_package,
+    "should_deploy_l1": True,
+    "should_deploy_matic_contracts": True,
+}
+
+
+DEFAULT_ANVIL_ARGS = {
+    "image": constants.DEFAULT_IMAGES.get("l1_anvil_image"),
+    "network_id": constants.DEFAULT_L1_CHAIN_ID,
+    "block_time": 1,
+    "slots_in_epoch": 1,  # block_time * slots_in_epoch = total seconds to transition a block from latest to safest
+    "mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
+}
+
+
 DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     "global_log_level": constants.LOG_LEVEL.info,
     "participants": [
@@ -126,17 +143,24 @@ DEFAULT_ETHSTATS_SERVER_ARGS = {
     "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
 }
 
-DEFAULT_DEV_ARGS = {
-    "should_deploy_l1": True,
-    "should_deploy_matic_contracts": True,
-}
-
 
 def input_parser(plan, input_args):
+    plan.print("Parsing the dev input args")
+    dev_input_args = input_args.get("dev", {})
+    dev_args = _parse_dev_args(plan, dev_input_args)
+    l1_backend = dev_args.get("l1_backend")
+    plan.print("Dev input args parsed: {}".format(str(dev_args)))
+
     plan.print("Parsing the L1 input args")
-    ethereum_input_args = input_args.get("ethereum_package", {})
-    ethereum_args = _parse_ethereum_args(plan, ethereum_input_args)
-    plan.print("L1 input args parsed: {}".format(str(ethereum_args)))
+    if l1_backend == constants.L1_BACKEND.ethereum_package:
+        ethereum_input_args = input_args.get("ethereum_package", {})
+        l1_args = _parse_ethereum_args(plan, ethereum_input_args)
+    elif l1_backend == constants.L1_BACKEND.anvil:
+        anvil_input_args = input_args.get("anvil", {})
+        l1_args = _parse_anvil_args(plan, anvil_input_args)
+    else:
+        fail('Unsupported L1 backend: "{}".'.format(l1_backend))
+    plan.print("L1 input anvil args parsed: {}".format(str(l1_args)))
 
     plan.print("Parsing the L2 input args")
     polygon_pos_input_args = input_args.get("polygon_pos_package", {})
@@ -145,12 +169,20 @@ def input_parser(plan, input_args):
     )
     plan.print("L2 input args parsed: {}".format(str(polygon_pos_args)))
 
-    plan.print("Parsing the dev input args")
-    dev_input_args = input_args.get("dev", {})
-    dev_args = _parse_dev_args(plan, dev_input_args)
-    plan.print("Dev input args parsed: {}".format(str(dev_args)))
+    return (l1_args, polygon_pos_args, dev_args, devnet_cl_type)
 
-    return (ethereum_args, polygon_pos_args, dev_args, devnet_cl_type)
+
+def _parse_anvil_args(plan, anvil_args):
+    # Create a mutable copy of anvil_args.
+    if anvil_args:
+        anvil_args = dict(anvil_args)
+
+    # Set default params if not provided.
+    for k, v in DEFAULT_ANVIL_ARGS.items():
+        anvil_args.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(anvil_args)
 
 
 def _parse_ethereum_args(plan, ethereum_args):
