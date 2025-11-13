@@ -1,20 +1,15 @@
-account_util = import_module("./src/account/account.star")
 additional_services_launcher = import_module("./src/additional_services/launcher.star")
-anvil = import_module("./src/l1/anvil.star")
 cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/config/constants.star")
 contract_deployer = import_module("./src/contracts/deployer.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis = import_module("./src/el/genesis.star")
-el_shared = import_module("./src/el/shared.star")
 hex = import_module("./src/hex/hex.star")
 input_parser = import_module("./src/config/input_parser.star")
+l1_launcher = import_module("./src/l1/launcher.star")
 math = import_module("./src/math/math.star")
 prefunded_accounts_module = import_module("./src/prefunded_accounts/accounts.star")
-wait = import_module("./src/wait/wait.star")
 wallet = import_module("./src/wallet/wallet.star")
-
-ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@a43368eb3085a20f5950de0c7d11dc4bece37348"  # 2025-10-16
 
 
 def run(plan, args):
@@ -43,43 +38,14 @@ def run(plan, args):
                 l1_backend, l1_args
             )
         )
-        if l1_backend == constants.L1_BACKEND.ethereum_package:
-            l1 = deploy_ethereum_package(
-                plan,
-                l1_args,
-                l2_network_params.get("preregistered_validator_keys_mnemonic"),
-                admin_address,
-            )
-            prefunded_accounts_count = len(l1.pre_funded_accounts)
-            if prefunded_accounts_count < 13:
-                fail(
-                    "The L1 package did not prefund enough accounts. Expected at least 13 accounts but got {}".format(
-                        prefunded_accounts_count
-                    )
-                )
-            if len(l1.all_participants) < 1:
-                fail("The L1 package did not start any participants.")
-            l1_context = struct(
-                chain_id=l1.network_id,
-                private_key=admin_private_key,
-                rpc_url=l1.all_participants[0].el_context.rpc_http_url,
-                all_participants=l1.all_participants,
-            )
-        elif l1_backend == constants.L1_BACKEND.anvil:
-            rpc_url = anvil.run(
-                plan,
-                l1_args,
-                l2_network_params.get("preregistered_validator_keys_mnemonic"),
-                admin_address,
-            )
-            l1_context = struct(
-                chain_id=l1_args.get("network_id"),
-                private_key=admin_private_key,
-                rpc_url=rpc_url,
-                all_participants=None,
-            )
-        else:
-            fail('Unsupported L1 backend: "{}".'.format(l1_backend))
+        l1_context = l1_launcher.launch(
+            plan,
+            l1_backend,
+            l1_args,
+            l2_network_params.get("preregistered_validator_keys_mnemonic"),
+            admin_private_key,
+            admin_address,
+        )
 
     else:
         plan.print("Using an external l1")
@@ -223,58 +189,3 @@ def get_validator_accounts(participants):
         fail("There must be at least one validator among the participants!")
 
     return validator_accounts
-
-
-def deploy_ethereum_package(
-    plan, ethereum_args, preregistered_validator_keys_mnemonic, admin_address
-):
-    # Sanity check the mnemonic used.
-    # TODO: Remove this limitation.
-    l2_network_params = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
-        "network_params"
-    )
-    default_l2_mnemonic = l2_network_params.get("preregistered_validator_keys_mnemonic")
-    if preregistered_validator_keys_mnemonic != default_l2_mnemonic:
-        fail("Using a different mnemonic is not supported for now.")
-
-    # Define prefunded accounts on L1.
-    l1_network_params = ethereum_args.get("network_params")
-    prefunded_accounts = _merge_l1_prefunded_accounts(admin_address, l1_network_params)
-    ethereum_args["network_params"] = l1_network_params | {
-        "prefunded_accounts": json.encode(prefunded_accounts)
-    }
-
-    # Deploy the ethereum package.
-    l1 = import_module(ETHEREUM_PACKAGE).run(plan, ethereum_args)
-    plan.print(l1)
-    if len(l1.all_participants) < 1:
-        fail("The L1 package did not start any participants.")
-
-    wait.wait_for_l1_startup(
-        plan, str(l1.all_participants[0].cl_context.beacon_http_url)
-    )
-    return l1
-
-
-def _merge_l1_prefunded_accounts(admin_address, l1_network_params):
-    # Merge the prefunded accounts (admin and validators) with the user-specified prefuned accounts.
-    admin_prefunded_account = account_util.to_ethereum_pkg_prefunded_account(
-        admin_address, constants.ADMIN_BALANCE_ETH
-    )
-
-    validators_prefunded_accounts = {}
-    for a in prefunded_accounts_module.PREFUNDED_ACCOUNTS:
-        validators_prefunded_accounts |= account_util.to_ethereum_pkg_prefunded_account(
-            a.eth_tendermint.address, constants.VALIDATORS_BALANCE_ETH
-        )
-
-    user_prefunded_accounts = {}
-    user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts")
-    if user_prefunded_accounts_str != "":
-        user_prefunded_accounts = json.decode(user_prefunded_accounts_str)
-
-    return (
-        admin_prefunded_account
-        | validators_prefunded_accounts
-        | user_prefunded_accounts
-    )

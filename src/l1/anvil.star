@@ -13,7 +13,7 @@ def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
         name="l1-anvil-genesis",
         config={
             "genesis.json": struct(
-                template=read_file(src="../../static_files/anvil/genesis.json"),
+                template=read_file(src="../../static_files/l1/anvil/genesis.json"),
                 data={
                     "admin_address": admin_address,
                     "admin_balance_wei": hex.int_to_hex(
