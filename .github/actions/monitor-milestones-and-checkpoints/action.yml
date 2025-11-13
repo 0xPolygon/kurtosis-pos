@@ -37,26 +37,18 @@ runs:
         l2_cl_api_url=$(kurtosis port print ${{ inputs.enclave_name }} l2-cl-1-${cl_type}-${el_type}-validator http)
         echo "L2_CL_API_URL=${l2_cl_api_url}" >> "${GITHUB_OUTPUT}"
         echo "L2_CL_API_URL=${l2_cl_api_url}"
-        echo "L2_CL_NODE_TYPE=${cl_type}" >> "${GITHUB_OUTPUT}"
-        echo "L2_CL_NODE_TYPE=${cl_type}"
 
     - name: Monitor milestones
       id: milestone
       shell: bash
       run: |
         l2_cl_api_url=${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}
-        l2_cl_node_type=${{ steps.l2-cl-api-url.outputs.L2_CL_NODE_TYPE }}
 
         echo "Monitoring milestones for up to ${{ inputs.timeout_seconds }} seconds..."
         elapsed_time=0
         milestone_count=0
         while [[ "${elapsed_time}" -lt "${{ inputs.timeout_seconds }}" ]];do
-          if [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
-            milestone_count=$(curl --silent "${l2_cl_api_url}/milestones/count" | jq --raw-output '.count')
-          else
-            echo "Unsupported CL type: ${l2_cl_node_type}"
-            exit 1
-          fi
+          milestone_count=$(curl --silent "${l2_cl_api_url}/milestones/count" | jq --raw-output '.count')
           echo "Time: ${elapsed_time}s - Milestones: ${milestone_count}"
 
           if [[ "${milestone_count}" -ge 1 ]]; then
@@ -76,18 +68,12 @@ runs:
       shell: bash
       run: |
         l2_cl_api_url=${{ steps.l2-cl-api-url.outputs.L2_CL_API_URL }}
-        l2_cl_node_type=${{ steps.l2-cl-api-url.outputs.L2_CL_NODE_TYPE }}
 
         echo "Monitoring checkpoints for up to ${{ inputs.timeout_seconds }} seconds..."
         elapsed_time=0
         checkpoint_count=0
         while [[ "${elapsed_time}" -lt "${{ inputs.timeout_seconds }}" ]]; do
-          if [[ "${l2_cl_node_type}" == "heimdall-v2" ]]; then
-            checkpoint_count=$(curl --silent "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.ack_count')
-          else
-            echo "Unsupported CL type: ${l2_cl_node_type}"
-            exit 1
-          fi
+          checkpoint_count=$(curl --silent "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.ack_count')
           echo "Time: ${elapsed_time}s - Checkpoints: ${checkpoint_count}"
 
           if [[ "${checkpoint_count}" -ge 1 ]]; then

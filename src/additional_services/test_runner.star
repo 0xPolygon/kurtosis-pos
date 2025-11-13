@@ -105,7 +105,6 @@ def launch(
                 # RPC Urls.
                 "L1_RPC_URL": l1_context.rpc_url,
                 "L2_RPC_URL": l2_rpc_url,
-                "L2_CL_NODE_TYPE": l2_context.devnet_cl_type,
                 "L2_CL_API_URL": l2_cl_api_url,
                 "L2_CL_RPC_URL": l2_cl_rpc_url,
                 # Contract addresses.
