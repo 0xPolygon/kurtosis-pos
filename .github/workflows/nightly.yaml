@@ -12,6 +12,7 @@ permissions:
 
 env:
   ENCLAVE_NAME: pos
+  DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
 
 jobs:
   run-without-args:
@@ -242,3 +243,31 @@ jobs:
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: cl-el-genesis
+
+  workflow-summary:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: 
+      - run-without-args
+      - run-with-args
+      - run-with-external-l1
+      - run-with-cl-el-genesis
+    steps:
+      - uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+        with:
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          method: chat.postMessage
+          payload: |
+            {
+              "channel": ${{ env.DEVTOOLS_SLACK_ALERTS_CHANNEL_ID }},
+              "text": "Kurtosis POS Nightly - Test Summary",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis POS Nightly>: ${{ contains(needs.*.result, 'failure') && 'some tests failed ❌' || 'all tests passed ✅' }}",
+                  }
+                }
+              ]
+            }
