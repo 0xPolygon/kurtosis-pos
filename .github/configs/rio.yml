@@ -5,42 +5,32 @@ polygon_pos_package:
       count: 7
       el_bor_produce_witness: true
       cl_type: heimdall-v2
-      cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta4
 
     # Bor and erigon RPC nodes (3 rpc nodes, one stateless bor node, one stateful bor node, one stateful erigon node)
     - kind: rpc
       count: 1
       el_bor_sync_with_witness: true
       cl_type: heimdall-v2
-      cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta4
 
     - kind: rpc
       count: 1
       el_bor_sync_with_witness: false
       cl_type: heimdall-v2
-      cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta4
     
     - kind: rpc
       count: 1
       el_bor_sync_with_witness: false
       cl_type: heimdall-v2
-      cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: erigon
-      el_image: 0xpolygon/erigon:v3.0.18
 
     # Bor archive node
     - kind: archive
       count: 1
       cl_type: heimdall-v2
-      cl_image: 0xpolygon/heimdall-v2:0.4.2
       el_type: bor
-      el_image: 0xpolygon/bor:2.4.0-beta4
 
   additional_services:
     - observability
