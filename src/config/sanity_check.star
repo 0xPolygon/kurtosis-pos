@@ -53,6 +53,8 @@ POLYGON_POS_PARAMS = {
         "jaipur_fork_block",
         "delhi_fork_block",
         "indore_fork_block",
+        "agra_fork_block",
+        "napoli_fork_block",
         "ahmedabad_fork_block",
         "bhilai_fork_block",
         "rio_fork_block",
