@@ -9,7 +9,7 @@ heimdall-v2-bor-minimal: 180
 heimdall-v2-erigon-minimal: 180
 heimdall-v2-bor: 210
 heimdall-v2-erigon: 210
-heimdall-v2-mix: 300
+heimdall-v2-mix: 330
 rio: 300
 
 # Additional services configurations
