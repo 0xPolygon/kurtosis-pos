@@ -49,6 +49,8 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
     "cl_type": constants.CL_TYPE.heimdall_v2,
     "cl_image": constants.DEFAULT_IMAGES.get("l2_cl_heimdall_v2_image"),
+    "cl_log_level": constants.LOG_LEVEL.info,
+    "cl_log_format": constants.LOG_FORMAT.text,
     "cl_db_image": constants.DEFAULT_IMAGES.get("l2_cl_db_image"),
     "cl_min_retain_blocks": constants.CL_MIN_RETAIN_BLOCKS,
     "cl_compact_enabled": constants.CL_COMPACT_ENABLED,
@@ -57,6 +59,8 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_indexer_pruning_enabled": constants.CL_INDEXER_PRUNING_ENABLED,
     "el_type": constants.EL_TYPE.bor,
     "el_image": constants.DEFAULT_IMAGES.get("l2_el_bor_image"),
+    "el_log_level": constants.LOG_LEVEL.info,
+    "el_log_format": constants.LOG_FORMAT.text,
     "count": 1,
 }
 
@@ -91,6 +95,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "validator_top_up_fee_amount_eth": 2000,  # in ether
         # CL network params.
         "cl_chain_id": constants.DEFAULT_CL_CHAIN_ID,
+        # "cl_environment": constants.CL_ENVIRONMENT.local,
         "cl_span_poll_interval": "0m15s",
         "cl_checkpoint_poll_interval": "1m0s",
         "cl_max_age_num_blocks": 100000,

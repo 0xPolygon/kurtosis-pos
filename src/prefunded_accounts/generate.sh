@@ -17,6 +17,7 @@ echo "MNEMONIC: ${MNEMONIC}"
 
 # Generating Ethereum/Tendermint accounts.
 echo "Generating Ethereum accounts..."
+echo "It might take a while depending on the number of accounts to generate."
 polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}" |
   jq '[.Addresses[] | {Path: .Path, ETHAddress: .ETHAddress, ETHPublicKey: ("0x" + .HexFullPublicKey), ETHPrivateKey: .HexPrivateKey}]' \
     >eth_accounts.json
