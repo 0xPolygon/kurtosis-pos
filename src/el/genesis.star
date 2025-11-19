@@ -30,11 +30,15 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                     "jaipur_fork_block": network_params.get("jaipur_fork_block"),
                     "delhi_fork_block": network_params.get("delhi_fork_block"),
                     "indore_fork_block": network_params.get("indore_fork_block"),
+                    "agra_fork_block": network_params.get("agra_fork_block"),
+                    "napoli_fork_block": network_params.get("napoli_fork_block"),
                     "ahmedabad_fork_block": network_params.get("ahmedabad_fork_block"),
                     "bhilai_fork_block": network_params.get("bhilai_fork_block"),
                     "rio_fork_block": network_params.get("rio_fork_block"),
                     "madhugiri_fork_block": network_params.get("madhugiri_fork_block"),
-                    "madhugiri_pro_fork_block": network_params.get("madhugiri_pro_fork_block"),
+                    "madhugiri_pro_fork_block": network_params.get(
+                        "madhugiri_pro_fork_block"
+                    ),
                 },
             )
         },

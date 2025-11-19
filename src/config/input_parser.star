@@ -109,6 +109,8 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),
         "indore_fork_block": constants.EL_HARD_FORK_BLOCKS.get("indore"),
+        "agra_fork_block": constants.EL_HARD_FORK_BLOCKS.get("agra"),
+        "napoli_fork_block": constants.EL_HARD_FORK_BLOCKS.get("napoli"),
         "ahmedabad_fork_block": constants.EL_HARD_FORK_BLOCKS.get("ahmedabad"),
         "bhilai_fork_block": constants.EL_HARD_FORK_BLOCKS.get("bhilai"),
         "rio_fork_block": constants.EL_HARD_FORK_BLOCKS.get("rio"),

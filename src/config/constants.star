@@ -100,6 +100,8 @@ EL_HARD_FORK_BLOCKS = {
     "jaipur": 0,
     "delhi": 0,
     "indore": 0,
+    "agra": 0,
+    "napoli": 0,
     "ahmedabad": 0,
     "bhilai": 0,
     "rio": 256,
