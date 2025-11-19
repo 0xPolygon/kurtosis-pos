@@ -1,4 +1,4 @@
-ARG HEIMDALL_V2_VERSION="0.4.2"
+ARG HEIMDALL_V2_VERSION="0.4.4"
 FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
