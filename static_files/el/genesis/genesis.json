@@ -27,6 +27,7 @@
       "bhilaiBlock": {{.bhilai_fork_block}},
       "rioBlock": {{.rio_fork_block}},
       "madhugiriBlock": {{.madhugiri_fork_block}},
+      "madhugiriProBlock": {{.madhugiri_pro_fork_block}},
       "stateSyncConfirmationDelay": {
         "0": 32
       },

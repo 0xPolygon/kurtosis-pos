@@ -34,6 +34,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                     "bhilai_fork_block": network_params.get("bhilai_fork_block"),
                     "rio_fork_block": network_params.get("rio_fork_block"),
                     "madhugiri_fork_block": network_params.get("madhugiri_fork_block"),
+                    "madhugiri_pro_fork_block": network_params.get("madhugiri_pro_fork_block"),
                 },
             )
         },
