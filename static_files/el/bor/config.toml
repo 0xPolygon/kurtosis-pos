@@ -16,7 +16,7 @@ snapshot = {{ eq .kind "archive" }}
 verbosity = {{.log_level_to_int}}
 # Enables bor log retrieval (default: false)
 "bor.logs" = true
-{{ if ne .ethstats_server_secret "None" }}
+{{ if ne .ethstats_server_secret "" }}
 # Reporting URL of a ethstats service "nodename:secret@host:port" (default: "")
 ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
 {{ end }}
