@@ -25,6 +25,10 @@ def launch(
     container_proc_manager_artifact,
     ethstats_server_params,
 ):
+    ethstats_server_secret = ""
+    if ethstats_server_params:
+        ethstats_server_secret = ethstats_server_params.get("ws_secret")
+
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
         config={
@@ -50,7 +54,7 @@ def launch(
                     # network params
                     "static_nodes": str(el_static_nodes),
                     "el_gas_limit": network_params.get("el_gas_limit"),
-                    "ethstats_server_secret": ethstats_server_params.get("ws_secret"),
+                    "ethstats_server_secret": ethstats_server_secret,
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,
                     "ws_port_number": el_shared.WS_PORT_NUMBER,
