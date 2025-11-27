@@ -1,5 +1,4 @@
 # Config parameters are defined in `internal/cli/server/config.go` and `docs/cli/server.md`.
-# Note that `-` in go templates is for whitespace control. It trims whitespace (spaces, tabs, newlines) from the template output.
 
 # Name of the chain to sync: "amoy", "mumbai" or "mainnet" or path to a genesis file (default: "mainnet")
 chain = "{{.config_folder_path}}/genesis.json"
@@ -8,25 +7,25 @@ datadir = "{{.data_folder_path}}"
 # Name/Identity of the node (default: hostname)
 identity = "{{.node_name}}"
 # Blockchain sync mode: "full" or "stateless" (default: "full")
-syncmode = {{- if eq .sync_with_witness }}"stateless"{{- else }}"full"{{- end }}
+syncmode = {{ if .sync_with_witness }}"stateless"{{ else }}"full"{{ end }}
 # Blockchain garbage collection mode: "full" or "archive" (default: "full")
-gcmode = {{- if eq .kind "archive" }}"archive"{{- else }}"full"{{- end }}
+gcmode = {{ if eq .kind "archive" }}"archive"{{ else }}"full"{{ end }}
 # Enables the snapshot-database mode (default: true)
 snapshot = {{ eq .kind "archive" }}
 # Logging verbosity for the server (5=trace|4=debug|3=info|2=warn|1=error|0=crit) (default: 3)
 verbosity = {{.log_level_to_int}}
 # Enables bor log retrieval (default: false)
 "bor.logs" = true
-{{- if .ethstats_server_secret }}
+{{ if ne .ethstats_server_secret "None" }}
 # Reporting URL of a ethstats service "nodename:secret@host:port" (default: "")
 ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
-{{- end }}
+{{ end }}
 
 [witness]
   # Enable witness API endpoints (by default disabled) (default: false)
   witnessapi = true
   # Minimum necessary distance between local header and chain tip to trigger fast forward (default: 6400)
-  fastforwardthreshold=30
+  fastforwardthreshold = 30
   # Sync blocks with witnesses (default: false)
   syncwithwitnesses = {{ .sync_with_witness }}
   # Parallel stateless import (download path) toggle (default: false)
@@ -65,17 +64,17 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Comma separated list of accounts to unlock (default: [])
   unlock = ["{{.address}}"]
 
-{{- if and (eq .kind "validator") (not .sync_with_witness) }}
+{{ if and (eq .kind "validator") (not .sync_with_witness) }}
 [miner]
   # Enable mining (default: false)
   mine = true
   # Target gas ceiling (gas limit) for mined blocks (default: 45000000)
-  gaslimit = {{.el_gas_limit}}
+  gaslimit = {{ .el_gas_limit | printf "%.0f" }}
   # Public address for block mining rewards
   etherbase = "{{.address}}"
   # Block extra data set by the miner (default: client version)
   extradata = "{{.extradata}}"
-{{- end }}
+{{ end }}
 
 [jsonrpc]
   # Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap) (default: 1)
@@ -147,7 +146,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Enable recording the SHA3/keccak preimages of trie keys (default: false)
   preimages = {{ ne .kind "validator" }}
   # Number of block states (tries) to keep in memory (default: 128)
-  triesinmemory = {{- if eq .kind "validator" }}1{{- else }}128{{- end }}
+  triesinmemory = {{ if eq .kind "validator" }}1{{ else }}128{{ end }}
   # Number of recent blocks to maintain transactions index for (soon to be deprecated, use history.transactions instead) (default: 2350000)
   txlookuplimit = 2350000
   # Size (in number of blocks) of the log cache for filtering (default: 32)
@@ -165,6 +164,6 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Do not maintain log search index (default: false)
   "logs.disable" = {{ eq .kind "validator" }}
   # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain) (default: 90000)
-  state = {{- if eq .kind "validator" }}1024{{- else if eq .kind "rpc"}}90000{{- else if eq .kind "archive"}}0{{- end }}
+  state = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}90000{{ else if eq .kind "archive"}}0{{ end }}
   # Number of recent blocks to maintain transactions index for (default = about 2 months, 0 = entire chain) (default: 2350000)
-  transactions = {{- if eq .kind "validator" }}1024{{- else if eq .kind "rpc"}}2350000{{- else if eq .kind "archive"}}0{{- end }}
+  transactions = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}2350000{{ else if eq .kind "archive"}}0{{ end }}
