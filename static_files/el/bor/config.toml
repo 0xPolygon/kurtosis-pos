@@ -8,7 +8,7 @@ datadir = "{{.data_folder_path}}"
 # Name/Identity of the node (default: hostname)
 identity = "{{.node_name}}"
 # Blockchain sync mode: "full" or "stateless" (default: "full")
-syncmode = "{{.sync_mode}}"
+syncmode = {{- if eq .sync_with_witness }}"stateless"{{- else }}"full"{{- end }}
 {{- if eq .kind "archive" }}
 # Blockchain garbage collection mode: "full" or "archive" (default: "full")
 gcmode = "archive"

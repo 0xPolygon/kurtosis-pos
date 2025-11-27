@@ -79,7 +79,6 @@ Default: a single validator.
 | el_image                    | string | 0xpolygon/bor:2.5.1         | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | el_log_format               | string | text                        | Log format for the EL client                             |
-| el_bor_sync_mode            | string | full                        | Sync mode for Bor: `full`, `stateless`                   |
 | el_bor_produce_witness      | bool   | false                       | Allow bor to start producing witnesses                   |
 | el_bor_sync_with_witness    | bool   | false                       | Enable bor to sync new blocks using witnesses            |
 | count                       | int    | 1                           | Number of nodes to spin up for this participant          |

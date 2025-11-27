@@ -45,7 +45,6 @@ def launch(
                     "json_log_enabled": participant.get("el_log_format")
                     == constants.LOG_FORMAT.json,
                     "extradata": "bor-{}".format(id),
-                    "sync_mode": participant.get("el_bor_sync_mode"),
                     "produce_witness": participant.get("el_bor_produce_witness"),
                     "sync_with_witness": participant.get("el_bor_sync_with_witness"),
                     # network params
