@@ -29,6 +29,8 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   fastforwardthreshold=30
   # Sync blocks with witnesses (default: false)
   syncwithwitnesses = {{ .sync_with_witness }}
+  # Parallel stateless import (download path) toggle (default: false)
+  parallel-stateless-import = {{ .sync_with_witness }}
   # Enable witness protocol (default: false)
   enable = {{ .produce_witness }}
   # Produce witnesses while syncing (default: false)
