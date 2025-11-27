@@ -36,8 +36,6 @@ LOG_FORMAT = struct(
 
 BOR_SYNC_MODES = struct(
     full="full",
-    snap="snap",
-    archive="archive",
     stateless="stateless",
 )
 
