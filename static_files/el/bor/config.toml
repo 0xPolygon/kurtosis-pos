@@ -61,7 +61,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Comma separated list of accounts to unlock (default: [])
   unlock = ["{{.address}}"]
 
-{{- if and (eq .kind "validator") (ne .sync_mode "stateless") }}
+{{- if and (eq .kind "validator") (not .sync_with_witness) }}
 [miner]
   # Enable mining (default: false)
   mine = true
