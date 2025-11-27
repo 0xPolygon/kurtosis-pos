@@ -25,6 +25,10 @@ def launch(
     container_proc_manager_artifact,
     ethstats_server_params,
 ):
+    ethstats_server_secret = ""
+    if ethstats_server_params:
+        ethstats_server_secret = ethstats_server_params.get("ws_secret")
+
     bor_node_config_artifact = plan.render_templates(
         name="{}-node-config".format(el_node_name),
         config={
@@ -45,13 +49,12 @@ def launch(
                     "json_log_enabled": participant.get("el_log_format")
                     == constants.LOG_FORMAT.json,
                     "extradata": "bor-{}".format(id),
-                    "sync_mode": participant.get("el_bor_sync_mode"),
                     "produce_witness": participant.get("el_bor_produce_witness"),
                     "sync_with_witness": participant.get("el_bor_sync_with_witness"),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     "el_gas_limit": network_params.get("el_gas_limit"),
-                    "ethstats_server_secret": ethstats_server_params.get("ws_secret"),
+                    "ethstats_server_secret": ethstats_server_secret,
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,
                     "ws_port_number": el_shared.WS_PORT_NUMBER,

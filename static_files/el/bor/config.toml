@@ -1,121 +1,170 @@
+# Config parameters are defined in `internal/cli/server/config.go` and `docs/cli/server.md`.
+
+# Name of the chain to sync: "amoy", "mumbai" or "mainnet" or path to a genesis file (default: "mainnet")
 chain = "{{.config_folder_path}}/genesis.json"
+# Path of the data directory to store information (default: default data directory)
 datadir = "{{.data_folder_path}}"
+# Name/Identity of the node (default: hostname)
 identity = "{{.node_name}}"
-syncmode = "full"   # Blockchain sync mode (only "full" sync supported)
-{{- if eq .kind "archive" }}
-gcmode = "archive"  # Blockchain garbage collection mode ("full", "archive")
-snapshot = true     # Enables the snapshot-database mode
-{{- else }}
-gcmode = "full"     # Blockchain garbage collection mode ("full", "archive")
-snapshot = false    # Enables the snapshot-database mode
-{{- end }}
+# Blockchain sync mode: "full" or "stateless" (default: "full")
+syncmode = {{ if .sync_with_witness }}"stateless"{{ else }}"full"{{ end }}
+# Blockchain garbage collection mode: "full" or "archive" (default: "full")
+gcmode = {{ if eq .kind "archive" }}"archive"{{ else }}"full"{{ end }}
+# Enables the snapshot-database mode (default: true)
+snapshot = {{ eq .kind "archive" }}
+# Logging verbosity for the server (5=trace|4=debug|3=info|2=warn|1=error|0=crit) (default: 3)
 verbosity = {{.log_level_to_int}}
-
+# Enables bor log retrieval (default: false)
 "bor.logs" = true
-
+{{- if ne .ethstats_server_secret "" }}
+# Reporting URL of a ethstats service "nodename:secret@host:port" (default: "")
 ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
+{{- end }}
+
+{{- if and (eq .kind "validator") (not .sync_with_witness) }}
+{{/* Inset a line break before the [miner] block for readability - this comment will not be rendered */}}
+[miner]
+  # Enable mining (default: false)
+  mine = true
+  # Target gas ceiling (gas limit) for mined blocks (default: 45000000)
+  gaslimit = {{ .el_gas_limit }}
+  # Public address for block mining rewards
+  etherbase = "{{.address}}"
+  # Block extra data set by the miner (default: client version)
+  extradata = "{{.extradata}}"
+{{- end }}
 
 [witness]
-    witnessapi = true
-    fastforwardthreshold=30
-    {{- if .sync_with_witness }}
-    syncwithwitnesses = true
-    parallel-stateless-import = true
-    {{- end }}
-    {{- if .produce_witness }}
-    enable = true
-    producewitnesses = true
-    {{- end }}
+  # Enable witness API endpoints (by default disabled) (default: false)
+  witnessapi = true
+  # Minimum necessary distance between local header and chain tip to trigger fast forward (default: 6400)
+  fastforwardthreshold = 30
+  # Sync blocks with witnesses (default: false)
+  syncwithwitnesses = {{ .sync_with_witness }}
+  # Parallel stateless import (download path) toggle (default: false)
+  parallel-stateless-import = {{ .sync_with_witness }}
+  # Enable witness protocol (default: false)
+  enable = {{ .produce_witness }}
+  # Produce witnesses while syncing (default: false)
+  producewitnesses = {{ .produce_witness }}
 
 [p2p]
-    maxpeers = 200
-    bind = "0.0.0.0"
-    port = {{.discovery_port_number}}
-    nodiscover = true
-    nodekey = "{{.data_folder_path}}/nodekey"
-    [p2p.discovery]
-        static-nodes = {{.static_nodes}}
+  # Maximum number of network peers (network disabled if set to 0) (default: 50)
+  maxpeers = 200
+  # Network binding address (default: 0.0.0.0)
+  bind = "0.0.0.0"
+  # Network listening port (default: 30303)
+  port = {{.discovery_port_number}}
+  # Disables the peer discovery mechanism (manual peer addition) (default: false)
+  nodiscover = true
+  # P2P node key file (default: "")
+  nodekey = "{{.data_folder_path}}/nodekey"
+  [p2p.discovery]
+    # List of static nodes (default: [])
+    static-nodes = {{.static_nodes}}
 
 [heimdall]
-    url = "{{.cl_api_url}}"
-    ws-address = "{{.cl_ws_rpc_url}}"
+  # URL of the heimdall server (default: http://localhost:1317)
+  url = "{{.cl_api_url}}"
+  # Address of the heimdall ws subscription server (default: "")
+  ws-address = "{{.cl_ws_rpc_url}}"
 
 [accounts]
-    allow-insecure-unlock = true
-    password = "{{.config_folder_path}}/password.txt"
-    unlock = ["{{.address}}"]
-
-{{- if and (eq .kind "validator") (ne .sync_mode "stateless") }}
-[miner]
-    mine = true
-    gaslimit = {{.el_gas_limit}}
-    etherbase = "{{.address}}"
-    extradata = "{{.extradata}}"
-{{- end }}
+  # Allow insecure account unlocking when account-related RPCs are exposed by http (default: false)
+  allow-insecure-unlock = true
+  # Password file to use for non-interactive password input (default: "")
+  password = "{{.config_folder_path}}/password.txt"
+  # Comma separated list of accounts to unlock (default: [])
+  unlock = ["{{.address}}"]
 
 [jsonrpc]
-    txfeecap = 0.4194304 # Set a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap)
-    ipcpath = "{{.data_folder_path}}/bor.ipc"
-    [jsonrpc.http]
-        enabled = true
-        host = "0.0.0.0"
-        port = {{.rpc_port_number}}
-        api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
-        vhosts = ["*"]
-        corsdomain = ["*"]
-    [jsonrpc.ws]
-        enabled = true
-        host = "0.0.0.0"
-        port = {{.ws_port_number}}
-        api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
-        origins = ["*"]
+  # Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap) (default: 1)
+  txfeecap = 0.4194304
+  # Filename for IPC socket/pipe within the datadir (explicit paths escape it)
+  ipcpath = "{{.data_folder_path}}/bor.ipc"
+  [jsonrpc.http]
+    # Enable the HTTP-RPC server (default: false)
+    enabled = true
+    # HTTP-RPC server listening interface (default: localhost)
+    host = "0.0.0.0"
+    # HTTP-RPC server listening port (default: 8545)
+    port = {{.rpc_port_number}}
+    # API's offered over the HTTP-RPC interface (default: eth,net,web3,txpool,bor)
+    api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
+    # Comma separated list of virtual hostnames from which to accept requests (server enforced). Accepts '*' wildcard. (default: localhost)
+    vhosts = ["*"]
+    # List of cross-origin domains from which to accept requests
+    corsdomain = ["*"]
+  [jsonrpc.ws]
+    # Enable the WS-RPC server (default: false)
+    enabled = true
+    # WS-RPC server listening interface (default: localhost)
+    host = "0.0.0.0"
+    # WS-RPC server listening port (default: 8546)
+    port = {{.ws_port_number}}
+    # API's offered over the WS-RPC interface (default: net,web3)
+    api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
+    # Origins from which to accept websockets requests (default: localhost)
+    origins = ["*"]
 
 [log]
-    json = {{.json_log_enabled}}
+  # Format logs with JSON (default: false)
+  json = {{.json_log_enabled}}
 
 [telemetry]
-    metrics = true
-    prometheus-addr = "0.0.0.0:{{.metrics_port_number}}"
+  # Enable metrics collection and reporting (default: false)
+  metrics = true
+  # Address for Prometheus Server (default: 127.0.0.1:7071)
+  prometheus-addr = "0.0.0.0:{{.metrics_port_number}}"
+  # Enable expensive metrics collection and reporting (default: false)
+  expensive = false
 
 [pprof]
-  pprof = true                      # Enable the pprof HTTP server
-  port = {{.pprof_port_number}}     # pprof HTTP server listening port
-  addr = "0.0.0.0"                  # pprof HTTP server listening interface
-  memprofilerate = 524288           # Turn on memory profiling with the given rate
-  blockprofilerate = 0              # Turn on block profiling with the given rate
+  # Enable the pprof HTTP server (default: false)
+  pprof = true
+  # pprof HTTP server listening interface (default: 127.0.0.1)
+  addr = "0.0.0.0"
+  # pprof HTTP server listening port (default: 6060)
+  port = {{.pprof_port_number}}
+  # Turn on memory profiling with the given rate (default: 524288)
+  memprofilerate = 524288
+  # Turn on block profiling with the given rate (default: 0)
+  blockprofilerate = 0
 
 [cache]
-  cache = 4096             # Megabytes of memory allocated to internal caching (recommended for mainnet = 4096, default suitable for amoy/devnet)
-  gc = 0                   # Percentage of cache memory allowance to use for trie pruning (default = 25% full mode, 0% archive mode)
-  snapshot = 35            # Percentage of cache memory allowance to use for snapshot caching (default = 10% full mode, 20% archive mode)
-  database = 50            # Percentage of cache memory allowance to use for database io (default = 50%)
-  trie = 15                # Percentage of cache memory allowance to use for trie caching (default = 15% full mode, 30% archive mode)
-  noprefetch = false       # Disable heuristic state prefetch during block import (less CPU and disk IO, more time waiting for data)
-  {{- if eq .kind "validator" }}
-  preimages = false        # Enable recording the SHA3/keccak preimages of trie keys
-  triesinmemory = 1        # Number of block states (tries) to keep in memory
-  {{- else }}
-  preimages = true         # Enable recording the SHA3/keccak preimages of trie keys
-  triesinmemory = 128      # Number of block states (tries) to keep in memory
-  {{- end }}
-  txlookuplimit = 2350000  # Number of recent blocks to maintain transactions index for (soon to be deprecated, use history.transactions instead)
-  blocklogs = 32           # Size (in number of blocks) of the log cache for filtering
-  timeout = "1h0m0s"       # Time after which the Merkle Patricia Trie is stored to disc from memory
-  fdlimit = 0              # Raise the open file descriptor resource limit (default = system fd limit)
-# addresscachesizes= ""    # Address-specific cache sizes for biased caching in MB (format: address=sizeMB,address=sizeMB, e.g. 0x1234...=1024,0x5678...=512)
+  # Megabytes of memory allocated to internal caching (default: 1024) - recommended for mainnet = 4096, default suitable for amoy/devnet
+  cache = 4096
+  # Percentage of cache memory allowance to use for trie pruning (default: 25)
+  gc = 0
+  # Percentage of cache memory allowance to use for snapshot caching (default: 10)
+  snapshot = 35
+  # Percentage of cache memory allowance to use for database io (default: 50)
+  database = 50
+  # Percentage of cache memory allowance to use for trie caching (default: 15)
+  trie = 15
+  # Disable heuristic state prefetch during block import (less CPU and disk IO, more time waiting for data) (default: false)
+  noprefetch = false
+  # Enable recording the SHA3/keccak preimages of trie keys (default: false)
+  preimages = {{ ne .kind "validator" }}
+  # Number of block states (tries) to keep in memory (default: 128)
+  triesinmemory = {{ if eq .kind "validator" }}1{{ else }}128{{ end }}
+  # Number of recent blocks to maintain transactions index for (soon to be deprecated, use history.transactions instead) (default: 2350000)
+  txlookuplimit = 2350000
+  # Size (in number of blocks) of the log cache for filtering (default: 32)
+  blocklogs = 32
+  # Time after which the Merkle Patricia Trie is stored to disc from memory (default: 1h0m0s)
+  timeout = "1h0m0s"
+  # Raise the open file descriptor resource limit (default = system fd limit)
+  fdlimit = 0
+  # Address-specific cache sizes for biased caching (format: "address=sizeMB,address=sizeMB", e.g. 0x1234...=1024,0x5678...=512) (default: "")
+  # addresscachesizes= ""
 
-[history]                  # For historical data retention related flags
-  logs = 2350000           # Number of recent blocks to maintain log search index for (default = about 2 months - 2350000, 0 = entire chain)
-  {{- if eq .kind "validator" }}
-  "logs.disable" = true   # Do not maintain log search index
-  state = 1024            # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
-  transactions = 1024     # Number of recent blocks to maintain transactions index for (default = about 2 months - 2350000, 0 = entire chain)
-  {{- else if eq .kind "rpc"}}
-  "logs.disable" = false # Maintain log search index
-  state = 90000          # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
-  transactions = 2350000   # Number of recent blocks to maintain transactions index for (default = about 2 months - 2350000, 0 = entire chain)
-  {{- else if eq .kind "archive" }}
-  "logs.disable" = false # Maintain log search index
-  state = 0              # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
-  transactions = 0       # Number of recent blocks to maintain transactions index for (default = about 2 months - 2350000, 0 = entire chain)
-  {{- end }}
+[history]
+  # Number of recent blocks to maintain log search index for (default = about 2 months, 0 = entire chain) (default: 2350000)
+  logs = 2350000
+  # Do not maintain log search index (default: false)
+  "logs.disable" = {{ eq .kind "validator" }}
+  # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain) (default: 90000)
+  state = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}90000{{ else if eq .kind "archive"}}0{{ end }}
+  # Number of recent blocks to maintain transactions index for (default = about 2 months, 0 = entire chain) (default: 2350000)
+  transactions = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}2350000{{ else if eq .kind "archive"}}0{{ end }}

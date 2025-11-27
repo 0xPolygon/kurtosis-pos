@@ -22,7 +22,6 @@ POLYGON_POS_PARAMS = {
         "el_image",
         "el_log_level",
         "el_log_format",
-        "el_bor_sync_mode",
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
         "count",
@@ -109,13 +108,6 @@ VALID_LOG_LEVELS = [
 VALID_LOG_FORMATS = [
     constants.LOG_FORMAT.text,
     constants.LOG_FORMAT.json,
-]
-
-VALID_BOR_SYNC_MODES = [
-    constants.BOR_SYNC_MODES.full,
-    constants.BOR_SYNC_MODES.snap,
-    constants.BOR_SYNC_MODES.archive,
-    constants.BOR_SYNC_MODES.stateless,
 ]
 
 DEV_PARAMS = [
@@ -346,11 +338,8 @@ def _validate_participant(p):
     _validate_str(p, "cl_log_format", VALID_LOG_FORMATS)
     _validate_str(p, "el_log_format", VALID_LOG_FORMATS)
 
-    # Validate bor specific parameters.
-    if el_type == constants.EL_TYPE.bor:
-        _validate_str(p, "el_bor_sync_mode", VALID_BOR_SYNC_MODES)
-    else:
-        _fail_if_not_bor_el_type(p, "el_bor_sync_mode")
+    # Validate specific parameters.
+    if el_type != constants.EL_TYPE.bor:
         _fail_if_not_bor_el_type(p, "el_bor_produce_witness")
         _fail_if_not_bor_el_type(p, "el_bor_sync_with_witness")
 

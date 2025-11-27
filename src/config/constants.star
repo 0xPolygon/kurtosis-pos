@@ -34,13 +34,6 @@ LOG_FORMAT = struct(
     json="json",
 )
 
-BOR_SYNC_MODES = struct(
-    full="full",
-    snap="snap",
-    archive="archive",
-    stateless="stateless",
-)
-
 ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
     bridge_spammer="bridge_spammer",
