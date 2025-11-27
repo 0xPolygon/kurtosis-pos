@@ -25,6 +25,9 @@ POLYGON_POS_PARAMS = {
         "el_bor_sync_mode",
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
+        "el_bor_cache_waitforwarm",  # Wait for trie cache to warm up before processing the block.
+        "el_bor_cache_warminworker",  # Warm up trie cache in worker.
+        "el_bor_triedb_usetriedb",  # Enable TrieDB for improved trie management.
         "count",
     ],
     "setup_images": [

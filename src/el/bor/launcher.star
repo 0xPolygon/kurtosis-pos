@@ -48,6 +48,9 @@ def launch(
                     "sync_mode": participant.get("el_bor_sync_mode"),
                     "produce_witness": participant.get("el_bor_produce_witness"),
                     "sync_with_witness": participant.get("el_bor_sync_with_witness"),
+                    "cache_waitforwarm": participant.get("el_bor_cache_waitforwarm"),
+                    "cache_warminworker": participant.get("el_bor_cache_warminworker"),
+                    "triedb_usetriedb": participant.get("el_bor_triedb_usetriedb"),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     "el_gas_limit": network_params.get("el_gas_limit"),

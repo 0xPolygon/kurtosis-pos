@@ -68,6 +68,9 @@ DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_sync_mode": constants.BOR_SYNC_MODES.full,
     "el_bor_produce_witness": False,
     "el_bor_sync_with_witness": False,
+    "el_bor_cache_waitforwarm": True,
+    "el_bor_cache_warminworker": True,
+    "el_bor_triedb_usetriedb": True,
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {

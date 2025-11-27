@@ -91,6 +91,8 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   database = 50            # Percentage of cache memory allowance to use for database io (default = 50%)
   trie = 15                # Percentage of cache memory allowance to use for trie caching (default = 15% full mode, 30% archive mode)
   noprefetch = false       # Disable heuristic state prefetch during block import (less CPU and disk IO, more time waiting for data)
+  waitforwarm = {{.cache_waitforwarm}}       # Wait for trie cache to warm up before processing the block
+  warminworker = {{.cache_warminworker}}      # Warm up trie cache in worker
   {{- if eq .kind "validator" }}
   preimages = false        # Enable recording the SHA3/keccak preimages of trie keys
   triesinmemory = 1        # Number of block states (tries) to keep in memory
@@ -119,3 +121,6 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   state = 0              # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
   transactions = 0       # Number of recent blocks to maintain transactions index for (default = about 2 months - 2350000, 0 = entire chain)
   {{- end }}
+
+[triedb]
+  "triedb.usetriedb" = {{.triedb_usetriedb}}  # Enable TrieDB for improved trie management
