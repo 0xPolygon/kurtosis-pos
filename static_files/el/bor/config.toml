@@ -16,10 +16,23 @@ snapshot = {{ eq .kind "archive" }}
 verbosity = {{.log_level_to_int}}
 # Enables bor log retrieval (default: false)
 bor.logs = true
-{{ if ne .ethstats_server_secret "" }}
+{{- if ne .ethstats_server_secret "" }}
 # Reporting URL of a ethstats service "nodename:secret@host:port" (default: "")
 ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
-{{ end }}
+{{- end }}
+
+{{- if and (eq .kind "validator") (not .sync_with_witness) }}
+{{/* Inset a line break before the [miner] block for readability - this comment will not be rendered */}}
+[miner]
+  # Enable mining (default: false)
+  mine = true
+  # Target gas ceiling (gas limit) for mined blocks (default: 45000000)
+  gaslimit = {{ .el_gas_limit | printf "%.0f" }}
+  # Public address for block mining rewards
+  etherbase = "{{.address}}"
+  # Block extra data set by the miner (default: client version)
+  extradata = "{{.extradata}}"
+{{- end }}
 
 [witness]
   # Enable witness API endpoints (by default disabled) (default: false)
@@ -63,18 +76,6 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   password = "{{.config_folder_path}}/password.txt"
   # Comma separated list of accounts to unlock (default: [])
   unlock = ["{{.address}}"]
-
-{{ if and (eq .kind "validator") (not .sync_with_witness) }}
-[miner]
-  # Enable mining (default: false)
-  mine = true
-  # Target gas ceiling (gas limit) for mined blocks (default: 45000000)
-  gaslimit = {{ .el_gas_limit | printf "%.0f" }}
-  # Public address for block mining rewards
-  etherbase = "{{.address}}"
-  # Block extra data set by the miner (default: client version)
-  extradata = "{{.extradata}}"
-{{ end }}
 
 [jsonrpc]
   # Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap) (default: 1)
