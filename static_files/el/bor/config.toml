@@ -27,7 +27,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Enable mining (default: false)
   mine = true
   # Target gas ceiling (gas limit) for mined blocks (default: 45000000)
-  gaslimit = {{ .el_gas_limit | printf "%.0f" }}
+  gaslimit = {{ .el_gas_limit }}
   # Public address for block mining rewards
   etherbase = "{{.address}}"
   # Block extra data set by the miner (default: client version)
