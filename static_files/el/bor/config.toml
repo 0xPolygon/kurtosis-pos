@@ -15,7 +15,7 @@ snapshot = {{ eq .kind "archive" }}
 # Logging verbosity for the server (5=trace|4=debug|3=info|2=warn|1=error|0=crit) (default: 3)
 verbosity = {{.log_level_to_int}}
 # Enables bor log retrieval (default: false)
-"bor.logs" = true
+bor.logs = true
 {{ if ne .ethstats_server_secret "" }}
 # Reporting URL of a ethstats service "nodename:secret@host:port" (default: "")
 ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
@@ -162,7 +162,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Number of recent blocks to maintain log search index for (default = about 2 months, 0 = entire chain) (default: 2350000)
   logs = 2350000
   # Do not maintain log search index (default: false)
-  "logs.disable" = {{ eq .kind "validator" }}
+  logs.disable = {{ eq .kind "validator" }}
   # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain) (default: 90000)
   state = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}90000{{ else if eq .kind "archive"}}0{{ end }}
   # Number of recent blocks to maintain transactions index for (default = about 2 months, 0 = entire chain) (default: 2350000)
