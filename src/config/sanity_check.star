@@ -340,7 +340,6 @@ def _validate_participant(p):
 
     # Validate specific parameters.
     if el_type != constants.EL_TYPE.bor:
-        _fail_if_not_bor_el_type(p, "el_bor_sync_mode")
         _fail_if_not_bor_el_type(p, "el_bor_produce_witness")
         _fail_if_not_bor_el_type(p, "el_bor_sync_with_witness")
 
