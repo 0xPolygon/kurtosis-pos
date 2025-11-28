@@ -12,6 +12,7 @@ snapshot = false    # Enables the snapshot-database mode
 verbosity = {{.log_level_to_int}}
 
 "bor.logs" = true
+"triedb.usetriedb" = {{.triedb_usetriedb}}
 
 ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethstats_server_port_number}}"
 
@@ -121,6 +122,3 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   state = 0              # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain)
   transactions = 0       # Number of recent blocks to maintain transactions index for (default = about 2 months - 2350000, 0 = entire chain)
   {{- end }}
-
-[triedb]
-  "triedb.usetriedb" = {{.triedb_usetriedb}}  # Enable TrieDB for improved trie management
