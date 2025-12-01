@@ -64,6 +64,7 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
 DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_produce_witness": False,
     "el_bor_sync_with_witness": False,
+    "el_bor_stateless_parallel_import": False,
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
