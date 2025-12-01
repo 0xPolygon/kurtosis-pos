@@ -51,6 +51,9 @@ def launch(
                     "extradata": "bor-{}".format(id),
                     "produce_witness": participant.get("el_bor_produce_witness"),
                     "sync_with_witness": participant.get("el_bor_sync_with_witness"),
+                    "stateless_parallel_import": participant.get(
+                        "el_bor_stateless_parallel_import"
+                    ),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     "el_gas_limit": network_params.get("el_gas_limit"),

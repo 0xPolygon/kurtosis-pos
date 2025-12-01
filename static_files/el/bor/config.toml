@@ -42,7 +42,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Sync blocks with witnesses (default: false)
   syncwithwitnesses = {{ .sync_with_witness }}
   # Parallel stateless import (download path) toggle (default: false)
-  parallel-stateless-import = {{ .sync_with_witness }}
+  parallel-stateless-import = {{ .stateless_parallel_import }}
   # Enable witness protocol (default: false)
   enable = {{ .produce_witness }}
   # Produce witnesses while syncing (default: false)
