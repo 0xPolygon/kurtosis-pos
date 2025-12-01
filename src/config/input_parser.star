@@ -45,12 +45,11 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     },
 }
 
+# Log level and format are not set by default here to allow global log level override.
 DEFAULT_POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
     "cl_type": constants.CL_TYPE.heimdall_v2,
     "cl_image": constants.DEFAULT_IMAGES.get("l2_cl_heimdall_v2_image"),
-    "cl_log_level": constants.LOG_LEVEL.info,
-    "cl_log_format": constants.LOG_FORMAT.text,
     "cl_db_image": constants.DEFAULT_IMAGES.get("l2_cl_db_image"),
     "cl_min_retain_blocks": constants.CL_MIN_RETAIN_BLOCKS,
     "cl_compact_enabled": constants.CL_COMPACT_ENABLED,
@@ -59,8 +58,6 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "cl_indexer_pruning_enabled": constants.CL_INDEXER_PRUNING_ENABLED,
     "el_type": constants.EL_TYPE.bor,
     "el_image": constants.DEFAULT_IMAGES.get("l2_el_bor_image"),
-    "el_log_level": constants.LOG_LEVEL.info,
-    "el_log_format": constants.LOG_FORMAT.text,
     "count": 1,
 }
 
