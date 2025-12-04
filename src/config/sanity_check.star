@@ -25,6 +25,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
         "el_bor_stateless_parallel_import",  # Enable bor to use parallel import in stateless mode.
+        "el_bor_vm_evm",  # Path to custom EVM binary.
         "count",
     ],
     "setup_images": [

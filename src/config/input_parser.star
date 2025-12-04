@@ -65,6 +65,7 @@ DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_produce_witness": False,
     "el_bor_sync_with_witness": False,
     "el_bor_stateless_parallel_import": False,
+    "el_bor_vm_evm": "",  # Path to custom EVM binary (empty = use default)
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {

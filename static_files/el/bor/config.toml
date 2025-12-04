@@ -168,3 +168,9 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   state = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}90000{{ else if eq .kind "archive"}}0{{ end }}
   # Number of recent blocks to maintain transactions index for (default = about 2 months, 0 = entire chain) (default: 2350000)
   transactions = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}2350000{{ else if eq .kind "archive"}}0{{ end }}
+
+{{- if ne .vm_evm "" }}
+[vm]
+  # Path to custom EVM binary (default: "")
+  evm = "{{.vm_evm}}"
+{{- end }}
