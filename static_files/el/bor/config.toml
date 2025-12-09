@@ -38,7 +38,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Enable witness API endpoints (by default disabled) (default: false)
   witnessapi = true
   # Minimum necessary distance between local header and chain tip to trigger fast forward (default: 6400)
-  fastforwardthreshold = 30
+  fastforwardthreshold = 6400
   # Sync blocks with witnesses (default: false)
   syncwithwitnesses = {{ .sync_with_witness }}
   # Parallel stateless import (download path) toggle (default: false)
