@@ -66,7 +66,7 @@ Default: a single validator.
 | --------------------------- | ------ | --------------------------- | -------------------------------------------------------- |
 | kind                        | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`    |
 | cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
-| cl_image                    | string | 0xpolygon/heimdall-v2:0.4.5 | Image for the CL client                                  |
+| cl_image                    | string | 0xpolygon/heimdall-v2:0.5.2 | Image for the CL client                                  |
 | cl_db_image                 | string | rabbitmq:4.2.1              | Image for the CL database                                |
 | cl_log_level                | string | info                        | Log level for the CL client                              |
 | cl_log_format               | string | text                        | Log format for the CL client                             |
@@ -76,7 +76,7 @@ Default: a single validator.
 | cl_storage_pruning_interval | string | 10m0s                       | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.5.3         | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.5.4         | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | el_log_format               | string | text                        | Log format for the EL client                             |
 | el_bor_produce_witness      | bool   | false                       | Allow bor to start producing witnesses                   |
@@ -89,7 +89,7 @@ Default: a single validator.
 | -------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.4.5 | Image used to generate validator configs    |
+| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.5.2 | Image used to generate validator configs    |
 
 ### `network_params`
 
