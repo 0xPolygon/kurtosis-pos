@@ -31,7 +31,7 @@ This sets the `ETH_RPC_URL` environment variable for use with `cast`.
 
 ```bash
 pk="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea"
-cast send --private-key "$pk" --value 0.01ether $(cast address-zero)
+cast send --private-key "$pk" --value 0.01ether $(cast address-zero) -r $ETH_RPC_URL --gas-price 50gwei --priority-gas-price 30gwei
 ```
 
 where `0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea` is the admin private key used to deploy Polygon PoS contracts on both L1 and L2.
