@@ -27,7 +27,7 @@ def test_parse_polygon_pos_args_with_global_log_params(plan):
         "log_format": "json",
         "participants": [],
     }
-    (parsed_args, _) = input_parser._parse_polygon_pos_args(plan, args)
+    parsed_args = input_parser._parse_polygon_pos_args(plan, args)
 
     expect.eq(parsed_args["log_level"], "debug")
     expect.eq(parsed_args["log_format"], "json")
@@ -45,7 +45,7 @@ def test_parse_polygon_pos_args_without_log_params(plan):
     args = {
         "participants": [],
     }
-    (parsed_args, _) = input_parser._parse_polygon_pos_args(plan, args)
+    parsed_args = input_parser._parse_polygon_pos_args(plan, args)
 
     expect.eq(parsed_args["log_level"], "info")
     expect.eq(parsed_args["log_format"], "text")

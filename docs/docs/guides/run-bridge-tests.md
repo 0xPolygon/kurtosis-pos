@@ -28,14 +28,14 @@ We rely on [bats](https://github.com/bats-core/bats-core), a bash testing framew
 Then run the L1-to-L2 bridge test to validate that Heimdall and Bor can process bridge events and trigger state synchronizations.
 
 ```bash
-bats --filter-tags pos,bridge,matic,pol --recursive tests/
+bats --filter-tags pos,bridge --recursive tests/
 ```
 
 :::tip
 If you have deployed the test runner in your environment, you can run the tests without cloning the repository:
 
 ```bash
-kurtosis service exec pos test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+kurtosis service exec pos test-runner "bats --filter-tags pos,bridge --recursive tests/"
 ```
 
 :::
@@ -43,9 +43,13 @@ kurtosis service exec pos test-runner "bats --filter-tags pos,bridge,matic,pol -
 After the tests complete, you should see output similar to:
 
 ```bash
-The command was successfully executed and returned '0'.
-1..1
-ok 1 bridge MATIC/POL from L1 to L2 and confirm L2 ETH balance increased
+pos/bridge.bats
+ ✓ bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased
+ ✓ bridge some ERC20 tokens from L1 to L2 and confirm L2 ERC20 balance increased
+ ✓ bridge an ERC721 token from L1 to L2 and confirm L2 ERC721 balance increased
+ ✓ bridge MATIC/POL, ERC20, and ERC721 from L1 to L2 and confirm L2 balances increased
+
+4 tests, 0 failures
 ```
 
 If any tests fail, check the logs in your Kurtosis enclave for more details.

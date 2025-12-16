@@ -9,6 +9,33 @@ def test_sanity_check_valid_config(plan):
     )
 
 
+def test_sanity_check_with_invalid_parallel_import(plan):
+    participant = input_parser.DEFAULT_POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_sync_with_witness": False,
+        "el_bor_stateless_parallel_import": True,
+    }
+    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        'The "el_bor_stateless_parallel_import" parameter can only be enabled with bor EL client and when "el_bor_sync_with_witness" is set to true.',
+    )
+
+
+def test_sanity_check_with_parallel_import(plan):
+    participant = input_parser.DEFAULT_POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_sync_with_witness": True,
+        "el_bor_stateless_parallel_import": True,
+    }
+    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    sanity_check.sanity_check_polygon_args(plan, args)
+
+
 def test_sanity_check_with_status_checker_missing_image(plan):
     args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
         "additional_services": [
