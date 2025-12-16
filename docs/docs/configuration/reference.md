@@ -76,7 +76,7 @@ Default: a single validator.
 | cl_storage_pruning_interval | string | 10m0s                       | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.5.4         | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.5.5         | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | el_log_format               | string | text                        | Log format for the EL client                             |
 | el_bor_produce_witness      | bool   | false                       | Allow bor to start producing witnesses                   |
