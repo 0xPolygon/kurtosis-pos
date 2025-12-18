@@ -26,7 +26,9 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
 [miner]
   # Enable mining (default: false)
   mine = true
-  # Target gas ceiling (gas limit) for mined blocks (default: 45000000)
+  # Block time in seconds (default: 1s)
+  blocktime = "{{.el_block_interval_seconds}}s"
+  # Target gas ceiling (gas limit) for mined blocks (default: 60000000)
   gaslimit = {{ .el_gas_limit }}
   # Public address for block mining rewards
   etherbase = "{{.address}}"
@@ -168,3 +170,18 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   state = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}90000{{ else if eq .kind "archive"}}0{{ end }}
   # Number of recent blocks to maintain transactions index for (default = about 2 months, 0 = entire chain) (default: 2350000)
   transactions = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}2350000{{ else if eq .kind "archive"}}0{{ end }}
+
+[txpool]
+  # Minimum gas price limit to enforce for acceptance into the pool.
+  # Regardless the value set, it will be enforced to 25000000000 for all networks (default: 25000000000)
+  pricelimit = 25000000000
+  # Minimum number of executable transaction slots guaranteed per account
+  accountslots = 65536
+  # Maximum number of executable transaction slots for all accounts
+  globalslots = 131072
+  # Maximum number of non-executable transaction slots permitted per account
+  accountqueue = 65536
+  # Maximum number of non-executable transaction slots for all accounts
+  globalqueue = 131072
+  # Maximum amount of time non-executable transaction are queued
+  lifetime = "1h30m0s"

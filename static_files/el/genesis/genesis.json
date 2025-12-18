@@ -34,7 +34,8 @@
         "0": 32
       },
       "period": {
-        "0": {{.el_block_interval_seconds}}
+        "0": 2,
+        "256": 1
       },
       "producerDelay": {
         "0": 2,
