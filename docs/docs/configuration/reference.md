@@ -53,7 +53,7 @@ polygon_pos_package:
       count: 2
   network_params:
     el_block_interval_seconds: 2
-    el_gas_limit: 45_000_000
+    el_gas_limit: 60_000_000
   additional_services:
     - observability
 ```

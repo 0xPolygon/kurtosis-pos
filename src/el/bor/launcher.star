@@ -57,6 +57,9 @@ def launch(
                     # network params
                     "static_nodes": str(el_static_nodes),
                     "el_gas_limit": network_params.get("el_gas_limit"),
+                    "el_block_interval_seconds": network_params.get(
+                        "el_block_interval_seconds"
+                    ),
                     "ethstats_server_secret": ethstats_server_secret,
                     # ports
                     "rpc_port_number": el_shared.RPC_PORT_NUMBER,

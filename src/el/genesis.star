@@ -19,9 +19,6 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     "el_chain_id": network_params.get("el_chain_id"),
-                    "el_block_interval_seconds": network_params.get(
-                        "el_block_interval_seconds"
-                    ),
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_gas_limit_hex": hex.int_to_hex(
                         network_params.get("el_gas_limit")
