@@ -11,7 +11,7 @@ syncmode = {{ if .sync_with_witness }}"stateless"{{ else }}"full"{{ end }}
 # Blockchain garbage collection mode: "full" or "archive" (default: "full")
 gcmode = {{ if eq .kind "archive" }}"archive"{{ else }}"full"{{ end }}
 # Enables the snapshot-database mode (default: true)
-snapshot = {{ eq .kind "archive" }}
+snapshot = {{ or (eq .kind "archive") .produce_witness .sync_with_witness }}
 # Logging verbosity for the server (5=trace|4=debug|3=info|2=warn|1=error|0=crit) (default: 3)
 verbosity = {{.log_level_to_int}}
 # Enables bor log retrieval (default: false)
@@ -176,11 +176,11 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Regardless the value set, it will be enforced to 25000000000 for all networks (default: 25000000000)
   pricelimit = 25000000000
   # Minimum number of executable transaction slots guaranteed per account
-  accountslots = 65536
+  accountslots = 256
   # Maximum number of executable transaction slots for all accounts
   globalslots = 131072
   # Maximum number of non-executable transaction slots permitted per account
-  accountqueue = 65536
+  accountqueue = 256
   # Maximum number of non-executable transaction slots for all accounts
   globalqueue = 131072
   # Maximum amount of time non-executable transaction are queued
