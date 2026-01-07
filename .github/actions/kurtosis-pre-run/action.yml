@@ -82,6 +82,7 @@ runs:
         service_account: "kurtosis-pos-ci@prj-polygonlabs-devtools-dev.iam.gserviceaccount.com"
 
     - uses: google-github-actions/setup-gcloud@26f734c2779b00b7dda794207734c511110a4368 # v3.0.0
+      if: ${{ inputs.pull_images_from_gcr == 'true' }}
 
     - name: Configure Docker to use GCR
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
