@@ -50,7 +50,7 @@ DEFAULT_IMAGES = {
     "l1_cl_image": "sigp/lighthouse:v8.0.0",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.5.4",
-    "l2_el_bor_image": "0xpolygon/bor:2.5.6-beta5",
+    "l2_el_bor_image": "0xpolygon/bor:2.5.6-beta6",
     "l2_el_erigon_image": "0xpolygon/erigon:v3.3.0",
     "l2_cl_db_image": "rabbitmq:4.2.1",
     # utilities
