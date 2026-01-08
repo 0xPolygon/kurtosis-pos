@@ -70,6 +70,8 @@ DEFAULT_IMAGES = {
 DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
 DEFAULT_EL_CHAIN_ID = "4927"
 DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".
+DEFAULT_EL_SPRINT_DURATION = 16
+DEFAULT_EL_SPAN_DURATION = DEFAULT_EL_SPRINT_DURATION * 8
 
 ADMIN_BALANCE_ETH = math.pow(10, 9)
 VALIDATORS_BALANCE_ETH = math.pow(10, 4)
@@ -97,8 +99,10 @@ EL_HARD_FORK_BLOCKS = {
     "napoli": 0,
     "ahmedabad": 0,
     "bhilai": 0,
-    "rio": 256,
-    "madhugiri": 256,
-    "madhugiriPro": 256,
-    "dandeli": 256,
+    # rio must be enabled after the first span
+    "rio": DEFAULT_EL_SPAN_DURATION,
+    # hardforks hapenning after rio can also be enabled after the first span
+    "madhugiri": DEFAULT_EL_SPAN_DURATION,
+    "madhugiriPro": DEFAULT_EL_SPAN_DURATION,
+    "dandeli": DEFAULT_EL_SPAN_DURATION,
 }
