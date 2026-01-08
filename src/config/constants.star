@@ -101,7 +101,7 @@ EL_HARD_FORK_BLOCKS = {
     "bhilai": 0,
     # rio must be enabled after the first span
     "rio": DEFAULT_EL_SPAN_DURATION,
-    # hardforks hapenning after rio can also be enabled after the first span
+    # hardforks happening after rio can also be enabled after the first span
     "madhugiri": DEFAULT_EL_SPAN_DURATION,
     "madhugiriPro": DEFAULT_EL_SPAN_DURATION,
     "dandeli": DEFAULT_EL_SPAN_DURATION,
