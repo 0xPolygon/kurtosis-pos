@@ -70,6 +70,8 @@ DEFAULT_IMAGES = {
 DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
 DEFAULT_EL_CHAIN_ID = "4927"
 DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".
+DEFAULT_EL_SPRINT_DURATION = 16
+DEFAULT_EL_SPAN_DURATION = DEFAULT_EL_SPRINT_DURATION * 8
 
 ADMIN_BALANCE_ETH = math.pow(10, 9)
 VALIDATORS_BALANCE_ETH = math.pow(10, 4)
@@ -97,7 +99,10 @@ EL_HARD_FORK_BLOCKS = {
     "napoli": 0,
     "ahmedabad": 0,
     "bhilai": 0,
+    # rio must be enabled at block 256 because it's hardcoded in heimdall-v2 codebase
+    # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
     "rio": 256,
+    # hardforks happening after rio should also be enabled at block 256 or later
     "madhugiri": 256,
     "madhugiriPro": 256,
     "dandeli": 256,
