@@ -28,7 +28,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   mine = true
   # Block time in seconds (default: 1s)
   blocktime = "{{.el_block_interval_seconds}}s"
-  # Target gas ceiling (gas limit) for mined blocks (default: 60000000)
+  # Target gas ceiling (gas limit) for mined blocks (default: 65000000)
   gaslimit = {{ .el_gas_limit }}
   # Public address for block mining rewards
   etherbase = "{{.address}}"
