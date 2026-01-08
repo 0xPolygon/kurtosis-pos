@@ -51,7 +51,7 @@ DEFAULT_IMAGES = {
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.5.4",
     "l2_el_bor_image": "0xpolygon/bor:2.5.6",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.3.0",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.3.6",
     "l2_cl_db_image": "rabbitmq:4.2.1",
     # utilities
     "e2e_image": "ghcr.io/agglayer/e2e:9fd2d09",
