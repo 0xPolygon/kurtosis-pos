@@ -100,4 +100,5 @@ EL_HARD_FORK_BLOCKS = {
     "rio": 256,
     "madhugiri": 300,
     "madhugiriPro": 300,
+    "dandeli": 300,
 }

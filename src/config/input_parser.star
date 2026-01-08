@@ -113,6 +113,7 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "rio_fork_block": constants.EL_HARD_FORK_BLOCKS.get("rio"),
         "madhugiri_fork_block": constants.EL_HARD_FORK_BLOCKS.get("madhugiri"),
         "madhugiri_pro_fork_block": constants.EL_HARD_FORK_BLOCKS.get("madhugiriPro"),
+        "dandeli_fork_block": constants.EL_HARD_FORK_BLOCKS.get("dandeli"),
     },
     "additional_services": [
         constants.ADDITIONAL_SERVICES.test_runner,
