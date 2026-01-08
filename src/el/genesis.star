@@ -20,7 +20,6 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                 data={
                     "el_chain_id": network_params.get("el_chain_id"),
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
-                    "el_span_duration": network_params.get("el_span_duration"),
                     "el_gas_limit_hex": hex.int_to_hex(
                         network_params.get("el_gas_limit")
                     ),

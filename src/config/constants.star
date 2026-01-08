@@ -99,10 +99,11 @@ EL_HARD_FORK_BLOCKS = {
     "napoli": 0,
     "ahmedabad": 0,
     "bhilai": 0,
-    # rio must be enabled after the first span
-    "rio": DEFAULT_EL_SPAN_DURATION,
-    # hardforks happening after rio can also be enabled after the first span
-    "madhugiri": DEFAULT_EL_SPAN_DURATION,
-    "madhugiriPro": DEFAULT_EL_SPAN_DURATION,
-    "dandeli": DEFAULT_EL_SPAN_DURATION,
+    # rio must be enabled at block 256 because it's hardcoded in heimdall-v2 codebase
+    # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
+    "rio": 256,
+    # hardforks happening after rio should also be enabled at block 256 or later
+    "madhugiri": 256,
+    "madhugiriPro": 256,
+    "dandeli": 256,
 }
