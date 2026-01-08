@@ -98,7 +98,7 @@ EL_HARD_FORK_BLOCKS = {
     "ahmedabad": 0,
     "bhilai": 0,
     "rio": 256,
-    "madhugiri": 300,
-    "madhugiriPro": 300,
-    "dandeli": 300,
+    "madhugiri": 256,
+    "madhugiriPro": 256,
+    "dandeli": 256,
 }
