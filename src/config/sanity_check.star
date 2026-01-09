@@ -22,9 +22,9 @@ POLYGON_POS_PARAMS = {
         "el_image",
         "el_log_level",
         "el_log_format",
-        "el_bor_sync_mode",
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
+        "el_bor_stateless_parallel_import",  # Enable bor to use parallel import in stateless mode.
         "count",
     ],
     "setup_images": [
@@ -53,10 +53,14 @@ POLYGON_POS_PARAMS = {
         "jaipur_fork_block",
         "delhi_fork_block",
         "indore_fork_block",
+        "agra_fork_block",
+        "napoli_fork_block",
         "ahmedabad_fork_block",
         "bhilai_fork_block",
         "rio_fork_block",
         "madhugiri_fork_block",
+        "madhugiri_pro_fork_block",
+        "dandeli_fork_block",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
@@ -111,13 +115,6 @@ VALID_LOG_LEVELS = [
 VALID_LOG_FORMATS = [
     constants.LOG_FORMAT.text,
     constants.LOG_FORMAT.json,
-]
-
-VALID_BOR_SYNC_MODES = [
-    constants.BOR_SYNC_MODES.full,
-    constants.BOR_SYNC_MODES.snap,
-    constants.BOR_SYNC_MODES.archive,
-    constants.BOR_SYNC_MODES.stateless,
 ]
 
 DEV_PARAMS = [
@@ -355,16 +352,19 @@ def _validate_participant(p):
     _validate_str(p, "el_log_level", VALID_LOG_LEVELS)
     _validate_str(p, "cl_log_format", VALID_LOG_FORMATS)
     _validate_str(p, "el_log_format", VALID_LOG_FORMATS)
+    _validate_strictly_positive_int(p, "count")
 
     # Validate bor specific parameters.
-    if el_type == constants.EL_TYPE.bor:
-        _validate_str(p, "el_bor_sync_mode", VALID_BOR_SYNC_MODES)
-    else:
-        _fail_if_not_bor_el_type(p, "el_bor_sync_mode")
+    if el_type != constants.EL_TYPE.bor:
         _fail_if_not_bor_el_type(p, "el_bor_produce_witness")
         _fail_if_not_bor_el_type(p, "el_bor_sync_with_witness")
 
-    _validate_strictly_positive_int(p, "count")
+    if not (el_type == constants.EL_TYPE.bor and p.get("el_bor_sync_with_witness")):
+        stateless_parallel_import = p.get("el_bor_stateless_parallel_import")
+        if stateless_parallel_import:
+            fail(
+                'The "el_bor_stateless_parallel_import" parameter can only be enabled with bor EL client and when "el_bor_sync_with_witness" is set to true.'
+            )
 
 
 def _validate_validator_config_generator_image(plan, image, heimdall_v2_image):

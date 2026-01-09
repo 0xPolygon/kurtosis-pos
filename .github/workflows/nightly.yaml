@@ -12,13 +12,14 @@ permissions:
 
 env:
   ENCLAVE_NAME: pos
+  DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
 
 jobs:
   run-without-args:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -58,7 +59,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - id: set-matrix
         run: |
           file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
@@ -88,7 +89,7 @@ jobs:
       matrix:
         file: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -147,7 +148,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -156,7 +157,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy L1
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@a43368eb3085a20f5950de0c7d11dc4bece37348 # 2025-10-16
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@6.0.0 # 2026-01-05
 
       - name: Deploy L2
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
@@ -184,7 +185,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Pre kurtosis run
         uses: ./.github/actions/kurtosis-pre-run
@@ -242,3 +243,31 @@ jobs:
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: cl-el-genesis
+
+  workflow-summary:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: 
+      - run-without-args
+      - run-with-args
+      - run-with-external-l1
+      - run-with-cl-el-genesis
+    steps:
+      - uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+        with:
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          method: chat.postMessage
+          payload: |
+            {
+              "channel": ${{ env.DEVTOOLS_SLACK_ALERTS_CHANNEL_ID }},
+              "text": "Kurtosis POS Nightly - Test Summary",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis POS Nightly>: ${{ contains(needs.*.result, 'failure') && 'some tests failed ❌' || (contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')) && 'some tests were skipped ⚠️' || 'all tests passed ✅' }}",
+                  }
+                }
+              ]
+            }

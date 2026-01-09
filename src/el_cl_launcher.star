@@ -20,7 +20,6 @@ def launch(
     el_genesis_artifact,
     cl_genesis_artifact,
     l1_rpc_url,
-    devnet_cl_type,
 ):
     network_params = polygon_pos_args.get("network_params")
 
@@ -31,7 +30,6 @@ def launch(
         network_data.cl_validator_configs_str,
         network_data.cl_validator_keystores,
         polygon_pos_args,
-        devnet_cl_type,
     )
     cl_node_ids = _read_cl_persistent_peers(
         plan, cl_validator_config_artifacts.persistent_peers
@@ -138,12 +136,11 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
-    wait.wait_for_l2_startup(plan, first_cl_context.api_url, devnet_cl_type)
+    wait.wait_for_l2_startup(plan, first_cl_context.api_url)
 
     # Return the L2 context.
     return struct(
         el_chain_id=network_params.get("el_chain_id"),
-        devnet_cl_type=devnet_cl_type,
         all_participants=all_participants,
     )
 
@@ -225,7 +222,6 @@ def _generate_cl_validator_config(
     cl_validator_configs_str,
     cl_validator_keystores,
     polygon_pos_args,
-    devnet_cl_type,
 ):
     setup_images = polygon_pos_args.get("setup_images")
     network_params = polygon_pos_args.get("network_params")
@@ -240,7 +236,6 @@ def _generate_cl_validator_config(
         name="l2-validators-config-generator",
         image=setup_images.get("validator_config_generator"),
         env_vars={
-            "DEVNET_CL_TYPE": devnet_cl_type,
             "CL_CHAIN_ID": network_params.get("cl_chain_id"),
             "CL_CLIENT_CONFIG_PATH": constants.CL_CLIENT_CONFIG_PATH,
             "CL_VALIDATORS_CONFIGS": cl_validator_configs_str,

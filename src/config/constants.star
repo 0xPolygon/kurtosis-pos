@@ -39,13 +39,6 @@ LOG_FORMAT = struct(
     json="json",
 )
 
-BOR_SYNC_MODES = struct(
-    full="full",
-    snap="snap",
-    archive="archive",
-    stateless="stateless",
-)
-
 ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
     bridge_spammer="bridge_spammer",
@@ -58,19 +51,19 @@ ADDITIONAL_SERVICES = struct(
 
 DEFAULT_IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.16.5",
-    "l1_cl_image": "sigp/lighthouse:v8.0.0-rc.1",
+    "l1_el_image": "ethereum/client-go:v1.16.7",
+    "l1_cl_image": "sigp/lighthouse:v8.0.0",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.4.4",
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.4.2",
-    "l2_el_bor_image": "0xpolygon/bor:2.4.0-beta4",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.0.18",
-    "l2_cl_db_image": "rabbitmq:4.1.4",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.5.4",
+    "l2_el_bor_image": "0xpolygon/bor:2.5.6",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.3.6",
+    "l2_cl_db_image": "rabbitmq:4.2.1",
     # utilities
     "e2e_image": "ghcr.io/agglayer/e2e:9fd2d09",
     "pos_contract_deployer_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592",
     "pos_el_genesis_builder_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd",
-    "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.4.2",
+    "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.5.4",
     "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # observability
@@ -83,6 +76,8 @@ DEFAULT_IMAGES = {
 DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
 DEFAULT_EL_CHAIN_ID = "4927"
 DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".
+DEFAULT_EL_SPRINT_DURATION = 16
+DEFAULT_EL_SPAN_DURATION = DEFAULT_EL_SPRINT_DURATION * 8
 
 ADMIN_BALANCE_ETH = math.pow(10, 9)
 VALIDATORS_BALANCE_ETH = math.pow(10, 4)
@@ -106,8 +101,15 @@ EL_HARD_FORK_BLOCKS = {
     "jaipur": 0,
     "delhi": 0,
     "indore": 0,
+    "agra": 0,
+    "napoli": 0,
     "ahmedabad": 0,
     "bhilai": 0,
+    # rio must be enabled at block 256 because it's hardcoded in heimdall-v2 codebase
+    # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
     "rio": 256,
-    "madhugiri": 300,
+    # hardforks happening after rio should also be enabled at block 256 or later
+    "madhugiri": 256,
+    "madhugiriPro": 256,
+    "dandeli": 256,
 }

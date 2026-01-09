@@ -4,15 +4,14 @@ heimdall_v2_genesis = import_module("./heimdall_v2/genesis.star")
 
 
 CL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/cl/genesis/builder.sh"
-HEIMDALL_GENESIS_TEMPLATE_FILE_PATH = {
-    constants.CL_TYPE.heimdall_v2: "../../static_files/cl/heimdall_v2/genesis.json",
-}
+HEIMDALL_V2_GENESIS_TEMPLATE_FILE_PATH = (
+    "../../static_files/cl/heimdall_v2/genesis.json"
+)
 
 
 def generate(
     plan,
     polygon_pos_args,
-    devnet_cl_type,
     validator_accounts,
     contract_addresses_artifact,
 ):
@@ -71,7 +70,7 @@ def generate(
         name="l2-cl-genesis-tmp",
         config={
             "genesis-tmp.json": struct(
-                template=read_file(HEIMDALL_GENESIS_TEMPLATE_FILE_PATH[devnet_cl_type]),
+                template=read_file(HEIMDALL_V2_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
                     "cl_chain_id": network_params.get("cl_chain_id"),

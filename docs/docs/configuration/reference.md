@@ -53,7 +53,7 @@ polygon_pos_package:
       count: 2
   network_params:
     el_block_interval_seconds: 2
-    el_gas_limit: 45_000_000
+    el_gas_limit: 60_000_000
   additional_services:
     - observability
 ```
@@ -64,19 +64,23 @@ Default: a single validator.
 
 | Field                       | Type   | Default                     | Description                                              |
 | --------------------------- | ------ | --------------------------- | -------------------------------------------------------- |
-| kind                        | string | validator                   | Role of the node in the network: `validator` or `rpc`    |
+| kind                        | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`    |
 | cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
-| cl_image                    | string | 0xpolygon/heimdall-v2:0.4.2 | Image for the CL client                                  |
-| cl_db_image                 | string | rabbitmq:4.1.4              | Image for the CL database                                |
+| cl_image                    | string | 0xpolygon/heimdall-v2:0.5.4 | Image for the CL client                                  |
+| cl_db_image                 | string | rabbitmq:4.2.1              | Image for the CL database                                |
 | cl_log_level                | string | info                        | Log level for the CL client                              |
+| cl_log_format               | string | text                        | Log format for the CL client                             |
 | cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height    |
 | cl_compact_enabled          | bool   | false                       | Compaction enabling.                                     |
 | cl_compaction_interval      | int    | 1000                        | Minimal blocks necessary to run a new compaction routine |
-| cl_storage_pruning_interval | string | 1m0s                        | Interval between prune routines.                         |
+| cl_storage_pruning_interval | string | 10m0s                       | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.4.0-beta4   | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.5.6         | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
+| el_log_format               | string | text                        | Log format for the EL client                             |
+| el_bor_produce_witness      | bool   | false                       | Allow bor to start producing witnesses                   |
+| el_bor_sync_with_witness    | bool   | false                       | Enable bor to sync new blocks using witnesses            |
 | count                       | int    | 1                           | Number of nodes to spin up for this participant          |
 
 ### `setup_images`
@@ -85,7 +89,7 @@ Default: a single validator.
 | -------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
 | contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.4.2 | Image used to generate validator configs    |
+| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.5.4 | Image used to generate validator configs    |
 
 ### `network_params`
 
@@ -108,7 +112,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | el_block_interval_seconds             | int    | 1                      | Seconds per block on the EL chain                                  |
 | el_sprint_duration                    | int    | 16                     | Duration of an EL sprint (blocks)                                  |
 | el_span_duration                      | int    | 128                    | Duration of an EL span (blocks).                                   |
-| el_gas_limit                          | int    | 45_000_000             | EL gas limit                                                       |
+| el_gas_limit                          | int    | 60_000_000             | EL gas limit                                                       |
 
 ### `additional_services`
 

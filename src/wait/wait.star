@@ -25,7 +25,7 @@ def wait_for_l1_startup(plan, cl_rpc_url):
     )
 
 
-def wait_for_l2_startup(plan, cl_api_url, cl_type):
+def wait_for_l2_startup(plan, cl_api_url):
     plan.run_sh(
         name="l2-startup-monitor",
         description="Wait for L2 to start up - it can take up to 5 minutes",

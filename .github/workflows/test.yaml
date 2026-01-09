@@ -1,4 +1,4 @@
-name: kurtosis-lint
+name: test
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install kurtosis
         shell: bash
@@ -34,5 +34,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v5
-      - uses: crate-ci/typos@07d900b8fa1097806b8adb6391b0d3e0ac2fdea7 # v1.39.0
+      - uses: actions/checkout@v6
+      - uses: crate-ci/typos@5c19779cb52ea50e151f5a10333ccd269227b5ae # v1.41.0
+
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 1.21
+          cache: false
+
+      - name: Install kurtosis-test
+        run: |
+          git clone --branch v0.0.5 https://github.com/ethereum-optimism/kurtosis-test.git /tmp/kurtosis-test
+          cd /tmp/kurtosis-test
+          go build -o kurtosis-test cli/main.go
+          cp kurtosis-test /usr/local/bin
+
+      - name: Run unit tests
+        run: kurtosis-test .

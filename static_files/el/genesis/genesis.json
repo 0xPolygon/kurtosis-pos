@@ -23,26 +23,30 @@
       "jaipurBlock": {{.jaipur_fork_block}},
       "delhiBlock": {{.delhi_fork_block}},
       "indoreBlock": {{.indore_fork_block}},
+      "agraBlock": {{.agra_fork_block}},
+      "napoliBlock": {{.napoli_fork_block}},
       "ahmedabadBlock": {{.ahmedabad_fork_block}},
       "bhilaiBlock": {{.bhilai_fork_block}},
       "rioBlock": {{.rio_fork_block}},
       "madhugiriBlock": {{.madhugiri_fork_block}},
+      "madhugiriProBlock": {{.madhugiri_pro_fork_block}},
+      "dandeliBlock": {{.dandeli_fork_block}},
       "stateSyncConfirmationDelay": {
         "0": 32
       },
       "period": {
-        "0": {{.el_block_interval_seconds}}
+        "0": 1
       },
       "producerDelay": {
         "0": 2,
-        "256": 1
+        "{{.rio_fork_block}}": 1
       },
       "sprint": {
         "0": {{.el_sprint_duration}}
       },
       "backupMultiplier": {
         "0": 2,
-        "256": 2
+        "{{.rio_fork_block}}": 2
       },
       "validatorContract": "0x0000000000000000000000000000000000001000",
       "stateReceiverContract": "0x0000000000000000000000000000000000001001",
@@ -51,7 +55,7 @@
       },
       "coinbase": {
         "0": "0x0000000000000000000000000000000000000000",
-        "256": "0x000000000000000000000000000000000000ba5e"
+        "{{.rio_fork_block}}": "0x000000000000000000000000000000000000ba5e"
       }
     },
     "nonce": "0x0"

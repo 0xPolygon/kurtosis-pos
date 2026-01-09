@@ -61,6 +61,7 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
     },
 }
 
+# Log level and format are not set by default here to allow global log level override.
 DEFAULT_POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
     "cl_type": constants.CL_TYPE.heimdall_v2,
@@ -77,9 +78,9 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
 }
 
 DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
-    "el_bor_sync_mode": constants.BOR_SYNC_MODES.full,
     "el_bor_produce_witness": False,
     "el_bor_sync_with_witness": False,
+    "el_bor_stateless_parallel_import": False,
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
@@ -108,23 +109,28 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "validator_top_up_fee_amount_eth": 2000,  # in ether
         # CL network params.
         "cl_chain_id": constants.DEFAULT_CL_CHAIN_ID,
+        # "cl_environment": constants.CL_ENVIRONMENT.local,
         "cl_span_poll_interval": "0m15s",
         "cl_checkpoint_poll_interval": "1m0s",
         "cl_max_age_num_blocks": 100000,
         # EL network params.
         "el_chain_id": constants.DEFAULT_EL_CHAIN_ID,
         "el_block_interval_seconds": 1,
-        "el_sprint_duration": 16,
-        "el_span_duration": 128,
-        "el_gas_limit": 60000000,
+        "el_sprint_duration": constants.DEFAULT_EL_SPRINT_DURATION,
+        "el_span_duration": constants.DEFAULT_EL_SPAN_DURATION,
+        "el_gas_limit": 65000000,
         # Polygon PoS hard fork configurations
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),
         "indore_fork_block": constants.EL_HARD_FORK_BLOCKS.get("indore"),
+        "agra_fork_block": constants.EL_HARD_FORK_BLOCKS.get("agra"),
+        "napoli_fork_block": constants.EL_HARD_FORK_BLOCKS.get("napoli"),
         "ahmedabad_fork_block": constants.EL_HARD_FORK_BLOCKS.get("ahmedabad"),
         "bhilai_fork_block": constants.EL_HARD_FORK_BLOCKS.get("bhilai"),
         "rio_fork_block": constants.EL_HARD_FORK_BLOCKS.get("rio"),
         "madhugiri_fork_block": constants.EL_HARD_FORK_BLOCKS.get("madhugiri"),
+        "madhugiri_pro_fork_block": constants.EL_HARD_FORK_BLOCKS.get("madhugiriPro"),
+        "dandeli_fork_block": constants.EL_HARD_FORK_BLOCKS.get("dandeli"),
     },
     "additional_services": [
         constants.ADDITIONAL_SERVICES.test_runner,
@@ -164,12 +170,10 @@ def input_parser(plan, input_args):
 
     plan.print("Parsing the L2 input args")
     polygon_pos_input_args = input_args.get("polygon_pos_package", {})
-    (polygon_pos_args, devnet_cl_type) = _parse_polygon_pos_args(
-        plan, polygon_pos_input_args
-    )
+    polygon_pos_args = _parse_polygon_pos_args(plan, polygon_pos_input_args)
     plan.print("L2 input args parsed: {}".format(str(polygon_pos_args)))
 
-    return (l1_args, polygon_pos_args, dev_args, devnet_cl_type)
+    return (ethereum_args, polygon_pos_args, dev_args)
 
 
 def _parse_anvil_args(plan, anvil_args):
@@ -216,7 +220,6 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     participants = polygon_pos_args.get("participants", [])
     result["participants"] = _parse_participants(participants, log_level, log_format)
-    devnet_cl_type = _get_devnet_cl_type(result["participants"])
 
     setup_images = polygon_pos_args.get("setup_images", {})
     result["setup_images"] = _parse_setup_images(setup_images)
@@ -253,7 +256,7 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
 
     # Sanity check and return the result.
     sanity_check.sanity_check_polygon_args(plan, result)
-    return (_sort_dict_by_values(result), devnet_cl_type)
+    return _sort_dict_by_values(result)
 
 
 def _parse_dev_args(plan, dev_args):
@@ -274,7 +277,6 @@ def _parse_dev_args(plan, dev_args):
 
 
 def _parse_participants(participants, log_level, log_format):
-    devnet_cl_type = ""
     participants_with_defaults = []
 
     # Set default participant if not provided.
@@ -331,28 +333,11 @@ def _parse_participants(participants, log_level, log_format):
             for k, v in DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT.items():
                 p.setdefault(k, v)
 
-        # Set devnet CL type using the first participant CL type.
-        if devnet_cl_type == "":
-            devnet_cl_type = p.get("cl_type")
-
-        # Make sure that CL types have not been mixed.
-        if p.get("cl_type") != devnet_cl_type:
-            fail(
-                'Mixing different CL types is not supported. Got "{}" and "{}".'.format(
-                    devnet_cl_type, cl_type
-                )
-            )
-
         # Assign the modified dictionary back to the list.
         participants_with_defaults.append(p)
 
     # Sort each participant dictionary and return the result
     return [_sort_dict_by_values(p) for p in participants_with_defaults]
-
-
-def _get_devnet_cl_type(participants):
-    # Determine the devnet CL type to be able to select the appropriate validator address format later.
-    return participants[0].get("cl_type")
 
 
 def _parse_setup_images(setup_images):

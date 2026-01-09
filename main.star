@@ -18,7 +18,6 @@ def run(plan, args):
         l1_args,
         polygon_pos_args,
         dev_args,
-        devnet_cl_type,
     ) = input_parser.input_parser(plan, args)
 
     participants = polygon_pos_args.get("participants")
@@ -86,7 +85,6 @@ def run(plan, args):
         l2_cl_genesis_artifact = cl_genesis.generate(
             plan,
             polygon_pos_args,
-            devnet_cl_type,
             validator_accounts,
             l1_contract_addresses_artifact,
         )
@@ -144,7 +142,6 @@ def run(plan, args):
         l2_el_genesis_artifact,
         l2_cl_genesis_artifact,
         l1_context.rpc_url,
-        devnet_cl_type,
     )
     l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
 

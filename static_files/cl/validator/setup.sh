@@ -7,10 +7,6 @@ set -euxo pipefail
 # to then be able to create the list of persistent peers.
 
 # Checking environment variables.
-if [[ -z "${DEVNET_CL_TYPE}" ]]; then
-  echo "Error: DEVNET_CL_TYPE environment variable is not set"
-  exit 1
-fi
 if [[ -z "${CL_CHAIN_ID}" ]]; then
   echo "Error: CL_CHAIN_ID environment variable is not set"
   exit 1
@@ -25,7 +21,6 @@ if [[ -z "${CL_VALIDATORS_CONFIGS}" ]]; then
 fi
 # Note: CL_VALIDATORS_CONFIGS is expected to follow this exact pattern:
 # "<private_key_1>,<p2p_url_1>;<private_key_2>,<p2p_url_2>;..."
-echo "DEVNET_CL_TYPE: ${DEVNET_CL_TYPE}"
 echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 echo "CL_CLIENT_CONFIG_PATH: ${CL_CLIENT_CONFIG_PATH}"
 echo "CL_VALIDATORS_CONFIGS: ${CL_VALIDATORS_CONFIGS}"
@@ -40,42 +35,32 @@ generate_cl_validator_config() {
 
   # Generate the validator key (or consensus key) using the execution key.
   local cl_validator_config_path="${CL_CLIENT_CONFIG_PATH}/${id}"
-  if [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
-    # Make sure all required directories exist
-    mkdir -p "${cl_validator_config_path}/config"
-    mkdir -p "${cl_validator_config_path}/data"
+  # Make sure all required directories exist
+  mkdir -p "${cl_validator_config_path}/config"
+  mkdir -p "${cl_validator_config_path}/data"
 
-    # Create the validator key file
-    echo "{
-      \"address\": \"${cometbft_address#0x}\",
-      \"pub_key\": {
-        \"type\": \"cometbft/PubKeySecp256k1eth\",
-        \"value\": \"${cometbft_public_key}\"
-      },
-      \"priv_key\": {
-        \"type\": \"cometbft/PrivKeySecp256k1eth\",
-        \"value\": \"${cometbft_private_key}\"
-      }
-    }" | jq >"${cl_validator_config_path}/config/priv_validator_key.json"
+  # Create the validator key file
+  echo "{
+    \"address\": \"${cometbft_address#0x}\",
+    \"pub_key\": {
+      \"type\": \"cometbft/PubKeySecp256k1eth\",
+      \"value\": \"${cometbft_public_key}\"
+    },
+    \"priv_key\": {
+      \"type\": \"cometbft/PrivKeySecp256k1eth\",
+      \"value\": \"${cometbft_private_key}\"
+    }
+  }" | jq >"${cl_validator_config_path}/config/priv_validator_key.json"
 
-    # Set proper permissions
-    chmod 600 "${cl_validator_config_path}/config/priv_validator_key.json"
+  # Set proper permissions
+  chmod 600 "${cl_validator_config_path}/config/priv_validator_key.json"
 
-    # Create validator state file
-    echo '{"height":"0","round":0,"step":0}' | jq >"${cl_validator_config_path}/data/priv_validator_state.json"
-  else
-    echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
-    exit 1
-  fi
+  # Create validator state file
+  echo '{"height":"0","round":0,"step":0}' | jq >"${cl_validator_config_path}/data/priv_validator_state.json"
 
   # Retrieve and store the node identifier.
-  if [[ "${DEVNET_CL_TYPE}" == "heimdall-v2" ]]; then
-    heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
-    node_id="$(cat ${cl_validator_config_path}/init.out | jq --raw-output '.node_id')"
-  else
-    echo "Wrong devnet CL type: ${DEVNET_CL_TYPE}"
-    exit 1
-  fi
+  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
+  node_id="$(cat ${cl_validator_config_path}/init.out | jq --raw-output '.node_id')"
 
   # Drop the unnecessary files.
   rm -rf "${cl_validator_config_path}/config/app.toml" \
