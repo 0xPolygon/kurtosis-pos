@@ -5,8 +5,9 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 wait = import_module("../wait/wait.star")
 
 
-ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star@a43368eb3085a20f5950de0c7d11dc4bece37348"  # 2025-10-16
-
+ETHEREUM_PACKAGE = (
+    "github.com/ethpandaops/ethereum-package/main.star@6.0.0"  # 2026-01-05
+)
 
 def run(plan, ethereum_args, preregistered_validator_keys_mnemonic, admin_address):
     # Sanity check the mnemonic used.
