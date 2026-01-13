@@ -12,7 +12,7 @@ POLYGON_POS_PARAMS = {
         "cl_image",
         "cl_log_level",
         "cl_log_format",
-        "cl_db_image",
+        "cl_queue_image",
         "cl_min_retain_blocks",
         "cl_compact_enabled",
         "cl_compaction_interval",

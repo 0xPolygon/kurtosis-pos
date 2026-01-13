@@ -52,7 +52,7 @@ DEFAULT_IMAGES = {
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.5.5",
     "l2_el_bor_image": "0xpolygon/bor:2.5.6",
     "l2_el_erigon_image": "0xpolygon/erigon:v3.3.6",
-    "l2_cl_db_image": "rabbitmq:4.2.1",
+    "l2_cl_queue_image": "rabbitmq:4.2.2",
     # utilities
     "e2e_image": "ghcr.io/agglayer/e2e:9fd2d09",
     "pos_contract_deployer_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592",

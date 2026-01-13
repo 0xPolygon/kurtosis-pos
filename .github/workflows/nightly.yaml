@@ -220,7 +220,7 @@ jobs:
       - name: Stop L2 participants
         run: |
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-validator
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} rabbitmq-l2-cl-1-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-rabbitmq
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-v2-validator
 
       - name: Kurtosis run for the second time
