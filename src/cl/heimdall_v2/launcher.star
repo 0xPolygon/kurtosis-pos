@@ -97,7 +97,7 @@ def launch(
                     cl_shared.CONFIG_FOLDER_PATH
                 ),
                 # Start heimdall using the container proc manager script.
-                "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --rest-server --home {}".format(
+                "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --home {} --log_no_color --rest-server".format(
                     cl_shared.CONFIG_FOLDER_PATH,
                 ),
             ]
