@@ -67,7 +67,7 @@ Default: a single validator.
 | kind                        | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`    |
 | cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
 | cl_image                    | string | 0xpolygon/heimdall-v2:0.5.5 | Image for the CL client                                  |
-| cl_db_image                 | string | rabbitmq:4.2.1              | Image for the CL database                                |
+| cl_queue_image                 | string | rabbitmq:4.2.1              | Image for the CL queue                                |
 | cl_log_level                | string | info                        | Log level for the CL client                              |
 | cl_log_format               | string | text                        | Log format for the CL client                             |
 | cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height    |

@@ -23,7 +23,7 @@ def launch(
     container_proc_manager_artifact,
 ):
     rabbitmq_name = "rabbitmq-l2-cl-{}-{}".format(id, participant.get("kind"))
-    rabbitmq_image = participant.get("cl_db_image")
+    rabbitmq_image = participant.get("cl_queue_image")
     rabbitmq_url = rabbitmq.launch(plan, rabbitmq_name, rabbitmq_image)
 
     launch_method = _get_launcher(plan, participant)
