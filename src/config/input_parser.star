@@ -50,7 +50,7 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
     "cl_type": constants.CL_TYPE.heimdall_v2,
     "cl_image": constants.DEFAULT_IMAGES.get("l2_cl_heimdall_v2_image"),
-    "cl_db_image": constants.DEFAULT_IMAGES.get("l2_cl_db_image"),
+    "cl_db_image": constants.DEFAULT_IMAGES.get("l2_cl_queue_image"),
     "cl_min_retain_blocks": constants.CL_MIN_RETAIN_BLOCKS,
     "cl_compact_enabled": constants.CL_COMPACT_ENABLED,
     "cl_compaction_interval": constants.CL_COMPACTION_INTERVAL,
