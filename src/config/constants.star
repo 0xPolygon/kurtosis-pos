@@ -46,7 +46,7 @@ ADDITIONAL_SERVICES = struct(
 
 DEFAULT_IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.16.7",
+    "l1_el_image": "ethereum/client-go:v1.16.8",
     "l1_cl_image": "sigp/lighthouse:v8.0.0",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.5.5",
