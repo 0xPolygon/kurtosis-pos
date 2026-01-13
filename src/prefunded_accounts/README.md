@@ -7,7 +7,7 @@ Here are the commands to generate such accounts.
 First, start a docker container that contains the different utils such as `polycli`, `jq` and `heimdallcli`.
 
 ```bash
-docker run -it --rm --volume "$(pwd):/tmp" --workdir /tmp europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.5.4 bash
+docker run -it --rm --volume "$(pwd):/tmp" --workdir /tmp europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.5.5 bash
 ```
 
 Inside the docker container, execute the following script to generate the accounts.

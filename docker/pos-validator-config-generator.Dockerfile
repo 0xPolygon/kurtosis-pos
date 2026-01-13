@@ -1,4 +1,4 @@
-ARG HEIMDALL_V2_VERSION="0.5.4"
+ARG HEIMDALL_V2_VERSION="0.5.5"
 FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
@@ -7,7 +7,7 @@ LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
 WORKDIR /opt/polygon-cli
 RUN apk add --no-cache git build-base \
-  && git clone --branch "v0.1.75" https://github.com/0xPolygon/polygon-cli.git . \
+  && git clone --branch "v0.1.99" https://github.com/0xPolygon/polygon-cli.git . \
   && make build
 
 
