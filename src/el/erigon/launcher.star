@@ -28,7 +28,7 @@ def launch(
     ethstats_server_params,
 ):
     erigon_node_config_artifact = plan.render_templates(
-        name="{}-node-config".format(el_node_name),
+        name="{}-config".format(el_node_name),
         config={
             "config.toml": struct(
                 template=read_file(ERIGON_TEMPLATE_CONFIG_FILE_PATH),

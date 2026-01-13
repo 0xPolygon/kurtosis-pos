@@ -19,7 +19,7 @@ def launch(
     container_proc_manager_artifact,
 ):
     heimdall_node_config_artifacts = plan.render_templates(
-        name="{}-node-config".format(cl_node_name),
+        name="{}-config".format(cl_node_name),
         config={
             "app.toml": struct(
                 template=read_file(

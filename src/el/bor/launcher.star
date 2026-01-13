@@ -30,7 +30,7 @@ def launch(
         ethstats_server_secret = ethstats_server_params.get("ws_secret")
 
     bor_node_config_artifact = plan.render_templates(
-        name="{}-node-config".format(el_node_name),
+        name="{}-config".format(el_node_name),
         config={
             "config.toml": struct(
                 template=read_file(BOR_TEMPLATE_CONFIG_FILE_PATH),
