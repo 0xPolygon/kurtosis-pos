@@ -17,7 +17,7 @@ def launch(
     participant,
     network_params,
     el_genesis_artifact,
-    el_credentials_artifact,
+    el_keys_artifact,
     cl_api_url,
     cl_ws_rpc_url,
     el_account,
@@ -78,11 +78,11 @@ def launch(
         "cp /opt/data/genesis/genesis.json {}/genesis.json".format(
             BOR_CONFIG_FOLDER_PATH
         ),
-        # Copy node credentials.
-        "cp /opt/data/credentials/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
+        # Copy keys.
+        "cp /opt/data/keys/password.txt {}".format(BOR_CONFIG_FOLDER_PATH),
         "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp /opt/data/credentials/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
-        "cp -r /opt/data/credentials/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
+        "cp /opt/data/keys/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
+        "cp -r /opt/data/keys/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
         # Start bor using the container proc manager script.
         "/usr/local/share/container-proc-manager.sh bor server --config {}/config.toml".format(
             BOR_CONFIG_FOLDER_PATH
@@ -120,7 +120,7 @@ def launch(
                 # bor config
                 BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
-                "/opt/data/credentials": el_credentials_artifact,
+                "/opt/data/keys": el_keys_artifact,
                 # utils scripts
                 "/usr/local/share": container_proc_manager_artifact,
             },
