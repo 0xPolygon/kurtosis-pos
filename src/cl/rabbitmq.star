@@ -6,8 +6,9 @@ RABBITMQ_AMQP_PORT_NUMBER = 5672
 
 
 def launch(plan, id, image):
+    name = "l2-cl-{}-rabbitmq".format(id)
     service = plan.add_service(
-        name="l2-cl-{}-rabbitmq".format(id),
+        name=name,
         config=ServiceConfig(
             image=image,
             ports={
