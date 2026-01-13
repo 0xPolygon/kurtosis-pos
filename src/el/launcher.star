@@ -4,7 +4,7 @@ context = import_module("./context.star")
 erigon_launcher = import_module("./erigon/launcher.star")
 shared = import_module("./shared.star")
 
-EL_CREDENTIALS_GENERATOR_FOLDER_PATH = "../../static_files/el/credentials"
+EL_KEYS_GENERATOR_FOLDER_PATH = "../../static_files/el/keys"
 
 LAUNCHERS = {
     constants.EL_TYPE.bor: bor_launcher.launch,
@@ -28,7 +28,7 @@ def launch(
     el_node_name = generate_name(participant, id)
 
     # Generate keystore, nodekey and password.
-    el_credentials_artifact = _generate_credentials(
+    el_keys_artifact = _generate_keys(
         plan, el_node_name, el_account.eth_tendermint.private_key
     )
 
@@ -41,7 +41,7 @@ def launch(
         participant,
         network_params,
         el_genesis_artifact,
-        el_credentials_artifact,
+        el_keys_artifact,
         cl_api_url,
         cl_ws_rpc_url,
         el_account,
@@ -57,38 +57,38 @@ def launch(
     )
 
 
-def _generate_credentials(plan, el_node_name, private_key):
-    credentials_generator_artifact = plan.upload_files(
-        src=EL_CREDENTIALS_GENERATOR_FOLDER_PATH,
-        name="{}-credentials-generator-config".format(el_node_name),
+def _generate_keys(plan, el_node_name, private_key):
+    keys_generator_artifact = plan.upload_files(
+        src=EL_KEYS_GENERATOR_FOLDER_PATH,
+        name="{}-keys-generator-config".format(el_node_name),
     )
     result = plan.run_sh(
-        name="{}-credentials-generator".format(el_node_name),
+        name="{}-keys-generator".format(el_node_name),
         image=constants.DEFAULT_IMAGES.get("toolbox_image"),
         env_vars={
             "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
             "PRIVATE_KEY": private_key,
         },
         files={
-            "/opt/data/credentials": credentials_generator_artifact,
+            "/opt/data/keys": keys_generator_artifact,
         },
         store=[
             StoreSpec(
                 src=constants.EL_CLIENT_CONFIG_PATH,
-                name="{}-credentials-config".format(el_node_name),
+                name="{}-keys".format(el_node_name),
             )
         ],
-        run="bash /opt/data/credentials/generate.sh",
+        run="bash /opt/data/keys/generate.sh",
     )
     artifact_count = len(result.files_artifacts)
     if artifact_count != 1:
         fail(
-            "The EL credentials generator should have generated one artifact, got {}.".format(
+            "The EL keys generator should have generated one artifact, got {}.".format(
                 artifact_count
             )
         )
-    el_credentials = result.files_artifacts[0]
-    return el_credentials
+    el_keys = result.files_artifacts[0]
+    return el_keys
 
 
 def wait_for_node_startup(plan, service_name):
