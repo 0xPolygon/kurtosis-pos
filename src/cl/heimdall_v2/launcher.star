@@ -11,7 +11,7 @@ def launch(
     participant,
     network_params,
     cl_genesis_artifact,
-    cl_validator_config_artifact,
+    cl_keys_artifact,
     cl_node_ids,
     l1_rpc_url,
     el_rpc_url,
@@ -85,11 +85,11 @@ def launch(
         " && ".join(
             [
                 # Copy CL validator config inside heimdall config folder.
-                "cp /opt/data/genesis/genesis.json /opt/data/config/node_key.json /opt/data/config/priv_validator_key.json {}/config/".format(
+                "cp /opt/data/genesis/genesis.json /opt/data/keys/node_key.json /opt/data/keys/priv_validator_key.json {}/config/".format(
                     cl_shared.CONFIG_FOLDER_PATH
                 ),
                 "mkdir {}/data".format(cl_shared.CONFIG_FOLDER_PATH),
-                "cp /opt/data/config/priv_validator_state.json {}/data/priv_validator_state.json".format(
+                "cp /opt/data/keys/priv_validator_state.json {}/data/priv_validator_state.json".format(
                     cl_shared.CONFIG_FOLDER_PATH
                 ),
                 # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
@@ -140,7 +140,7 @@ def launch(
                     cl_shared.CONFIG_FOLDER_PATH
                 ): heimdall_node_config_artifacts,
                 "/opt/data/genesis": cl_genesis_artifact,
-                "/opt/data/config": cl_validator_config_artifact,
+                "/opt/data/keys": cl_keys_artifact,
                 # utils scripts
                 "/usr/local/share": container_proc_manager_artifact,
             },
