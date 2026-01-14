@@ -2,7 +2,7 @@ ARG HEIMDALL_V2_VERSION="0.5.6"
 FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
-FROM golang:1.23-alpine AS polycli-builder
+FROM golang:1.24-alpine AS polycli-builder
 LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
 WORKDIR /opt/polygon-cli
