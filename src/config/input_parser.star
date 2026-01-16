@@ -67,7 +67,7 @@ DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_stateless_parallel_import": False,
     "el_bor_cache_waitforwarm": True,
     "el_bor_cache_warminworker": True,
-    "el_bor_triedb_usetriedb": True,
+    "el_bor_triedb_usetriedb": False,
 }
 
 DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
