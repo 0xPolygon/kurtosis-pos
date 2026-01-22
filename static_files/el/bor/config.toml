@@ -150,8 +150,6 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   preimages = {{ ne .kind "validator" }}
   # Number of block states (tries) to keep in memory (default: 128)
   triesinmemory = {{ if eq .kind "validator" }}1{{ else }}128{{ end }}
-  # Number of recent blocks to maintain transactions index for (soon to be deprecated, use history.transactions instead) (default: 2350000)
-  txlookuplimit = 2350000
   # Size (in number of blocks) of the log cache for filtering (default: 32)
   blocklogs = 32
   # Time after which the Merkle Patricia Trie is stored to disc from memory (default: 1h0m0s)
