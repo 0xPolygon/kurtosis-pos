@@ -46,18 +46,18 @@ ADDITIONAL_SERVICES = struct(
 
 DEFAULT_IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.16.7",
+    "l1_el_image": "ethereum/client-go:v1.16.8",
     "l1_cl_image": "sigp/lighthouse:v8.0.0",
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.5.4",
-    "l2_el_bor_image": "0xpolygon/bor:2.5.6",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.3.6",
-    "l2_cl_db_image": "rabbitmq:4.2.1",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.5.6",
+    "l2_el_bor_image": "0xpolygon/bor:2.5.7",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.3.7",
+    "l2_cl_queue_image": "rabbitmq:4.2.2",
     # utilities
     "e2e_image": "ghcr.io/agglayer/e2e:9fd2d09",
     "pos_contract_deployer_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592",
     "pos_el_genesis_builder_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd",
-    "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.5.4",
+    "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.5.6",
     "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # observability

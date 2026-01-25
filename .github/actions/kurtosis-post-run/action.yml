@@ -27,7 +27,34 @@ runs:
     - name: Dump enclave
       if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
       shell: bash
-      run: kurtosis enclave dump ${{ inputs.enclave_name }} ./dump
+      run: |
+        kurtosis enclave dump ${{ inputs.enclave_name }} ./dump
+
+        # Filter out unnecessary services
+        rm -rf ./dump/files-artifacts-expander*
+        rm -rf ./dump/kurtosis-*
+        rm -rf ./dump/address-deriver*
+        rm -rf ./dump/address-funder*
+        rm -rf ./dump/*address-reader*
+        rm -rf ./dump/erc20-token-sender*
+        rm -rf ./dump/*generator*
+        rm -rf ./dump/*startup-monitor*
+        rm -rf ./dump/matic-contracts-*-deployer*
+        rm -rf ./dump/private-key-generator*
+        rm -rf ./dump/read-*
+        rm -rf ./dump/run-generate-genesis*
+        rm -rf ./dump/validator-key-generation-cl-validator-keystore*
+        rm -rf ./dump/test-runner*
+        rm -rf ./dump/l2-cl-validator-node-ids-reader*
+
+        # Filter out unecessary files
+        rm -rf ./dump/files/*tmp*
+        rm -rf ./dump/files/*-builder-config
+        rm -rf ./dump/files/*-generator-config
+        rm -rf ./dump/files/*-deployer-config
+        rm -rf ./dump/files/matic-contract-l1-addresses
+        rm -rf ./dump/files/l2-cl-persistent-peers
+        rm -rf ./dump/files/l2-validators-config
 
     - name: Generate archive name
       if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
