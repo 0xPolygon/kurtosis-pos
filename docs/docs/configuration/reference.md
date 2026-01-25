@@ -27,7 +27,7 @@ ethereum_package:
 ### `participants`
 
 | Field    | Type   | Default                     | Description                      |
-| -------- | ------ | --------------------------- | -------------------------------- |
+|----------|--------|-----------------------------|----------------------------------|
 | cl_type  | string | lighthouse                  | Consensus Layer (CL) client type |
 | cl_image | string | sigp/lighthouse:v8.0.0-rc.1 | Image for the CL client          |
 | el_type  | string | geth                        | Execution Layer (EL) client type |
@@ -62,34 +62,34 @@ polygon_pos_package:
 
 Default: a single validator.
 
-| Field                       | Type   | Default                     | Description                                              |
-| --------------------------- | ------ | --------------------------- | -------------------------------------------------------- |
-| kind                        | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`    |
-| cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
-| cl_image                    | string | 0xpolygon/heimdall-v2:0.5.6 | Image for the CL client                                  |
-| cl_queue_image              | string | rabbitmq:4.2.2              | Image for the CL queue                                |
-| cl_log_level                | string | info                        | Log level for the CL client                              |
-| cl_log_format               | string | text                        | Log format for the CL client                             |
-| cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height    |
-| cl_compact_enabled          | bool   | false                       | Compaction enabling.                                     |
-| cl_compaction_interval      | int    | 1000                        | Minimal blocks necessary to run a new compaction routine |
-| cl_storage_pruning_interval | string | 10m0s                       | Interval between prune routines.                         |
-| cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
-| el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.5.7         | Image for the EL client                                  |
-| el_log_level                | string | info                        | Log level for the EL client                              |
-| el_log_format               | string | text                        | Log format for the EL client                             |
-| el_bor_produce_witness      | bool   | false                       | Allow bor to start producing witnesses                   |
-| el_bor_sync_with_witness    | bool   | false                       | Enable bor to sync new blocks using witnesses            |
-| count                       | int    | 1                           | Number of nodes to spin up for this participant          |
+| Field                       | Type   | Default                     | Description                                                      |
+|-----------------------------|--------|-----------------------------|------------------------------------------------------------------|
+| kind                        | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive` |
+| cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                                 |
+| cl_image                    | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                          |
+| cl_queue_image              | string | rabbitmq:4.2.2              | Image for the CL queue                                           |
+| cl_log_level                | string | info                        | Log level for the CL client                                      |
+| cl_log_format               | string | text                        | Log format for the CL client                                     |
+| cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height            |
+| cl_compact_enabled          | bool   | false                       | Compaction enabling.                                             |
+| cl_compaction_interval      | int    | 1000                        | Minimal blocks necessary to run a new compaction routine         |
+| cl_storage_pruning_interval | string | 10m0s                       | Interval between prune routines.                                 |
+| cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                                |
+| el_type                     | string | bor                         | Execution Layer (EL) client type                                 |
+| el_image                    | string | 0xpolygon/bor:2.5.7         | Image for the EL client                                          |
+| el_log_level                | string | info                        | Log level for the EL client                                      |
+| el_log_format               | string | text                        | Log format for the EL client                                     |
+| el_bor_produce_witness      | bool   | false                       | Allow bor to start producing witnesses                           |
+| el_bor_sync_with_witness    | bool   | false                       | Enable bor to sync new blocks using witnesses                    |
+| count                       | int    | 1                           | Number of nodes to spin up for this participant                  |
 
 ### `setup_images`
 
 | Field                      | Type   | Default                                                                                              | Description                                 |
-| -------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+|----------------------------|--------|------------------------------------------------------------------------------------------------------|---------------------------------------------|
 | contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.5.6 | Image used to generate validator configs    |
+| validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.6.0 | Image used to generate validator configs    |
 
 ### `network_params`
 
@@ -98,7 +98,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 :::
 
 | Field                                 | Type   | Default                | Description                                                        |
-| ------------------------------------- | ------ | ---------------------- | ------------------------------------------------------------------ |
+|---------------------------------------|--------|------------------------|--------------------------------------------------------------------|
 | admin_private_key                     | string | 0xd403...60ea          | Private key used to deploy Polygon PoS contracts on both L1 and L2 |
 | preregistered_validator_keys_mnemonic | string | sibling lend brave ... | Mnemonic for validator keystores                                   |
 | validator_stake_amount_eth            | int    | 10000                  | Amount of ether to stake for each validator                        |
@@ -119,7 +119,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 The `additional_services` array lets you enable optional tools and utilities alongside your devnet. These are not configuration options themselves, but rather extra services you can include by listing their names in the array.
 
 | Service           | Description                                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
+|-------------------|--------------------------------------------------------------------------------------------------------------|
 | `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                             |
 | `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                          |
 | `ethstats_server` | Visual interface for tracking network status                                                                 |
@@ -131,18 +131,18 @@ The `additional_services` array lets you enable optional tools and utilities alo
 ### `ethstats_server_params`
 
 | Field | Type   | Default                                                                                 | Description                               |
-| ----- | ------ | --------------------------------------------------------------------------------------- | ----------------------------------------- |
+|-------|--------|-----------------------------------------------------------------------------------------|-------------------------------------------|
 | image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server. |
 
 ### `status_checker_params`
 
 | Field | Type   | Default                                                                              | Description                              |
-| ----- | ------ | ------------------------------------------------------------------------------------ | ---------------------------------------- |
+|-------|--------|--------------------------------------------------------------------------------------|------------------------------------------|
 | image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9 | Image used to deploy the status checker. |
 
 
 ### `test_runner_params`
 
 | Field | Type   | Default                      | Description                                                                                               |
-| ----- | ------ | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
+|-------|--------|------------------------------|-----------------------------------------------------------------------------------------------------------|
 | image | string | ghcr.io/agglayer/e2e:9fd2d09 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |
