@@ -9,6 +9,7 @@ ETHEREUM_PACKAGE = (
     "github.com/ethpandaops/ethereum-package/main.star@6.0.0"  # 2026-01-05
 )
 
+
 def run(plan, ethereum_args, preregistered_validator_keys_mnemonic, admin_address):
     # Sanity check the mnemonic used.
     # TODO: Remove this limitation.
