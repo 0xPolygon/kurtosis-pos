@@ -8,7 +8,7 @@ prefunded_accounts = import_module("./prefunded_accounts/accounts.star")
 wait = import_module("./wait/wait.star")
 
 
-VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH = "../static_files/cl/validator"
+CL_KEYS_GENERATOR_FOLDER_PATH = "../static_files/cl/keys"
 
 CONTAINER_PROC_MANAGER_FILE_PATH = "../static_files/scripts/container-proc-manager.sh"
 
@@ -61,16 +61,14 @@ def launch(
             # If the participant is a validator, launch the CL node and it's dedicated AMQP server.
             cl_context = {}
             if is_validator:
-                cl_validator_config_artifact = cl_validator_config_artifacts.configs[
-                    validator_index
-                ]
+                cl_keys_artifact = cl_validator_config_artifacts.keys[validator_index]
                 cl_context = cl_launcher.launch(
                     plan,
                     participant,
                     participant_index + 1,
                     network_params,
                     cl_genesis_artifact,
-                    cl_validator_config_artifact,
+                    cl_keys_artifact,
                     cl_node_ids,
                     l1_rpc_url,
                     container_proc_manager_artifact,
@@ -192,7 +190,7 @@ def _prepare_network_data(participants):
                         src="{}/{}/config/".format(
                             constants.CL_CLIENT_CONFIG_PATH, validator_index + 1
                         ),
-                        name="{}-config".format(cl_node_name),
+                        name="{}-keys".format(cl_node_name),
                     )
                 )
 
@@ -223,17 +221,15 @@ def _generate_cl_validator_config(
     cl_validator_keystores,
     polygon_pos_args,
 ):
+    # Generate CL validators configuration such as the public/private keys and node identifiers.
     setup_images = polygon_pos_args.get("setup_images")
     network_params = polygon_pos_args.get("network_params")
-
-    validator_config_generator_artifact = plan.upload_files(
-        src=VALIDATOR_CONFIG_GENERATOR_FOLDER_PATH,
-        name="l2-validator-config-generator-config",
+    cl_keys_generator_artifact = plan.upload_files(
+        src=CL_KEYS_GENERATOR_FOLDER_PATH,
+        name="l2-cl-validator-keys-generator-config",
     )
-
-    # Generate CL validators configuration such as the public/private keys and node identifiers.
     result = plan.run_sh(
-        name="l2-validators-config-generator",
+        name="l2-cl-validator-keys-generator",
         image=setup_images.get("validator_config_generator"),
         env_vars={
             "CL_CHAIN_ID": network_params.get("cl_chain_id"),
@@ -241,7 +237,7 @@ def _generate_cl_validator_config(
             "CL_VALIDATORS_CONFIGS": cl_validator_configs_str,
         },
         files={
-            "/opt/data": validator_config_generator_artifact,
+            "/opt/data": cl_keys_generator_artifact,
         },
         store=cl_validator_keystores
         + [
@@ -252,19 +248,20 @@ def _generate_cl_validator_config(
         ],
         run="bash /opt/data/setup.sh",
     )
+
     # Artifacts are ordered to match the `StoreSpec` definitions.
-    cl_validator_config_artifacts = result.files_artifacts[:-1]
+    cl_keys_artifacts = result.files_artifacts[:-1]
     cl_persistent_peers_artifact = result.files_artifacts[-1]
 
     return struct(
-        configs=cl_validator_config_artifacts,
+        keys=cl_keys_artifacts,
         persistent_peers=cl_persistent_peers_artifact,
     )
 
 
 def _read_cl_persistent_peers(plan, cl_persistent_peers_artifact):
     result = plan.run_sh(
-        name="cl-validator-node-ids-reader",
+        name="l2-cl-validator-node-ids-reader",
         description="Reading CL validator node ids",
         files={
             "/opt/data": cl_persistent_peers_artifact,
