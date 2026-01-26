@@ -19,7 +19,7 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   # Install foundry.
-  && curl --silent --location --proto "=https" https://foundry.paradigm.xyz | bash \
+  && curl --location --proto "=https" https://foundry.paradigm.xyz | bash \
   && /root/.foundry/bin/foundryup --install ${FOUNDRY_VERSION} \
   && cp /root/.foundry/bin/* /usr/local/bin \
   # Prepare pos contracts.

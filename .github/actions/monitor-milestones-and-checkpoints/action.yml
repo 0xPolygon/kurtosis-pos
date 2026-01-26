@@ -48,7 +48,7 @@ runs:
         elapsed_time=0
         milestone_count=0
         while [[ "${elapsed_time}" -lt "${{ inputs.timeout_seconds }}" ]];do
-          milestone_count=$(curl --silent "${l2_cl_api_url}/milestones/count" | jq --raw-output '.count')
+          milestone_count=$(curl "${l2_cl_api_url}/milestones/count" | jq --raw-output '.count')
           echo "Time: ${elapsed_time}s - Milestones: ${milestone_count}"
 
           if [[ "${milestone_count}" -ge 1 ]]; then
@@ -73,7 +73,7 @@ runs:
         elapsed_time=0
         checkpoint_count=0
         while [[ "${elapsed_time}" -lt "${{ inputs.timeout_seconds }}" ]]; do
-          checkpoint_count=$(curl --silent "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.ack_count')
+          checkpoint_count=$(curl "${l2_cl_api_url}/checkpoints/count" | jq --raw-output '.ack_count')
           echo "Time: ${elapsed_time}s - Checkpoints: ${checkpoint_count}"
 
           if [[ "${checkpoint_count}" -ge 1 ]]; then
