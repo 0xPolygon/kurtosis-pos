@@ -158,6 +158,7 @@ def input_parser(plan, input_args):
     plan.print("Dev input args parsed: {}".format(str(dev_args)))
 
     plan.print("Parsing the L1 input args")
+    l1_args = {}
     if l1_backend == constants.L1_BACKEND.ethereum_package:
         ethereum_input_args = input_args.get("ethereum_package", {})
         l1_args = _parse_ethereum_args(plan, ethereum_input_args)
@@ -173,7 +174,7 @@ def input_parser(plan, input_args):
     polygon_pos_args = _parse_polygon_pos_args(plan, polygon_pos_input_args)
     plan.print("L2 input args parsed: {}".format(str(polygon_pos_args)))
 
-    return (ethereum_args, polygon_pos_args, dev_args)
+    return (l1_args, polygon_pos_args, dev_args)
 
 
 def _parse_anvil_args(plan, anvil_args):
