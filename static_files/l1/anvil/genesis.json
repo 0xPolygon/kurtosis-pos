@@ -1,0 +1,12 @@
+{
+  "block": {},
+  "best_block_number": 0,
+  "accounts": {
+    "{{.admin_address}}": {
+      "nonce": 0,
+      "balance": "{{.admin_balance_wei}}",
+      "code": "0x",
+      "storage": {}
+    }
+  }
+}

@@ -12,7 +12,7 @@ def wait_for_l1_startup(plan, cl_rpc_url):
             [
                 "while true; do",
                 "  sleep 5;",
-                '  slot=$(curl --silent $CL_RPC_URL/eth/v1/beacon/headers/ | jq --raw-output ".data[0].header.message.slot");',
+                '  slot=$(curl $CL_RPC_URL/eth/v1/beacon/headers/ | jq --raw-output ".data[0].header.message.slot");',
                 '  echo "L1 Chain is starting up... Current slot: $slot";',
                 '  if [[ "$slot" =~ ^[0-9]+$ ]] && [[ "$slot" -gt "0" ]]; then',
                 '    echo "✅ L1 Chain has started!";',
@@ -36,7 +36,7 @@ def wait_for_l2_startup(plan, cl_api_url):
             [
                 "while true; do",
                 "  sleep 5;",
-                "  span_id=$(curl --silent $CL_RPC_URL/bor/spans/latest | jq --raw-output '.span.id');",
+                "  span_id=$(curl $CL_RPC_URL/bor/spans/latest | jq --raw-output '.span.id');",
                 '  echo "L2 Chain is starting up... Current span id: $span_id";',
                 '  if [[ "$span_id" =~ ^[0-9]+$ ]] && [[ "$span_id" -gt "0" ]]; then',
                 '    echo "✅ L2 Chain has started!";',
