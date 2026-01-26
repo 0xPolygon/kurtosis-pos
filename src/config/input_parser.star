@@ -14,7 +14,7 @@ DEFAULT_ANVIL_ARGS = {
     "image": constants.DEFAULT_IMAGES.get("l1_anvil_image"),
     "network_id": constants.DEFAULT_L1_CHAIN_ID,
     "block_time": 1,
-    "slots_in_epoch": 1,  # block_time * slots_in_epoch = total seconds to transition a block from latest to safest
+    "slots_in_epoch": 2,  # block_time * slots_in_epoch = total seconds to transition a block from latest to safest
 }
 
 
