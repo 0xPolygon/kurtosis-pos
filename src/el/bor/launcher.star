@@ -126,6 +126,8 @@ def launch(
             },
             entrypoint=["sh", "-c"],
             cmd=["&&".join(bor_cmds)],
+            max_cpu=shared.MAX_CPU,
+            max_mem=shared.MAX_MEM,
         ),
     )
 
