@@ -33,6 +33,6 @@ RUN apt-get update \
   && npm run template:process -- --bor-chain-id ${DEFAULT_EL_CHAIN_ID} \
   && npm run generate:interfaces \
   && forge build \
-  # Clean up to reduce image size (scripts will npm install if custom chain ID is used)
-  && rm -rf node_modules \
+  # Clean up to reduce image size while keeping dependencies needed for forge script
+  && npm prune --production \
   && npm cache clean --force
