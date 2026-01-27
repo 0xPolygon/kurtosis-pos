@@ -19,6 +19,6 @@ def launch(
                 "WS_SECRET": ethstats_server_params.get("ws_secret"),
             },
             max_cpu=shared.MAX_CPU,
-            max_mem=shared.MAX_MEM,
+            max_memory=shared.MAX_MEM,
         ),
     )

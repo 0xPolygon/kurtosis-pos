@@ -87,7 +87,7 @@ def launch_panoptichain(
             },
             files={"/etc/panoptichain": panoptichain_config_artifact},
             max_cpu=shared.MAX_CPU,
-            max_mem=shared.MAX_MEM,
+            max_memory=shared.MAX_MEM,
         ),
     )
     return service.ports["metrics"].url

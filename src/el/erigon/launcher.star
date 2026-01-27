@@ -121,6 +121,6 @@ def launch(
             cmd=["&&".join(erigon_cmds)],
             user=User(uid=0, gid=0),  # Run the container as root user.
             max_cpu=shared.MAX_CPU,
-            max_mem=shared.MAX_MEM,
+            max_memory=shared.MAX_MEM,
         ),
     )

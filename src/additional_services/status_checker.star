@@ -46,6 +46,6 @@ def launch(
                 "L2_URLS": json.encode(l2_urls),
             },
             max_cpu=shared.MAX_CPU,
-            max_mem=shared.MAX_MEM,
+            max_memory=shared.MAX_MEM,
         ),
     )

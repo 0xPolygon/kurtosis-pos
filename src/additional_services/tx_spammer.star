@@ -77,6 +77,6 @@ def _start_tx_spammer_service(plan, name, script_artifact, private_key, rpc_url)
             entrypoint=["bash", "-c"],
             cmd=["chmod +x /opt/{0} && /opt/{0}".format(TX_SPAMMER_SCRIPT_NAME)],
             max_cpu=shared.MAX_CPU,
-            max_mem=shared.MAX_MEM,
+            max_memory=shared.MAX_MEM,
         ),
     )

@@ -78,6 +78,6 @@ def launch(
             entrypoint=["bash", "-c"],
             cmd=["chmod +x /opt/{0} && /opt/{0}".format(BRIDGE_SPAMMER_SCRIPT_NAME)],
             max_cpu=shared.MAX_CPU,
-            max_mem=shared.MAX_MEM,
+            max_memory=shared.MAX_MEM,
         ),
     )

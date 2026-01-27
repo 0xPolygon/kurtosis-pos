@@ -125,6 +125,6 @@ def launch(
             entrypoint=["bash", "-c"],
             cmd=["sleep infinity"],
             max_cpu=shared.MAX_CPU,
-            max_mem=shared.MAX_MEM,
+            max_memory=shared.MAX_MEM,
         ),
     )

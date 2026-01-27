@@ -22,7 +22,7 @@ def launch(plan, id, image):
                 )
             },
             max_cpu=MAX_CPU,
-            max_mem=MAX_MEM,
+            max_memory=MAX_MEM,
         ),
     )
     return "amqp://{}:{}@{}:{}".format(
