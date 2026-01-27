@@ -1,4 +1,4 @@
-cl_shared = import_module("../shared.star")
+shared = import_module("../shared.star")
 
 
 # The folder where the heimdall templates are stored in the repository.
@@ -38,9 +38,9 @@ def launch(
                     "el_rpc_url": el_rpc_url,
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
-                    "rest_api_port_number": cl_shared.REST_API_PORT_NUMBER,
-                    "grpc_port_number": cl_shared.GRPC_PORT_NUMBER,
-                    "rpc_port_number": cl_shared.RPC_PORT_NUMBER,
+                    "rest_api_port_number": shared.REST_API_PORT_NUMBER,
+                    "grpc_port_number": shared.GRPC_PORT_NUMBER,
+                    "rpc_port_number": shared.RPC_PORT_NUMBER,
                 },
             ),
             "client.toml": struct(
@@ -49,7 +49,7 @@ def launch(
                 ),
                 data={
                     "cl_chain_id": network_params.get("cl_chain_id"),
-                    "rpc_port_number": cl_shared.RPC_PORT_NUMBER,
+                    "rpc_port_number": shared.RPC_PORT_NUMBER,
                 },
             ),
             "config.toml": struct(
@@ -71,11 +71,11 @@ def launch(
                         "cl_indexer_pruning_enabled"
                     ),
                     # Port numbers.
-                    "proxy_app_port_number": cl_shared.PROXY_LISTEN_PORT_NUMBER,
-                    "rpc_port_number": cl_shared.RPC_PORT_NUMBER,
-                    "p2p_listen_port_number": cl_shared.NODE_LISTEN_PORT_NUMBER,
-                    "metrics_port_number": cl_shared.METRICS_PORT_NUMBER,
-                    "pprof_port_number": cl_shared.PPROF_PORT_NUMBER,
+                    "proxy_app_port_number": shared.PROXY_LISTEN_PORT_NUMBER,
+                    "rpc_port_number": shared.RPC_PORT_NUMBER,
+                    "p2p_listen_port_number": shared.NODE_LISTEN_PORT_NUMBER,
+                    "metrics_port_number": shared.METRICS_PORT_NUMBER,
+                    "pprof_port_number": shared.PPROF_PORT_NUMBER,
                 },
             ),
         },
@@ -86,19 +86,19 @@ def launch(
             [
                 # Copy CL validator config inside heimdall config folder.
                 "cp /opt/data/genesis/genesis.json /opt/data/keys/node_key.json /opt/data/keys/priv_validator_key.json {}/config/".format(
-                    cl_shared.CONFIG_FOLDER_PATH
+                    shared.CONFIG_FOLDER_PATH
                 ),
-                "mkdir {}/data".format(cl_shared.CONFIG_FOLDER_PATH),
+                "mkdir {}/data".format(shared.CONFIG_FOLDER_PATH),
                 "cp /opt/data/keys/priv_validator_state.json {}/data/priv_validator_state.json".format(
-                    cl_shared.CONFIG_FOLDER_PATH
+                    shared.CONFIG_FOLDER_PATH
                 ),
                 # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
                 'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
-                    cl_shared.CONFIG_FOLDER_PATH
+                    shared.CONFIG_FOLDER_PATH
                 ),
                 # Start heimdall using the container proc manager script.
                 "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --home {} --log_no_color --rest-server".format(
-                    cl_shared.CONFIG_FOLDER_PATH,
+                    shared.CONFIG_FOLDER_PATH,
                 ),
             ]
         )
@@ -109,35 +109,35 @@ def launch(
         config=ServiceConfig(
             image=participant.get("cl_image"),
             ports={
-                cl_shared.REST_API_PORT_ID: PortSpec(
-                    number=cl_shared.REST_API_PORT_NUMBER,
+                shared.REST_API_PORT_ID: PortSpec(
+                    number=shared.REST_API_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                cl_shared.GRPC_PORT_ID: PortSpec(
-                    number=cl_shared.GRPC_PORT_NUMBER,
+                shared.GRPC_PORT_ID: PortSpec(
+                    number=shared.GRPC_PORT_NUMBER,
                     application_protocol="grpc",
                 ),
-                cl_shared.NODE_LISTEN_PORT_ID: PortSpec(
-                    number=cl_shared.NODE_LISTEN_PORT_NUMBER,
+                shared.NODE_LISTEN_PORT_ID: PortSpec(
+                    number=shared.NODE_LISTEN_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                cl_shared.RPC_PORT_ID: PortSpec(
-                    number=cl_shared.RPC_PORT_NUMBER,
+                shared.RPC_PORT_ID: PortSpec(
+                    number=shared.RPC_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                cl_shared.METRICS_PORT_ID: PortSpec(
-                    number=cl_shared.METRICS_PORT_NUMBER,
+                shared.METRICS_PORT_ID: PortSpec(
+                    number=shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                cl_shared.PPROF_PORT_ID: PortSpec(
-                    number=cl_shared.PPROF_PORT_NUMBER,
+                shared.PPROF_PORT_ID: PortSpec(
+                    number=shared.PPROF_PORT_NUMBER,
                     application_protocol="http",
                 ),
             },
             files={
                 # heimdall-v2 config
                 "{}/config".format(
-                    cl_shared.CONFIG_FOLDER_PATH
+                    shared.CONFIG_FOLDER_PATH
                 ): heimdall_node_config_artifacts,
                 "/opt/data/genesis": cl_genesis_artifact,
                 "/opt/data/keys": cl_keys_artifact,
@@ -146,5 +146,7 @@ def launch(
             },
             entrypoint=["sh", "-c"],
             cmd=["&&".join(heimdall_cmds)],
+            max_cpu=shared.MAX_CPU,
+            max_mem=shared.MAX_MEM,
         ),
     )
