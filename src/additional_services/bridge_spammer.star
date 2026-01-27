@@ -1,5 +1,6 @@
 constants = import_module("../config/constants.star")
 contract_util = import_module("../contracts/util.star")
+shared = import_module("./shared.star")
 wallet_module = import_module("../wallet/wallet.star")
 
 BRIDGE_SPAMMER_SCRIPT_NAME = "bridge.sh"
@@ -76,5 +77,7 @@ def launch(
             },
             entrypoint=["bash", "-c"],
             cmd=["chmod +x /opt/{0} && /opt/{0}".format(BRIDGE_SPAMMER_SCRIPT_NAME)],
+            max_cpu=shared.MAX_CPU,
+            max_mem=shared.MAX_MEM,
         ),
     )

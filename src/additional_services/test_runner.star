@@ -1,4 +1,5 @@
 contract_util = import_module("../contracts/util.star")
+shared = import_module("./shared.star")
 wallet_module = import_module("../wallet/wallet.star")
 
 
@@ -123,5 +124,7 @@ def launch(
             },
             entrypoint=["bash", "-c"],
             cmd=["sleep infinity"],
+            max_cpu=shared.MAX_CPU,
+            max_mem=shared.MAX_MEM,
         ),
     )
