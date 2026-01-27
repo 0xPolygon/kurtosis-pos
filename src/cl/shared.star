@@ -23,3 +23,7 @@ APP_DATA_FOLDER_PATH = "/var/lib/heimdall"
 
 PPROF_PORT_ID = "pprof"
 PPROF_PORT_NUMBER = 6060
+
+# CPU and memory limits.
+MAX_CPU = 2000  # in milicores (2 cores)
+MAX_MEM = 4096  # in megabytes (4 GB)

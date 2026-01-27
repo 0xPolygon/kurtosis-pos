@@ -1,5 +1,6 @@
 contract_util = import_module("../contracts/util.star")
 constants = import_module("../config/constants.star")
+shared = import_module("./shared.star")
 util = import_module("./util.star")
 
 PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star@f5ce159aec728898e3deb827f6b921f8ecfc527f"
@@ -85,6 +86,8 @@ def launch_panoptichain(
                 "metrics": PortSpec(PANOPTICHAIN_PORT, application_protocol="http"),
             },
             files={"/etc/panoptichain": panoptichain_config_artifact},
+            max_cpu=shared.MAX_CPU,
+            max_memory=shared.MAX_MEM,
         ),
     )
     return service.ports["metrics"].url
@@ -97,9 +100,9 @@ def launch_prometheus(plan, l2_participants, panoptichain_url):
         metrics_jobs,
         name="prometheus",
         min_cpu=10,
-        max_cpu=1000,
+        max_cpu=shared.MAX_CPU,
         min_memory=128,
-        max_memory=2048,
+        max_memory=shared.MAX_MEM,
         node_selectors=None,
         storage_tsdb_retention_time="1d",
         storage_tsdb_retention_size="512MB",
@@ -132,6 +135,7 @@ def launch_grafana(plan, prometheus_url):
     grafana_dashboards_files_artifact = plan.upload_files(
         src=GRAFANA_DASHBOARDS, name="grafana-dashboards"
     )
+    # no max cpu or mem limits for grafana
     import_module(GRAFANA_PACKAGE).run(
         plan,
         prometheus_url,
