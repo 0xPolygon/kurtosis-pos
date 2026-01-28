@@ -210,9 +210,7 @@ def deploy_local_l1(
 ):
     # Sanity check the mnemonic used.
     # TODO: Remove this limitation.
-    l2_network_params = input_parser.POLYGON_POS_PACKAGE_ARGS.get(
-        "network_params"
-    )
+    l2_network_params = input_parser.POLYGON_POS_PACKAGE_ARGS.get("network_params")
     default_l2_mnemonic = l2_network_params.get("preregistered_validator_keys_mnemonic")
     if preregistered_validator_keys_mnemonic != default_l2_mnemonic:
         fail("Using a different mnemonic is not supported for now.")

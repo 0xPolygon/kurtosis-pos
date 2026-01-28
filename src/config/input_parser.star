@@ -320,9 +320,7 @@ def _parse_network_params(network_params):
         network_params = dict(network_params)
     else:
         # Set default network params if not provided.
-        network_params = dict(
-            POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
-        )
+        network_params = dict(POLYGON_POS_PACKAGE_ARGS.get("network_params", {}))
 
     for k, v in POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
         network_params.setdefault(k, v)
@@ -334,9 +332,7 @@ def _parse_network_params(network_params):
 def _parse_additional_services(additional_services):
     # Set default additional services if not provided.
     if len(additional_services) == 0:
-        additional_services = POLYGON_POS_PACKAGE_ARGS.get(
-            "additional_services", []
-        )
+        additional_services = POLYGON_POS_PACKAGE_ARGS.get("additional_services", [])
     return additional_services
 
 
