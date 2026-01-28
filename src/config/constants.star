@@ -58,7 +58,7 @@ IMAGES = {
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
 }
 
-ADDITIONAL_IMAGES = {
+ADDITIONAL_SERVICE_IMAGES = {
     "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.2.1",

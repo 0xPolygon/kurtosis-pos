@@ -53,7 +53,7 @@ def test_sanity_check_with_status_checker(plan):
             constants.ADDITIONAL_SERVICES.status_checker,
         ],
         "status_checker_params": {
-            "image": constants.ADDITIONAL_IMAGES.get("status_checker_image"),
+            "image": constants.ADDITIONAL_SERVICE_IMAGES.get("status_checker_image"),
         },
     }
 
@@ -77,6 +77,6 @@ def test_sanity_check_with_ethstats_server(plan):
             constants.ADDITIONAL_SERVICES.ethstats_server,
         ],
         "ethstats_server_params": {
-            "image": constants.ADDITIONAL_IMAGES.get("ethstats_server_image"),
+            "image": constants.ADDITIONAL_SERVICE_IMAGES.get("ethstats_server_image"),
         },
     }
