@@ -158,6 +158,7 @@ def sanity_check_polygon_args(plan, input_args):
     _validate_cl_environment(cl_environment)
 
     # Make sure status checker params are defined only if the status checker is deployed.
+    additional_services = input_args.get("additional_services", [])
     if constants.ADDITIONAL_SERVICES.status_checker in additional_services:
         _validate_dict(input_args, "status_checker_params")
         status_checker_params = input_args.get("status_checker_params")
