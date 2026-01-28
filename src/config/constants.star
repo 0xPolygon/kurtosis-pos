@@ -54,11 +54,12 @@ DEFAULT_IMAGES = {
     "l2_el_erigon_image": "0xpolygon/erigon:v3.3.7",
     "l2_cl_queue_image": "rabbitmq:4.2.2",
     # utilities
-    "e2e_image": "ghcr.io/agglayer/e2e:9fd2d09",
     "pos_contract_deployer_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592",
     "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.6.0",
-    "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
+    # additional services
+    "e2e_image": "ghcr.io/agglayer/e2e:9fd2d09",
+    "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.2.1",
     "grafana_image": "grafana/grafana:11.6.0",
