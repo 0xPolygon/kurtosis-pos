@@ -12,7 +12,7 @@ RUN apt-get update \
   && make
 
 
-FROM node:16-bookworm
+FROM node:16-bookworm-slim
 LABEL description="MATIC (Polygon PoS) EL genesis builder image"
 LABEL author="devtools@polygon.technology"
 
@@ -34,10 +34,10 @@ ENV DEFAULT_CL_CHAIN_ID="heimdall-4927"
 
 COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
 
-# Prepare environment to build MATIC genesis file.
+# Prepare environment to build MATIC genesis file
 WORKDIR /opt/genesis-contracts
 RUN apt-get update \
-  && apt-get install --no-install-recommends --yes jq \
+  && apt-get install --no-install-recommends --yes ca-certificates g++ gcc git jq make python3 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   && npm install --global truffle@${TRUFFLE_VERSION} \
@@ -52,4 +52,7 @@ RUN apt-get update \
   && truffle compile \
   && cd .. \
   && node generate-borvalidatorset.js --bor-chain-id ${DEFAULT_EL_CHAIN_ID} --heimdall-chain-id ${DEFAULT_CL_CHAIN_ID} \
-  && truffle compile
+  && truffle compile \
+  # Clean up to reduce image size while keeping dependencies needed for runtime scripts
+  && find . -name .git -exec rm -rf {} + 2>/dev/null || true \
+  && npm cache clean --force
