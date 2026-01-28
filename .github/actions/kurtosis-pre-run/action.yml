@@ -12,6 +12,10 @@ inputs:
     description: Whether to pull images from GCR
     required: false
     default: "true"
+  save_cache:
+    description: Whether this job should save the Docker image cache
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -71,10 +75,9 @@ runs:
       uses: actions/cache@v4
       with:
         path: /tmp/docker-images
-        key: docker-images-${{ github.ref_name }}-${{ github.run_number }}
+        key: docker-images-${{ github.ref_name }}
         restore-keys: |
-          docker-images-${{ github.ref_name }}-
-          docker-images-main-
+          docker-images-main
           docker-images-
 
     - name: Load cached docker images
@@ -157,6 +160,7 @@ runs:
 
     # Cache images for future runs
     - name: Save Docker images to cache
+      if: ${{ inputs.save_cache == 'true' }}
       shell: bash
       run: |
         echo "Saving all Docker images to cache..."

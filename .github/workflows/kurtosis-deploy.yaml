@@ -100,6 +100,7 @@ jobs:
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
+          save_cache: ${{ contains(matrix.file.name, 'rio') }}
 
       - name: Kurtosis run
         run: |
