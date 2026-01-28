@@ -57,7 +57,7 @@ def test_sanity_check_with_status_checker(plan):
             constants.ADDITIONAL_SERVICES.test_runner,
         ],
         "status_checker_params": {
-            "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
+            "image": constants.ADDITIONAL_IMAGES.get("status_checker_image"),
         },
     }
 
@@ -77,7 +77,7 @@ def test_sanity_check_with_test_runner(plan):
     args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
         "additional_services": [constants.ADDITIONAL_SERVICES.test_runner],
         "test_runner_params": {
-            "image": constants.DEFAULT_IMAGES.get("test_runner_image"),
+            "image": constants.ADDITIONAL_IMAGES.get("test_runner_image"),
         },
     }
 
@@ -103,6 +103,6 @@ def test_sanity_check_with_ethstats_server(plan):
             constants.ADDITIONAL_SERVICES.test_runner,
         ],
         "ethstats_server_params": {
-            "image": constants.DEFAULT_IMAGES.get("ethstats_server_image"),
+            "image": constants.ADDITIONAL_IMAGES.get("ethstats_server_image"),
         },
     }

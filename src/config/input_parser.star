@@ -122,16 +122,16 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         constants.ADDITIONAL_SERVICES.test_runner,
     ],
     "test_runner_params": {
-        "image": constants.DEFAULT_IMAGES.get("e2e_image"),
+        "image": constants.ADDITIONAL_IMAGES.get("test_runner_image"),
     },
 }
 
 DEFAULT_STATUS_CHECKER_ARGS = {
-    "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
+    "image": constants.ADDITIONAL_IMAGES.get("status_checker_image"),
 }
 
 DEFAULT_ETHSTATS_SERVER_ARGS = {
-    "image": constants.DEFAULT_IMAGES.get("ethstats_server_image"),
+    "image": constants.ADDITIONAL_IMAGES.get("ethstats_server_image"),
     "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
 }
 
