@@ -12,14 +12,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Extract timing information
-      shell: bash
-      continue-on-error: true
-      run: |
-        if ! python3 .github/scripts/parse_timing.py run.log --config-file=${{ inputs.args_filename }}; then
-          echo "::warning title=Timing Check Failed::Ccheck script output for details"
-        fi
-
     - name: Check if the enclave exists
       id: enclave-check
       shell: bash
