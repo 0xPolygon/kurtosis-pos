@@ -70,13 +70,13 @@ class RegistryPrefixAdder:
         with open(self.constants_path, 'r') as f:
             content = f.read()
 
-        # Find the DEFAULT_IMAGES dictionary
-        default_images_pattern = r'(DEFAULT_IMAGES\s*=\s*\{)(.*?)(\n\})'
-        match = re.search(default_images_pattern, content, re.DOTALL)
+        # Find the IMAGES dictionary
+        IMAGES_pattern = r'(IMAGES\s*=\s*\{)(.*?)(\n\})'
+        match = re.search(IMAGES_pattern, content, re.DOTALL)
 
         if not match:
             raise ValueError(
-                "DEFAULT_IMAGES dictionary not found in constants.star")
+                "IMAGES dictionary not found in constants.star")
 
         before_dict = match.group(1)
         dict_content = match.group(2)
@@ -134,9 +134,9 @@ class RegistryPrefixAdder:
             with open(self.constants_path, 'r') as f:
                 content = f.read()
 
-            # Check that DEFAULT_IMAGES dictionary is still present and well-formed
-            default_images_pattern = r'DEFAULT_IMAGES\s*=\s*\{.*?\n\}'
-            if not re.search(default_images_pattern, content, re.DOTALL):
+            # Check that IMAGES dictionary is still present and well-formed
+            IMAGES_pattern = r'IMAGES\s*=\s*\{.*?\n\}'
+            if not re.search(IMAGES_pattern, content, re.DOTALL):
                 return False
 
             # Check for basic syntax issues

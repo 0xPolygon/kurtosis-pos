@@ -44,7 +44,7 @@ ADDITIONAL_SERVICES = struct(
     ethstats_server="ethstats_server",
 )
 
-DEFAULT_IMAGES = {
+IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.16.8",
     "l1_cl_image": "sigp/lighthouse:v8.0.0",

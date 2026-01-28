@@ -10,18 +10,18 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
             "count": 1,
             # Consensus client
             "cl_type": "lighthouse",
-            "cl_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
+            "cl_image": constants.IMAGES.get("l1_cl_image"),
             "cl_max_cpu": 2000,  # in milicores (2 cores)
             "cl_max_mem": 4096,  # in megabytes (4 GB)
             # Execution client
             "el_type": "geth",
-            "el_image": constants.DEFAULT_IMAGES.get("l1_el_image"),
+            "el_image": constants.IMAGES.get("l1_el_image"),
             "el_max_cpu": 3000,  # in milicores (3 cores)
             "el_max_mem": 8192,  # in megabytes (8 GB)
             # Validator client
             "use_separate_vc": True,
             "vc_type": "lighthouse",
-            "vc_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
+            "vc_image": constants.IMAGES.get("l1_cl_image"),
             "vc_max_cpu": 2000,  # in milicores (2 cores)
             "vc_max_mem": 4096,  # in megabytes (4 GB)
             # Fulu hard fork config
@@ -55,15 +55,15 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
 DEFAULT_POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
     "cl_type": constants.CL_TYPE.heimdall_v2,
-    "cl_image": constants.DEFAULT_IMAGES.get("l2_cl_heimdall_v2_image"),
-    "cl_queue_image": constants.DEFAULT_IMAGES.get("l2_cl_queue_image"),
+    "cl_image": constants.IMAGES.get("l2_cl_heimdall_v2_image"),
+    "cl_queue_image": constants.IMAGES.get("l2_cl_queue_image"),
     "cl_min_retain_blocks": constants.CL_MIN_RETAIN_BLOCKS,
     "cl_compact_enabled": constants.CL_COMPACT_ENABLED,
     "cl_compaction_interval": constants.CL_COMPACTION_INTERVAL,
     "cl_storage_pruning_interval": constants.CL_STORAGE_PRUNING_INTERVAL,
     "cl_indexer_pruning_enabled": constants.CL_INDEXER_PRUNING_ENABLED,
     "el_type": constants.EL_TYPE.bor,
-    "el_image": constants.DEFAULT_IMAGES.get("l2_el_bor_image"),
+    "el_image": constants.IMAGES.get("l2_el_bor_image"),
     "count": 1,
 }
 
@@ -78,10 +78,10 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     "log_format": constants.LOG_FORMAT.text,
     "participants": [DEFAULT_POLYGON_POS_PARTICIPANT],
     "setup_images": {
-        "contract_deployer": constants.DEFAULT_IMAGES.get(
+        "contract_deployer": constants.IMAGES.get(
             "pos_contract_deployer_image"
         ),
-        "validator_config_generator": constants.DEFAULT_IMAGES.get(
+        "validator_config_generator": constants.IMAGES.get(
             "pos_validator_config_generator_image"
         ),
     },
@@ -265,7 +265,7 @@ def _parse_participants(participants, log_level, log_format):
         cl_image = p.get("cl_image", "")
         if cl_type and not cl_image:
             if cl_type == constants.CL_TYPE.heimdall_v2:
-                p["cl_image"] = constants.DEFAULT_IMAGES.get("l2_cl_heimdall_v2_image")
+                p["cl_image"] = constants.IMAGES.get("l2_cl_heimdall_v2_image")
             else:
                 fail("Invalid CL client type: '{}'.".format(cl_type))
 
@@ -274,9 +274,9 @@ def _parse_participants(participants, log_level, log_format):
         el_image = p.get("el_image", "")
         if el_type and not el_image:
             if el_type == constants.EL_TYPE.bor:
-                p["el_image"] = constants.DEFAULT_IMAGES.get("l2_el_bor_image")
+                p["el_image"] = constants.IMAGES.get("l2_el_bor_image")
             elif el_type == constants.EL_TYPE.erigon:
-                p["el_image"] = constants.DEFAULT_IMAGES.get("l2_el_erigon_image")
+                p["el_image"] = constants.IMAGES.get("l2_el_erigon_image")
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
 

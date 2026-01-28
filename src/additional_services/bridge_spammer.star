@@ -63,7 +63,7 @@ def launch(
     plan.add_service(
         name="l1-bridge-spammer",
         config=ServiceConfig(
-            image=constants.DEFAULT_IMAGES.get("toolbox_image"),
+            image=constants.IMAGES.get("toolbox_image"),
             files={
                 "/opt": Directory(artifact_names=[bridge_spammer_config_artifact]),
             },
