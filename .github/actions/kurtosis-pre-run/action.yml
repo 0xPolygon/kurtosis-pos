@@ -54,21 +54,6 @@ runs:
         version: v1.4.2
         cache: false
 
-    # Login to registries
-    - name: Login to docker registry
-      if: ${{ inputs.docker_username && inputs.docker_token }}
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-      with:
-        username: ${{ inputs.docker_username }}
-        password: ${{ inputs.docker_token }}
-
-    - name: Login to github container registry
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ github.token }}
-
     # Load cached images
     - name: Cache docker images
       id: cache-docker
@@ -95,6 +80,21 @@ runs:
           echo "No cached images found, will pull from GCR"
         fi
         docker images
+
+    # Login to registries
+    - name: Login to docker registry
+      if: ${{ inputs.docker_username && inputs.docker_token }}
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+      with:
+        username: ${{ inputs.docker_username }}
+        password: ${{ inputs.docker_token }}
+
+    - name: Login to github container registry
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
 
     # Pull images from GCR if specified
     - uses: actions/setup-python@v4
@@ -139,19 +139,7 @@ runs:
       shell: bash
       run: |
         registry="europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/virtual"
-        images=(
-          "kurtosistech/engine:1.12.1"
-          "kurtosistech/core:1.12.1"
-          "kurtosistech/files-artifacts-expander:1.12.1"
-          "timberio/vector:0.45.0-debian"
-          "traefik:2.10.6"
-          "alpine:3.17"
-          "badouralix/curl-jq:latest"
-          "protolambda/eth2-val-tools:latest"
-          "ethpandaops/ethereum-genesis-generator:5.2.2"
-          "mslipper/deployment-utils:latest"
-        )
-        for image in "${images[@]}"; do
+        cat .github/actions/kurtosis-pre-run/images.txt | while read image; do
           {
             if ! docker image inspect "${image}" >/dev/null 2>&1; then
               echo "Pulling ${registry}/${image}..."
@@ -187,4 +175,3 @@ runs:
         echo "Docker images saved successfully"
         echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
         echo "Number of images: $(ls -1 /tmp/docker-images | wc -l)"
-
