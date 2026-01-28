@@ -29,7 +29,6 @@ POLYGON_POS_PARAMS = {
     ],
     "setup_images": [
         "contract_deployer",
-        "el_genesis_builder",
         "validator_config_generator",
     ],
     "network_params": [

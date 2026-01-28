@@ -109,7 +109,6 @@ def run(plan, args):
             plan,
             polygon_pos_args,
             validator_accounts,
-            validator_config_artifact,
             admin_address,
         )
     else:

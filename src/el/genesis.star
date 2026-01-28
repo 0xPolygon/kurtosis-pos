@@ -7,25 +7,24 @@ EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 
 
-def generate(
-    plan, polygon_pos_args, validator_accounts, validator_config_artifact, admin_address
-):
+def generate(plan, polygon_pos_args, validator_accounts, admin_address):
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
 
-    # Generate a temporary EL genesis with an empty `alloc` field.
+    # Generate a temporary EL genesis with hardcoded contracts allocation.
     el_genesis_temporary_artifact = plan.render_templates(
         name="l2-el-genesis-tmp",
         config={
-            "genesis.json": struct(
+            "genesis-tmp.json": struct(
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
+                    # chain params
                     "el_chain_id": network_params.get("el_chain_id"),
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_gas_limit_hex": hex.int_to_hex(
                         network_params.get("el_gas_limit")
                     ),
-                    # Hardfork configurations
+                    # hardfork configurations
                     "jaipur_fork_block": network_params.get("jaipur_fork_block"),
                     "delhi_fork_block": network_params.get("delhi_fork_block"),
                     "indore_fork_block": network_params.get("indore_fork_block"),
@@ -44,43 +43,30 @@ def generate(
         },
     )
 
-    # Generate the alloc field of the EL genesis and return the final EL genesis.
+    # The template that Kurtosis generates is not a valid json thus if you want to check the content
+    # of the file artifact, Kurtosis will render an empty file... This is a hack to format the file
+    # with jq and get a working artifact.
     el_genesis_builder_script_artifact = plan.upload_files(
         src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
         name="l2-el-genesis-builder-config",
     )
-    result = setup_images.get("el_genesis_builder").split(":")
-    if len(result) != 2:
-        fail(
-            "The EL genesis builder image tag should be in the format <image>:<tag>, got: '{}'".format(
-                setup_images.get("el_genesis_builder")
-            )
-        )
-    contracts_tag = result[1]
-    validators_alloc = generate_validator_allocs(validator_accounts)
+    validator_alloc = _generator_validator_alloc(validator_accounts)
     result = plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
-        image=setup_images.get("el_genesis_builder"),
         env_vars={
-            "EL_CHAIN_ID": network_params.get("el_chain_id"),
-            "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
-            "CL_CHAIN_ID": network_params.get("cl_chain_id"),
-            "DEFAULT_CL_CHAIN_ID": constants.DEFAULT_CL_CHAIN_ID,
-            "CONTRACTS_TAG": contracts_tag,
-            "DEFAULT_CONTRACTS_TAG": constants.DEFAULT_CONTRACTS_TAG,
-            "VALIDATORS_ALLOC": json.indent(json.encode(validators_alloc)),
+            "VALIDATOR_ALLOC": json.indent(json.encode(validator_alloc)),
+            # Note that we don't add the admin address to the alloc in starlark because
+            # admin_address is a Kurtosis future string. We can't perform any string
+            # operations on it like removing the "0x" prefix. We do it in the bash script.
             "ADMIN_ADDRESS": admin_address,
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
             ),
         },
         files={
-            # Load the artefacts one by one instead of using a Directory because it is not
-            # supported by Kurtosis when using plan.run_sh unfortunately.
             "/opt/data/genesis": el_genesis_temporary_artifact,
             "/opt/data/genesis-builder": el_genesis_builder_script_artifact,
-            "/opt/data/validator": validator_config_artifact,
         },
         store=[
             StoreSpec(
@@ -88,7 +74,7 @@ def generate(
                 name="l2-el-genesis",
             ),
         ],
-        run="bash /opt/data/genesis-builder/builder.sh",
+        run="sh /opt/data/genesis-builder/builder.sh",
     )
     artifact_count = len(result.files_artifacts)
     if artifact_count != 1:
@@ -101,12 +87,10 @@ def generate(
     return l2_el_genesis_artifact
 
 
-def generate_validator_allocs(validator_accounts):
+def _generator_validator_alloc(validator_accounts):
     alloc = {}
+    balance_wei = hex.int_to_hex(math.ether_to_wei(constants.VALIDATORS_BALANCE_ETH))
     for v in validator_accounts:
-        alloc[v.cometbft.address.removeprefix("0x")] = {
-            "balance": hex.int_to_hex(
-                math.ether_to_wei(constants.VALIDATORS_BALANCE_ETH)
-            )
-        }
+        validator_address = v.cometbft.address.removeprefix("0x")
+        alloc[validator_address] = {"balance": balance_wei}
     return alloc

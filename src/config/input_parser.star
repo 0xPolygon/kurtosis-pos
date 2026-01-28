@@ -81,9 +81,6 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
         "contract_deployer": constants.DEFAULT_IMAGES.get(
             "pos_contract_deployer_image"
         ),
-        "el_genesis_builder": constants.DEFAULT_IMAGES.get(
-            "pos_el_genesis_builder_image"
-        ),
         "validator_config_generator": constants.DEFAULT_IMAGES.get(
             "pos_validator_config_generator_image"
         ),
