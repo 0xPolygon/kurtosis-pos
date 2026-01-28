@@ -16,6 +16,7 @@ inputs:
 runs:
   using: composite
   steps:
+    # Release disk space
     - name: Free up disk space
       uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
       with:
@@ -63,6 +64,35 @@ runs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ github.token }}
+
+    # Load cached images
+    - name: Cache docker images
+      id: cache-docker
+      uses: actions/cache@v4
+      with:
+        path: /tmp/docker-images
+        key: docker-images-${{ github.ref }}-week-${{ github.run_number / 50 }}
+        restore-keys: |
+          docker-images-${{ github.ref }}-week-
+          docker-images-${{ github.ref }}-
+          docker-images-
+
+    - name: Load cached docker images
+      shell: bash
+      run: |
+        echo "Loading cached Docker images..."
+        if [ -d "/tmp/docker-images" ]; then
+          for image_tar in /tmp/docker-images/*.tar; do
+            if [ -f "$image_tar" ]; then
+              echo "Loading $(basename $image_tar)..."
+              docker load -i "$image_tar"
+            fi
+          done
+          echo "Cached images loaded successfully"
+        else
+          echo "No cached images found, will pull from GCR"
+        fi
+        docker images
 
     # Pull images from GCR if specified
     - uses: actions/setup-python@v4
@@ -113,6 +143,7 @@ runs:
         )
         for image in "${images[@]}"; do
           {
+            echo "Pulling ${registry}/${image}..."
             docker pull "${registry}/${image}"
             docker tag "${registry}/${image}" "${image}"
           } &
@@ -123,3 +154,21 @@ runs:
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
       shell: bash
       run: docker images
+
+    - name: Save Docker images to cache
+      shell: bash
+      run: |
+        echo "Saving all Docker images to cache..."
+        mkdir -p /tmp/docker-images
+
+        # Save all images on the host (excluding dangling images)
+        docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>" | while read image; do
+          safe_name=$(echo "$image" | sed 's/[\/:]/_/g')
+          echo "Saving $image as ${safe_name}.tar"
+          docker save "$image" -o "/tmp/docker-images/${safe_name}.tar"
+        done
+
+        echo "Docker images saved successfully"
+        du -sh /tmp/docker-images
+        ls -lh /tmp/docker-images | wc -l
+
