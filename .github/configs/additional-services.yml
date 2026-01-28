@@ -5,5 +5,4 @@ polygon_pos_package:
     - ethstats_server
     - observability
     - status_checker
-    - test_runner
     - tx_spammer
