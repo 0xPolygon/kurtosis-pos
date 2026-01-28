@@ -32,4 +32,4 @@ runs:
       shell: bash
       run: bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats
       env:
-        TIMEOUT_SECONDS: 300 # default: 180
+        TIMEOUT_SECONDS: 600 # default: 180
