@@ -26,7 +26,6 @@ jobs:
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
-          pull_images_from_gcr: "false"
 
       - name: Kurtosis run
         run: |

@@ -8,6 +8,10 @@ inputs:
   args_filename:
     description: The name of the args file
     required: false
+  save_cache:
+    description: Whether this job should save the Docker image cache
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -76,3 +80,22 @@ runs:
       with:
         name: ${{ steps.archive-name.outputs.ARCHIVE_NAME }}
         path: ./dump
+
+    # Cache images for future runs
+    - name: Cache docker images
+      if: ${{ inputs.save_cache == 'true' }}
+      shell: bash
+      run: |
+        echo "Saving all Docker images to cache..."
+        mkdir -p /tmp/docker-images
+
+        # Save all images on the host (excluding dangling images)
+        docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>" | while read image; do
+          safe_name=$(echo "$image" | sed 's/[\/:]/_/g')
+          echo "Saving $image as ${safe_name}.tar"
+          docker save "$image" -o "/tmp/docker-images/${safe_name}.tar"
+        done
+
+        echo "Docker images saved successfully"
+        echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
+        echo "Number of images: $(ls -1 /tmp/docker-images | wc -l)"

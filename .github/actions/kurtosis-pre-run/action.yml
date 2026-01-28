@@ -8,14 +8,6 @@ inputs:
   docker_token:
     description: The token for docker registry
     required: false
-  pull_images_from_gcr:
-    description: Whether to pull images from GCR
-    required: false
-    default: "true"
-  save_cache:
-    description: Whether this job should save the Docker image cache
-    required: false
-    default: "false"
 
 runs:
   using: composite
@@ -97,82 +89,3 @@ runs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ github.token }}
-
-    # Pull images from GCR if specified
-    - uses: actions/setup-python@v4
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      with:
-        python-version: 3.13
-
-    - name: Add registry prefix to image names
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: python3 .github/scripts/add-registry-prefix.py --registry-prefix "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/virtual"
-
-    - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      with:
-        workload_identity_provider: "projects/337907489413/locations/global/workloadIdentityPools/github-wif/providers/github"
-        service_account: "kurtosis-pos-ci@prj-polygonlabs-devtools-dev.iam.gserviceaccount.com"
-
-    - uses: google-github-actions/setup-gcloud@26f734c2779b00b7dda794207734c511110a4368 # v3.0.0
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-
-    - name: Configure Docker to use GCR
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: gcloud auth configure-docker europe-west2-docker.pkg.dev
-
-    - name: Pre pull package images from GCR
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: |
-        cat modified-images.txt | while read image; do
-          if ! docker image inspect "$image" >/dev/null 2>&1; then
-            echo "Pulling $image..."
-            docker pull "$image"
-          else
-            echo "${image} already present"
-          fi
-        done
-
-    - name: Pre pull kurtosis core images from GCR
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: |
-        registry="europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/virtual"
-        cat .github/actions/kurtosis-pre-run/images.txt | while read image; do
-          {
-            if ! docker image inspect "${image}" >/dev/null 2>&1; then
-              docker pull "${registry}/${image}"
-              docker tag "${registry}/${image}" "${image}"
-            else
-              echo "${image} already present"
-            fi
-          } &
-        done
-        wait
-
-    - name: Display docker images
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: docker images
-
-    # Cache images for future runs
-    - name: Save Docker images to cache
-      if: ${{ inputs.save_cache == 'true' }}
-      shell: bash
-      run: |
-        echo "Saving all Docker images to cache..."
-        mkdir -p /tmp/docker-images
-
-        # Save all images on the host (excluding dangling images)
-        docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>" | while read image; do
-          safe_name=$(echo "$image" | sed 's/[\/:]/_/g')
-          echo "Saving $image as ${safe_name}.tar"
-          docker save "$image" -o "/tmp/docker-images/${safe_name}.tar"
-        done
-
-        echo "Docker images saved successfully"
-        echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
-        echo "Number of images: $(ls -1 /tmp/docker-images | wc -l)"
