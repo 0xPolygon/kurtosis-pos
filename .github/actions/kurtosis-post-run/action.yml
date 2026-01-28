@@ -91,10 +91,12 @@ runs:
 
         # Save all images on the host (excluding dangling images)
         docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>" | while read image; do
-          safe_name=$(echo "$image" | sed 's/[\/:]/_/g')
-          echo "Saving $image as ${safe_name}.tar"
-          docker save "$image" -o "/tmp/docker-images/${safe_name}.tar"
+          {
+            safe_name=$(echo "$image" | sed 's/[\/:]/_/g')
+            docker save "$image" -o "/tmp/docker-images/${safe_name}.tar"
+          } &
         done
+        wait
 
         echo "Docker images saved successfully"
         echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
