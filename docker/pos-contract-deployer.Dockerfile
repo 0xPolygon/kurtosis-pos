@@ -6,7 +6,7 @@ ARG POS_CONTRACTS_BRANCH="anvil-pos"
 ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="d96d592"
 
 ENV FOUNDRY_VERSION="stable"
-ENV DEFAULT_EL_CHAIN_ID="4927"
+ENV EL_CHAIN_ID="4927"
 
 # Prepare Polygon PoS smart contracts for deployment by compiling them
 # For reference: https://github.com/0xPolygon/pos-contracts
@@ -30,7 +30,7 @@ RUN apt-get update \
   && sed -i '/^\[etherscan\]/,/^$/d' foundry.toml \
   # Pre-build for default chain ID (most common case)
   && npm install \
-  && npm run template:process -- --bor-chain-id ${DEFAULT_EL_CHAIN_ID} \
+  && npm run template:process -- --bor-chain-id ${EL_CHAIN_ID} \
   && npm run generate:interfaces \
   && forge build \
   # Clean up to reduce image size while keeping dependencies needed for forge script

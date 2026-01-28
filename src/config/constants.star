@@ -69,12 +69,13 @@ ADDITIONAL_IMAGES = {
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 
-DEFAULT_L1_CHAIN_ID = "3151908"  # 0x301824
-DEFAULT_CONTRACTS_TAG = "96a19dd"
-DEFAULT_EL_CHAIN_ID = "4927"
-DEFAULT_CL_CHAIN_ID = "heimdall-4927"  # Follows the standard "heimdall-<el_chain_id>".
-DEFAULT_EL_SPRINT_DURATION = 16
-DEFAULT_EL_SPAN_DURATION = DEFAULT_EL_SPRINT_DURATION * 8
+L1_CHAIN_ID = "3151908"  # 0x301824
+EL_CHAIN_ID = "4927"
+CL_CHAIN_ID = (
+    "heimdall-" + EL_CHAIN_ID
+)  # Follows the standard "heimdall-<el_chain_id>".
+EL_SPRINT_DURATION = 16
+EL_SPAN_DURATION = EL_SPRINT_DURATION * 8
 
 ADMIN_BALANCE_ETH = math.pow(10, 9)
 VALIDATORS_BALANCE_ETH = math.pow(10, 4)
