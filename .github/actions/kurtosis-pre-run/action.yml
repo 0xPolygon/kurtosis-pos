@@ -132,7 +132,7 @@ runs:
             echo "Pulling $image..."
             docker pull "$image"
           else
-            echo "${image} already exists"
+            echo "${image} already present"
           fi
         done
 
@@ -147,7 +147,7 @@ runs:
               docker pull "${registry}/${image}"
               docker tag "${registry}/${image}" "${image}"
             else
-              echo "${image} already exists"
+              echo "${image} already present"
             fi
           } &
         done
