@@ -124,7 +124,15 @@ runs:
     - name: Pre pull package images from GCR
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
       shell: bash
-      run: cat modified-images.txt | xargs -n 1 -P 8 docker pull
+      run: |
+        cat modified-images.txt | while read image; do
+          if ! docker image inspect "$image" >/dev/null 2>&1; then
+            echo "Pulling $image..."
+            docker pull "$image"
+          else
+            echo "Image $image already exists, skipping pull"
+          fi
+        done
 
     - name: Pre pull kurtosis core images from GCR
       if: ${{ inputs.pull_images_from_gcr == 'true' }}
@@ -145,9 +153,13 @@ runs:
         )
         for image in "${images[@]}"; do
           {
-            echo "Pulling ${registry}/${image}..."
-            docker pull "${registry}/${image}"
-            docker tag "${registry}/${image}" "${image}"
+            if ! docker image inspect "${image}" >/dev/null 2>&1; then
+              echo "Pulling ${registry}/${image}..."
+              docker pull "${registry}/${image}"
+              docker tag "${registry}/${image}" "${image}"
+            else
+              echo "Image ${image} already exists, skipping pull"
+            fi
           } &
         done
         wait
