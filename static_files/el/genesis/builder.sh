@@ -30,6 +30,23 @@ fi
 echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
 echo "DEFAULT_CL_CHAIN_ID: ${DEFAULT_CL_CHAIN_ID}"
 
+if [[ -z "${CONTRACTS_TAG}" ]]; then
+  echo "Error: CONTRACTS_TAG environment variable is not set"
+  exit 1
+fi
+if [[ -z "${DEFAULT_CONTRACTS_TAG}" ]]; then
+  echo "Error: DEFAULT_CONTRACTS_TAG environment variable is not set"
+  exit 1
+fi
+echo "CONTRACTS_TAG: ${CONTRACTS_TAG}"
+echo "DEFAULT_CONTRACTS_TAG: ${DEFAULT_CONTRACTS_TAG}"
+
+if [[ -z "${VALIDATORS_ALLOC}" ]]; then
+  echo "Error: VALIDATORS_ALLOC environment variable is not set"
+  exit 1
+fi
+echo "VALIDATORS_ALLOC: ${VALIDATORS_ALLOC}"
+
 if [[ -z "${ADMIN_ADDRESS}" ]]; then
   echo "Error: ADMIN_ADDRESS environment variable is not set"
   exit 1
@@ -52,25 +69,30 @@ else
   truffle compile
 fi
 
-# Generate the EL genesis alloc field.
-echo "Generating the genesis file..."
-cp /opt/data/validator/validators.js validators.js
-node generate-genesis.js --bor-chain-id "${EL_CHAIN_ID}" --heimdall-chain-id "${CL_CHAIN_ID}"
-if [[ -s "${EL_GENESIS_ALLOC_FILE}" ]]; then
-  echo "EL genesis alloc field generated."
+# Regenerate the EL genesis alloc field if needed.
+if [[ "${CONTRACTS_TAG}" == "${DEFAULT_CONTRACTS_TAG}" ]]; then
+  echo "There is no need to regenerate the EL genesis alloc field since CONTRACTS_TAG is already set to its default value."
+  jq '{alloc: .alloc}' "${EL_GENESIS_FILE}" >"${EL_GENESIS_ALLOC_FILE}"
+  jq --argjson alloc "${VALIDATORS_ALLOC}" '.alloc += $alloc' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+  mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 else
-  echo "Error: ${EL_GENESIS_ALLOC_FILE} does not exist or is empty."
+  echo "Generating the genesis file..."
+  cp /opt/data/validator/validators.js validators.js
+  node generate-genesis.js --bor-chain-id "${EL_CHAIN_ID}" --heimdall-chain-id "${CL_CHAIN_ID}"
+  if [[ -s "${EL_GENESIS_ALLOC_FILE}" ]]; then
+    echo "EL genesis alloc field generated."
+  else
+    echo "Error: ${EL_GENESIS_ALLOC_FILE} does not exist or is empty."
+  fi
 fi
 
 # Prefund the admin address.
 admin_address=$(echo "${ADMIN_ADDRESS}" | sed 's/^0x//')
-jq --arg a "${admin_address}" --arg b "${ADMIN_BALANCE_WEI}" \
-  '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+jq --arg a "${admin_address}" --arg b "${ADMIN_BALANCE_WEI}" '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
-jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
-  "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+jq --arg key 'alloc' '. + {($key): input | .[$key]}' "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" >tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
 # Add the current timestamp to the EL genesis.

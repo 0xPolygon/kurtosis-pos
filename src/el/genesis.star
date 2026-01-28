@@ -7,7 +7,9 @@ EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 
 
-def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
+def generate(
+    plan, polygon_pos_args, validator_accounts, validator_config_artifact, admin_address
+):
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
 
@@ -47,6 +49,15 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
         src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
         name="l2-el-genesis-builder-config",
     )
+    result = setup_images.get("el_genesis_builder").split(":")
+    if len(result) != 2:
+        fail(
+            "The EL genesis builder image tag should be in the format <image>:<tag>, got: '{}'".format(
+                setup_images.get("el_genesis_builder")
+            )
+        )
+    contracts_tag = result[1]
+    validators_alloc = generate_validator_allocs(validator_accounts)
     result = plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
@@ -56,6 +67,9 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
             "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
             "CL_CHAIN_ID": network_params.get("cl_chain_id"),
             "DEFAULT_CL_CHAIN_ID": constants.DEFAULT_CL_CHAIN_ID,
+            "CONTRACTS_TAG": contracts_tag,
+            "DEFAULT_CONTRACTS_TAG": constants.DEFAULT_CONTRACTS_TAG,
+            "VALIDATORS_ALLOC": json.indent(json.encode(validators_alloc)),
             "ADMIN_ADDRESS": admin_address,
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
@@ -85,3 +99,14 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
         )
     l2_el_genesis_artifact = result.files_artifacts[0]
     return l2_el_genesis_artifact
+
+
+def generate_validator_allocs(validator_accounts):
+    alloc = {}
+    for v in validator_accounts:
+        alloc[v.cometbft.address.removeprefix("0x")] = {
+            "balance": hex.int_to_hex(
+                math.ether_to_wei(constants.VALIDATORS_BALANCE_ETH)
+            )
+        }
+    return alloc

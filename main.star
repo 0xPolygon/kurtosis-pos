@@ -108,6 +108,7 @@ def run(plan, args):
         l2_el_genesis_artifact = el_genesis.generate(
             plan,
             polygon_pos_args,
+            validator_accounts,
             validator_config_artifact,
             admin_address,
         )
