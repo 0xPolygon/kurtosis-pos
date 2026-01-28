@@ -13,3 +13,7 @@ METRICS_PORT_NUMBER = 7071
 
 PPROF_PORT_ID = "pprof"
 PPROF_PORT_NUMBER = 6060
+
+# CPU and memory limits.
+MAX_CPU = 4000  # in milicores (4 cores)
+MAX_MEM = 16384  # in megabytes (16 GB)

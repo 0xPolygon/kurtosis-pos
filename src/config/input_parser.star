@@ -11,13 +11,19 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
             # Consensus client
             "cl_type": "lighthouse",
             "cl_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
+            "cl_max_cpu": 2000,  # in milicores (2 cores)
+            "cl_max_mem": 4096,  # in megabytes (4 GB)
             # Execution client
             "el_type": "geth",
             "el_image": constants.DEFAULT_IMAGES.get("l1_el_image"),
+            "el_max_cpu": 3000,  # in milicores (3 cores)
+            "el_max_mem": 8192,  # in megabytes (8 GB)
             # Validator client
             "use_separate_vc": True,
             "vc_type": "lighthouse",
             "vc_image": constants.DEFAULT_IMAGES.get("l1_cl_image"),
+            "vc_max_cpu": 2000,  # in milicores (2 cores)
+            "vc_max_mem": 4096,  # in megabytes (4 GB)
             # Fulu hard fork config
             # In PeerDAS, a supernode is a node that custodies and samples all data columns (i.e. holds full awareness
             # of the erasure-coded blob data) and helps with distributed blob building — computing proofs and

@@ -1,4 +1,5 @@
 constants = import_module("../config/constants.star")
+shared = import_module("./shared.star")
 
 
 def launch(
@@ -17,5 +18,7 @@ def launch(
             env_vars={
                 "WS_SECRET": ethstats_server_params.get("ws_secret"),
             },
+            max_cpu=shared.MAX_CPU,
+            max_memory=shared.MAX_MEM,
         ),
     )

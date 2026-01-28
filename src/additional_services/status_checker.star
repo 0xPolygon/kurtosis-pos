@@ -1,3 +1,4 @@
+shared = import_module("./shared.star")
 util = import_module("./util.star")
 
 
@@ -44,5 +45,7 @@ def launch(
                 "L1_RPCS": json.encode(l1_rpcs),
                 "L2_URLS": json.encode(l2_urls),
             },
+            max_cpu=shared.MAX_CPU,
+            max_memory=shared.MAX_MEM,
         ),
     )
