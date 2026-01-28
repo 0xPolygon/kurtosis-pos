@@ -132,7 +132,7 @@ runs:
             echo "Pulling $image..."
             docker pull "$image"
           else
-            echo "Image $image already exists, skipping pull"
+            echo "${image} already exists"
           fi
         done
 
