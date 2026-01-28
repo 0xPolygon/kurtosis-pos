@@ -38,7 +38,6 @@ ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
     bridge_spammer="bridge_spammer",
     observability="observability",
-    test_runner="test_runner",
     tx_spammer="tx_spammer",
     status_checker="status_checker",
     ethstats_server="ethstats_server",
@@ -60,7 +59,6 @@ IMAGES = {
 }
 
 ADDITIONAL_IMAGES = {
-    "test_runner_image": "ghcr.io/agglayer/e2e:9fd2d09",
     "status_checker_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.2.1",
