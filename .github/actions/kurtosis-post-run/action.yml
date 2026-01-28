@@ -1,5 +1,5 @@
 name: kurtosis-post-run
-description: Dump enclave and upload it as an artifact after deploying Kurtosis packages.
+description: Dump enclave and upload it as an artifact after deploying Kurtosis packages
 
 inputs:
   enclave_name:

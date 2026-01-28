@@ -1,5 +1,5 @@
 name: monitor-milestones-and-checkpoints
-description: Monitor milestones and checkpoints in a Kurtosis enclave.
+description: Monitor milestones and checkpoints in a Kurtosis enclave
 
 inputs:
   enclave_name:
