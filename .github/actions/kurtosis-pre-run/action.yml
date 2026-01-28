@@ -71,10 +71,12 @@ runs:
         if [ -d "/tmp/docker-images" ]; then
           for image_tar in /tmp/docker-images/*.tar; do
             if [ -f "$image_tar" ]; then
-              echo "Loading $(basename $image_tar)..."
-              docker load -i "$image_tar"
+              {
+                docker load -i "$image_tar"
+              } &
             fi
           done
+          wait
           echo "Cached images loaded successfully"
         else
           echo "No cached images found, will pull from GCR"
@@ -142,11 +144,10 @@ runs:
         cat .github/actions/kurtosis-pre-run/images.txt | while read image; do
           {
             if ! docker image inspect "${image}" >/dev/null 2>&1; then
-              echo "Pulling ${registry}/${image}..."
               docker pull "${registry}/${image}"
               docker tag "${registry}/${image}" "${image}"
             else
-              echo "Image ${image} already exists, skipping pull"
+              echo "${image} already exists"
             fi
           } &
         done
