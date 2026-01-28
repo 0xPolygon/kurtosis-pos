@@ -2,7 +2,7 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
-DEFAULT_ETHEREUM_PACKAGE_ARGS = {
+ETHEREUM_PACKAGE_ARGS = {
     "global_log_level": constants.LOG_LEVEL.info,
     "participants": [
         {
@@ -52,7 +52,7 @@ DEFAULT_ETHEREUM_PACKAGE_ARGS = {
 }
 
 # Log level and format are not set by default here to allow global log level override.
-DEFAULT_POLYGON_POS_PARTICIPANT = {
+POLYGON_POS_PARTICIPANT = {
     "kind": constants.PARTICIPANT_KIND.validator,
     "cl_type": constants.CL_TYPE.heimdall_v2,
     "cl_image": constants.IMAGES.get("l2_cl_heimdall_v2_image"),
@@ -67,16 +67,16 @@ DEFAULT_POLYGON_POS_PARTICIPANT = {
     "count": 1,
 }
 
-DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT = {
+POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_produce_witness": False,
     "el_bor_sync_with_witness": False,
     "el_bor_stateless_parallel_import": False,
 }
 
-DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
+POLYGON_POS_PACKAGE_ARGS = {
     "log_level": constants.LOG_LEVEL.info,
     "log_format": constants.LOG_FORMAT.text,
-    "participants": [DEFAULT_POLYGON_POS_PARTICIPANT],
+    "participants": [POLYGON_POS_PARTICIPANT],
     "setup_images": {
         "contract_deployer": constants.IMAGES.get("pos_contract_deployer_image"),
         "validator_config_generator": constants.IMAGES.get(
@@ -124,16 +124,16 @@ DEFAULT_POLYGON_POS_PACKAGE_ARGS = {
     },
 }
 
-DEFAULT_STATUS_CHECKER_ARGS = {
+STATUS_CHECKER_ARGS = {
     "image": constants.ADDITIONAL_IMAGES.get("status_checker_image"),
 }
 
-DEFAULT_ETHSTATS_SERVER_ARGS = {
+ETHSTATS_SERVER_ARGS = {
     "image": constants.ADDITIONAL_IMAGES.get("ethstats_server_image"),
     "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
 }
 
-DEFAULT_DEV_ARGS = {
+DEV_ARGS = {
     "should_deploy_l1": True,
     "should_deploy_matic_contracts": True,
 }
@@ -165,9 +165,9 @@ def _parse_ethereum_args(plan, ethereum_args):
 
     # Set default params if not provided.
     if "network_params" not in ethereum_args:
-        ethereum_args = dict(DEFAULT_ETHEREUM_PACKAGE_ARGS)
+        ethereum_args = dict(ETHEREUM_PACKAGE_ARGS)
 
-    for k, v in DEFAULT_ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
+    for k, v in ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
         ethereum_args.get("network_params", {}).setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -235,10 +235,10 @@ def _parse_dev_args(plan, dev_args):
 
     # Set default params if not provided.
     if "should_deploy_l1" not in dev_args:
-        dev_args["should_deploy_l1"] = DEFAULT_DEV_ARGS.get("should_deploy_l1", True)
+        dev_args["should_deploy_l1"] = DEV_ARGS.get("should_deploy_l1", True)
 
     if "should_deploy_matic_contracts" not in dev_args:
-        dev_args["should_deploy_matic_contracts"] = DEFAULT_DEV_ARGS.get(
+        dev_args["should_deploy_matic_contracts"] = DEV_ARGS.get(
             "should_deploy_matic_contracts", True
         )
 
@@ -252,7 +252,7 @@ def _parse_participants(participants, log_level, log_format):
 
     # Set default participant if not provided.
     if len(participants) == 0:
-        participants = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("participants", [])
+        participants = POLYGON_POS_PACKAGE_ARGS.get("participants", [])
 
     for p in participants:
         # Create a mutable copy of participant.
@@ -296,12 +296,12 @@ def _parse_participants(participants, log_level, log_format):
                 p["el_log_format"] = log_format
 
         # Fill in any missing fields with default values.
-        for k, v in DEFAULT_POLYGON_POS_PARTICIPANT.items():
+        for k, v in POLYGON_POS_PARTICIPANT.items():
             p.setdefault(k, v)
 
         # Fill in any missing fields with default values for bor participants.
         if el_type == constants.EL_TYPE.bor:
-            for k, v in DEFAULT_POLYGON_POS_EL_BOR_PARTICIPANT.items():
+            for k, v in POLYGON_POS_EL_BOR_PARTICIPANT.items():
                 p.setdefault(k, v)
 
         # Assign the modified dictionary back to the list.
@@ -318,9 +318,9 @@ def _parse_setup_images(setup_images):
         setup_images = dict(setup_images)
     else:
         # Set default matic contracts params if not provided.
-        setup_images = dict(DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}))
+        setup_images = dict(POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}))
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}).items():
+    for k, v in POLYGON_POS_PACKAGE_ARGS.get("setup_images", {}).items():
         setup_images.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -334,10 +334,10 @@ def _parse_network_params(network_params):
     else:
         # Set default network params if not provided.
         network_params = dict(
-            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
+            POLYGON_POS_PACKAGE_ARGS.get("network_params", {})
         )
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
+    for k, v in POLYGON_POS_PACKAGE_ARGS.get("network_params", {}).items():
         network_params.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -347,7 +347,7 @@ def _parse_network_params(network_params):
 def _parse_additional_services(additional_services):
     # Set default additional services if not provided.
     if len(additional_services) == 0:
-        additional_services = DEFAULT_POLYGON_POS_PACKAGE_ARGS.get(
+        additional_services = POLYGON_POS_PACKAGE_ARGS.get(
             "additional_services", []
         )
     return additional_services
@@ -364,10 +364,10 @@ def _parse_test_runner_params(is_test_runner_deployed, test_runner_params):
     else:
         # Set default test runner params if not provided.
         test_runner_params = dict(
-            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {})
+            POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {})
         )
 
-    for k, v in DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {}).items():
+    for k, v in POLYGON_POS_PACKAGE_ARGS.get("test_runner_params", {}).items():
         test_runner_params.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -385,10 +385,10 @@ def _parse_status_checker_params(is_status_checker_deployed, status_checker_para
     else:
         # Set default status checker params if not provided.
         status_checker_params = dict(
-            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("status_checker_params", {})
+            POLYGON_POS_PACKAGE_ARGS.get("status_checker_params", {})
         )
 
-    for k, v in DEFAULT_STATUS_CHECKER_ARGS.items():
+    for k, v in STATUS_CHECKER_ARGS.items():
         status_checker_params.setdefault(k, v)
 
     # Sort the dict and return the result.
@@ -406,10 +406,10 @@ def _parse_ethstats_server_params(is_ethstats_server_deployed, ethstats_server_p
     else:
         # Set default status checker params if not provided.
         ethstats_server_params = dict(
-            DEFAULT_POLYGON_POS_PACKAGE_ARGS.get("ethstats_server_params", {})
+            POLYGON_POS_PACKAGE_ARGS.get("ethstats_server_params", {})
         )
 
-    for k, v in DEFAULT_ETHSTATS_SERVER_ARGS.items():
+    for k, v in ETHSTATS_SERVER_ARGS.items():
         ethstats_server_params.setdefault(k, v)
 
     # Sort the dict and return the result.
