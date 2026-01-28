@@ -10,6 +10,6 @@ polygon_pos_package:
       count: 1
   network_params:
     # consensus layer
-    cl_chain_id: 4928
+    cl_chain_id: heimdall-4928
     # execution layer
-    el_chain_id: heimdall-4928
+    el_chain_id: 4928
