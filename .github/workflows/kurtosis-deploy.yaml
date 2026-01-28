@@ -42,7 +42,9 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
+        uses: ./.github/actions/state-sync-test
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
 
       - name: Monitor milestones and checkpoints
         uses: ./.github/actions/monitor-milestones-and-checkpoints
@@ -111,8 +113,10 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
-        if: steps.check-test-runner.outputs.test_runner_deployed == 'true' && !contains(matrix.file.name, 'additional-services')
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
+        if: ${{ !contains(matrix.file.name, 'additional-services') }}
+        uses: ./.github/actions/state-sync-test
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
 
       - name: Monitor milestones and checkpoints
         # TODO: Understand why checkpoints are not being created in heimdall-v2/erigon devnets.
