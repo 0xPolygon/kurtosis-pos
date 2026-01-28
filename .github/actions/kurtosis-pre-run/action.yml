@@ -170,6 +170,6 @@ runs:
         done
 
         echo "Docker images saved successfully"
-        du -sh /tmp/docker-images
-        ls -lh /tmp/docker-images | wc -l
+        echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
+        echo "Number of images: $(ls -1 /tmp/docker-images | wc -l)"
 
