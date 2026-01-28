@@ -75,9 +75,8 @@ runs:
       uses: actions/cache@v4
       with:
         path: /tmp/docker-images
-        key: docker-images-${{ github.ref_name }}
+        key: docker-images-${{ github.run_id }}
         restore-keys: |
-          docker-images-main
           docker-images-
 
     - name: Load cached docker images
