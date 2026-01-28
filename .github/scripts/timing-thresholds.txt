@@ -7,7 +7,7 @@ default: 120
 # Client configurations
 heimdall-v2-bor-minimal: 120
 heimdall-v2-bor: 150
-rio: 210
+rio: 220
 
 # Additional services configurations
 additional-services: 150
