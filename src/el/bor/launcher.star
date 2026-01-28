@@ -1,5 +1,5 @@
 constants = import_module("../../config/constants.star")
-el_shared = import_module("../shared.star")
+shared = import_module("../shared.star")
 
 # The folder where the bor template config is stored in the repository.
 BOR_TEMPLATE_CONFIG_FILE_PATH = "../../../static_files/el/bor/config.toml"
@@ -62,11 +62,11 @@ def launch(
                     ),
                     "ethstats_server_secret": ethstats_server_secret,
                     # ports
-                    "rpc_port_number": el_shared.RPC_PORT_NUMBER,
-                    "ws_port_number": el_shared.WS_PORT_NUMBER,
-                    "discovery_port_number": el_shared.DISCOVERY_PORT_NUMBER,
-                    "metrics_port_number": el_shared.METRICS_PORT_NUMBER,
-                    "pprof_port_number": el_shared.PPROF_PORT_NUMBER,
+                    "rpc_port_number": shared.RPC_PORT_NUMBER,
+                    "ws_port_number": shared.WS_PORT_NUMBER,
+                    "discovery_port_number": shared.DISCOVERY_PORT_NUMBER,
+                    "metrics_port_number": shared.METRICS_PORT_NUMBER,
+                    "pprof_port_number": shared.PPROF_PORT_NUMBER,
                     "ethstats_server_port_number": constants.ETHSTATS_SERVER_PORT_NUMBER,
                 },
             ),
@@ -95,24 +95,24 @@ def launch(
             image=participant.get("el_image"),
             # All port checks are disabled, see the comment above.
             ports={
-                el_shared.RPC_PORT_ID: PortSpec(
-                    number=el_shared.RPC_PORT_NUMBER,
+                shared.RPC_PORT_ID: PortSpec(
+                    number=shared.RPC_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                el_shared.WS_PORT_ID: PortSpec(
-                    number=el_shared.WS_PORT_NUMBER,
+                shared.WS_PORT_ID: PortSpec(
+                    number=shared.WS_PORT_NUMBER,
                     application_protocol="ws",
                 ),
-                el_shared.DISCOVERY_PORT_ID: PortSpec(
-                    number=el_shared.DISCOVERY_PORT_NUMBER,
+                shared.DISCOVERY_PORT_ID: PortSpec(
+                    number=shared.DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                el_shared.METRICS_PORT_ID: PortSpec(
-                    number=el_shared.METRICS_PORT_NUMBER,
+                shared.METRICS_PORT_ID: PortSpec(
+                    number=shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
                 ),
-                el_shared.PPROF_PORT_ID: PortSpec(
-                    number=el_shared.PPROF_PORT_NUMBER,
+                shared.PPROF_PORT_ID: PortSpec(
+                    number=shared.PPROF_PORT_NUMBER,
                     application_protocol="http",
                 ),
             },
@@ -126,6 +126,8 @@ def launch(
             },
             entrypoint=["sh", "-c"],
             cmd=["&&".join(bor_cmds)],
+            max_cpu=shared.MAX_CPU,
+            max_memory=shared.MAX_MEM,
         ),
     )
 
