@@ -87,7 +87,7 @@ Default: a single validator.
 
 | Field                      | Type   | Default                                                                                              | Description                                 |
 | -------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
+| contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592-v2     | Image used to deploy MATIC contracts to L1  |
 | validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.6.0 | Image used to generate validator configs    |
 
 ### `network_params`
