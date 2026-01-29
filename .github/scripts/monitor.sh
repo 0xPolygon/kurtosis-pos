@@ -49,11 +49,10 @@ for step in $(seq 1 "${num_steps}"); do
   log_info "Check ${step}/${num_steps}"
 
   LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}")
-  SAFE_BLOCK=$(cast bn safe --rpc-url "${rpc_url}")
   FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}")
-  log_info "Got blocks: latest=${LATEST_BLOCK}, safe=${SAFE_BLOCK}, finalized=${FINALIZED_BLOCK}"
-  if [[ "${LATEST_BLOCK}" -ge "${target}" && "${SAFE_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
-    log_info "Target blocks reached for all block types (latest, safe and finalized)"
+  log_info "Got blocks: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
+  if [[ "${LATEST_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
+    log_info "Target blocks reached for all block types (latest and finalized)"
     exit 0
   fi
 
@@ -81,5 +80,5 @@ for step in $(seq 1 "${num_steps}"); do
 done
 
 # If the code reaches here, the target was not met within the allowed steps
-"Target blocks have not been reached for all block types (latest, safe and finalized)"
+"Target blocks have not been reached for all block types (latest and finalized)"
 exit 1
