@@ -43,7 +43,7 @@ jobs:
 
       - name: Monitor rollup progress
         working-directory: .github/scripts
-        run: ./monitor-blocks.sh ${{ env.ENCLAVE_NAME }}
+        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
@@ -118,7 +118,7 @@ jobs:
 
       - name: Monitor rollup progress
         working-directory: .github/scripts
-        run: ./monitor-blocks.sh ${{ env.ENCLAVE_NAME }}
+        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
         if: ${{ !contains(matrix.file.name, 'additional-services') }}

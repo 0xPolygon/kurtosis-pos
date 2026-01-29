@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # This script monitors the progress of a blockchain rollup.
-# Usage: ./monitor-blocks.sh <enclave_name>
-# Example: ./monitor-blocks.sh pos
+# Usage: ./monitor.sh <enclave_name>
+# Example: ./monitor.sh pos
 
 # Helper function to get the current timestamp
 _timestamp() { date +"%Y-%m-%d %H:%M:%S"; }
