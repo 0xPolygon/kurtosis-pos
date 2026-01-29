@@ -5,23 +5,9 @@ set -euo pipefail
 # Usage: ./monitor.sh <enclave_name>
 # Example: ./monitor.sh pos
 
-# Helper function to get the current timestamp
-_timestamp() { date +"%Y-%m-%d %H:%M:%S"; }
-
-# Helper function to format key=value pairs
-_format_fields() {
-  local msg="$1"
-  shift
-  local fields=""
-  for arg in "$@"; do
-    fields="$fields $arg"
-  done
-  echo "$msg$fields"
-}
-
-# Logging functions
-log_info() { echo "$(_timestamp) INFO $(_format_fields "$@")" >&2; }
-log_error() { echo "$(_timestamp) ERROR $(_format_fields "$@")" >&2; }
+# Source logging library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../lib/log.sh"
 
 log_info "Monitoring rollup progress"
 
