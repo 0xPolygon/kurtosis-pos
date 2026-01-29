@@ -8,14 +8,11 @@ inputs:
   docker_token:
     description: The token for docker registry
     required: false
-  pull_images_from_gcr:
-    description: Whether to pull images from GCR
-    required: false
-    default: "true"
 
 runs:
   using: composite
   steps:
+    # Release disk space
     - name: Free up disk space
       uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
       with:
@@ -49,6 +46,35 @@ runs:
         version: v1.4.2
         cache: false
 
+    # Load cached images
+    - name: Cache docker images
+      id: cache-docker
+      uses: actions/cache@v4
+      with:
+        path: /tmp/docker-images
+        key: docker-images-${{ github.run_id }}
+        restore-keys: |
+          docker-images-
+
+    - name: Load cached docker images
+      shell: bash
+      run: |
+        echo "Loading cached Docker images..."
+        if [[ -d "/tmp/docker-images" ]]; then
+          for image_tar in /tmp/docker-images/*.tar; do
+            if [[ -f "$image_tar" ]]; then
+              {
+                docker load -i "$image_tar"
+              } &
+            fi
+          done
+          wait
+          echo "Cached images loaded successfully"
+        else
+          echo "No cached images found, will pull from GCR"
+        fi
+        docker images
+
     # Login to registries
     - name: Login to docker registry
       if: ${{ inputs.docker_username && inputs.docker_token }}
@@ -63,63 +89,3 @@ runs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ github.token }}
-
-    # Pull images from GCR if specified
-    - uses: actions/setup-python@v4
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      with:
-        python-version: 3.13
-
-    - name: Add registry prefix to image names
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: python3 .github/scripts/add-registry-prefix.py --registry-prefix "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/virtual"
-
-    - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      with:
-        workload_identity_provider: "projects/337907489413/locations/global/workloadIdentityPools/github-wif/providers/github"
-        service_account: "kurtosis-pos-ci@prj-polygonlabs-devtools-dev.iam.gserviceaccount.com"
-
-    - uses: google-github-actions/setup-gcloud@26f734c2779b00b7dda794207734c511110a4368 # v3.0.0
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-
-    - name: Configure Docker to use GCR
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: gcloud auth configure-docker europe-west2-docker.pkg.dev
-
-    - name: Pre pull package images from GCR
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: cat modified-images.txt | xargs -n 1 -P 8 docker pull
-
-    - name: Pre pull kurtosis core images from GCR
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: |
-        registry="europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/virtual"
-        images=(
-          "kurtosistech/engine:1.12.1"
-          "kurtosistech/core:1.12.1"
-          "kurtosistech/files-artifacts-expander:1.12.1"
-          "timberio/vector:0.45.0-debian"
-          "traefik:2.10.6"
-          "alpine:3.17"
-          "badouralix/curl-jq:latest"
-          "protolambda/eth2-val-tools:latest"
-          "ethpandaops/ethereum-genesis-generator:5.2.2"
-          "mslipper/deployment-utils:latest"
-        )
-        for image in "${images[@]}"; do
-          {
-            docker pull "${registry}/${image}"
-            docker tag "${registry}/${image}" "${image}"
-          } &
-        done
-        wait
-
-    - name: Display docker images
-      if: ${{ inputs.pull_images_from_gcr == 'true' }}
-      shell: bash
-      run: docker images
