@@ -41,7 +41,7 @@ jobs:
 
       - name: Monitor rollup progress
         working-directory: .github/scripts
-        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
@@ -116,7 +116,7 @@ jobs:
 
       - name: Monitor rollup progress
         working-directory: .github/scripts
-        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
@@ -162,7 +162,7 @@ jobs:
 
       - name: Monitor rollup progress
         working-directory: .github/scripts
-        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
@@ -202,7 +202,7 @@ jobs:
 
       - name: Monitor rollup progress
         working-directory: .github/scripts
-        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Retrieve L2 CL genesis file
         working-directory: .github/configs/nightly/cl-el-genesis
@@ -236,7 +236,7 @@ jobs:
 
       - name: Monitor rollup progress
         working-directory: .github/scripts
-        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test

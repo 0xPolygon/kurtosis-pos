@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # This script monitors the progress of a blockchain rollup.
-# Usage: ./monitor.sh <enclave_name>
-# Example: ./monitor.sh pos
+# Usage: ./blocks.sh <enclave_name>
+# Example: ./blocks.sh pos
 
 # Source logging library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
