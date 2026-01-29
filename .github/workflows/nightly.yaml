@@ -39,6 +39,10 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
+      - name: Monitor rollup progress
+        working-directory: .github/scripts
+        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
         with:
@@ -110,6 +114,10 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
+      - name: Monitor rollup progress
+        working-directory: .github/scripts
+        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+
       - name: Test state syncs
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
         uses: ./.github/actions/state-sync-test
@@ -152,6 +160,10 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
+      - name: Monitor rollup progress
+        working-directory: .github/scripts
+        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
         with:
@@ -188,6 +200,10 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
+      - name: Monitor rollup progress
+        working-directory: .github/scripts
+        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
+
       - name: Retrieve L2 CL genesis file
         working-directory: .github/configs/nightly/cl-el-genesis
         run: |
@@ -217,6 +233,10 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Monitor rollup progress
+        working-directory: .github/scripts
+        run: ./monitor.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
