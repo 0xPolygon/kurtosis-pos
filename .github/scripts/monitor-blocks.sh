@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # This script monitors the progress of a blockchain rollup.
-# Usage: ./monitor.sh <enclave_name>
-# Example: ./monitor.sh pos
+# Usage: ./monitor-blocks.sh <enclave_name>
+# Example: ./monitor-blocks.sh pos
 
 # Helper function to get the current timestamp
 _timestamp() { date +"%Y-%m-%d %H:%M:%S"; }
@@ -39,7 +39,7 @@ log_info "Using rpc name: ${rpc_name}"
 rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
 log_info "Using rpc url: ${rpc_url}"
 
-target="50"
+target="100"
 log_info "Using target: ${target}"
 
 # Monitor the rollup progress
