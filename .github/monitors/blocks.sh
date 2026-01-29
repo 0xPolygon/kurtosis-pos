@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script monitors the progress of blocks in a Polygon PoS devnet.
+# This script monitors block progress in a Polygon PoS devnet.
 # Usage: ./blocks.sh <enclave_name>
 # Example: ./blocks.sh pos
 
@@ -28,7 +28,7 @@ log_info "Using rpc url: ${rpc_url}"
 target="100"
 log_info "Using target: ${target}"
 
-# Monitor the block progress
+# Monitor block progress
 num_steps=100
 gas_price_factor=1
 for step in $(seq 1 "${num_steps}"); do
@@ -66,5 +66,5 @@ for step in $(seq 1 "${num_steps}"); do
 done
 
 # If the code reaches here, the target was not met within the allowed steps
-"Target blocks have not been reached for all block types (latest and finalized)"
+log_error "Target blocks have not been reached for all block types (latest and finalized)"
 exit 1
