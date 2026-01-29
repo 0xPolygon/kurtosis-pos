@@ -42,7 +42,7 @@ jobs:
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
       - name: Monitor block progress
-        working-directory: .github/scripts
+        working-directory: .github/monitors
         run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
@@ -51,11 +51,11 @@ jobs:
           enclave_name: ${{ env.ENCLAVE_NAME }}
 
       - name: Monitor milestone progress
-        working-directory: .github/scripts
+        working-directory: .github/monitors
         run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Monitor checkpoint progress
-        working-directory: .github/scripts
+        working-directory: .github/monitors
         run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Post kurtosis run
@@ -121,7 +121,7 @@ jobs:
 
       - name: Monitor block progress
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
-        working-directory: .github/scripts
+        working-directory: .github/monitors
         run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Test state syncs
@@ -132,13 +132,13 @@ jobs:
 
       - name: Monitor milestone progress
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
-        working-directory: .github/scripts
+        working-directory: .github/monitors
         run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Monitor checkpoint progress
         if: ${{ !contains(matrix.file.name, 'additional-services') && !contains(matrix.file.name, 'heimdall-v2-erigon') }}
         # TODO: Understand why checkpoints are not being created in heimdall-v2/erigon devnets.
-        working-directory: .github/scripts
+        working-directory: .github/monitors
         run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Post kurtosis run
