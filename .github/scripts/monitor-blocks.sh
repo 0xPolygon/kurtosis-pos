@@ -26,7 +26,7 @@ log_error() { echo "$(_timestamp) ERROR $(_format_fields "$@")" >&2; }
 log_info "Monitoring rollup progress"
 
 # Validate input parameters
-enclave_name=${1:-"cdk"}
+enclave_name=${1:-"pos"}
 if [[ -z "${enclave_name}" ]]; then
   log_error "Enclave name must be provided"
   exit 1
@@ -39,7 +39,7 @@ log_info "Using rpc name: ${rpc_name}"
 rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
 log_info "Using rpc url: ${rpc_url}"
 
-target="100"
+target="50"
 log_info "Using target: ${target}"
 
 # Monitor the rollup progress
