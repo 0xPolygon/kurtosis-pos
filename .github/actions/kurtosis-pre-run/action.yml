@@ -60,9 +60,9 @@ runs:
       shell: bash
       run: |
         echo "Loading cached Docker images..."
-        if [ -d "/tmp/docker-images" ]; then
+        if [[ -d "/tmp/docker-images" ]]; then
           for image_tar in /tmp/docker-images/*.tar; do
-            if [ -f "$image_tar" ]; then
+            if [[ -f "$image_tar" ]]; then
               {
                 docker load -i "$image_tar"
               } &
