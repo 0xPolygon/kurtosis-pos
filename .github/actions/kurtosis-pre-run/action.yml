@@ -1,5 +1,5 @@
 name: kurtosis-pre-run
-description: Prepare the environment for deploying Kurtosis packages.
+description: Prepare the environment for deploying Kurtosis packages
 
 inputs:
   docker_username:

@@ -64,7 +64,7 @@ def _generate_keys(plan, el_node_name, private_key):
     )
     result = plan.run_sh(
         name="{}-keys-generator".format(el_node_name),
-        image=constants.DEFAULT_IMAGES.get("toolbox_image"),
+        image=constants.IMAGES.get("toolbox_image"),
         env_vars={
             "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
             "PRIVATE_KEY": private_key,

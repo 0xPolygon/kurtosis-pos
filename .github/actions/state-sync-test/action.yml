@@ -1,0 +1,35 @@
+name: state-sync-test
+description: Run state sync tests in a Kurtosis enclave
+
+inputs:
+  enclave_name:
+    description: The name of the kurtosis enclave
+    required: true
+  agglayer_e2e_tag:
+    description: The git tag, branch, or commit hash of agglayer/e2e
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Clone agglayer/e2e
+      uses: actions/checkout@v6
+      with:
+        repository: agglayer/e2e
+        path: agglayer-e2e
+        ref: 2687c0c751e7cae2deaf4e99b13ae0d0ef97b2d7
+
+    - name: Install bats
+      uses: bats-core/bats-action@42fcc8700f773c075a16a90eb11674c0318ad507 # 3.0.1
+      with:
+        support-path: ${{ github.workspace }}/lib/bats-support
+        assert-path: ${{ github.workspace }}/lib/bats-assert
+        detik-path: ${{ github.workspace }}/lib/bats-detik
+        file-path: ${{ github.workspace }}/lib/bats-file
+
+    - name: Test state syncs
+      working-directory: agglayer-e2e
+      shell: bash
+      run: bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats
+      env:
+        TIMEOUT_SECONDS: 600 # default: 180

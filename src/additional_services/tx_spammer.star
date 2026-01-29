@@ -66,7 +66,7 @@ def _start_tx_spammer_service(plan, name, script_artifact, private_key, rpc_url)
     plan.add_service(
         name=name,
         config=ServiceConfig(
-            image=constants.DEFAULT_IMAGES.get("toolbox_image"),
+            image=constants.IMAGES.get("toolbox_image"),
             files={
                 "/opt": Directory(artifact_names=[script_artifact]),
             },
