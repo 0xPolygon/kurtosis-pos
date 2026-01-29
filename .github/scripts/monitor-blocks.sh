@@ -39,7 +39,7 @@ log_info "Using rpc name: ${rpc_name}"
 rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
 log_info "Using rpc url: ${rpc_url}"
 
-target="50"
+target="100"
 log_info "Using target: ${target}"
 
 # Monitor the rollup progress
@@ -67,7 +67,7 @@ for step in $(seq 1 "${num_steps}"); do
     --timeout 30 \
     --gas-price "${gas_price}" \
     --rpc-url "${rpc_url}" \
-    --private-key "0x12d7de8621a77640c9241b2595ba78ce443d05e94090365ab3bb5e19df82c625" \
+    --private-key "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" \
     --gas-limit 100000 \
     --create 0x6001617000526160006110005ff05b6109c45a111560245761600061100080833c600e565b50
   result="$?"
