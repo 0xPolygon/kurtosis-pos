@@ -41,7 +41,7 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Monitor rollup progress
+      - name: Monitor block progress
         working-directory: .github/scripts
         run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
@@ -116,7 +116,7 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Monitor rollup progress
+      - name: Monitor block progress
         working-directory: .github/scripts
         run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
