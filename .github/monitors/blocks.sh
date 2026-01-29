@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script monitors the progress of a blockchain rollup.
+# This script monitors the progress of blocks in a Polygon PoS devnet.
 # Usage: ./blocks.sh <enclave_name>
 # Example: ./blocks.sh pos
 
@@ -9,7 +9,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/log.sh"
 
-log_info "Monitoring rollup progress"
+log_info "Monitoring block progress"
 
 # Validate input parameters
 enclave_name=${1:-"pos"}
@@ -28,7 +28,7 @@ log_info "Using rpc url: ${rpc_url}"
 target="100"
 log_info "Using target: ${target}"
 
-# Monitor the rollup progress
+# Monitor the block progress
 num_steps=100
 gas_price_factor=1
 for step in $(seq 1 "${num_steps}"); do
