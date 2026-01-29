@@ -7,7 +7,7 @@ set -euo pipefail
 
 # Source logging library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/../lib/log.sh"
+source "${SCRIPT_DIR}/log.sh"
 
 log_info "Monitoring rollup progress"
 
