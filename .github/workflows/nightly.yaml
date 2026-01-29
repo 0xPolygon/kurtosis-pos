@@ -35,15 +35,22 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
+      - name: Monitor block progress
+        working-directory: .github/monitors
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
+
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
 
-      - name: Monitor milestones and checkpoints
-        uses: ./.github/actions/monitor-milestones-and-checkpoints
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
+      - name: Monitor milestone progress
+        working-directory: .github/monitors
+        run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
+
+      - name: Monitor checkpoint progress
+        working-directory: .github/monitors
+        run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Post kurtosis run
         if: always()
@@ -103,19 +110,27 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
+      - name: Monitor block progress
+        if: ${{ !contains(matrix.file.name, 'additional-services') }}
+        working-directory: .github/monitors
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
+
       - name: Test state syncs
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
         uses: ./.github/actions/state-sync-test
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
+      
+      - name: Monitor milestone progress
+        if: ${{ !contains(matrix.file.name, 'additional-services') }}
+        working-directory: .github/monitors
+        run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
 
-      - name: Monitor milestones and checkpoints
+      - name: Monitor checkpoint progress
+        if: ${{ !contains(matrix.file.name, 'additional-services') && !contains(matrix.file.name, 'heimdall-v2-erigon') }}
         # TODO: Understand why checkpoints are not being created in heimdall-v2/erigon devnets.
-        if: ${{ !contains(matrix.file.name, 'heimdall-v2-erigon') && !contains(matrix.file.name, 'additional-services') }}
-        uses: ./.github/actions/monitor-milestones-and-checkpoints
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-          args_filename: ${{ matrix.file.path }}
+        working-directory: .github/monitors
+        run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Post kurtosis run
         if: always()
@@ -145,16 +160,23 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
+      - name: Monitor block progress
+        working-directory: .github/monitors
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
+
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
+      
+      - name: Monitor milestone progress
+        working-directory: .github/monitors
+        run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
 
       # TODO: Understand why checkpoints are not being created in this case.
-      # - name: Monitor milestones and checkpoints
-      #   uses: ./.github/actions/monitor-milestones-and-checkpoints
-      #   with:
-      #     enclave_name: ${{ env.ENCLAVE_NAME }}
+      # - name: Monitor checkpoint progress
+      #   working-directory: .github/monitors
+      #   run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Post kurtosis run
         if: always()
@@ -180,6 +202,10 @@ jobs:
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Monitor block progress
+        working-directory: .github/monitors
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Retrieve L2 CL genesis file
         working-directory: .github/configs/nightly/cl-el-genesis
@@ -211,15 +237,22 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
+      - name: Monitor block progress
+        working-directory: .github/monitors
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
+
       - name: Test state syncs
         uses: ./.github/actions/state-sync-test
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
 
-      - name: Monitor milestones and checkpoints
-        uses: ./.github/actions/monitor-milestones-and-checkpoints
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
+      - name: Monitor milestone progress
+        working-directory: .github/monitors
+        run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
+
+      - name: Monitor checkpoint progress
+        working-directory: .github/monitors
+        run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Post kurtosis run
         if: always()
