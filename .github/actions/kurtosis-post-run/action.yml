@@ -136,6 +136,7 @@ runs:
           } &
         done
         wait
+        sync # Force kernel to write all buffered data to disk
 
         echo "Docker images saved successfully"
         echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
