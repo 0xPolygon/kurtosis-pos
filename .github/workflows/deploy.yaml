@@ -28,42 +28,22 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
+      - uses: ./.github/actions/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Kurtosis run
+      - name: Deploy devnet
         run: |
           set -o pipefail
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
 
-      - name: Inspect enclave
-        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      - uses: ./.github/actions/monitor
 
-      - name: Monitor block progress
-        working-directory: .github/monitors
-        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
+      - uses: ./.github/actions/test-state-sync
 
-      - name: Test state syncs
-        uses: ./.github/actions/state-sync-test
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-
-      - name: Monitor milestone progress
-        working-directory: .github/monitors
-        run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
-
-      - name: Monitor checkpoint progress
-        working-directory: .github/monitors
-        run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
-
-      - name: Post kurtosis run
+      - uses: ./.github/actions/cleanup
         if: always()
-        uses: ./.github/actions/kurtosis-post-run
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
 
   list-ymls:
     runs-on: ubuntu-latest
@@ -109,47 +89,25 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
+      - uses: ./.github/actions/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Kurtosis run
+      - name: Deploy devnet
         run: |
           set -o pipefail
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
 
-      - name: Inspect enclave
-        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-
-      - name: Monitor block progress
+      - uses: ./.github/actions/monitor
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
-        working-directory: .github/monitors
-        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
-      - name: Test state syncs
+      - uses: ./.github/actions/test-state-sync
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
-        uses: ./.github/actions/state-sync-test
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
 
-      - name: Monitor milestone progress
-        if: ${{ !contains(matrix.file.name, 'additional-services') }}
-        working-directory: .github/monitors
-        run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
-
-      - name: Monitor checkpoint progress
-        if: ${{ !contains(matrix.file.name, 'additional-services') && !contains(matrix.file.name, 'heimdall-v2-erigon') }}
-        # TODO: Understand why checkpoints are not being created in heimdall-v2/erigon devnets.
-        working-directory: .github/monitors
-        run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
-
-      - name: Post kurtosis run
+      - uses: ./.github/actions/cleanup
         if: always()
-        uses: ./.github/actions/kurtosis-post-run
         with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: ${{ matrix.file.name }}
           save_cache: ${{ contains(matrix.file.name, 'rio') }}
 
@@ -160,44 +118,26 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
+      - uses: ./.github/actions/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Deploy L1
+      - name: Deploy L1 devnet
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@6.0.0 # 2026-01-05
 
-      - name: Deploy L2
+      - name: Deploy L2 devnet
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
 
-      - name: Inspect enclave
-        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-
-      - name: Monitor block progress
-        working-directory: .github/monitors
-        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
-
-      - name: Test state syncs
-        uses: ./.github/actions/state-sync-test
+      - uses: ./.github/actions/monitor
         with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
+          skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
-      - name: Monitor milestone progress
-        working-directory: .github/monitors
-        run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
+      - uses: ./.github/actions/test-state-sync
 
-      # TODO: Understand why checkpoints are not being created in this case.
-      # - name: Monitor checkpoint progress
-      #   working-directory: .github/monitors
-      #   run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
-
-      - name: Post kurtosis run
+      - uses: ./.github/actions/cleanup
         if: always()
-        uses: ./.github/actions/kurtosis-post-run
         with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: external-l1
 
   run-with-cl-el-genesis:
@@ -207,13 +147,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
+      - uses: ./.github/actions/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Kurtosis run for the first time
+      - name: Deploy devnet for the first time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed .
 
       - name: Inspect enclave
@@ -247,34 +186,16 @@ jobs:
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-rabbitmq
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-v2-validator
 
-      - name: Kurtosis run for the second time
+      - name: Deploy devnet for the second time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
-      - name: Inspect enclave
-        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      - uses: ./.github/actions/monitor
 
-      - name: Monitor block progress
-        working-directory: .github/monitors
-        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
+      - uses: ./.github/actions/test-state-sync
 
-      - name: Test state syncs
-        uses: ./.github/actions/state-sync-test
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-
-      - name: Monitor milestone progress
-        working-directory: .github/monitors
-        run: ./milestones.sh ${{ env.ENCLAVE_NAME }}
-
-      - name: Monitor checkpoint progress
-        working-directory: .github/monitors
-        run: ./checkpoints.sh ${{ env.ENCLAVE_NAME }}
-
-      - name: Post kurtosis run
+      - uses: ./.github/actions/cleanup
         if: always()
-        uses: ./.github/actions/kurtosis-post-run
         with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: cl-el-genesis
 
   workflow-summary:

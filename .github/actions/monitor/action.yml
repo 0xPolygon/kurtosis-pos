@@ -1,0 +1,40 @@
+name: monitor
+description: Monitor blockchain progress (blocks, milestones, checkpoints)
+
+inputs:
+  enclave_name:
+    description: The name of the Kurtosis enclave
+    required: false
+    default: pos
+  skip_milestones:
+    description: Skip milestone monitoring
+    required: false
+    default: 'false'
+  skip_checkpoints:
+    description: Skip checkpoint monitoring
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Inspect enclave
+      shell: bash
+      run: kurtosis enclave inspect ${{ inputs.enclave_name }}
+
+    - name: Monitor block progress
+      working-directory: .github/monitors
+      shell: bash
+      run: ./blocks.sh ${{ inputs.enclave_name }}
+
+    - name: Monitor milestone progress
+      if: inputs.skip_milestones != 'true'
+      working-directory: .github/monitors
+      shell: bash
+      run: ./milestones.sh ${{ inputs.enclave_name }}
+
+    - name: Monitor checkpoint progress
+      if: inputs.skip_checkpoints != 'true'
+      working-directory: .github/monitors
+      shell: bash
+      run: ./checkpoints.sh ${{ inputs.enclave_name }}

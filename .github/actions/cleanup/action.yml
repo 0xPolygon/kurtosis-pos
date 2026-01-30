@@ -1,10 +1,11 @@
-name: kurtosis-post-run
-description: Dump enclave and upload it as an artifact after deploying Kurtosis packages
+name: cleanup
+description: Collect logs and artifacts, clean up enclave, and save cache
 
 inputs:
   enclave_name:
     description: The name of the kurtosis enclave
-    required: true
+    required: false
+    default: pos
   args_filename:
     description: The name of the args file
     required: false
