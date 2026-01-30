@@ -23,18 +23,18 @@ runs:
       run: kurtosis enclave inspect ${{ inputs.enclave_name }}
 
     - name: Monitor block progress
-      working-directory: .github/monitors
+      working-directory: .github/actions/monitor
       shell: bash
       run: ./blocks.sh ${{ inputs.enclave_name }}
 
     - name: Monitor milestone progress
       if: inputs.skip_milestones != 'true'
-      working-directory: .github/monitors
+      working-directory: .github/actions/monitor
       shell: bash
       run: ./milestones.sh ${{ inputs.enclave_name }}
 
     - name: Monitor checkpoint progress
       if: inputs.skip_checkpoints != 'true'
-      working-directory: .github/monitors
+      working-directory: .github/actions/monitor
       shell: bash
       run: ./checkpoints.sh ${{ inputs.enclave_name }}
