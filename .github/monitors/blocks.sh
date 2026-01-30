@@ -25,7 +25,7 @@ log_info "Using rpc name: ${rpc_name}"
 rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
 log_info "Using rpc url: ${rpc_url}"
 
-target="100"
+target="50"
 log_info "Using target: ${target}"
 
 # Monitor block progress
