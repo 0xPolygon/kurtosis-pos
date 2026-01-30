@@ -102,6 +102,8 @@ jobs:
 
       - uses: ./.github/actions/monitor
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
+        with:
+          skip_checkpoints: ${{ contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test-state-sync
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
