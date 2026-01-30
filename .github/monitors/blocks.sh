@@ -47,6 +47,7 @@ for step in $(seq 1 "${num_steps}"); do
   gas_price=$(bc -l <<< "$gas_price * $gas_price_factor" | sed 's/\..*//')
 
   log_info "Sending a test transaction"
+  set +e
   cast send \
     --legacy \
     --timeout 30 \
@@ -56,6 +57,7 @@ for step in $(seq 1 "${num_steps}"); do
     --gas-limit 100000 \
     --create 0x6001617000526160006110005ff05b6109c45a111560245761600061100080833c600e565b50
   result="$?"
+  set -e
   if [[ "${result}" -eq 0 ]]; then
     gas_price_factor=1
   else
