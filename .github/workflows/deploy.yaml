@@ -8,6 +8,7 @@ on:
     - cron: 0 6 * * * # Run this workflow every day at 6 AM Paris time (UTC+2).
   workflow_dispatch:
 
+# Permissions required to pull images from GAR
 permissions:
   contents: read
   actions: write

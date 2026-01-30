@@ -2,6 +2,10 @@ name: setup
 description: Set up Docker authentication and Kurtosis environment
 
 inputs:
+  kurtosis_version:
+    description: The version of Kurtosis to install
+    required: false
+    default: 1.12.1
   docker_username:
     description: The username for docker registry
     required: false
@@ -30,7 +34,7 @@ runs:
       run: |
         echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
         sudo apt update
-        sudo apt install -y kurtosis-cli=1.12.1
+        sudo apt install -y kurtosis-cli=${{ inputs.kurtosis_version }}
         kurtosis analytics disable
         kurtosis version
 
