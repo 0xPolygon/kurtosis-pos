@@ -1,5 +1,0 @@
-polygon_pos_package:
-  participants:
-    - kind: validator
-      cl_type: heimdall-v2
-      el_type: erigon
