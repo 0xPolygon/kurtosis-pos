@@ -121,11 +121,11 @@ runs:
           done
 
     # Cache images for future runs
-    - name: Cache docker images
+    - name: Save docker images to cache directory
       if: ${{ inputs.save_cache == 'true' }}
       shell: bash
       run: |
-        echo "Saving all Docker images to cache..."
+        echo "Saving all images to cache directory..."
         mkdir -p /tmp/docker-images
 
         # Save all images on the host (excluding dangling images)
@@ -140,3 +140,10 @@ runs:
         echo "Docker images saved successfully"
         echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
         echo "Number of images: $(ls -1 /tmp/docker-images | wc -l)"
+
+    - name: Save cache
+      if: ${{ inputs.save_cache == 'true' }}
+      uses: actions/cache/save@v5
+      with:
+        path: /tmp/docker-images
+        key: docker-images-${{ github.run_id }}
