@@ -93,7 +93,7 @@ runs:
           docker-images-
 
     - name: Load cached docker images
-      if: steps.cache.outputs.cache-hit == 'true'
+      if: steps.cache.outputs.cache-matched-key != 'true'
       shell: bash
       run: |
         echo "Loading cached images..."
@@ -112,35 +112,35 @@ runs:
     # Pull images from GAR if cache miss
     - name: Authenticate to GCP
       uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
-      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       with:
         workload_identity_provider: ${{ inputs.gcp_wip }}
         service_account: ${{ inputs.gcp_sa }}
 
     - name: Setup gcloud cli
       uses: google-github-actions/setup-gcloud@26f734c2779b00b7dda794207734c511110a4368 # v3.0.0
-      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
 
     - name: Configure docker
-      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       shell: bash
       run: gcloud auth configure-docker ${{ inputs.gcp_registry }}
 
     - name: Install python
       uses: actions/setup-python@v5
-      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       with:
         python-version: 3.13
 
     - name: Add registry prefix to image names
-      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       shell: bash
       run: |
         registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
         python3 .github/actions/kurtosis-pre-run/add-registry-prefix.py --registry-prefix $registry_prefix
 
     - name: Pull images from GAR
-      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       shell: bash
       run: |
         # Pull kurtosis-pos images (already have registry prefix added)
