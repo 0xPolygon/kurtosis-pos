@@ -16,7 +16,7 @@ jq --arg d "${date}" '.genesis_time = $d' "${CL_GENESIS_FILE}" >tmp.json
 mv tmp.json "${CL_GENESIS_FILE}"
 
 # Verify and output the CL genesis file.
-if [ -s "${CL_GENESIS_FILE}" ]; then
+if [[ -s "${CL_GENESIS_FILE}" ]]; then
   echo "L2 CL genesis:"
   cat "${CL_GENESIS_FILE}"
 else

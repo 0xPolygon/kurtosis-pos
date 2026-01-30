@@ -88,7 +88,7 @@ def launch(
                 "cp /opt/data/genesis/genesis.json /opt/data/keys/node_key.json /opt/data/keys/priv_validator_key.json {}/config/".format(
                     shared.CONFIG_FOLDER_PATH
                 ),
-                "mkdir {}/data".format(shared.CONFIG_FOLDER_PATH),
+                "mkdir -p {}/data".format(shared.CONFIG_FOLDER_PATH),
                 "cp /opt/data/keys/priv_validator_state.json {}/data/priv_validator_state.json".format(
                     shared.CONFIG_FOLDER_PATH
                 ),

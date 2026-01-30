@@ -8,6 +8,10 @@ inputs:
   args_filename:
     description: The name of the args file
     required: false
+  save_cache:
+    description: Whether this job should save the Docker image cache
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -24,6 +28,7 @@ runs:
           echo "Enclave ${{ inputs.enclave_name }} does not exist."
         fi
 
+    # Dump the enclave (services configs, logs and file artifacts)
     - name: Dump enclave
       if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
       shell: bash
@@ -77,6 +82,7 @@ runs:
         name: ${{ steps.archive-name.outputs.ARCHIVE_NAME }}
         path: ./dump
 
+    # Check for stopped services and errors and warning in logs
     - name: Check for stopped services
       if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
       shell: bash

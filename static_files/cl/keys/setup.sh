@@ -88,7 +88,7 @@ for config in "${validator_configs[@]}"; do
 
   # Retrieve the node full address from the file.
   node_full_address=$(cat "${CL_CLIENT_CONFIG_PATH}/${id}/node_full_address.txt")
-  if [ -z "${persistent_peers}" ]; then
+  if [[ -z "${persistent_peers}" ]]; then
     persistent_peers="${node_full_address}"
   else
     persistent_peers+=",${node_full_address}"
