@@ -89,8 +89,7 @@ runs:
         password: ${{ github.token }}
 
     # Load images from cache or pull from GAR
-    - name: Load cache
-      uses: actions/cache@v5
+    - uses: actions/cache/restore@v5
       id: cache
       with:
         path: /tmp/docker-images
