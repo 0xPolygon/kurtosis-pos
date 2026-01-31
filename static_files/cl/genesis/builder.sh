@@ -3,7 +3,6 @@
 set -eux
 
 # Build L2 CL genesis file.
-
 CL_GENESIS_FILE="/opt/data/genesis/genesis.json"
 
 # The genesis file is already generated using a template.
@@ -16,7 +15,8 @@ date="${date}000000000Z"
 jq --arg d "${date}" '.genesis_time = $d' "${CL_GENESIS_FILE}" >tmp.json
 mv tmp.json "${CL_GENESIS_FILE}"
 
-if [ -s "${CL_GENESIS_FILE}" ]; then
+# Verify and output the CL genesis file.
+if [[ -s "${CL_GENESIS_FILE}" ]]; then
   echo "L2 CL genesis:"
   cat "${CL_GENESIS_FILE}"
 else

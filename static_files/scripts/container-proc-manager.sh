@@ -29,7 +29,7 @@ trap 'echo "Sending TERM to child process $command_pid"; kill -TERM $command_pid
 wait
 
 # Only start dummy process if we were manually trapped
-if [ "$trapped" = "false" ]; then
+if [[ "$trapped" = "false" ]]; then
   echo "Child process exited naturally, container-proc-manager exiting" >&2
   exit $?
 fi

@@ -22,9 +22,9 @@ def deploy_l1_contracts(
         env_vars={
             "PRIVATE_KEY": private_key,
             "L1_RPC_URL": l1_rpc_url,
-            "EL_CHAIN_ID": network_params.get("el_chain_id"),
-            "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
-            "CL_CHAIN_ID": network_params.get("cl_chain_id"),
+            "EL_CHAIN_ID": str(network_params.get("el_chain_id")),
+            "DEFAULT_EL_CHAIN_ID": str(constants.EL_CHAIN_ID),
+            "CL_CHAIN_ID": str(network_params.get("cl_chain_id")),
             "VALIDATOR_ACCOUNTS": validator_accounts_formatted,
             "VALIDATOR_BALANCE": str(constants.VALIDATORS_BALANCE_ETH),
             "VALIDATOR_STAKE_AMOUNT_ETH": str(
@@ -86,8 +86,8 @@ def deploy_l2_contracts_and_synchronise_l1_state(
             "PRIVATE_KEY": private_key,
             "L1_RPC_URL": l1_rpc_url,
             "L2_RPC_URL": l2_rpc_url,
-            "EL_CHAIN_ID": network_params.get("el_chain_id"),
-            "DEFAULT_EL_CHAIN_ID": constants.DEFAULT_EL_CHAIN_ID,
+            "EL_CHAIN_ID": str(network_params.get("el_chain_id")),
+            "DEFAULT_EL_CHAIN_ID": str(constants.EL_CHAIN_ID),
         },
         files={
             "/opt/data": contract_deployer_config_artifact,

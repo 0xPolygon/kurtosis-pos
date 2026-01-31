@@ -4,18 +4,16 @@ sanity_check = import_module("./sanity_check.star")
 
 
 def test_sanity_check_valid_config(plan):
-    sanity_check.sanity_check_polygon_args(
-        plan, input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS
-    )
+    sanity_check.sanity_check_polygon_args(plan, input_parser.POLYGON_POS_PACKAGE_ARGS)
 
 
 def test_sanity_check_with_invalid_parallel_import(plan):
-    participant = input_parser.DEFAULT_POLYGON_POS_PARTICIPANT | {
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
         "el_type": constants.EL_TYPE.bor,
         "el_bor_sync_with_witness": False,
         "el_bor_stateless_parallel_import": True,
     }
-    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
         "participants": [participant],
     }
     expect.fails(
@@ -25,22 +23,21 @@ def test_sanity_check_with_invalid_parallel_import(plan):
 
 
 def test_sanity_check_with_parallel_import(plan):
-    participant = input_parser.DEFAULT_POLYGON_POS_PARTICIPANT | {
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
         "el_type": constants.EL_TYPE.bor,
         "el_bor_sync_with_witness": True,
         "el_bor_stateless_parallel_import": True,
     }
-    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
         "participants": [participant],
     }
     sanity_check.sanity_check_polygon_args(plan, args)
 
 
 def test_sanity_check_with_status_checker_missing_image(plan):
-    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
         "additional_services": [
             constants.ADDITIONAL_SERVICES.status_checker,
-            constants.ADDITIONAL_SERVICES.test_runner,  # test_runner_params is defined in the default args so we have to include it here to avoid failing on that first
         ],
         "status_checker_params": {},
     }
@@ -51,42 +48,20 @@ def test_sanity_check_with_status_checker_missing_image(plan):
 
 
 def test_sanity_check_with_status_checker(plan):
-    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
         "additional_services": [
             constants.ADDITIONAL_SERVICES.status_checker,
-            constants.ADDITIONAL_SERVICES.test_runner,
         ],
         "status_checker_params": {
-            "image": constants.DEFAULT_IMAGES.get("status_checker_image"),
-        },
-    }
-
-
-def test_sanity_check_with_test_runner_missing_image(plan):
-    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
-        "additional_services": [constants.ADDITIONAL_SERVICES.test_runner],
-        "test_runner_params": {},
-    }
-    expect.fails(
-        lambda: sanity_check.sanity_check_polygon_args(plan, args),
-        '`test_runner_params` must include the "image" field when the test runner is deployed',
-    )
-
-
-def test_sanity_check_with_test_runner(plan):
-    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
-        "additional_services": [constants.ADDITIONAL_SERVICES.test_runner],
-        "test_runner_params": {
-            "image": constants.DEFAULT_IMAGES.get("test_runner_image"),
+            "image": constants.ADDITIONAL_SERVICE_IMAGES.get("status_checker_image"),
         },
     }
 
 
 def test_sanity_check_with_ethstats_server_missing_image(plan):
-    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
         "additional_services": [
             constants.ADDITIONAL_SERVICES.ethstats_server,
-            constants.ADDITIONAL_SERVICES.test_runner,  # test_runner_params is defined in the default args so we have to include it here to avoid failing on that first
         ],
         "ethstats_server_params": {},
     }
@@ -97,12 +72,11 @@ def test_sanity_check_with_ethstats_server_missing_image(plan):
 
 
 def test_sanity_check_with_ethstats_server(plan):
-    args = input_parser.DEFAULT_POLYGON_POS_PACKAGE_ARGS | {
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
         "additional_services": [
             constants.ADDITIONAL_SERVICES.ethstats_server,
-            constants.ADDITIONAL_SERVICES.test_runner,
         ],
         "ethstats_server_params": {
-            "image": constants.DEFAULT_IMAGES.get("ethstats_server_image"),
+            "image": constants.ADDITIONAL_SERVICE_IMAGES.get("ethstats_server_image"),
         },
     }

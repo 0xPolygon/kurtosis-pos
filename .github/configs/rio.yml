@@ -34,4 +34,3 @@ polygon_pos_package:
 
   additional_services:
     - observability
-    - test_runner
