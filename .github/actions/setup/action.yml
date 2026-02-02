@@ -184,7 +184,7 @@ runs:
             docker pull "$prefixed_image"
             docker tag "$prefixed_image" "$image"
           fi
-        done < .github/actions/kurtosis-pre-run/images.txt
+        done < .github/actions/setup/images.txt
 
     # Debug
     - name: List images
