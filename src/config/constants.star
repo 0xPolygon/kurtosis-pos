@@ -49,7 +49,7 @@ IMAGES = {
     "l1_cl_image": "sigp/lighthouse:v8.0.0",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.6.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.5.7",
+    "l2_el_bor_image": "0xpolygon/bor:2.5.8",
     "l2_el_erigon_image": "0xpolygon/erigon:v3.3.7",
     "l2_cl_queue_image": "rabbitmq:4.2.2",
     # utilities
