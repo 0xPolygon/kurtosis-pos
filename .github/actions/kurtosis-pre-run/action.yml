@@ -33,6 +33,10 @@ inputs:
     default: kurtosis-pos-ci@prj-polygonlabs-devtools-dev.iam.gserviceaccount.com
 
   # Cache settings
+  cache_key:
+    description: The key to use for caching Docker images
+    required: false
+    default: docker-images
   cache_folder:
     description: The folder to use for caching Docker images
     required: false
