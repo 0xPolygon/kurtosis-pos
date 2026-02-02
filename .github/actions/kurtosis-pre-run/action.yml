@@ -159,12 +159,12 @@ runs:
       shell: bash
       run: |
         # Pull kurtosis-pos images (already have registry prefix added)
-        cat modified-images.txt | xargs -n 1 -P 8 docker pull
+        cat modified-images.txt | xargs -n 1 -P 8 sh -c 'docker images -q "$1" > /dev/null || docker pull "$1"' sh
 
         # Pull kurtosis core and ethereum-package images
         registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
         cat .github/actions/kurtosis-pre-run/images.txt \
-          | xargs -n 1 -P 8 -I {} sh -c "docker pull ${registry_prefix}/{} && docker tag ${registry_prefix}/{} {}"
+          | xargs -n 1 -P 8 -I {} sh -c "docker images -q ${registry_prefix}/{} > /dev/null || (docker pull ${registry_prefix}/{} && docker tag ${registry_prefix}/{} {})"
 
     # Debug
     - name: List images
