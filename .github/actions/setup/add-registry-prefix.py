@@ -7,7 +7,7 @@ to enable pulling images from a private registry (e.g., GCP) instead of Docker H
 avoiding rate limiting issues in CI.
 
 Usage:
-    python3 .github/actions/kurtosis-pre-run/add-registry-prefix.py --registry-prefix "your-registry"
+    python3 .github/actions/setup/add-registry-prefix.py --registry-prefix "your-registry"
 """
 
 import argparse
