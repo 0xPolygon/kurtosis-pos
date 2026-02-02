@@ -81,7 +81,7 @@ def launch_panoptichain(
     service = plan.add_service(
         name="panoptichain",
         config=ServiceConfig(
-            image=constants.ADDITIONAL_SERVICE_IMAGES.get("panoptichain_image"),
+            image=constants.IMAGES.get("panoptichain_image"),
             ports={
                 "metrics": PortSpec(PANOPTICHAIN_PORT, application_protocol="http"),
             },
@@ -106,7 +106,7 @@ def launch_prometheus(plan, l2_participants, panoptichain_url):
         node_selectors=None,
         storage_tsdb_retention_time="1d",
         storage_tsdb_retention_size="512MB",
-        image=constants.ADDITIONAL_SERVICE_IMAGES.get("prometheus_image"),
+        image=constants.IMAGES.get("prometheus_image"),
     )
 
 
@@ -140,6 +140,6 @@ def launch_grafana(plan, prometheus_url):
         plan,
         prometheus_url,
         name="grafana",
-        image=constants.ADDITIONAL_SERVICE_IMAGES.get("grafana_image"),
+        image=constants.IMAGES.get("grafana_image"),
         grafana_dashboards_files_artifact=grafana_dashboards_files_artifact,
     )

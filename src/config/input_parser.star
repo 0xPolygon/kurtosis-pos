@@ -120,11 +120,11 @@ POLYGON_POS_PACKAGE_ARGS = {
 }
 
 STATUS_CHECKER_ARGS = {
-    "image": constants.ADDITIONAL_SERVICE_IMAGES.get("status_checker_image"),
+    "image": constants.IMAGES.get("status_checker_image"),
 }
 
 ETHSTATS_SERVER_ARGS = {
-    "image": constants.ADDITIONAL_SERVICE_IMAGES.get("ethstats_server_image"),
+    "image": constants.IMAGES.get("ethstats_server_image"),
     "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
 }
 
