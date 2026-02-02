@@ -30,6 +30,6 @@ runs:
     - name: Test state syncs
       working-directory: agglayer-e2e
       shell: bash
-      run: bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats
+      run: bats --filter 'bridge MATIC/POL, ERC20, and ERC721 from L1 to L2 and confirm L2 balances increased' tests/pos/bridge.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
