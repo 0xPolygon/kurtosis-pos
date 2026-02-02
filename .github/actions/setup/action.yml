@@ -1,7 +1,12 @@
-name: kurtosis-pre-run
-description: Prepare the environment for deploying Kurtosis packages
+name: setup
+description: Set up Docker authentication and Kurtosis environment
 
 inputs:
+  kurtosis_version:
+    description: The version of Kurtosis to install
+    required: false
+    default: 1.12.1
+
   # Docker registry credentials
   docker_username:
     description: The username for docker registry
@@ -62,7 +67,7 @@ runs:
       run: |
         echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
         sudo apt update
-        sudo apt install -y kurtosis-cli=1.12.1
+        sudo apt install -y kurtosis-cli=${{ inputs.kurtosis_version }}
         kurtosis analytics disable
         kurtosis version
 
@@ -152,7 +157,7 @@ runs:
       shell: bash
       run: |
         registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
-        python3 .github/actions/kurtosis-pre-run/add-registry-prefix.py --registry-prefix $registry_prefix
+        python3 .github/actions/setup/add-registry-prefix.py --registry-prefix $registry_prefix
 
     - name: Pull images from GAR
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
@@ -160,7 +165,7 @@ runs:
       run: |
         # Pull kurtosis-pos images (already have registry prefix added)
         while IFS= read -r image; do
-          if docker images -q "$image" > /dev/null 2>&1; then
+          if docker inspect "$image" > /dev/null 2>&1; then
             echo "Image already exists, skipping pull: $image"
           else
             echo "Pulling image: $image"
@@ -172,14 +177,14 @@ runs:
         registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
         while IFS= read -r image; do
           prefixed_image="${registry_prefix}/${image}"
-          if docker images -q "$prefixed_image" > /dev/null 2>&1; then
+          if docker inspect "$prefixed_image" > /dev/null 2>&1; then
             echo "Image already exists, skipping pull: $prefixed_image"
           else
             echo "Pulling image: $prefixed_image"
             docker pull "$prefixed_image"
             docker tag "$prefixed_image" "$image"
           fi
-        done < .github/actions/kurtosis-pre-run/images.txt
+        done < .github/actions/setup/images.txt
 
     # Debug
     - name: List images

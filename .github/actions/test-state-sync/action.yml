@@ -1,13 +1,15 @@
-name: state-sync-test
-description: Run state sync tests in a Kurtosis enclave
+name: test-state-sync
+description: Test state sync functionality
 
 inputs:
   enclave_name:
     description: The name of the kurtosis enclave
-    required: true
+    required: false
+    default: pos
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
+    default: 2687c0c751e7cae2deaf4e99b13ae0d0ef97b2d7
 
 runs:
   using: composite
@@ -17,7 +19,7 @@ runs:
       with:
         repository: agglayer/e2e
         path: agglayer-e2e
-        ref: 2687c0c751e7cae2deaf4e99b13ae0d0ef97b2d7
+        ref: ${{ inputs.agglayer_e2e_tag }}
 
     - name: Install bats
       uses: bats-core/bats-action@42fcc8700f773c075a16a90eb11674c0318ad507 # 3.0.1
