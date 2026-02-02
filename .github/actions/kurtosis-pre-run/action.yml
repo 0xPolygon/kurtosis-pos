@@ -10,7 +10,7 @@ inputs:
     description: The token for docker registry
     required: false
 
-  # GCP specific inputs
+  # GCP settings
   gcp_registry:
     description: Container registry url
     required: false
@@ -31,6 +31,12 @@ inputs:
     description: Service account
     required: false
     default: kurtosis-pos-ci@prj-polygonlabs-devtools-dev.iam.gserviceaccount.com
+
+  # Cache settings
+  cache_folder:
+    description: The folder to use for caching Docker images
+    required: false
+    default: /tmp/docker-images
 
 runs:
   using: composite
@@ -87,18 +93,18 @@ runs:
     - uses: actions/cache@v5
       id: cache
       with:
-        path: /tmp/docker-images
-        key: docker-images-${{ github.run_id }}
+        path: ${{ inputs.cache_folder }}
+        key: ${{ inputs.cache_key }}-${{ github.run_id }}
         restore-keys: |
-          docker-images-
+          ${{ inputs.cache_key }}-
 
     - name: Load cached docker images
       if: steps.cache.outputs.cache-matched-key != 'true'
       shell: bash
       run: |
         echo "Loading cached images..."
-        if [[ -d "/tmp/docker-images" ]]; then
-          for image_tar in /tmp/docker-images/*.tar; do
+        if [[ -d "${{ inputs.cache_folder }}" ]]; then
+          for image_tar in ${{ inputs.cache_folder }}/*.tar; do
             if [[ -f "$image_tar" ]]; then
               {
                 docker load -i "$image_tar"
