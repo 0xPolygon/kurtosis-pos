@@ -129,14 +129,13 @@ runs:
         mkdir -p /tmp/docker-images
 
         # Save all images on the host (excluding dangling images)
-        docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>" | while read image; do
+        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>"); do
           {
             safe_name=$(echo "$image" | sed 's/[\/:]/_/g')
             docker save "$image" -o "/tmp/docker-images/${safe_name}.tar"
           } &
         done
         wait
-        sync # Force kernel to write all buffered data to disk
 
         echo "Docker images saved successfully"
         echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
@@ -144,7 +143,7 @@ runs:
 
     - name: Save cache
       if: ${{ inputs.save_cache == 'true' }}
-      uses: actions/cache/save@v5
+      uses: actions/cache@v4
       with:
         path: /tmp/docker-images
         key: docker-images-${{ github.run_id }}
