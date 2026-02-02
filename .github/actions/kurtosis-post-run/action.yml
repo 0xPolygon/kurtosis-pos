@@ -2,12 +2,23 @@ name: kurtosis-post-run
 description: Dump enclave and upload it as an artifact after deploying Kurtosis packages
 
 inputs:
+  # Kurtosis settings
   enclave_name:
     description: The name of the kurtosis enclave
     required: true
   args_filename:
     description: The name of the args file
     required: false
+  
+  # Cache settings
+  cache_key:
+    description: The key to use for caching Docker images
+    required: false
+    default: docker-images
+  cache_folder:
+    description: The folder to use for caching Docker images
+    required: false
+    default: /tmp/docker-images
   save_cache:
     description: Whether this job should save the Docker image cache
     required: false
@@ -121,22 +132,29 @@ runs:
           done
 
     # Cache images for future runs
-    - name: Cache docker images
+    - name: Save docker images to cache directory
       if: ${{ inputs.save_cache == 'true' }}
       shell: bash
       run: |
-        echo "Saving all Docker images to cache..."
-        mkdir -p /tmp/docker-images
+        echo "Saving all images to cache directory..."
+        mkdir -p ${{ inputs.cache_folder }}
 
         # Save all images on the host (excluding dangling images)
-        docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>" | while read image; do
+        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>"); do
           {
-            safe_name=$(echo "$image" | sed 's/[\/:]/_/g')
-            docker save "$image" -o "/tmp/docker-images/${safe_name}.tar"
+            name=$(echo "$image" | sed 's/[\/:]/_/g')
+            docker save "$image" -o "${{ inputs.cache_folder }}/${name}.tar"
           } &
         done
         wait
 
         echo "Docker images saved successfully"
-        echo "Size: $(du -sh /tmp/docker-images | awk '{print $1}')"
-        echo "Number of images: $(ls -1 /tmp/docker-images | wc -l)"
+        echo "Size: $(du -sh ${{ inputs.cache_folder }} | awk '{print $1}')"
+        echo "Number of images: $(ls -1 ${{ inputs.cache_folder }} | wc -l)"
+
+    - name: Save cache
+      if: ${{ inputs.save_cache == 'true' }}
+      uses: actions/cache@v5
+      with:
+        path: ${{ inputs.cache_folder }}
+        key: ${{ inputs.cache_key }}-${{ github.run_id }}
