@@ -1,4 +1,4 @@
-FROM node:20-slim
+FROM node:25-slim
 LABEL description="Polygon PoS contracts deployment image"
 LABEL author="devtools@polygon.technology"
 
