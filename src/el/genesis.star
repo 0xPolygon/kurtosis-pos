@@ -51,6 +51,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
     result = plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
+        image=setup_images.get("el_genesis_builder"),
         env_vars={
             "EL_CHAIN_ID": network_params.get("el_chain_id"),
             "DEFAULT_EL_CHAIN_ID": constants.EL_CHAIN_ID,
