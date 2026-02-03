@@ -23,7 +23,7 @@ monitor_rpc() {
   rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
   log_info "Using rpc url: ${rpc_url}"
 
-  local num_steps=25
+  local num_steps=20
   local gas_price_factor=1
   local LATEST_BLOCK=0
   local FINALIZED_BLOCK=0
@@ -48,6 +48,7 @@ monitor_rpc() {
     cast send \
       --legacy \
       --timeout 30 \
+      --async \
       --gas-price "${gas_price}" \
       --rpc-url "${rpc_url}" \
       --private-key "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" \
