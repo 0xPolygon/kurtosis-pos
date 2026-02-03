@@ -15,7 +15,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
     el_genesis_temporary_artifact = plan.render_templates(
         name="l2-el-genesis-tmp",
         config={
-            "genesis-tmp.json": struct(
+            "genesis.json": struct(
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
@@ -68,7 +68,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
             # supported by Kurtosis when using plan.run_sh unfortunately.
-            "/opt/data/genesis": el_genesis_temporary_artifact,
+            "/opt/data/genesis-tmp": el_genesis_temporary_artifact,
             "/opt/data/genesis-builder": el_genesis_builder_script_artifact,
             "/opt/data/validator": validator_config_artifact,
         },
