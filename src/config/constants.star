@@ -54,6 +54,7 @@ IMAGES = {
     "l2_cl_queue_image": "rabbitmq:4.2.2",
     # utilities
     "pos_contract_deployer_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592-v2",
+    "pos_el_genesis_builder_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd",
     "pos_validator_config_generator_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.6.0",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
@@ -65,7 +66,7 @@ IMAGES = {
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 
-L1_CHAIN_ID = "3151908"  # 0x301824
+L1_CHAIN_ID = "3151908"  # 0x301824.
 EL_CHAIN_ID = "4927"
 CL_CHAIN_ID = (
     "heimdall-" + EL_CHAIN_ID

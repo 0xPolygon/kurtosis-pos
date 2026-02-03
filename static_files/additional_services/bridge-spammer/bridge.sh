@@ -64,7 +64,6 @@ while true; do
   cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --json \
     "${L1_DEPOSIT_MANAGER_PROXY_ADDRESS}" "depositERC20(address,uint)" "${L1_MATIC_TOKEN_ADDRESS}" "${bridge_amount}"
 
-
   log_info "Bridging ERC20 tokens from L1 to L2"
   log_info "Approving the DepositManager contract to spend ERC20 tokens on our behalf"
   cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --json \
