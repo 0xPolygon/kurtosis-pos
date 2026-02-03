@@ -79,6 +79,9 @@ POLYGON_POS_PACKAGE_ARGS = {
     "participants": [POLYGON_POS_PARTICIPANT],
     "setup_images": {
         "contract_deployer": constants.IMAGES.get("pos_contract_deployer_image"),
+        "el_genesis_builder": constants.DEFAULT_IMAGES.get(
+            "pos_el_genesis_builder_image"
+        ),
         "validator_config_generator": constants.IMAGES.get(
             "pos_validator_config_generator_image"
         ),
