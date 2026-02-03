@@ -129,6 +129,19 @@ jobs:
       - name: Deploy L1 devnet
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@6.0.0 # 2026-01-05
 
+      - name: Wait for L1 to be ready
+        run: |
+          cl_rpc_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} cl-1-lighthouse-geth http)
+          while true; do
+            slot=$(curl --silent $cl_rpc_url/eth/v1/beacon/headers/ | jq --raw-output ".data[0].header.message.slot")
+            echo "L1 chain is starting up... Current slot: $slot"
+            if [[ "$slot" =~ ^[0-9]+$ ]] && [[ "$slot" -gt "0" ]]; then
+              echo "L1 chain has started!"
+              break
+            fi
+            sleep 5
+          done
+
       - name: Deploy L2 devnet
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
 
