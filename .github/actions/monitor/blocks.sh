@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # This script monitors block progress in a Polygon PoS devnet.
-# Usage: ./blocks.sh <enclave_name>
-# Example: ./blocks.sh pos
+# Usage: ./blocks.sh <enclave_name> [first|all]
+# Example: ./blocks.sh pos first  # Check only the first RPC
+# Example: ./blocks.sh pos all    # Check all RPCs (default)
 
 # Source logging library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -19,54 +20,80 @@ if [[ -z "${enclave_name}" ]]; then
 fi
 log_info "Using enclave name: ${enclave_name}"
 
-rpc_name="l2-el-1-bor-heimdall-v2-validator"
-log_info "Using rpc name: ${rpc_name}"
+check_mode=${2:-"all"}
+if [[ "${check_mode}" != "first" && "${check_mode}" != "all" ]]; then
+  log_error "Check mode must be 'first' or 'all'"
+  exit 1
+fi
+log_info "Using check mode: ${check_mode}"
 
-rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
-log_info "Using rpc url: ${rpc_url}"
+# Get RPC names
+if [[ "${check_mode}" == "first" ]]; then
+  rpc_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-el/ && /RUNNING/ {print $2 "--" $1}' | head -n 1)
+else
+  rpc_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-el/ && /RUNNING/ {print $2 "--" $1}')
+fi
+if [[ -z "${rpc_names}" ]]; then
+  log_error "No running l2-el services found in enclave ${enclave_name}"
+  exit 1
+fi
+log_info "Found RPC(s): ${rpc_names}"
 
 target="100"
 log_info "Using target: ${target}"
 
-# Monitor block progress
-num_steps=100
-gas_price_factor=1
-for step in $(seq 1 "${num_steps}"); do
-  log_info "Check ${step}/${num_steps}"
+# Monitor block progress for each RPC
+while IFS= read -r rpc_entry; do
+  rpc_name="${rpc_entry%%--*}"
+  log_info "Checking RPC: ${rpc_name}"
 
-  LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}")
-  FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}")
-  log_info "Got blocks: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
-  if [[ "${LATEST_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
-    log_info "Target blocks reached for all block types (latest and finalized)"
-    exit 0
+  rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
+  log_info "Using rpc url: ${rpc_url}"
+
+  num_steps=100
+  gas_price_factor=1
+  for step in $(seq 1 "${num_steps}"); do
+    log_info "Check ${step}/${num_steps} for ${rpc_name}"
+
+    LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}")
+    FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}")
+    log_info "Got blocks: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
+    if [[ "${LATEST_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
+      log_info "Target blocks reached for all block types (latest and finalized) for ${rpc_name}"
+      break
+    fi
+
+    # Send a transaction to stimulate progress
+    gas_price=$(cast gas-price --rpc-url "$rpc_url")
+    gas_price=$(bc -l <<< "$gas_price * $gas_price_factor" | sed 's/\..*//')
+
+    log_info "Sending a test transaction"
+    set +e
+    cast send \
+      --legacy \
+      --timeout 30 \
+      --gas-price "${gas_price}" \
+      --rpc-url "${rpc_url}" \
+      --private-key "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" \
+      --gas-limit 100000 \
+      --create 0x6001617000526160006110005ff05b6109c45a111560245761600061100080833c600e565b50
+    result="$?"
+    set -e
+    if [[ "${result}" -eq 0 ]]; then
+      gas_price_factor=1
+    else
+      gas_price_factor=$(bc -l <<< "$gas_price_factor * 1.5")
+    fi
+
+    sleep 5
+  done
+
+  # Check if target was reached for this RPC
+  if [[ "${LATEST_BLOCK}" -lt "${target}" || "${FINALIZED_BLOCK}" -lt "${target}" ]]; then
+    log_error "Target blocks have not been reached for ${rpc_name}"
+    exit 1
   fi
+done <<< "${rpc_names}"
 
-  # Send a transaction to stimulate progress
-  gas_price=$(cast gas-price --rpc-url "$rpc_url")
-  gas_price=$(bc -l <<< "$gas_price * $gas_price_factor" | sed 's/\..*//')
-
-  log_info "Sending a test transaction"
-  set +e
-  cast send \
-    --legacy \
-    --timeout 30 \
-    --gas-price "${gas_price}" \
-    --rpc-url "${rpc_url}" \
-    --private-key "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea" \
-    --gas-limit 100000 \
-    --create 0x6001617000526160006110005ff05b6109c45a111560245761600061100080833c600e565b50
-  result="$?"
-  set -e
-  if [[ "${result}" -eq 0 ]]; then
-    gas_price_factor=1
-  else
-    gas_price_factor=$(bc -l <<< "$gas_price_factor * 1.5")
-  fi
-
-  sleep 5
-done
-
-# If the code reaches here, the target was not met within the allowed steps
-log_error "Target blocks have not been reached for all block types (latest and finalized)"
-exit 1
+log_info "All RPCs have reached target blocks"
+exit 0
