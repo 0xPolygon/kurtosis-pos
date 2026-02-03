@@ -1,0 +1,192 @@
+name: setup
+description: Set up Docker authentication and Kurtosis environment
+
+inputs:
+  kurtosis_version:
+    description: The version of Kurtosis to install
+    required: false
+    default: 1.12.1
+
+  # Docker registry credentials
+  docker_username:
+    description: The username for docker registry
+    required: false
+  docker_token:
+    description: The token for docker registry
+    required: false
+
+  # GCP settings
+  gcp_registry:
+    description: Container registry url
+    required: false
+    default: europe-west2-docker.pkg.dev
+  gcp_project_id:
+    description: Project id
+    required: false
+    default: prj-polygonlabs-devtools-dev
+  gcp_repository:
+    description: Artifact repository name
+    required: false
+    default: virtual
+  gcp_wip:
+    description: Workload identity provider
+    required: false
+    default: projects/337907489413/locations/global/workloadIdentityPools/github-wif/providers/github
+  gcp_sa:
+    description: Service account
+    required: false
+    default: kurtosis-pos-ci@prj-polygonlabs-devtools-dev.iam.gserviceaccount.com
+
+  # Cache settings
+  cache_key:
+    description: The key to use for caching Docker images
+    required: false
+    default: docker-images
+  cache_folder:
+    description: The folder to use for caching Docker images
+    required: false
+    default: /tmp/docker-images
+
+runs:
+  using: composite
+  steps:
+    - name: Free up disk space
+      uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: true
+        swap-storage: true
+
+    # Install dependencies
+    - name: Install kurtosis
+      shell: bash
+      run: |
+        echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+        sudo apt update
+        sudo apt install -y kurtosis-cli=${{ inputs.kurtosis_version }}
+        kurtosis analytics disable
+        kurtosis version
+
+    - name: Install yq
+      shell: bash
+      run: |
+        pip3 install yq
+        yq --version
+
+    - name: Install foundry
+      uses: foundry-rs/foundry-toolchain@50d5a8956f2e319df19e6b57539d7e2acb9f8c1e # v1.5.0
+      with:
+        version: v1.4.2
+        cache: false
+
+    # Login to registries
+    - name: Login to docker registry
+      if: ${{ inputs.docker_username && inputs.docker_token }}
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+      with:
+        username: ${{ inputs.docker_username }}
+        password: ${{ inputs.docker_token }}
+
+    - name: Login to github container registry
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+
+    # Load images from cache or pull from GAR
+    - uses: actions/cache@v5
+      id: cache
+      with:
+        path: ${{ inputs.cache_folder }}
+        key: ${{ inputs.cache_key }}-${{ github.run_id }}
+        restore-keys: |
+          ${{ inputs.cache_key }}-
+
+    - name: Load cached docker images
+      if: steps.cache.outputs.cache-matched-key != 'true'
+      shell: bash
+      run: |
+        echo "Loading cached images..."
+        if [[ -d "${{ inputs.cache_folder }}" ]]; then
+          for image_tar in ${{ inputs.cache_folder }}/*.tar; do
+            if [[ -f "$image_tar" ]]; then
+              {
+                docker load -i "$image_tar"
+              } &
+            fi
+          done
+          wait
+          echo "Cached images loaded successfully"
+        fi
+
+    - name: List images
+      if: steps.cache.outputs.cache-matched-key != 'true'
+      shell: bash
+      run: docker images
+
+    # Pull images from GAR if cache miss
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      with:
+        workload_identity_provider: ${{ inputs.gcp_wip }}
+        service_account: ${{ inputs.gcp_sa }}
+
+    - name: Setup gcloud cli
+      uses: google-github-actions/setup-gcloud@26f734c2779b00b7dda794207734c511110a4368 # v3.0.0
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+
+    - name: Configure docker
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      shell: bash
+      run: gcloud auth configure-docker ${{ inputs.gcp_registry }}
+
+    - name: Install python
+      uses: actions/setup-python@v5
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      with:
+        python-version: 3.13
+
+    - name: Add registry prefix to image names
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      shell: bash
+      run: |
+        registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
+        python3 .github/actions/setup/add-registry-prefix.py --registry-prefix $registry_prefix
+
+    - name: Pull images from GAR
+      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      shell: bash
+      run: |
+        # Pull kurtosis-pos images (already have registry prefix added)
+        while IFS= read -r image; do
+          if docker inspect "$image" > /dev/null 2>&1; then
+            echo "Image already exists, skipping pull: $image"
+          else
+            echo "Pulling image: $image"
+            docker pull "$image"
+          fi
+        done < modified-images.txt
+
+        # Pull kurtosis core and ethereum-package images
+        registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
+        while IFS= read -r image; do
+          prefixed_image="${registry_prefix}/${image}"
+          if docker inspect "$prefixed_image" > /dev/null 2>&1; then
+            echo "Image already exists, skipping pull: $prefixed_image"
+          else
+            echo "Pulling image: $prefixed_image"
+            docker pull "$prefixed_image"
+            docker tag "$prefixed_image" "$image"
+          fi
+        done < .github/actions/setup/images.txt
+
+    # Debug
+    - name: List images
+      shell: bash
+      run: docker images
