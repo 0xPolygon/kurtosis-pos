@@ -78,6 +78,7 @@ timestamp=$(printf "0x%x" $(date +%s))
 jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
+# Verify and output the EL genesis file.
 if [[ -s "${EL_GENESIS_FILE}" ]]; then
   echo "L2 EL genesis:"
   cat "${EL_GENESIS_FILE}"
