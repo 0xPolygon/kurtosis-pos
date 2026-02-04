@@ -107,12 +107,12 @@ cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
   "${governance_proxy_address}" "update(address,bytes)" "${stake_manager_proxy_address}" "${calldata}"
 
 # Create the validator config file.
-jq -n '[]' >"${VALIDATORS_CONFIG_FILE}"
+jq -n '[]' > "${VALIDATORS_CONFIG_FILE}"
 
 echo "Staking for each validator node..."
-IFS=';' read -ra validator_accounts <<<"${VALIDATOR_ACCOUNTS}"
+IFS=';' read -ra validator_accounts <<< "${VALIDATOR_ACCOUNTS}"
 for account in "${validator_accounts[@]}"; do
-  IFS=',' read -r address eth_public_key <<<"${account}"
+  IFS=',' read -r address eth_public_key <<< "${account}"
   # Note: MaticStake requires the amount to be specified in wei, not in eth.
   forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
     scripts/matic-cli-scripts/stake.s.sol:MaticStake \
@@ -122,10 +122,10 @@ for account in "${validator_accounts[@]}"; do
   # Update the validator config file.
   jq --arg address "${address}" --arg stake "${VALIDATOR_STAKE_AMOUNT_ETH}" --arg balance "${VALIDATOR_BALANCE}" \
     '. += [{"address": $address, "stake": ($stake | tonumber), "balance": ($balance | tonumber)}]' \
-    "${VALIDATORS_CONFIG_FILE}" >"${VALIDATORS_CONFIG_FILE}.tmp"
+    "${VALIDATORS_CONFIG_FILE}" > "${VALIDATORS_CONFIG_FILE}.tmp"
   mv "${VALIDATORS_CONFIG_FILE}.tmp" "${VALIDATORS_CONFIG_FILE}"
 done
-echo "exports = module.exports = $(<${VALIDATORS_CONFIG_FILE})" >"${VALIDATORS_CONFIG_FILE}"
+echo "exports = module.exports = $(< ${VALIDATORS_CONFIG_FILE})" > "${VALIDATORS_CONFIG_FILE}"
 
 if [[ -s "${VALIDATORS_CONFIG_FILE}" ]]; then
   echo "Validators config created successfully."
