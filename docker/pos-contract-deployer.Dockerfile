@@ -13,7 +13,7 @@ ENV EL_CHAIN_ID="4927"
 WORKDIR /opt/pos-contracts
 RUN apt-get update \
   # Install dependencies
-  && apt-get install --no-install-recommends --yes bash ca-certificates curl git jq \
+  && apt-get install --no-install-recommends --yes bash ca-certificates curl git g++ jq make python3 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
   # Install foundry
