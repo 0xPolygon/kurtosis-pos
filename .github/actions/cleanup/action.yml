@@ -12,6 +12,10 @@ inputs:
     required: false
   
   # Cache settings
+  save_cache:
+    description: Whether this job should save the Docker image cache
+    required: false
+    default: "false"
   cache_key:
     description: The key to use for caching Docker images
     required: false
@@ -20,10 +24,10 @@ inputs:
     description: The folder to use for caching Docker images
     required: false
     default: /tmp/docker-images
-  save_cache:
-    description: Whether this job should save the Docker image cache
+  main_branch:
+    description: The name of the main branch for cache keys
     required: false
-    default: "false"
+    default: main
 
 runs:
   using: composite
@@ -158,4 +162,4 @@ runs:
       uses: actions/cache@v5
       with:
         path: ${{ inputs.cache_folder }}
-        key: ${{ inputs.cache_key }}-${{ github.run_id }}
+        key: ${{ inputs.cache_key }}-${{ inputs.main_branch }}-${{ github.sha }}
