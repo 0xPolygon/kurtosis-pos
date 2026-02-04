@@ -50,16 +50,16 @@ generate_cl_validator_config() {
       \"type\": \"cometbft/PrivKeySecp256k1eth\",
       \"value\": \"${cometbft_private_key}\"
     }
-  }" | jq >"${cl_validator_config_path}/config/priv_validator_key.json"
+  }" | jq > "${cl_validator_config_path}/config/priv_validator_key.json"
 
   # Set proper permissions
   chmod 600 "${cl_validator_config_path}/config/priv_validator_key.json"
 
   # Create validator state file
-  echo '{"height":"0","round":0,"step":0}' | jq >"${cl_validator_config_path}/data/priv_validator_state.json"
+  echo '{"height":"0","round":0,"step":0}' | jq > "${cl_validator_config_path}/data/priv_validator_state.json"
 
   # Retrieve and store the node identifier.
-  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2>"${cl_validator_config_path}/init.out"
+  heimdalld init --home "${cl_validator_config_path}" --chain-id "${CL_CHAIN_ID}" "${id}" 2> "${cl_validator_config_path}/init.out"
   node_id="$(cat ${cl_validator_config_path}/init.out | jq --raw-output '.node_id')"
 
   # Drop the unnecessary files.
@@ -73,15 +73,15 @@ generate_cl_validator_config() {
   cp "${cl_validator_config_path}/data/priv_validator_state.json" "${cl_validator_config_path}/config"
 
   # Return the node full address
-  echo "${node_id}@${p2p_url}" >"${cl_validator_config_path}/node_full_address.txt"
+  echo "${node_id}@${p2p_url}" > "${cl_validator_config_path}/node_full_address.txt"
 }
 
 # Loop through validators and set them up.
 persistent_peers=""
 id=1
-IFS=';' read -ra validator_configs <<<"${CL_VALIDATORS_CONFIGS}"
+IFS=';' read -ra validator_configs <<< "${CL_VALIDATORS_CONFIGS}"
 for config in "${validator_configs[@]}"; do
-  IFS=',' read -r execution_key cometbft_address cometbft_public_key cometbft_private_key p2p_url <<<"${config}"
+  IFS=',' read -r execution_key cometbft_address cometbft_public_key cometbft_private_key p2p_url <<< "${config}"
 
   echo "Generating CL config for validator ${id}..."
   generate_cl_validator_config "${id}" "${execution_key}" "${cometbft_address}" "${cometbft_public_key}" "${cometbft_private_key}" "${p2p_url}"
@@ -98,5 +98,5 @@ for config in "${validator_configs[@]}"; do
 done
 
 # Store node identifiers.
-echo "${persistent_peers}" >"${CL_CLIENT_CONFIG_PATH}/persistent_peers.txt"
+echo "${persistent_peers}" > "${CL_CLIENT_CONFIG_PATH}/persistent_peers.txt"
 echo "Persistent peers: ${persistent_peers}"
