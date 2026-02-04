@@ -46,6 +46,10 @@ inputs:
     description: The folder to use for caching Docker images
     required: false
     default: /tmp/docker-images
+  main_branch:
+    description: The name of the main branch for cache keys
+    required: false
+    default: main
 
 runs:
   using: composite
@@ -103,9 +107,9 @@ runs:
       id: cache
       with:
         path: ${{ inputs.cache_folder }}
-        key: ${{ inputs.cache_key }}-main-${{ github.sha }}
+        key: ${{ inputs.cache_key }}-${{ inputs.main_branch }}-${{ github.sha }}
         restore-keys: |
-          ${{ inputs.cache_key }}-main-
+          ${{ inputs.cache_key }}-${{ inputs.main_branch }}-
 
     - name: Load cached docker images
       if: steps.cache.outputs.cache-matched-key != 'true'
