@@ -1,11 +1,24 @@
 name: publish-docker-images
 
-# Manually triggered workflow to build and publish docker images to GHCR.
+# Workflow to build and publish docker images to GHCR.
 # Update the respective env vars below to deploy new versions:
 # - pos-contract-deployer: POS_CONTRACTS_BRANCH, POS_CONTRACTS_COMMIT_SHA
 # - pos-el-genesis-builder: GENESIS_CONTRACTS_BRANCH, GENESIS_CONTRACTS_COMMIT_SHA
 # - pos-validator-config-generator: HEIMDALL_V2_VERSION, POLYGON_CLI_VERSION
 on:
+  # Auto-trigger on PRs (for validation only, no push)
+  pull_request:
+    paths:
+      - '.github/workflows/publish-docker-images.yaml'
+      - 'docker/*.Dockerfile'
+  # Auto-trigger on main when workflow or dockerfiles change (for publishing)
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-docker-images.yaml'
+      - 'docker/*.Dockerfile'
+  # Manual trigger (for publishing)
   workflow_dispatch:
     inputs:
       image:
@@ -19,7 +32,6 @@ on:
           - pos-el-genesis-builder
           - pos-validator-config-generator
 
-# Prevent concurrent workflow runs
 concurrency:
   group: publish-docker-images
   cancel-in-progress: false
@@ -44,7 +56,8 @@ env:
 
 jobs:
   publish-pos-contract-deployer:
-    if: inputs.image == 'all' || inputs.image == 'pos-contract-deployer'
+    # Run on PR/push (inputs.image doesn't exist), OR on manual trigger if selected
+    if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-contract-deployer'
     runs-on: ubuntu-latest
 
     permissions:
@@ -82,7 +95,7 @@ jobs:
           build-args: |
             POS_CONTRACTS_BRANCH=${{ env.POS_CONTRACTS_BRANCH }}
             POS_CONTRACTS_TAG_OR_COMMIT_SHA=${{ env.POS_CONTRACTS_COMMIT_SHA }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
@@ -90,6 +103,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Generate artifact attestation
+        if: github.event_name != 'pull_request'
         uses: actions/attest-build-provenance@v3
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.POS_CONTRACTS_IMAGE_NAME}}
@@ -97,7 +111,8 @@ jobs:
           push-to-registry: true
 
   publish-pos-el-genesis-builder:
-    if: inputs.image == 'all' || inputs.image == 'pos-el-genesis-builder'
+    # Run on PR/push (inputs.image doesn't exist), OR on manual trigger if selected
+    if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-el-genesis-builder'
     runs-on: ubuntu-latest
 
     permissions:
@@ -135,7 +150,7 @@ jobs:
           build-args: |
             GENESIS_CONTRACTS_BRANCH=${{ env.GENESIS_CONTRACTS_BRANCH }}
             GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA=${{ env.GENESIS_CONTRACTS_COMMIT_SHA }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
@@ -143,6 +158,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Generate artifact attestation
+        if: github.event_name != 'pull_request'
         uses: actions/attest-build-provenance@v3
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.EL_GENESIS_BUILDER_IMAGE_NAME}}
@@ -150,7 +166,8 @@ jobs:
           push-to-registry: true
 
   publish-pos-validator-config-generator:
-    if: inputs.image == 'all' || inputs.image == 'pos-validator-config-generator'
+    # Run on PR/push (inputs.image doesn't exist), OR on manual trigger if selected
+    if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-validator-config-generator'
     runs-on: ubuntu-latest
 
     permissions:
@@ -188,7 +205,7 @@ jobs:
           build-args: |
             HEIMDALL_V2_VERSION=${{ env.HEIMDALL_V2_VERSION }}
             POLYGON_CLI_VERSION=${{ env.POLYGON_CLI_VERSION }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
@@ -196,6 +213,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Generate artifact attestation
+        if: github.event_name != 'pull_request'
         uses: actions/attest-build-provenance@v3
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.VALIDATOR_CONFIG_IMAGE_NAME}}
