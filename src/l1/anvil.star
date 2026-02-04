@@ -4,7 +4,7 @@ math = import_module("../math/math.star")
 prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 
 
-ANVIL_PORT_ID = "http"
+ANVIL_PORT_ID = "rpc"
 ANVIL_PORT_NUMBER = 8545
 
 
