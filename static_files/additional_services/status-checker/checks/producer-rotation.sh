@@ -44,7 +44,7 @@ for i in {0..20}; do
   echo "span $i: $span_length blocks (start: $span_start_block) - producer $span_producer"
 
   if [[ $span_start_block -le $last_start_block ]]; then
-    echo "WARN: span $((i-1)) has been replaced by span $i"
+    echo "WARN: span $((i - 1)) has been replaced by span $i"
     echo "WARN: producer $last_producer was replaced by producer $span_producer"
   fi
   last_start_block="${span_start_block}"
@@ -58,7 +58,7 @@ for i in {0..20}; do
     last_start_block="${span_start_block}"
     continue
   fi
-  
+
   if [[ $last_producer -eq 1 && $span_producer -ne 2 ]]; then
     echo "WARN: span $i has been produced by producer $span_producer, expected 2"
   elif [[ $last_producer -eq 2 && $span_producer -ne 3 ]]; then

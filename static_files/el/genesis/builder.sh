@@ -75,7 +75,7 @@ mv tmp.json "${EL_GENESIS_FILE}"
 
 # Add the current timestamp to the EL genesis.
 timestamp=$(printf "0x%x" $(date +%s))
-jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
+jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" >tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
 # Verify and output the EL genesis file.
