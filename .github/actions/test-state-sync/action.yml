@@ -6,6 +6,10 @@ inputs:
     description: The name of the kurtosis enclave
     required: false
     default: pos
+  l1_rpc:
+    description: The RPC URL for the L1 node
+    required: false
+    default: el-1-geth-lighthouse
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
@@ -29,9 +33,21 @@ runs:
         detik-path: ${{ github.workspace }}/lib/bats-detik
         file-path: ${{ github.workspace }}/lib/bats-file
 
+    - name: Determine L1 RPC URL
+      shell: bash
+      run: |
+        if [[ "${{ inputs.l1_rpc }}" == "el-1-geth-lighthouse" ]]; then
+          l1_rpc_url="http://$(kurtosis port print ${{ inputs.enclave_name }} el-1-geth-lighthouse rpc)"
+        else
+          l1_rpc_url="$(kurtosis port print ${{ inputs.enclave_name }} ${{ inputs.l1_rpc }} rpc)"
+        fi
+        echo "L1_RPC_URL=$l1_rpc_url" >> $GITHUB_ENV
+        echo "l1_rpc_url=$l1_rpc_url"
+
     - name: Test state syncs
       working-directory: agglayer-e2e
       shell: bash
       run: bats --filter 'bridge MATIC/POL, ERC20, and ERC721 from L1 to L2 and confirm L2 balances increased' tests/pos/bridge.bats
       env:
+        L1_RPC_URL: ${{ env.L1_RPC_URL }}
         TIMEOUT_SECONDS: 600 # default: 180

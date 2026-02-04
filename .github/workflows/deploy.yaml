@@ -107,6 +107,8 @@ jobs:
 
       - uses: ./.github/actions/test-state-sync
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
+        with:
+          l1_rpc: ${{ contains(matrix.file.name, 'anvil') && 'anvil' || 'el-1-geth-lighthouse' }}
 
       - uses: ./.github/actions/cleanup
         if: always()
