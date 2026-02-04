@@ -102,22 +102,23 @@ When deploying the devnet on an `arm64` architecture, you may encounter the foll
 ```bash
 There was an error validating Starlark code
 ...
-Caused by: Tried pulling image 'europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12' with platform '' but failed
+Caused by: Tried pulling image 'europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592-v2' with platform '' but failed
 ...
 ```
 
-Some images are built for `amd64` only. That's why you see a warning like this at the top of the deployment:
+Some of our images are built for `amd64` only. That's why you see a warning like this at the top of the deployment:
 
 ```bash
 WARNING: Container images with different architecture than expected(arm64):
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592-v2 - amd64
 > europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12 - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.4.2 - amd64
 > ghcr.io/agglayer/e2e:9fd2d09 - amd64
 ```
 
-**Note:** The `pos-contract-deployer`, `pos-el-genesis-builder`, and `pos-validator-config-generator` images are now built for both `amd64` and `arm64` platforms.
-
-**Solution:** For images that only support `amd64`, pull them by specifying the platform:
+**Solution:** Pull the image by specifying the `amd64` platform.
 
 ```bash
-docker pull --platform linux/amd64 europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12
+docker pull --platform linux/amd64 europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592-v2
 ```
