@@ -76,7 +76,7 @@ Default: a single validator.
 | cl_storage_pruning_interval | string | 10m0s                       | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
 | el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.5.7         | Image for the EL client                                  |
+| el_image                    | string | 0xpolygon/bor:2.5.8         | Image for the EL client                                  |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | el_log_format               | string | text                        | Log format for the EL client                             |
 | el_bor_produce_witness      | bool   | false                       | Allow bor to start producing witnesses                   |
@@ -87,7 +87,7 @@ Default: a single validator.
 
 | Field                      | Type   | Default                                                                                              | Description                                 |
 | -------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
+| contract_deployer          | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-contract-deployer:d96d592-v2     | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
 | validator_config_generator | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-validator-config-generator:0.6.0 | Image used to generate validator configs    |
 
@@ -125,7 +125,6 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | `ethstats_server` | Visual interface for tracking network status                                                                 |
 | `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) |
 | `status_checker`  | Perform regular status checks to track and monitor the health of the network                                 |
-| `test_runner`     | Run [agglayer/e2e](https://github.com/agglayer/e2e) end-to-end tests against the devnet                      |
 | `tx_spammer`      | Send transactions to the network to simulate load                                                            |
 
 ### `ethstats_server_params`
@@ -139,10 +138,3 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | Field | Type   | Default                                                                              | Description                              |
 | ----- | ------ | ------------------------------------------------------------------------------------ | ---------------------------------------- |
 | image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9 | Image used to deploy the status checker. |
-
-
-### `test_runner_params`
-
-| Field | Type   | Default                      | Description                                                                                               |
-| ----- | ------ | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
-| image | string | ghcr.io/agglayer/e2e:9fd2d09 | Image used to deploy the test runner - used to run [agglayer/e2e](https://github.com/agglayer/e2e) tests. |

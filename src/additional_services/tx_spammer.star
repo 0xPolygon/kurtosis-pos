@@ -1,5 +1,6 @@
 constants = import_module("../config/constants.star")
 contract_util = import_module("../contracts/util.star")
+shared = import_module("./shared.star")
 wallet_module = import_module("../wallet/wallet.star")
 
 TX_SPAMMER_SCRIPT_NAME = "loadtest.sh"
@@ -65,7 +66,7 @@ def _start_tx_spammer_service(plan, name, script_artifact, private_key, rpc_url)
     plan.add_service(
         name=name,
         config=ServiceConfig(
-            image=constants.DEFAULT_IMAGES.get("toolbox_image"),
+            image=constants.IMAGES.get("toolbox_image"),
             files={
                 "/opt": Directory(artifact_names=[script_artifact]),
             },
@@ -75,10 +76,7 @@ def _start_tx_spammer_service(plan, name, script_artifact, private_key, rpc_url)
             },
             entrypoint=["bash", "-c"],
             cmd=["chmod +x /opt/{0} && /opt/{0}".format(TX_SPAMMER_SCRIPT_NAME)],
-            # Resource limits
-            min_cpu=100,  # 0.1 CPU
-            max_cpu=1000,  # 1 CPU
-            min_memory=128,  # 128Mb
-            max_memory=1024,  # 1024Mb
+            max_cpu=shared.MAX_CPU,
+            max_memory=shared.MAX_MEM,
         ),
     )

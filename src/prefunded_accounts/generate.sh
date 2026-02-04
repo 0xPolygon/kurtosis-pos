@@ -20,7 +20,7 @@ echo "Generating Ethereum accounts..."
 echo "It might take a while depending on the number of accounts to generate."
 polycli wallet inspect --mnemonic "${MNEMONIC}" --addresses "${ACCOUNTS_NUMBER}" |
   jq '[.Addresses[] | {Path: .Path, ETHAddress: .ETHAddress, ETHPublicKey: ("0x" + .HexFullPublicKey), ETHPrivateKey: .HexPrivateKey}]' \
-    >eth_accounts.json
+    > eth_accounts.json
 
 # Generating CometBFT accounts (secp256k1).
 jq --compact-output '.[]' eth_accounts.json | while read -r account; do
@@ -32,10 +32,10 @@ jq --compact-output '.[]' eth_accounts.json | while read -r account; do
 
   echo "${account}" | jq --arg pub "${eth_public_key_base64}" --arg priv "${eth_private_key_base64}" \
     '. + {CometBftAddress: .ETHAddress, CometBftPublicKey: $pub, CometBftPrivateKey: $priv}'
-done | jq --slurp '.' >eth_cometbft_accounts.json
+done | jq --slurp '.' > eth_cometbft_accounts.json
 
 echo "Generating the Starlark accounts.star file..."
-jq --raw-output '[.[] | "    # \(.Path)\n    account.new_validator(\n        # ETH/Tendermint account - used by heimdall validators.\n        account.new(\n            \"\(.ETHAddress)\",\n            \"\(.ETHPublicKey)\",\n            \"\(.ETHPrivateKey)\",\n        ),\n        # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.\n        account.new(\n            \"\(.CometBftAddress)\",\n            \"\(.CometBftPublicKey)\",\n            \"\(.CometBftPrivateKey)\",\n        ),\n    ),"] | "account = import_module(\"../account/account.star\")\n\nPREFUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json >accounts.star
+jq --raw-output '[.[] | "    # \(.Path)\n    account.new_validator(\n        # ETH/Tendermint account - used by heimdall validators.\n        account.new(\n            \"\(.ETHAddress)\",\n            \"\(.ETHPublicKey)\",\n            \"\(.ETHPrivateKey)\",\n        ),\n        # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.\n        account.new(\n            \"\(.CometBftAddress)\",\n            \"\(.CometBftPublicKey)\",\n            \"\(.CometBftPrivateKey)\",\n        ),\n    ),"] | "account = import_module(\"../account/account.star\")\n\nPREFUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json > accounts.star
 
 echo "Cleaning up..."
 rm -rf eth_accounts.json eth_cometbft_accounts.json priv_validator_key.json logs.txt data/

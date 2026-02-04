@@ -5,7 +5,6 @@ def get_validator_data(validator_accounts):
     accounts = []
     balances = []
     dividends = []
-    signing_infos = {}
     validator_set = []
 
     for i, validator_account in enumerate(validator_accounts):

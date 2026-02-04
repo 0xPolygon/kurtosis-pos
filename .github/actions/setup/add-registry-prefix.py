@@ -7,7 +7,7 @@ to enable pulling images from a private registry (e.g., GCP) instead of Docker H
 avoiding rate limiting issues in CI.
 
 Usage:
-    python .github/scripts/add-registry-prefix.py --registry-prefix "your-registry.pkg.dev/project/repo"
+    python3 .github/actions/setup/add-registry-prefix.py --registry-prefix "your-registry"
 """
 
 import argparse
@@ -70,13 +70,13 @@ class RegistryPrefixAdder:
         with open(self.constants_path, 'r') as f:
             content = f.read()
 
-        # Find the DEFAULT_IMAGES dictionary
-        default_images_pattern = r'(DEFAULT_IMAGES\s*=\s*\{)(.*?)(\n\})'
-        match = re.search(default_images_pattern, content, re.DOTALL)
+        # Find the IMAGES dictionary
+        IMAGES_pattern = r'(IMAGES\s*=\s*\{)(.*?)(\n\})'
+        match = re.search(IMAGES_pattern, content, re.DOTALL)
 
         if not match:
             raise ValueError(
-                "DEFAULT_IMAGES dictionary not found in constants.star")
+                "IMAGES dictionary not found in constants.star")
 
         before_dict = match.group(1)
         dict_content = match.group(2)
@@ -134,9 +134,9 @@ class RegistryPrefixAdder:
             with open(self.constants_path, 'r') as f:
                 content = f.read()
 
-            # Check that DEFAULT_IMAGES dictionary is still present and well-formed
-            default_images_pattern = r'DEFAULT_IMAGES\s*=\s*\{.*?\n\}'
-            if not re.search(default_images_pattern, content, re.DOTALL):
+            # Check that IMAGES dictionary is still present and well-formed
+            IMAGES_pattern = r'IMAGES\s*=\s*\{.*?\n\}'
+            if not re.search(IMAGES_pattern, content, re.DOTALL):
                 return False
 
             # Check for basic syntax issues
@@ -180,8 +180,8 @@ def main():
         constants_path = args.input_file
     else:
         # Try to find constants.star relative to script location
-        script_dir = Path(__file__).parent.parent
-        repo_root = script_dir.parent
+        script_dir = Path(__file__).parent
+        repo_root = script_dir.parent.parent.parent
         constants_path = repo_root / "src" / "config" / "constants.star"
 
     if not constants_path.exists():

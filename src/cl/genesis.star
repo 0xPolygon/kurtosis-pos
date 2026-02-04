@@ -18,6 +18,7 @@ def generate(
     network_params = polygon_pos_args.get("network_params")
     validators_number = len(validator_accounts)
 
+    # Generate the data for the CL genesis.
     cl_genesis_data = {}
     validator_data = heimdall_v2_genesis.get_validator_data(validator_accounts)
     proposer = []
@@ -34,6 +35,7 @@ def generate(
         "total_voting_power": validator_data.total_voting_power,
     }
 
+    # Generate a temporary CL genesis.
     el_span_duration = network_params.get("el_span_duration")
     l1_matic_token_address = contract_util.get_address(
         plan,

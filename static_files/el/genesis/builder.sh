@@ -62,15 +62,15 @@ else
   echo "Error: ${EL_GENESIS_ALLOC_FILE} does not exist or is empty."
 fi
 
-# Prefund the admin address.
+# Append the admin address to the alloc field.
 admin_address=$(echo "${ADMIN_ADDRESS}" | sed 's/^0x//')
 jq --arg a "${admin_address}" --arg b "${ADMIN_BALANCE_WEI}" \
-  '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+  '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
 jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
-  "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+  "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
 # Add the current timestamp to the EL genesis.
@@ -78,6 +78,7 @@ timestamp=$(printf "0x%x" $(date +%s))
 jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
+# Verify and output the EL genesis file.
 if [[ -s "${EL_GENESIS_FILE}" ]]; then
   echo "L2 EL genesis:"
   cat "${EL_GENESIS_FILE}"

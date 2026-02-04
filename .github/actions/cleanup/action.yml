@@ -1,0 +1,165 @@
+name: cleanup
+description: Collect logs and artifacts, clean up enclave, and save cache
+
+inputs:
+  # Kurtosis settings
+  enclave_name:
+    description: The name of the kurtosis enclave
+    required: false
+    default: pos
+  args_filename:
+    description: The name of the args file
+    required: false
+  
+  # Cache settings
+  save_cache:
+    description: Whether this job should save the Docker image cache
+    required: false
+    default: "false"
+  cache_key:
+    description: The key to use for caching Docker images
+    required: false
+    default: docker-images
+  cache_folder:
+    description: The folder to use for caching Docker images
+    required: false
+    default: /tmp/docker-images
+  main_branch:
+    description: The name of the main branch for cache keys
+    required: false
+    default: main
+
+runs:
+  using: composite
+  steps:
+    - name: Check if the enclave exists
+      id: enclave-check
+      shell: bash
+      run: |
+        if kurtosis enclave inspect ${{ inputs.enclave_name }}; then
+          echo "ENCLAVE_EXISTS=true" >> "${GITHUB_OUTPUT}"
+          echo "Enclave ${{ inputs.enclave_name }} exists."
+        else
+          echo "ENCLAVE_EXISTS=false" >> "${GITHUB_OUTPUT}"
+          echo "Enclave ${{ inputs.enclave_name }} does not exist."
+        fi
+
+    # Dump the enclave (services configs, logs and file artifacts)
+    - name: Dump enclave
+      if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
+      shell: bash
+      run: |
+        kurtosis enclave dump ${{ inputs.enclave_name }} ./dump
+
+        # Filter out unnecessary services
+        rm -rf ./dump/files-artifacts-expander*
+        rm -rf ./dump/kurtosis-*
+        rm -rf ./dump/address-deriver*
+        rm -rf ./dump/address-funder*
+        rm -rf ./dump/*address-reader*
+        rm -rf ./dump/erc20-token-sender*
+        rm -rf ./dump/*generator*
+        rm -rf ./dump/*startup-monitor*
+        rm -rf ./dump/matic-contracts-*-deployer*
+        rm -rf ./dump/private-key-generator*
+        rm -rf ./dump/read-*
+        rm -rf ./dump/run-generate-genesis*
+        rm -rf ./dump/validator-key-generation-cl-validator-keystore*
+        rm -rf ./dump/test-runner*
+        rm -rf ./dump/l2-cl-validator-node-ids-reader*
+
+        # Filter out unecessary files
+        rm -rf ./dump/files/*tmp*
+        rm -rf ./dump/files/*-builder-config
+        rm -rf ./dump/files/*-generator-config
+        rm -rf ./dump/files/*-deployer-config
+        rm -rf ./dump/files/matic-contract-l1-addresses
+        rm -rf ./dump/files/l2-cl-persistent-peers
+        rm -rf ./dump/files/l2-validators-config
+
+    - name: Generate archive name
+      if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
+      id: archive-name
+      shell: bash
+      run: |
+        archive_name="kurtosis_pos_dump_${{ github.run_id }}"
+        if [[ -z "${{ inputs.args_filename }}" ]]; then
+          archive_name+="_without_args"
+        else
+          archive_name+="_with_args_${{ inputs.args_filename }}"
+        fi
+        echo "ARCHIVE_NAME=${archive_name}" >> "${GITHUB_OUTPUT}"
+        echo "ARCHIVE_NAME=${archive_name}"
+
+    - name: Upload enclave dump
+      if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.archive-name.outputs.ARCHIVE_NAME }}
+        path: ./dump
+
+    # Check for stopped services and errors and warning in logs
+    - name: Check for stopped services
+      if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
+      shell: bash
+      run: |
+        stopped_services="$(kurtosis enclave inspect "${{ inputs.enclave_name }}" | grep STOPPED || true)"
+        if [[ -n "${stopped_services}" ]]; then
+          echo "❌ It looks like there is at least one stopped service in the enclave... Something must have halted..."
+          echo "${stopped_services}"
+          echo
+
+          kurtosis enclave inspect "${{ inputs.enclave_name }}" --full-uuids | grep STOPPED | awk '{print $2 "--" $1}' |
+            while read -r container; do
+              echo "Printing logs for ${container}"
+              echo "::warning title=${container}::Service stopped"
+              docker logs --tail 50 "${container}"
+            done
+        else
+          echo "✅ All services are running."
+        fi
+
+    - name: Check for errors in service logs
+      if: steps.enclave-check.outputs.ENCLAVE_EXISTS == 'true'
+      shell: bash
+      run: |
+        kurtosis enclave inspect "${{ inputs.enclave_name }}" --full-uuids | grep RUNNING | grep -v "Status:" | awk '{print $2 "--" $1}' |
+          while read -r container; do
+            echo "Checking logs for ${container}"
+            if docker logs --since 10m "${container}" 2>&1 | grep -Ev "NoPeersSubscribedToTopic|Errors: \[\]" | grep "error\|warn\|exception\|failed\|fatal\|ERRO\|FATA\|panic"; then
+              echo "❌ Errors found in container logs!"
+              echo "::warning title=${container}::Errors found in container logs"
+            else
+              echo "✅ No errors found in logs."
+            fi
+            echo "------------------------------"
+            echo
+          done
+
+    # Cache images for future runs
+    - name: Save docker images to cache directory
+      if: ${{ inputs.save_cache == 'true' }}
+      shell: bash
+      run: |
+        echo "Saving all images to cache directory..."
+        mkdir -p ${{ inputs.cache_folder }}
+
+        # Save all images on the host (excluding dangling images)
+        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>"); do
+          {
+            name=$(echo "$image" | sed 's/[\/:]/_/g')
+            docker save "$image" -o "${{ inputs.cache_folder }}/${name}.tar"
+          } &
+        done
+        wait
+
+        echo "Docker images saved successfully"
+        echo "Size: $(du -sh ${{ inputs.cache_folder }} | awk '{print $1}')"
+        echo "Number of images: $(ls -1 ${{ inputs.cache_folder }} | wc -l)"
+
+    - name: Save cache
+      if: ${{ inputs.save_cache == 'true' }}
+      uses: actions/cache@v5
+      with:
+        path: ${{ inputs.cache_folder }}
+        key: ${{ inputs.cache_key }}-${{ inputs.main_branch }}-${{ github.sha }}

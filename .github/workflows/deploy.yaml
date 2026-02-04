@@ -1,14 +1,22 @@
-name: nightly
+name: deploy
 
 on:
+  pull_request:
+  push:
+    branches: [main]
   schedule:
     - cron: 0 6 * * * # Run this workflow every day at 6 AM Paris time (UTC+2).
   workflow_dispatch:
 
+# Permissions required to pull images from GAR
 permissions:
   contents: read
   actions: write
   id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 env:
   ENCLAVE_NAME: pos
@@ -17,41 +25,26 @@ env:
 jobs:
   run-without-args:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
 
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
+      - uses: ./.github/actions/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
-          pull_images_from_gcr: "false"
 
-      - name: Kurtosis run
+      - name: Deploy devnet
         run: |
           set -o pipefail
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
 
-      - name: Extract timing information
-        run: python3 .github/scripts/parse_timing.py run.log
+      - uses: ./.github/actions/monitor
 
-      - name: Inspect enclave
-        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      - uses: ./.github/actions/test-state-sync
 
-      - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
-
-      - name: Monitor milestones and checkpoints
-        uses: ./.github/actions/monitor-milestones-and-checkpoints
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-
-      - name: Post kurtosis run
+      - uses: ./.github/actions/cleanup
         if: always()
-        uses: ./.github/actions/kurtosis-post-run
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
 
   list-ymls:
     runs-on: ubuntu-latest
@@ -62,13 +55,19 @@ jobs:
       - uses: actions/checkout@v6
       - id: set-matrix
         run: |
-          file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            # Nightly mode: include all configs except cl-el-genesis and external-l1
+            file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
+          else
+            # Regular mode: exclude nightly configs
+            file_paths=$(ls -R ./.github/configs/{*,*/*}.yml | grep -Ev "nightly")
+          fi
           echo "file_paths=${file_paths}"
 
           matrix=$(echo "${file_paths}" | while read -r file_path; do
             file_name=$(basename -s ".yml" "${file_path}")
             folder_name=$(basename $(dirname "${file_path}"))
-            if [[ "${folder_name}" == "nightly" ]]; then
+            if [[ "${folder_name}" == "configs" || "${folder_name}" == "nightly" ]]; then
               job_name="${file_name}"
             else
               job_name="${folder_name}-${file_name}"
@@ -80,7 +79,7 @@ jobs:
           echo "matrix=${matrix}" >> $GITHUB_OUTPUT
 
   run-with-args:
-    needs: list-ymls
+    needs: [list-ymls]
     name: run-with-${{ matrix.file.name }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -91,113 +90,94 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
+      - uses: ./.github/actions/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Run Starlark
+      - name: Deploy devnet
         run: |
           set -o pipefail
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
 
-      - name: Extract timing information
-        run: python3 .github/scripts/parse_timing.py run.log --config-file ${{ matrix.file.path }}
-
-      - name: Inspect enclave
-        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-
-      - name: Check if test runner is deployed
-        id: check-test-runner
-        run: |
-          # The test runner is deployed by default.
-          test_runner_deployed=true
-
-          # Verify if additional services are defined and ensure the test runner is deployed.
-          additional_services=$(yq '.polygon_pos_package.additional_services' ${{ matrix.file.path }})
-          if [[ "${additional_services}" != "null" ]]; then
-            is_test_runner_deployed=$(yq '.polygon_pos_package.additional_services | contains(["test_runner"])' ${{ matrix.file.path }})
-            if [[ "${is_test_runner_deployed}" != "true" ]]; then
-              test_runner_deployed=false
-            fi
-          fi
-
-          echo "test_runner_deployed=${test_runner_deployed}" >> $GITHUB_OUTPUT
-
-      - name: Test state syncs
-        if: steps.check-test-runner.outputs.test_runner_deployed == 'true' && !contains(matrix.file.name, 'additional-services')
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
-
-      - name: Monitor milestones and checkpoints
-        # TODO: Understand why checkpoints are not being created in heimdall-v2/erigon devnets.
-        if: ${{ !contains(matrix.file.name, 'heimdall-v2-erigon') && !contains(matrix.file.name, 'additional-services') }}
-        uses: ./.github/actions/monitor-milestones-and-checkpoints
+      - uses: ./.github/actions/monitor
+        if: ${{ !contains(matrix.file.name, 'additional-services') }}
         with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-          args_filename: ${{ matrix.file.path }}
+          skip_checkpoints: ${{ contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why checkpoints are not being created in this case.
 
-      - name: Post kurtosis run
+      - uses: ./.github/actions/test-state-sync
+        if: ${{ !contains(matrix.file.name, 'additional-services') }}
+
+      - uses: ./.github/actions/cleanup
         if: always()
-        uses: ./.github/actions/kurtosis-post-run
         with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: ${{ matrix.file.name }}
+          # Cache is only saved by main branch runs to avoid excessive storage use
+          save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-mix' }}
 
   run-with-external-l1:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
-        with:
-          docker_username: ${{ secrets.DOCKER_USERNAME }}
-          docker_token: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Deploy L1
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@6.0.0 # 2026-01-05
-
-      - name: Deploy L2
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
-
-      - name: Inspect enclave
-        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
-
-      - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
-
-      # TODO: Understand why checkpoints are not being created in this case.
-      # - name: Monitor milestones and checkpoints
-      #   uses: ./.github/actions/monitor-milestones-and-checkpoints
-      #   with:
-      #     enclave_name: ${{ env.ENCLAVE_NAME }}
-
-      - name: Post kurtosis run
-        if: always()
-        uses: ./.github/actions/kurtosis-post-run
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-          args_filename: external-l1
-
-  run-with-cl-el-genesis:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
 
-      - name: Pre kurtosis run
-        uses: ./.github/actions/kurtosis-pre-run
+      - uses: ./.github/actions/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Kurtosis run for the first time
+      - name: Deploy L1 devnet
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@6.0.0 # 2026-01-05
+
+      - name: Wait for L1 to be ready
+        run: |
+          cl_rpc_url=$(kurtosis port print ${{ env.ENCLAVE_NAME }} cl-1-lighthouse-geth http)
+          while true; do
+            slot=$(curl --silent $cl_rpc_url/eth/v1/beacon/headers/ | jq --raw-output ".data[0].header.message.slot")
+            echo "L1 chain is starting up... Current slot: $slot"
+            if [[ "$slot" =~ ^[0-9]+$ ]] && [[ "$slot" -gt "0" ]]; then
+              echo "L1 chain has started!"
+              break
+            fi
+            sleep 5
+          done
+
+      - name: Deploy L2 devnet
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
+
+      - uses: ./.github/actions/monitor
+        with:
+          skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
+
+      - uses: ./.github/actions/test-state-sync
+
+      - uses: ./.github/actions/cleanup
+        if: always()
+        with:
+          args_filename: external-l1
+
+  run-with-cl-el-genesis:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Deploy devnet for the first time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+
+      - name: Monitor block progress
+        working-directory: .github/actions/monitor
+        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
 
       - name: Retrieve L2 CL genesis file
         working-directory: .github/configs/nightly/cl-el-genesis
@@ -223,31 +203,22 @@ jobs:
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-rabbitmq
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-v2-validator
 
-      - name: Kurtosis run for the second time
+      - name: Deploy devnet for the second time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
-      - name: Inspect enclave
-        run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
+      - uses: ./.github/actions/monitor
 
-      - name: Test state syncs
-        run: kurtosis service exec ${{ env.ENCLAVE_NAME }} test-runner "bats --filter 'bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased' tests/pos/bridge.bats"
+      - uses: ./.github/actions/test-state-sync
 
-      - name: Monitor milestones and checkpoints
-        uses: ./.github/actions/monitor-milestones-and-checkpoints
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-
-      - name: Post kurtosis run
+      - uses: ./.github/actions/cleanup
         if: always()
-        uses: ./.github/actions/kurtosis-post-run
         with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
           args_filename: cl-el-genesis
 
   workflow-summary:
     runs-on: ubuntu-latest
-    if: ${{ always() && github.event_name == 'schedule' }}
-    needs: 
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    needs:
       - run-without-args
       - run-with-args
       - run-with-external-l1
