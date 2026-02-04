@@ -103,9 +103,9 @@ runs:
       id: cache
       with:
         path: ${{ inputs.cache_folder }}
-        key: ${{ inputs.cache_key }}-${{ github.run_id }}
+        key: ${{ inputs.cache_key }}-main-${{ github.sha }}
         restore-keys: |
-          ${{ inputs.cache_key }}-
+          ${{ inputs.cache_key }}-main-
 
     - name: Load cached docker images
       if: steps.cache.outputs.cache-matched-key != 'true'

@@ -112,7 +112,8 @@ jobs:
         if: always()
         with:
           args_filename: ${{ matrix.file.name }}
-          save_cache: ${{ contains(matrix.file.name, 'rio') }}
+          # Cache is only saved by main branch runs to avoid excessive storage use
+          save_cache: ${{ github.ref == 'refs/heads/main' }}
 
   run-with-external-l1:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'

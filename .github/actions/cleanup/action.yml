@@ -158,4 +158,4 @@ runs:
       uses: actions/cache@v5
       with:
         path: ${{ inputs.cache_folder }}
-        key: ${{ inputs.cache_key }}-${{ github.run_id }}
+        key: ${{ inputs.cache_key }}-main-${{ github.sha }}
