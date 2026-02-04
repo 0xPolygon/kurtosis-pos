@@ -52,10 +52,13 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
         description="Generating L2 EL genesis",
         image=setup_images.get("el_genesis_builder"),
         env_vars={
-            "EL_CHAIN_ID": network_params.get("el_chain_id"),
+            "EL_CHAIN_ID": str(network_params.get("el_chain_id")),
             "DEFAULT_EL_CHAIN_ID": constants.EL_CHAIN_ID,
-            "CL_CHAIN_ID": network_params.get("cl_chain_id"),
+            "CL_CHAIN_ID": str(network_params.get("cl_chain_id")),
             "DEFAULT_CL_CHAIN_ID": constants.CL_CHAIN_ID,
+            # Note that we don't add the admin address to the alloc in starlark because
+            # admin_address is a Kurtosis future string. We can't perform any string
+            # operations on it like removing the "0x" prefix. We do it in the bash script.
             "ADMIN_ADDRESS": admin_address,
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
