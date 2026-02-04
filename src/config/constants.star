@@ -66,7 +66,7 @@ IMAGES = {
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 
-L1_CHAIN_ID = "3151908"  # 0x301824.
+L1_CHAIN_ID = "3151908"  # 0x301824
 EL_CHAIN_ID = "4927"
 CL_CHAIN_ID = (
     "heimdall-" + EL_CHAIN_ID

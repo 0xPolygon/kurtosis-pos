@@ -18,12 +18,13 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
             "genesis.json": struct(
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
+                    # chain params
                     "el_chain_id": network_params.get("el_chain_id"),
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_gas_limit_hex": hex.int_to_hex(
                         network_params.get("el_gas_limit")
                     ),
-                    # Hardfork configurations
+                    # hardfork configurations
                     "jaipur_fork_block": network_params.get("jaipur_fork_block"),
                     "delhi_fork_block": network_params.get("delhi_fork_block"),
                     "indore_fork_block": network_params.get("indore_fork_block"),
