@@ -113,7 +113,7 @@ jobs:
         with:
           args_filename: ${{ matrix.file.name }}
           # Cache is only saved by main branch runs to avoid excessive storage use
-          save_cache: ${{ github.ref == 'refs/heads/main' }}
+          save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-mix' }}
 
   run-with-external-l1:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
