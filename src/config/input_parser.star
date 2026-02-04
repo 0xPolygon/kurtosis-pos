@@ -11,8 +11,8 @@ DEV_ARGS = {
 
 
 ANVIL_ARGS = {
-    "image": constants.DEFAULT_IMAGES.get("l1_anvil_image"),
-    "network_id": constants.DEFAULT_L1_CHAIN_ID,
+    "image": constants.IMAGES.get("l1_anvil_image"),
+    "network_id": constants.L1_CHAIN_ID,
     "block_time": 1,
     "slots_in_epoch": 2,  # block_time * slots_in_epoch = total seconds to transition a block from latest to safest
 }
