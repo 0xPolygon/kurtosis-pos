@@ -1460,14 +1460,14 @@ PREFUNDED_ACCOUNTS = [
     account.new_validator(
         # ETH/Tendermint account - used by heimdall validators.
         account.new(
-            "0x1F064F92cA6833FE86409D609527ACA5C8b5cB43",
-            "0x347bbf53d0ba784d739e0a1e3704ba209322ee1b6dfbadcd4bc8e506cd1b6ae9c8054c585da6f554875fd0a3baf15ae292109cbcca812f643a21adfe7f9766",
+            "0x1Ac89467eF27C25d8cd5552F8bbc18E467a69B31",
+            "0x347bbf53d0ba784d739e0a1e3704ba209322ee1b6dfbadcd4bc8e506cd1b6ae900c8054c585da6f554875fd0a3baf15ae292109cbcca812f643a21adfe7f9766",
             "099dc55eb9ccee41739d5889c9656cf263988c9c332e0c4250b1730ac974a2ed",
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x1F064F92cA6833FE86409D609527ACA5C8b5cB43",
-            "BDR7v1PQunhNc54KHjcEuiCTIu4bbfutzUvI5QbNG2rpyAVMWF2m9VSHX9CjuvFa4pIQnLzKgS9kOiGt/n+XZg==",
+            "0x1Ac89467eF27C25d8cd5552F8bbc18E467a69B31",
+            "BDR7v1PQunhNc54KHjcEuiCTIu4bbfutzUvI5QbNG2rpAMgFTFhdpvVUh1/Qo7rxWuKSEJy8yoEvZDohrf5/l2Y=",
             "CZ3FXrnM7kFznViJyWVs8mOYjJwzLgxCULFzCsl0ou0=",
         ),
     ),
@@ -1715,14 +1715,14 @@ PREFUNDED_ACCOUNTS = [
     account.new_validator(
         # ETH/Tendermint account - used by heimdall validators.
         account.new(
-            "0xeF863C1C5D9f69107fa4Dc95eAe2c1549BD61bcE",
-            "0x05fc77de21188031ba6d8f83817e127bf7ad4ef3fb9afc46d1d37b86fdae08566ba8a96b2041a20a615ea57b55c080a86af8ac58b543bedfcc29c638588f86",
+            "0x662559C61987E8b7dcF1Bc57387B828a0065DA30",
+            "0x0005fc77de21188031ba6d8f83817e127bf7ad4ef3fb9afc46d1d37b86fdae08566ba8a96b2041a20a615ea57b55c080a86af8ac58b543bedfcc29c638588f86",
             "068d92e8d4b6d77b5841db89847ee9e00938f407950091b502d2149a46a0e621",
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xeF863C1C5D9f69107fa4Dc95eAe2c1549BD61bcE",
-            "BAX8d94hGIAxum2Pg4F+Env3rU7z+5r8RtHTe4b9rghWa6ipayBBogphXqV7VcCAqGr4rFi1Q77fzCnGOFiPhg==",
+            "0x662559C61987E8b7dcF1Bc57387B828a0065DA30",
+            "BAAF/HfeIRiAMbptj4OBfhJ7961O8/ua/EbR03uG/a4IVmuoqWsgQaIKYV6le1XAgKhq+KxYtUO+38wpxjhYj4Y=",
             "Bo2S6NS213tYQduJhH7p4Ak49AeVAJG1AtIUmkag5iE=",
         ),
     ),
@@ -4100,14 +4100,14 @@ PREFUNDED_ACCOUNTS = [
     account.new_validator(
         # ETH/Tendermint account - used by heimdall validators.
         account.new(
-            "0x819B8cC5c3B84E833828349522e8D3EFe01E7B2D",
-            "0x134c7f9700c4e073c42c01467581817cc89a161f32a65a519926b39e771066af14e88d88b8c8eada7d07d11808fae1ddfb9213e9b792a9698021e9c1f0429f",
+            "0x24fD2c2173d1a0Dd1E49407C7DA94eEAc7b7DC86",
+            "0x134c7f9700c4e073c42c01467581817cc89a161f32a65a519926b39e771066af0014e88d88b8c8eada7d07d11808fae1ddfb9213e9b792a9698021e9c1f0429f",
             "9dd1e11f3503f5f34f77a590fbcd4ec67341f5c398bb2386f2de91bed4f18695",
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x819B8cC5c3B84E833828349522e8D3EFe01E7B2D",
-            "BBNMf5cAxOBzxCwBRnWBgXzImhYfMqZaUZkms553EGavFOiNiLjI6tp9B9EYCPrh3fuSE+m3kqlpgCHpwfBCnw==",
+            "0x24fD2c2173d1a0Dd1E49407C7DA94eEAc7b7DC86",
+            "BBNMf5cAxOBzxCwBRnWBgXzImhYfMqZaUZkms553EGavABTojYi4yOrafQfRGAj64d37khPpt5KpaYAh6cHwQp8=",
             "ndHhHzUD9fNPd6WQ+81OxnNB9cOYuyOG8t6RvtTxhpU=",
         ),
     ),
@@ -7100,14 +7100,14 @@ PREFUNDED_ACCOUNTS = [
     account.new_validator(
         # ETH/Tendermint account - used by heimdall validators.
         account.new(
-            "0xdbD92bd9375A0A8de08a3AC9C386481A15B3ba43",
-            "0x9bb0bc858ab4c0be946983bfc72886c6d2b387e1356d94c83e18b142b60fca9b5e70a943cd1bd806a77f4bcfff34adea07f0a0a3fd04a4dd1ecf5fdd5b77e9",
+            "0xB3cb903d462B556dd75cF4C2f75d84faaC57bb71",
+            "0x9bb0bc858ab4c0be946983bfc72886c6d2b387e1356d94c83e18b142b60fca9b005e70a943cd1bd806a77f4bcfff34adea07f0a0a3fd04a4dd1ecf5fdd5b77e9",
             "86977ec06142d5e93fb2308268a8c9b6d7498ec613b8650c8795dcb03a2280ec",
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0xdbD92bd9375A0A8de08a3AC9C386481A15B3ba43",
-            "BJuwvIWKtMC+lGmDv8cohsbSs4fhNW2UyD4YsUK2D8qbXnCpQ80b2Aanf0vP/zSt6gfwoKP9BKTdHs9f3Vt36Q==",
+            "0xB3cb903d462B556dd75cF4C2f75d84faaC57bb71",
+            "BJuwvIWKtMC+lGmDv8cohsbSs4fhNW2UyD4YsUK2D8qbAF5wqUPNG9gGp39Lz/80reoH8KCj/QSk3R7PX91bd+k=",
             "hpd+wGFC1ek/sjCCaKjJttdJjsYTuGUMh5XcsDoigOw=",
         ),
     ),
@@ -10520,14 +10520,14 @@ PREFUNDED_ACCOUNTS = [
     account.new_validator(
         # ETH/Tendermint account - used by heimdall validators.
         account.new(
-            "0x0D7C2B6C79543EaBd130F38a72A39E044c412689",
-            "0x687605f331153d9954390029efa098e9bd0463846f2578d632aa6637c2b2c296752d0f22f4431b66c965dafa6360bbbb56ba55ac854e6b35a63d9d15bcd491",
+            "0x1c057a48dc20C3D7eC2aF4c69C161d36FaA7dB7B",
+            "0x687605f331153d9954390029efa098e9bd0463846f2578d632aa6637c2b2c29600752d0f22f4431b66c965dafa6360bbbb56ba55ac854e6b35a63d9d15bcd491",
             "2054d6eb1f39551bd133ec94693d76e833317dc65319f230a39fa41430137e3e",
         ),
         # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.
         account.new(
-            "0x0D7C2B6C79543EaBd130F38a72A39E044c412689",
-            "BGh2BfMxFT2ZVDkAKe+gmOm9BGOEbyV41jKqZjfCssKWdS0PIvRDG2bJZdr6Y2C7u1a6VayFTms1pj2dFbzUkQ==",
+            "0x1c057a48dc20C3D7eC2aF4c69C161d36FaA7dB7B",
+            "BGh2BfMxFT2ZVDkAKe+gmOm9BGOEbyV41jKqZjfCssKWAHUtDyL0QxtmyWXa+mNgu7tWulWshU5rNaY9nRW81JE=",
             "IFTW6x85VRvRM+yUaT126DMxfcZTGfIwo5+kFDATfj4=",
         ),
     ),
