@@ -2,6 +2,9 @@
 
 # Global configuration options
 [global]
+# Disable specific rules by their rule code (e.g., MD034 for bare URLs)
+# - MD034: Ensures URLs are properly formatted with angle brackets or as clickable links, not pasted as plain text - https://github.com/rvben/rumdl/blob/main/docs/md034.md
+disable = ["MD034"]
 
 # List of file/directory patterns to exclude from linting
 exclude = [
