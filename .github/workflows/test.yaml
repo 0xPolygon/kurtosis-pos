@@ -33,7 +33,7 @@ jobs:
       - name: Run kurtosis linter
         run: kurtosis lint .
       
-      - uses: rvben/rumdl@v0.1.12
+      - uses: rvben/rumdl@1968a061d57ee44d863ab2240e64a120a90f4b2b # v0.1.12
 
   typos:
     runs-on: ubuntu-latest
