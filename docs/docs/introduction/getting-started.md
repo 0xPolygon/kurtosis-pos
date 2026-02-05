@@ -16,7 +16,7 @@ Make sure you have installed the [required tools](./installation.md)!
 kurtosis run --enclave pos github.com/0xPolygon/kurtosis-pos
 ```
 
-where `pos` is the name of the enclave, you can choosse any name you like.
+where `pos` is the name of the enclave, you can choose any name you like.
 
 2. Retrieve the L2 RPC URL.
 
