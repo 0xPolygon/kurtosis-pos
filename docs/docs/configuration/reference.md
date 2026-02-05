@@ -26,12 +26,12 @@ ethereum_package:
 
 ### `participants`
 
-| Field    | Type   | Default                     | Description                      |
-| -------- | ------ | --------------------------- | -------------------------------- |
-| cl_type  | string | lighthouse                  | Consensus Layer (CL) client type |
-| cl_image | string | sigp/lighthouse:v8.0.0-rc.1 | Image for the CL client          |
-| el_type  | string | geth                        | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.16.5  | Image for the EL client          |
+| Field    | Type   | Default                    | Description                      |
+| -------- | ------ | ---------------------------| -------------------------------- |
+| cl_type  | string | lighthouse                 | Consensus Layer (CL) client type |
+| cl_image | string | sigp/lighthouse:v8.0.0     | Image for the CL client          |
+| el_type  | string | geth                       | Execution Layer (EL) client type |
+| el_image | string | ethereum/client-go:v1.16.8 | Image for the EL client          |
 
 ### `network_params`
 
@@ -75,13 +75,14 @@ Default: a single validator.
 | cl_compaction_interval      | int    | 1000                        | Minimal blocks necessary to run a new compaction routine |
 | cl_storage_pruning_interval | string | 10m0s                       | Interval between prune routines.                         |
 | cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
-| el_type                     | string | bor                         | Execution Layer (EL) client type                         |
-| el_image                    | string | 0xpolygon/bor:2.5.8         | Image for the EL client                                  |
+| el_type                     | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`      |
+| el_image                    | string | 0xpolygon/bor:2.5.8         | Image for the EL client (bor: `0xpolygon/bor:2.5.8`, erigon: `0xpolygon/erigon:v3.3.7`) |
 | el_log_level                | string | info                        | Log level for the EL client                              |
 | el_log_format               | string | text                        | Log format for the EL client                             |
-| el_bor_produce_witness      | bool   | false                       | Allow bor to start producing witnesses                   |
-| el_bor_sync_with_witness    | bool   | false                       | Enable bor to sync new blocks using witnesses            |
-| count                       | int    | 1                           | Number of nodes to spin up for this participant          |
+| el_bor_produce_witness              | bool   | false                       | Allow bor to start producing witnesses                              |
+| el_bor_sync_with_witness            | bool   | false                       | Enable bor to sync new blocks using witnesses                       |
+| el_bor_stateless_parallel_import    | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`) |
+| count                               | int    | 1                           | Number of nodes to spin up for this participant                     |
 
 ### `setup_images`
 
@@ -104,7 +105,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | validator_stake_amount_eth            | int    | 10000                  | Amount of ether to stake for each validator                        |
 | validator_top_up_fee_amount_eth       | int    | 2000                   | Top up fee amount in ether for each validator                      |
 | cl_chain_id                           | string | heimdall-4927          | CL network ID                                                      |
-| cl_environment                        | string | mainnet                | CL environment                                                     |
+| cl_environment                        | string | -                      | CL environment: `mainnet`, `mumbai`, or `local` (optional)         |
 | cl_span_poll_interval                 | string | 0m15s                  | Span poll interval on the CL chain                                 |
 | cl_checkpoint_poll_interval           | string | 1m0s                   | Checkpoint poll interval on the CL chain                           |
 | cl_max_age_num_blocks                 | int    | 100000                 | Genesis evidence setting, useful to set smaller pruning intervals  |
@@ -112,7 +113,18 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | el_block_interval_seconds             | int    | 1                      | Seconds per block on the EL chain                                  |
 | el_sprint_duration                    | int    | 16                     | Duration of an EL sprint (blocks)                                  |
 | el_span_duration                      | int    | 128                    | Duration of an EL span (blocks).                                   |
-| el_gas_limit                          | int    | 60_000_000             | EL gas limit                                                       |
+| el_gas_limit                          | int    | 65_000_000             | EL gas limit                                                       |
+| jaipur_fork_block                     | int    | 0                      | Block number for Jaipur hard fork activation                       |
+| delhi_fork_block                      | int    | 0                      | Block number for Delhi hard fork activation                        |
+| indore_fork_block                     | int    | 0                      | Block number for Indore hard fork activation                       |
+| agra_fork_block                       | int    | 0                      | Block number for Agra hard fork activation                         |
+| napoli_fork_block                     | int    | 0                      | Block number for Napoli hard fork activation                       |
+| ahmedabad_fork_block                  | int    | 0                      | Block number for Ahmedabad hard fork activation                    |
+| bhilai_fork_block                     | int    | 0                      | Block number for Bhilai hard fork activation                       |
+| rio_fork_block                        | int    | 256                    | Block number for Rio hard fork activation                          |
+| madhugiri_fork_block                  | int    | 256                    | Block number for Madhugiri hard fork activation                    |
+| madhugiri_pro_fork_block              | int    | 256                    | Block number for Madhugiri Pro hard fork activation                |
+| dandeli_fork_block                    | int    | 256                    | Block number for Dandeli hard fork activation                      |
 
 ### `additional_services`
 
@@ -135,6 +147,6 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 ### `status_checker_params`
 
-| Field | Type   | Default                                                                              | Description                              |
-| ----- | ------ | ------------------------------------------------------------------------------------ | ---------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/status-checker:0.2.9 | Image used to deploy the status checker. |
+| Field | Type   | Default                                      | Description                              |
+| ----- | ------ | -------------------------------------------- | ---------------------------------------- |
+| image | string | ghcr.io/0xpolygon/status-checker:v0.2.9 | Image used to deploy the status checker. |
