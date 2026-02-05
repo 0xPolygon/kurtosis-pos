@@ -16,7 +16,6 @@ Optional features:
 
 > 🚨 This package is for development and testing only — **not for production use!**
 
-
 ## Sections
 
 ### [Getting Started](./docs/docs/introduction/getting-started.md)

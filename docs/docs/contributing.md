@@ -52,7 +52,7 @@ To preview docs locally:
 npm run serve
 ```
 
-Then visit http://localhost:3000.
+Then visit <http://localhost:3000>.
 
 ## Need Help?
 
