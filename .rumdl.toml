@@ -22,3 +22,8 @@ exclude = [
 # Rule-specific configurations
 [MD013]
 line-length = 1000
+
+[MD060]
+enabled = true
+style = "aligned"
+max-width = 0         # Auto-compact tables exceeding 100 chars
