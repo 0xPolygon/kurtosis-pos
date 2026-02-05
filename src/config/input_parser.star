@@ -4,7 +4,7 @@ sanity_check = import_module("./sanity_check.star")
 
 
 DEV_ARGS = {
-    "l1_backend": constants.L1_BACKEND.ethereum_package,
+    "l1_backend": constants.L1_BACKEND.anvil,
     "should_deploy_l1": True,
     "should_deploy_matic_contracts": True,
 }
