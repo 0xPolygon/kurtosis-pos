@@ -18,7 +18,7 @@ Alternatively, you can specify arguments directly on the command line:
 
 ```bash
 kurtosis run --enclave pos . \
-  '{"polygon_pos_package": {"network_params": {"bor_id": "98765"}}}"'
+  '{"polygon_pos_package": {"network_params": {"el_chain_id": "98765"}}}"'
 ```
 
 :::warning
