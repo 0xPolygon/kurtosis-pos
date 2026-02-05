@@ -2,17 +2,26 @@ name: setup
 description: Set up Docker authentication and Kurtosis environment
 
 inputs:
+  # Dependency versions
   kurtosis_version:
     description: The version of Kurtosis to install
     required: false
-    default: 1.12.1
+    default: 1.15.2
+  foundry_version:
+    description: The version of Foundry to install
+    required: false
+    default: v1.5.1
+  python_version:
+    description: The version of Python to install
+    required: false
+    default: 3.14
 
-  # Docker registry credentials
+  # Docker hub registry credentials
   docker_username:
-    description: The username for docker registry
+    description: The username for docker hub registry
     required: false
   docker_token:
-    description: The token for docker registry
+    description: The token for docker hub registry
     required: false
 
   # GCP settings
@@ -82,21 +91,21 @@ runs:
         yq --version
 
     - name: Install foundry
-      uses: foundry-rs/foundry-toolchain@50d5a8956f2e319df19e6b57539d7e2acb9f8c1e # v1.5.0
+      uses: foundry-rs/foundry-toolchain@8789b3e21e6c11b2697f5eb56eddae542f746c10 # v1.7.0
       with:
-        version: v1.4.2
-        cache: false
+        version: ${{ inputs.foundry_version }}
+        cache: true
 
     # Login to registries
-    - name: Login to docker registry
+    - name: Login to docker hub registry
       if: ${{ inputs.docker_username && inputs.docker_token }}
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
         username: ${{ inputs.docker_username }}
         password: ${{ inputs.docker_token }}
 
     - name: Login to github container registry
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -142,7 +151,7 @@ runs:
         service_account: ${{ inputs.gcp_sa }}
 
     - name: Setup gcloud cli
-      uses: google-github-actions/setup-gcloud@26f734c2779b00b7dda794207734c511110a4368 # v3.0.0
+      uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
 
     - name: Configure docker
@@ -151,10 +160,10 @@ runs:
       run: gcloud auth configure-docker ${{ inputs.gcp_registry }}
 
     - name: Install python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       with:
-        python-version: 3.13
+        python-version: ${{ inputs.python_version }}
 
     - name: Add registry prefix to image names
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
