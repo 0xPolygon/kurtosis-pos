@@ -2,6 +2,22 @@ constants = import_module("./constants.star")
 math = import_module("../math/math.star")
 sanity_check = import_module("./sanity_check.star")
 
+
+DEV_ARGS = {
+    "l1_backend": constants.L1_BACKEND.ethereum_package,
+    "should_deploy_l1": True,
+    "should_deploy_matic_contracts": True,
+}
+
+
+ANVIL_ARGS = {
+    "image": constants.IMAGES.get("l1_anvil_image"),
+    "network_id": constants.L1_CHAIN_ID,
+    "block_time": 1,
+    "slots_in_epoch": 2,  # block_time * slots_in_epoch = total seconds to transition a block from latest to safest
+}
+
+
 ETHEREUM_PACKAGE_ARGS = {
     "global_log_level": constants.LOG_LEVEL.info,
     "participants": [
@@ -89,6 +105,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         # This private key is used to deploy Polygon PoS contracts on both L1 and L2.
         "admin_private_key": "0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea",
         # Validators params.
+        # Mnemonic for generating validator keys.
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount_eth": 10000,  # in ether
         "validator_top_up_fee_amount_eth": 2000,  # in ether
@@ -129,29 +146,45 @@ ETHSTATS_SERVER_ARGS = {
     "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
 }
 
-DEV_ARGS = {
-    "should_deploy_l1": True,
-    "should_deploy_matic_contracts": True,
-}
-
 
 def input_parser(plan, input_args):
+    plan.print("Parsing the dev input args")
+    dev_input_args = input_args.get("dev", {})
+    dev_args = _parse_dev_args(plan, dev_input_args)
+    l1_backend = dev_args.get("l1_backend")
+    plan.print("Dev input args parsed: {}".format(str(dev_args)))
+
     plan.print("Parsing the L1 input args")
-    ethereum_input_args = input_args.get("ethereum_package", {})
-    ethereum_args = _parse_ethereum_args(plan, ethereum_input_args)
-    plan.print("L1 input args parsed: {}".format(str(ethereum_args)))
+    l1_args = {}
+    if l1_backend == constants.L1_BACKEND.ethereum_package:
+        ethereum_input_args = input_args.get("ethereum_package", {})
+        l1_args = _parse_ethereum_args(plan, ethereum_input_args)
+    elif l1_backend == constants.L1_BACKEND.anvil:
+        anvil_input_args = input_args.get("anvil", {})
+        l1_args = _parse_anvil_args(plan, anvil_input_args)
+    else:
+        fail('Unsupported L1 backend: "{}".'.format(l1_backend))
+    plan.print("L1 input anvil args parsed: {}".format(str(l1_args)))
 
     plan.print("Parsing the L2 input args")
     polygon_pos_input_args = input_args.get("polygon_pos_package", {})
     polygon_pos_args = _parse_polygon_pos_args(plan, polygon_pos_input_args)
     plan.print("L2 input args parsed: {}".format(str(polygon_pos_args)))
 
-    plan.print("Parsing the dev input args")
-    dev_input_args = input_args.get("dev", {})
-    dev_args = _parse_dev_args(plan, dev_input_args)
-    plan.print("Dev input args parsed: {}".format(str(dev_args)))
+    return (l1_args, polygon_pos_args, dev_args)
 
-    return (ethereum_args, polygon_pos_args, dev_args)
+
+def _parse_anvil_args(plan, anvil_args):
+    # Create a mutable copy of anvil_args.
+    if anvil_args:
+        anvil_args = dict(anvil_args)
+
+    # Set default params if not provided.
+    for k, v in ANVIL_ARGS.items():
+        anvil_args.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(anvil_args)
 
 
 def _parse_ethereum_args(plan, ethereum_args):
@@ -220,15 +253,13 @@ def _parse_dev_args(plan, dev_args):
     # Create a mutable copy of dev_args.
     if dev_args:
         dev_args = dict(dev_args)
+    else:
+        # Set default dev args if not provided.
+        dev_args = dict(DEV_ARGS)
 
     # Set default params if not provided.
-    if "should_deploy_l1" not in dev_args:
-        dev_args["should_deploy_l1"] = DEV_ARGS.get("should_deploy_l1", True)
-
-    if "should_deploy_matic_contracts" not in dev_args:
-        dev_args["should_deploy_matic_contracts"] = DEV_ARGS.get(
-            "should_deploy_matic_contracts", True
-        )
+    for k, v in DEV_ARGS.items():
+        dev_args.setdefault(k, v)
 
     # Sanity check and return the result.
     sanity_check.sanity_check_dev_args(plan, dev_args)
