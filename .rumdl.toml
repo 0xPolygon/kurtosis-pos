@@ -1,0 +1,24 @@
+# rumdl configuration file
+
+# Global configuration options
+[global]
+
+# List of file/directory patterns to exclude from linting
+exclude = [
+    # Common directories to exclude
+    ".git",
+    ".github",
+    ".kurtosis-test",
+    "node_modules",
+    "vendor",
+    "dist",
+    "build",
+
+    # Specific files or patterns
+    "CHANGELOG.md",
+    "LICENSE.md",
+]
+
+# Rule-specific configurations
+[MD013]
+line-length = 1000
