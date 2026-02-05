@@ -1,4 +1,4 @@
-name: publish-docker-images
+name: publish-images
 
 # Workflow to build and publish docker images to GHCR.
 # Update the respective env vars below to deploy new versions:
