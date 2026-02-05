@@ -117,7 +117,11 @@ def launch(
                 ),
             },
             files={
-                # bor config
+                # app data
+                BOR_APP_DATA_FOLDER_PATH: Directory(
+                    persistent_key="{}-data".format(el_node_name)
+                ),
+                # config
                 BOR_CONFIG_FOLDER_PATH: bor_node_config_artifact,
                 "/opt/data/genesis": el_genesis_artifact,
                 "/opt/data/keys": el_keys_artifact,

@@ -135,7 +135,11 @@ def launch(
                 ),
             },
             files={
-                # heimdall-v2 config
+                # app data
+                shared.APP_DATA_FOLDER_PATH: Directory(
+                    persistent_key="{}-data".format(cl_node_name)
+                ),
+                # config
                 "{}/config".format(
                     shared.CONFIG_FOLDER_PATH
                 ): heimdall_node_config_artifacts,
