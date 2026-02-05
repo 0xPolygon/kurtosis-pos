@@ -21,11 +21,11 @@ dev:
   should_deploy_matic_contracts: true
 ```
 
-| Field                         | Type    | Default           | Description                                                                   |
-| ----------------------------- | ------- | ----------------- | ----------------------------------------------------------------------------- |
+| Field                         | Type    | Default           | Description                                                                      |
+| ----------------------------- | ------- | ----------------- | -------------------------------------------------------------------------------- |
 | l1_backend                    | string  | ethereum-package  | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight |
-| should_deploy_l1              | bool    | true              | Whether to deploy the L1 chain                                                |
-| should_deploy_matic_contracts | bool    | true              | Whether to deploy Polygon PoS contracts to L1                                 |
+| should_deploy_l1              | bool    | true              | Whether to deploy the L1 chain                                                   |
+| should_deploy_matic_contracts | bool    | true              | Whether to deploy Polygon PoS contracts to L1                                    |
 
 ## L1 Configuration
 
@@ -54,7 +54,7 @@ ethereum_package:
 #### `participants`
 
 | Field    | Type   | Default                    | Description                      |
-| -------- | ------ | ---------------------------| -------------------------------- |
+| -------- | ------ | -------------------------- | -------------------------------- |
 | cl_type  | string | lighthouse                 | Consensus Layer (CL) client type |
 | cl_image | string | sigp/lighthouse:v8.1.0     | Image for the CL client          |
 | el_type  | string | geth                       | Execution Layer (EL) client type |
@@ -82,11 +82,11 @@ anvil:
   slots_in_epoch: 2
 ```
 
-| Field          | Type   | Default                           | Description                                                      |
-| -------------- | ------ | --------------------------------- | ---------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.5.1 | Anvil container image                                            |
-| network_id     | string | 3151908                           | L1 network/chain ID                                              |
-| block_time     | int    | 1                                 | Block time in seconds                                            |
+| Field          | Type   | Default                           | Description           |
+| -------------- | ------ | --------------------------------- | --------------------- |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.5.1 | Anvil container image |
+| network_id     | string | 3151908                           | L1 network/chain ID   |
+| block_time     | int    | 1                                 | Block time in seconds |
 | slots_in_epoch | int    | 2                                 | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
 
 ## L2 Configuration
@@ -111,10 +111,10 @@ polygon_pos_package:
 
 ### Top-Level Parameters
 
-| Field      | Type   | Default | Description                                                                                      |
-| ---------- | ------ | ------- | ------------------------------------------------------------------------------------------------ |
-| log_level  | string | info    | Global log level for all participants: `error`, `warn`, `info`, `debug`, or `trace`              |
-| log_format | string | text    | Global log format for all participants: `text` or `json`                                         |
+| Field      | Type   | Default | Description                                                                         |
+| ---------- | ------ | ------- | ----------------------------------------------------------------------------------- |
+| log_level  | string | info    | Global log level for all participants: `error`, `warn`, `info`, `debug`, or `trace` |
+| log_format | string | text    | Global log format for all participants: `text` or `json`                            |
 
 :::tip
 These global settings apply to all participants unless overridden at the participant level with `cl_log_level`, `cl_log_format`, `el_log_level`, or `el_log_format`.
@@ -124,27 +124,27 @@ These global settings apply to all participants unless overridden at the partici
 
 Default: a single validator.
 
-| Field                       | Type   | Default                     | Description                                              |
-| --------------------------- | ------ | --------------------------- | -------------------------------------------------------- |
-| kind                        | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`    |
-| cl_type                     | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
-| cl_image                    | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                  |
-| cl_queue_image              | string | rabbitmq:4.2.2              | Image for the CL queue                                |
-| cl_log_level                | string | info                        | Log level for the CL client                              |
-| cl_log_format               | string | text                        | Log format for the CL client                             |
-| cl_min_retain_blocks        | int    | 0                           | Minimal distance from current height to retain height    |
-| cl_compact_enabled          | bool   | false                       | Compaction enabling.                                     |
-| cl_compaction_interval      | int    | 1000                        | Minimal blocks necessary to run a new compaction routine |
-| cl_storage_pruning_interval | string | 10m0s                       | Interval between prune routines.                         |
-| cl_indexer_pruning_enabled  | bool   | false                       | Pruning enabling.                                        |
-| el_type                     | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`      |
-| el_image                    | string | 0xpolygon/bor:2.5.8         | Image for the EL client (bor: `0xpolygon/bor:2.5.8`, erigon: `0xpolygon/erigon:v3.3.7`) |
-| el_log_level                | string | info                        | Log level for the EL client                              |
-| el_log_format               | string | text                        | Log format for the EL client                             |
-| el_bor_produce_witness              | bool   | false                       | Allow bor to start producing witnesses                              |
-| el_bor_sync_with_witness            | bool   | false                       | Enable bor to sync new blocks using witnesses                       |
+| Field                               | Type   | Default                     | Description                                              |
+| ----------------------------------- | ------ | --------------------------- | -------------------------------------------------------- |
+| kind                                | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive` |
+| cl_type                             | string | heimdall-v2                 | Consensus Layer (CL) client type                         |
+| cl_image                            | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                  |
+| cl_queue_image                      | string | rabbitmq:4.2.2              | Image for the CL queue                                   |
+| cl_log_level                        | string | info                        | Log level for the CL client                              |
+| cl_log_format                       | string | text                        | Log format for the CL client                             |
+| cl_min_retain_blocks                | int    | 0                           | Minimal distance from current height to retain height    |
+| cl_compact_enabled                  | bool   | false                       | Compaction enabling.                                     |
+| cl_compaction_interval              | int    | 1000                        | Minimal blocks necessary to run a new compaction routine |
+| cl_storage_pruning_interval         | string | 10m0s                       | Interval between prune routines.                         |
+| cl_indexer_pruning_enabled          | bool   | false                       | Pruning enabling.                                        |
+| el_type                             | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`      |
+| el_image                            | string | 0xpolygon/bor:2.6.0-beta    | Image for the EL client (bor: `0xpolygon/bor:2.6.0-beta`, erigon: `0xpolygon/erigon:v3.4.0-beta`) |
+| el_log_level                        | string | info                        | Log level for the EL client                              |
+| el_log_format                       | string | text                        | Log format for the EL client                             |
+| el_bor_produce_witness              | bool   | false                       | Allow bor to start producing witnesses                   |
+| el_bor_sync_with_witness            | bool   | false                       | Enable bor to sync new blocks using witnesses            |
 | el_bor_stateless_parallel_import    | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`) |
-| count                               | int    | 1                           | Number of nodes to spin up for this participant                     |
+| count                               | int    | 1                           | Number of nodes to spin up for this participant          |
 
 ### `setup_images`
 
@@ -163,7 +163,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | Field                                 | Type   | Default                | Description                                                        |
 | ------------------------------------- | ------ | ---------------------- | ------------------------------------------------------------------ |
 | admin_private_key                     | string | 0xd403...60ea          | Private key used to deploy Polygon PoS contracts on both L1 and L2 |
-| preregistered_validator_keys_mnemonic | string | sibling lend brave ... | Mnemonic for validator keystores                                   |
+| preregistered_validator_keys_mnemonic | string | sibling lend brave     | Mnemonic for validator keystores                                   |
 | validator_stake_amount_eth            | int    | 10000                  | Amount of ether to stake for each validator                        |
 | validator_top_up_fee_amount_eth       | int    | 2000                   | Top up fee amount in ether for each validator                      |
 | cl_chain_id                           | string | heimdall-4927          | CL network ID                                                      |
@@ -205,10 +205,10 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 | Field | Type   | Default                                                                                 | Description                               |
 | ----- | ------ | --------------------------------------------------------------------------------------- | ----------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server. |
+| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server |
 
 ### `status_checker_params`
 
 | Field | Type   | Default                                      | Description                              |
 | ----- | ------ | -------------------------------------------- | ---------------------------------------- |
-| image | string | ghcr.io/0xpolygon/status-checker:v0.2.9 | Image used to deploy the status checker. |
+| image | string | ghcr.io/0xpolygon/status-checker:v0.2.9      | Image used to deploy the status checker  |
