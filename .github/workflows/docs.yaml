@@ -1,6 +1,7 @@
-name: docs-deploy
+name: docs
 
 on:
+  pull_request:
   push:
     branches: [main]
 
@@ -37,6 +38,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
