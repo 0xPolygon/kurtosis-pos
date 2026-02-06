@@ -187,6 +187,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | madhugiri_fork_block                  | int    | 256                | Block number for Madhugiri hard fork activation                    |
 | madhugiri_pro_fork_block              | int    | 256                | Block number for Madhugiri Pro hard fork activation                |
 | dandeli_fork_block                    | int    | 256                | Block number for Dandeli hard fork activation                      |
+| lisovo_fork_block                     | int    | 256                | Block number for Lisovo hard fork activation                      |
 
 ### `additional_services`
 
