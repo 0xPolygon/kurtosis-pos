@@ -68,7 +68,7 @@ runs:
         rm -rf ./dump/test-runner*
         rm -rf ./dump/l2-cl-validator-node-ids-reader*
 
-        # Filter out unecessary files
+        # Filter out unnecessary files
         rm -rf ./dump/files/*tmp*
         rm -rf ./dump/files/*-builder-config
         rm -rf ./dump/files/*-generator-config

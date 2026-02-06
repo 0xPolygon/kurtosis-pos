@@ -1,0 +1,32 @@
+# rumdl configuration file
+
+# Global configuration options
+[global]
+# Disable specific rules by their rule code (e.g., MD034 for bare URLs)
+# - MD034: Ensures URLs are properly formatted with angle brackets or as clickable links, not pasted as plain text - https://github.com/rvben/rumdl/blob/main/docs/md034.md
+disable = ["MD034"]
+
+# List of file/directory patterns to exclude from linting
+exclude = [
+    # Common directories to exclude
+    ".git",
+    ".github",
+    ".kurtosis-test",
+    "node_modules",
+    "vendor",
+    "dist",
+    "build",
+
+    # Specific files or patterns
+    "CHANGELOG.md",
+    "LICENSE.md",
+]
+
+# Rule-specific configurations
+[MD013]
+line-length = 1000
+
+[MD060]
+enabled = true
+style = "aligned"
+max-width = 0         # Auto-compact tables exceeding 100 chars
