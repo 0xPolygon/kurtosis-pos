@@ -61,6 +61,7 @@ POLYGON_POS_PARAMS = {
         "madhugiri_fork_block",
         "madhugiri_pro_fork_block",
         "dandeli_fork_block",
+        "lisovo_fork_block",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)

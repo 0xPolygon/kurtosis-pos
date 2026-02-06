@@ -183,10 +183,11 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | napoli_fork_block                     | int    | 0                      | Block number for Napoli hard fork activation                       |
 | ahmedabad_fork_block                  | int    | 0                      | Block number for Ahmedabad hard fork activation                    |
 | bhilai_fork_block                     | int    | 0                      | Block number for Bhilai hard fork activation                       |
-| rio_fork_block                        | int    | 256                    | Block number for Rio hard fork activation                          |
-| madhugiri_fork_block                  | int    | 256                    | Block number for Madhugiri hard fork activation                    |
-| madhugiri_pro_fork_block              | int    | 256                    | Block number for Madhugiri Pro hard fork activation                |
-| dandeli_fork_block                    | int    | 256                    | Block number for Dandeli hard fork activation                      |
+| rio_fork_block                        | int    | 128                    | Block number for Rio hard fork activation                          |
+| madhugiri_fork_block                  | int    | 128                    | Block number for Madhugiri hard fork activation                    |
+| madhugiri_pro_fork_block              | int    | 128                    | Block number for Madhugiri Pro hard fork activation                |
+| dandeli_fork_block                    | int    | 128                    | Block number for Dandeli hard fork activation                      |
+| lisovo_fork_block                     | int    | 128                    | Block number for Lisovo hard fork activation                      |
 
 ### `additional_services`
 
