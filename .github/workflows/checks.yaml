@@ -1,4 +1,4 @@
-name: test
+name: checks
 
 on:
   pull_request:
@@ -12,18 +12,17 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
-env:
-  KURTOSIS_VERSION: 1.12.1
-
 jobs:
   lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      KURTOSIS_VERSION: 1.15.2
+
     steps:
       - uses: actions/checkout@v6
 
       - name: Install kurtosis
-        shell: bash
         run: |
           echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
           sudo apt update
@@ -32,31 +31,38 @@ jobs:
 
       - name: Run kurtosis linter
         run: kurtosis lint .
+      
+      - name: Run markdown linter
+        uses: rvben/rumdl@1968a061d57ee44d863ab2240e64a120a90f4b2b # v0.1.12
 
   typos:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
-      - uses: crate-ci/typos@06d010dfe4c84fdab1a25ea02b57b3585018ba80 # v1.42.3
+      - uses: crate-ci/typos@3a4d65230db538caabac6e156599c8ba8380ff07 # v1.43.1
 
   unit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      KURTOSIS_TEST_VERSION: v0.0.6
+      GO_VERSION: 1.23 # required by kurtosis-test v0.0.6
+
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-go@v6
         with:
-          go-version: 1.21
-          cache: false
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
 
       - name: Install kurtosis-test
         run: |
-          git clone --branch v0.0.5 https://github.com/ethereum-optimism/kurtosis-test.git /tmp/kurtosis-test
+          git clone --branch ${{ env.KURTOSIS_TEST_VERSION }} https://github.com/ethereum-optimism/kurtosis-test.git /tmp/kurtosis-test
           cd /tmp/kurtosis-test
           go build -o kurtosis-test cli/main.go
-          cp kurtosis-test /usr/local/bin
+          sudo cp kurtosis-test /usr/local/bin
 
       - name: Run unit tests
         run: kurtosis-test .

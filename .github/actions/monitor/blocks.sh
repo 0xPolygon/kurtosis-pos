@@ -23,7 +23,7 @@ monitor_rpc() {
   rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
   log_info "Using rpc url: ${rpc_url}"
 
-  local num_steps=20
+  local num_steps=100
   local gas_price_factor=1
   local LATEST_BLOCK=0
   local FINALIZED_BLOCK=0

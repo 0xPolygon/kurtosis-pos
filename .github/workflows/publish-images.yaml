@@ -1,4 +1,4 @@
-name: publish-docker-images
+name: publish-images
 
 # Workflow to build and publish docker images to GHCR.
 # Update the respective env vars below to deploy new versions:
@@ -9,14 +9,14 @@ on:
   # Auto-trigger on PRs (for validation only, no push)
   pull_request:
     paths:
-      - '.github/workflows/publish-docker-images.yaml'
+      - '.github/workflows/publish-images.yaml'
       - 'docker/*.Dockerfile'
   # Auto-trigger on main when workflow or dockerfiles change (for publishing)
   push:
     branches:
       - main
     paths:
-      - '.github/workflows/publish-docker-images.yaml'
+      - '.github/workflows/publish-images.yaml'
       - 'docker/*.Dockerfile'
   # Manual trigger (for publishing)
   workflow_dispatch:
@@ -33,7 +33,7 @@ on:
           - pos-validator-config-generator
 
 concurrency:
-  group: publish-docker-images
+  group: publish-images
   cancel-in-progress: false
 
 env:
