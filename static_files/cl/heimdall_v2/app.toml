@@ -265,9 +265,9 @@ amqp_url = "{{.amqp_url}}"
 
 ## Poll intervals
 checkpoint_poll_interval = "{{.checkpoint_poll_interval}}"
-syncer_poll_interval = "1m0s"
-noack_poll_interval = "16m50s"
-clerk_poll_interval = "10s"
+syncer_poll_interval = "5s"
+noack_poll_interval = "1m0s"
+clerk_poll_interval = "5s"
 span_poll_interval = "{{.span_poll_interval}}"
 milestone_poll_interval = "30s"
 enable_self_heal = "false"

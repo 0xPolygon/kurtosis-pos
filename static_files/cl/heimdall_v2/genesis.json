@@ -63,14 +63,14 @@
           "state_receiver_address": "0x0000000000000000000000000000000000001001",
           "validator_set_address": "0x0000000000000000000000000000000000001000"
         },
-        "main_chain_tx_confirmations": "6",
-        "bor_chain_tx_confirmations": "10"
+        "main_chain_tx_confirmations": "1",
+        "bor_chain_tx_confirmations": "1"
       }
     },
     "checkpoint": {
       "params": {
-        "checkpoint_buffer_time": "1000s",
-        "avg_checkpoint_length": "256",
+        "checkpoint_buffer_time": "120s",
+        "avg_checkpoint_length": "128",
         "max_checkpoint_length": "1024",
         "child_chain_block_interval": "10000"
       },
