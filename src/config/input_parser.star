@@ -112,8 +112,8 @@ POLYGON_POS_PACKAGE_ARGS = {
         # CL network params.
         "cl_chain_id": constants.CL_CHAIN_ID,
         # "cl_environment": constants.CL_ENVIRONMENT.local,
-        "cl_span_poll_interval": "0m15s",
-        "cl_checkpoint_poll_interval": "1m0s",
+        "cl_span_poll_interval": "5s",
+        "cl_checkpoint_poll_interval": "5s",
         "cl_max_age_num_blocks": 100000,
         # EL network params.
         "el_chain_id": constants.EL_CHAIN_ID,
