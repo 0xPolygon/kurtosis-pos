@@ -104,7 +104,7 @@ if [[ -z "${rpc_names}" ]]; then
 fi
 log_info "Found RPC(s): ${rpc_names}"
 
-target="100"
+target="40" # a sprint is 16 blocks so 40 is ~2.5 sprints, which should be enough to see progress
 log_info "Using target: ${target}"
 
 # Monitor block progress for each RPC in parallel
