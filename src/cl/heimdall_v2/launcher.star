@@ -139,6 +139,9 @@ def launch(
                 shared.APP_DATA_FOLDER_PATH: Directory(
                     persistent_key="{}-data".format(cl_node_name)
                 ),
+                "{}/data".format(shared.CONFIG_FOLDER_PATH): Directory(
+                    persistent_key="{}-config-data".format(cl_node_name)
+                ),
                 # config
                 "{}/config".format(
                     shared.CONFIG_FOLDER_PATH
