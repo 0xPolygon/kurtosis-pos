@@ -183,3 +183,11 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   globalqueue = 131072
   # Maximum amount of time non-executable transaction are queued
   lifetime = "1h30m0s"
+  # Enable periodic re-announcement of stuck pending transactions to peers (default: true)
+  rebroadcast = true
+  # How often to check for and rebroadcast stuck transactions
+  rebroadcast-interval = "10s"
+  # Transactions in pending pool longer than this are considered stuck
+  rebroadcast-max-age = "1m"
+  # Max transactions to rebroadcast per cycle to limit bandwidth usage (min: 1)
+  rebroadcast-batch-size = 200
