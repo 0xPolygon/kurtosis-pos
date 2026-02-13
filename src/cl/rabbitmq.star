@@ -19,6 +19,7 @@ def launch(plan, id, image):
         config=ServiceConfig(
             image=image,
             env_vars={
+                "RABBITMQ_NODE_PORT": str(RABBITMQ_AMQP_PORT_NUMBER),
                 "RABBITMQ_DATA_DIR": APP_DATA_FOLDER_PATH,
                 "RABBITMQ_DEFAULT_USER": constants.RABBITMQ_USERNAME,
                 "RABBITMQ_DEFAULT_PASS": constants.RABBITMQ_PASSWORD,
