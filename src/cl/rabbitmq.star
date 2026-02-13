@@ -20,6 +20,8 @@ def launch(plan, id, image):
             image=image,
             env_vars={
                 "RABBITMQ_DATA_DIR": APP_DATA_FOLDER_PATH,
+                "RABBITMQ_DEFAULT_USER": constants.RABBITMQ_USERNAME,
+                "RABBITMQ_DEFAULT_PASS": constants.RABBITMQ_PASSWORD,
             },
             files={
                 # app data
