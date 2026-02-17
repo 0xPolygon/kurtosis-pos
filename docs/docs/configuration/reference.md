@@ -189,7 +189,6 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | dandeli_fork_block                    | int    | 128                | Block number for Dandeli hard fork activation                      |
 | lisovo_fork_block                     | int    | 128                | Block number for Lisovo hard fork activation                       |
 | lisovo_pro_fork_block                 | int    | 128                | Block number for Lisovo Pro hard fork activation                   |
-| lisovo_pro_fork_block                 | int    | 128                | Block number for Lisovo Pro hard fork activation                   |
 
 ### `additional_services`
 
