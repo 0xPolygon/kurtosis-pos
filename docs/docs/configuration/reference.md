@@ -124,27 +124,27 @@ These global settings apply to all participants unless overridden at the partici
 
 Default: a single validator.
 
-|              Field               |  Type  |           Default           |                                            Description                                            |
-| -------------------------------- | ------ | --------------------------- | ------------------------------------------------------------------------------------------------- |
-| kind                             | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`                                  |
-| cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                                  |
-| cl_image                         | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                                                           |
-| cl_queue_image                   | string | rabbitmq:4.2.2              | Image for the CL queue                                                                            |
-| cl_log_level                     | string | info                        | Log level for the CL client                                                                       |
-| cl_log_format                    | string | text                        | Log format for the CL client                                                                      |
-| cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                             |
-| cl_compact_enabled               | bool   | false                       | Compaction enabling.                                                                              |
-| cl_compaction_interval           | int    | 1000                        | Minimal blocks necessary to run a new compaction routine                                          |
-| cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                                  |
-| cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                                 |
-| el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                               |
-| el_image                         | string | 0xpolygon/bor:2.6.0-beta2    | Image for the EL client (bor: `0xpolygon/bor:2.6.0-beta2`, erigon: `0xpolygon/erigon:v3.4.0-beta2`) |
-| el_log_level                     | string | info                        | Log level for the EL client                                                                       |
-| el_log_format                    | string | text                        | Log format for the EL client                                                                      |
-| el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                            |
-| el_bor_sync_with_witness         | bool   | false                       | Enable bor to sync new blocks using witnesses                                                     |
-| el_bor_stateless_parallel_import | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)         |
-| count                            | int    | 1                           | Number of nodes to spin up for this participant                                                   |
+| Field                            | Type   | Default                     | Description                                                                                         |
+| -------------------------------- | ------ | --------------------------- | --------------------------------------------------------------------------------------------------- |
+| kind                             | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`                                    |
+| cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                                    |
+| cl_image                         | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                                                             |
+| cl_queue_image                   | string | rabbitmq:4.2.2              | Image for the CL queue                                                                              |
+| cl_log_level                     | string | info                        | Log level for the CL client                                                                         |
+| cl_log_format                    | string | text                        | Log format for the CL client                                                                        |
+| cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                               |
+| cl_compact_enabled               | bool   | false                       | Compaction enabling.                                                                                |
+| cl_compaction_interval           | int    | 1000                        | Minimal blocks necessary to run a new compaction routine                                            |
+| cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                                    |
+| cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                                   |
+| el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                                 |
+| el_image                         | string | 0xpolygon/bor:2.6.0-beta2   | Image for the EL client (bor: `0xpolygon/bor:2.6.0-beta2`, erigon: `0xpolygon/erigon:v3.4.0-beta2`) |
+| el_log_level                     | string | info                        | Log level for the EL client                                                                         |
+| el_log_format                    | string | text                        | Log format for the EL client                                                                        |
+| el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                              |
+| el_bor_sync_with_witness         | bool   | false                       | Enable bor to sync new blocks using witnesses                                                       |
+| el_bor_stateless_parallel_import | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)           |
+| count                            | int    | 1                           | Number of nodes to spin up for this participant                                                     |
 
 ### `setup_images`
 
@@ -188,7 +188,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | madhugiri_pro_fork_block              | int    | 256                | Block number for Madhugiri Pro hard fork activation                |
 | dandeli_fork_block                    | int    | 256                | Block number for Dandeli hard fork activation                      |
 | lisovo_fork_block                     | int    | 256                | Block number for Lisovo hard fork activation                       |
-| lisovo_pro_fork_block                 | int    | 256                | Block number for Lisovo Pro hard fork activation                       |
+| lisovo_pro_fork_block                 | int    | 256                | Block number for Lisovo Pro hard fork activation                   |
 
 ### `additional_services`
 
