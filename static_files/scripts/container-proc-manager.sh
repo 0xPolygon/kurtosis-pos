@@ -14,6 +14,10 @@ command_pid="$!"
 
 echo "PID $$ has started child process $command_pid" >&2
 
+# Forward SIGTERM to the child process so that `docker stop` triggers a clean shutdown.
+# Without this, the shell exits on SIGTERM without notifying the child, causing an unclean shutdown.
+trap 'echo "Forwarding TERM to child process $command_pid" >&2; kill -TERM $command_pid; wait $command_pid' TERM
+
 # Define a signal handler for SIGTRAP
 # When this signal is received, the script will:
 # 1. Gracefully terminate the child process by sending the SIGTERM signal.
@@ -23,13 +27,13 @@ echo "PID $$ has started child process $command_pid" >&2
 trapped=false
 trap 'echo "Sending TERM to child process $command_pid"; kill -TERM $command_pid; trapped=true; echo "Starting dummy process"; tail -f /dev/null' TRAP
 
-# The wait command pauses the script and waits for all background
-# processes to complete.  Here it waits for the child process to
-# finish. If the signal is caught, the handler will run instead.
-wait
+# The wait command pauses the script and waits for the child process to
+# finish. If a signal is caught, the handler will run instead.
+# We wait on the specific PID so we can re-wait after signal interruption.
+wait $command_pid
 
 # Only start dummy process if we were manually trapped
-if [[ "$trapped" = "false" ]]; then
+if [ "$trapped" = "false" ]; then
   echo "Child process exited naturally, container-proc-manager exiting" >&2
   exit $?
 fi
