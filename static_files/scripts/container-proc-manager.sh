@@ -27,13 +27,13 @@ echo "Starting process. Running command: $child_cmd" >&2
 # Start the specified command in the background, keep stdout/stderr connected and store its process ID (PID).
 # The "$!" variable holds the PID of the most recently executed background process.
 $child_cmd 2>&1 &
-command_pid="$!"
+child_pid="$!"
 
-echo "PID $$ has started child process $command_pid" >&2
+echo "PID $$ has started child process $child_pid" >&2
 
 # Forward SIGTERM to the child process so that `docker stop` triggers a clean shutdown.
 # Without this, the shell exits on SIGTERM without notifying the child, causing an unclean shutdown.
-trap 'echo "Forwarding TERM to child process $command_pid" >&2; kill -TERM $command_pid; wait $command_pid' TERM
+trap 'echo "Forwarding TERM to child process $child_pid" >&2; kill -TERM $child_pid; wait $child_pid' TERM
 
 # Define a signal handler for SIGTRAP
 # When this signal is received, the script will:
@@ -42,12 +42,12 @@ trap 'echo "Forwarding TERM to child process $command_pid" >&2; kill -TERM $comm
 # This is useful in containerized environments where stopping the main process would otherwise cause the container to exit.
 # Example: To trigger this behavior, run `kill -s TRAP <PID>` or `kill -5 <PID>` where `<PID>` is the process ID of this script.
 trapped=false
-trap 'echo "Sending TERM to child process $command_pid"; kill -TERM $command_pid; trapped=true; echo "Starting dummy process"; tail -f /dev/null' TRAP
+trap 'echo "Sending TERM to child process $child_pid"; kill -TERM $child_pid; trapped=true; echo "Starting dummy process"; tail -f /dev/null' TRAP
 
 # The wait command pauses the script and waits for the child process to
 # finish. If a signal is caught, the handler will run instead.
 # We wait on the specific PID so we can re-wait after signal interruption.
-wait $command_pid
+wait $child_pid
 
 # Only start dummy process if we were manually trapped
 if [ "$trapped" = "false" ]; then
