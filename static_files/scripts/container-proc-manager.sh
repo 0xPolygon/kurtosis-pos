@@ -28,19 +28,18 @@ echo "Starting process. Running command: $child_cmd" >&2
 # The "$!" variable holds the PID of the most recently executed background process.
 $child_cmd 2>&1 &
 child_pid="$!"
-
 echo "PID $$ has started child process $child_pid" >&2
 
-# Forward SIGTERM to the child process so that `docker stop` triggers a clean shutdown.
-# Without this, the shell exits on SIGTERM without notifying the child, causing an unclean shutdown.
+# SIGTERM handler
+# Forward signal to child process for graceful shutdown.
+# Triggered by docker stop and kurtosis enclave stop.
+# Without this, the shell exits immediately without notifying the child.
 trap 'echo "Forwarding TERM to child process $child_pid" >&2; kill -TERM $child_pid; wait $child_pid' TERM
 
-# Define a signal handler for SIGTRAP
-# When this signal is received, the script will:
-# 1. Gracefully terminate the child process by sending the SIGTERM signal.
-# 2. Start a dummy process (in this case, `tail -f /dev/null`) to keep the container running.
-# This is useful in containerized environments where stopping the main process would otherwise cause the container to exit.
-# Example: To trigger this behavior, run `kill -s TRAP <PID>` or `kill -5 <PID>` where `<PID>` is the process ID of this script.
+# SIGTRAP handler
+# Stop child process and keep container alive for debugging.
+# Triggered by: kill -s TRAP <pid> or kill -5 <pid> where <pid> is the process ID of this script.
+# Sends SIGTERM to child, then starts dummy process.
 trapped=false
 trap 'echo "Sending TERM to child process $child_pid"; kill -TERM $child_pid; trapped=true; echo "Starting dummy process"; tail -f /dev/null' TRAP
 
