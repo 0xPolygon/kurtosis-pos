@@ -114,4 +114,5 @@ EL_HARD_FORK_BLOCKS = {
     "madhugiriPro": 256,
     "dandeli": 256,
     "lisovo": 256,
+    "lisovoPro": 256,
 }

@@ -135,6 +135,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         "madhugiri_pro_fork_block": constants.EL_HARD_FORK_BLOCKS.get("madhugiriPro"),
         "dandeli_fork_block": constants.EL_HARD_FORK_BLOCKS.get("dandeli"),
         "lisovo_fork_block": constants.EL_HARD_FORK_BLOCKS.get("lisovo"),
+        "lisovo_pro_fork_block": constants.EL_HARD_FORK_BLOCKS.get("lisovoPro"),
     },
     "additional_services": [],
 }
