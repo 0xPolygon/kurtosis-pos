@@ -39,6 +39,9 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                     ),
                     "dandeli_fork_block": network_params.get("dandeli_fork_block"),
                     "lisovo_fork_block": network_params.get("lisovo_fork_block"),
+                    "lisovo_pro_fork_block": network_params.get(
+                        "lisovo_pro_fork_block"
+                    ),
                 },
             )
         },
