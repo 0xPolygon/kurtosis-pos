@@ -138,7 +138,7 @@ Default: a single validator.
 | cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                                  |
 | cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                                 |
 | el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                               |
-| el_image                         | string | 0xpolygon/bor:2.6.0-beta    | Image for the EL client (bor: `0xpolygon/bor:2.6.0-beta`, erigon: `0xpolygon/erigon:v3.4.0-beta`) |
+| el_image                         | string | 0xpolygon/bor:2.6.0-beta2    | Image for the EL client (bor: `0xpolygon/bor:2.6.0-beta2`, erigon: `0xpolygon/erigon:v3.4.0-beta2`) |
 | el_log_level                     | string | info                        | Log level for the EL client                                                                       |
 | el_log_format                    | string | text                        | Log format for the EL client                                                                      |
 | el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                            |
