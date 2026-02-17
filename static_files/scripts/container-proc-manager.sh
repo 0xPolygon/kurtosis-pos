@@ -19,14 +19,14 @@
 
 # Assign the command passed as arguments to a variable.
 # The "$*" captures all command-line arguments as a single string.
-# For example, running `./container-proc-manager.sh sleep 100` will store "sleep 100" in command_to_run.
-command_to_run="$*"
+# For example, running `./container-proc-manager.sh sleep 100` will store "sleep 100" in cmd.
+cmd="$*"
 
-echo "Starting process. Running command: $command_to_run" >&2
+echo "Starting process. Running command: $cmd" >&2
 
 # Start the specified command in the background, keep stdout/stderr connected and store its process ID (PID).
 # The "$!" variable holds the PID of the most recently executed background process.
-$command_to_run 2>&1 &
+$cmd 2>&1 &
 command_pid="$!"
 
 echo "PID $$ has started child process $command_pid" >&2
