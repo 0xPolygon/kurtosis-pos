@@ -55,8 +55,8 @@ IMAGES = {
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.5.1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.6.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.6.0-beta",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.4.0-beta",
+    "l2_el_bor_image": "0xpolygon/bor:2.6.0-beta2",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.4.0-beta2",
     "l2_cl_queue_image": "rabbitmq:4.2.2",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:d96d592",
@@ -113,5 +113,6 @@ EL_HARD_FORK_BLOCKS = {
     "madhugiriPro": 128,
     "dandeli": 128,
     "lisovo": 128,
+    "lisovoPro": 128,
     "lisovoPro": 128,
 }

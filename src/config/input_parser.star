@@ -65,6 +65,7 @@ ETHEREUM_PACKAGE_ARGS = {
         "electra_fork_epoch": 2,
         "fulu_fork_epoch": 3,  # Requires a supernode or perfect PeerDAS to be enabled.
     },
+    "persistent": True,
 }
 
 # Log level and format are not set by default here to allow global log level override.

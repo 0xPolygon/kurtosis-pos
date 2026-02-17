@@ -88,7 +88,7 @@ jobs:
 
       - name: Build and push docker image
         id: push
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: docker
           file: docker/pos-contract-deployer.Dockerfile
@@ -143,7 +143,7 @@ jobs:
 
       - name: Build and push docker image
         id: push
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: docker
           file: docker/pos-el-genesis-builder.Dockerfile
@@ -198,7 +198,7 @@ jobs:
 
       - name: Build and push docker image
         id: push
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: docker
           file: docker/pos-validator-config-generator.Dockerfile
