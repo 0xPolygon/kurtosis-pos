@@ -1,5 +1,22 @@
 #!/bin/sh
 
+# Process manager for containerized applications that ensures proper signal handling.
+# Forward SIGTERM to child processes for graceful shutdown and supports debugging by keeping containers alive after process termination.
+
+# Usage: ./container-proc-manager.sh <command> [args...]
+# Examples:
+# - ./container-proc-manager.sh bor server --config /etc/bor/config.toml
+# - ./container-proc-manager.sh heimdalld start --all --bridge --home /etc/heimdall
+
+# Signals:
+#   - SIGTERM: Forward to child process, waits for graceful exit (docker stop, kurtosis enclave stop).
+#   - SIGTRAP: Stop child process, starts dummy process to keep container alive, useful for debugging or manual intervention.
+
+# Exit codes:
+#   - Exits with the child process exit code on natural termination.
+#   - Runs indefinitely (via tail -f /dev/null) if SIGTRAP was received.
+
+
 # Assign the command passed as arguments to a variable.
 # The "$*" captures all command-line arguments as a single string.
 # For example, running `./container-proc-manager.sh sleep 100` will store "sleep 100" in command_to_run.
