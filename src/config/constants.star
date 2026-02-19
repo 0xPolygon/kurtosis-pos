@@ -68,7 +68,7 @@ IMAGES = {
     # observability
     "prometheus_image": "prom/prometheus:v3.9.1",
     "grafana_image": "grafana/grafana:12.3.3",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v4.1.1",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v5.1.0",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 
