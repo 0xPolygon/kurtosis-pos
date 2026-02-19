@@ -58,7 +58,7 @@ ethereum_package:
 | cl_type  | string | lighthouse                 | Consensus Layer (CL) client type |
 | cl_image | string | sigp/lighthouse:v8.1.0     | Image for the CL client          |
 | el_type  | string | geth                       | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.16.8 | Image for the EL client          |
+| el_image | string | ethereum/client-go:v1.17.0 | Image for the EL client          |
 
 #### `network_params`
 

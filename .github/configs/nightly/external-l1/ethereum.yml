@@ -3,7 +3,7 @@ participants:
     cl_type: lighthouse
     cl_image: sigp/lighthouse:v8.1.0
     el_type: geth
-    el_image: ethereum/client-go:v1.16.8
+    el_image: ethereum/client-go:v1.17.0
     use_separate_vc: true
     vc_type: lighthouse
     vc_image: sigp/lighthouse:v8.1.0
