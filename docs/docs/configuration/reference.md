@@ -76,7 +76,6 @@ dev:
   l1_backend: anvil
 
 anvil:
-  image: ghcr.io/foundry-rs/foundry:v1.6.0-rc1
   network_id: "3151908"
   block_time: 1
   slots_in_epoch: 2
