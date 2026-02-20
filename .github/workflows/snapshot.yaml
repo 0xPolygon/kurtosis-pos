@@ -31,7 +31,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file .github/configs/large.yml.norun .
 
       - name: Create snapshot
         run: ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
