@@ -81,7 +81,7 @@ kurtosis run --enclave pos --args-file .github/configs/large.yml.norun .
 
 ### Snapshot the enclave
 
-The script waits for L2 to reach a certain block height, stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
+The script waits for L2 to reach a certain block height (256, Rio HF activation block), stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
 
 ```bash
 ./scripts/snapshot/snapshot.sh pos

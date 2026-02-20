@@ -399,7 +399,7 @@ if [[ -z "$enclave_name" ]]; then
 fi
 log_info "Using enclave name: $enclave_name"
 
-target_block=100
+target_block=256 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"
 wait_for_block "$enclave_name" "$target_block"
 log_info "L2 has reached block $target_block"
