@@ -95,15 +95,16 @@ where `pos` is the name of the enclave you want to snapshot.
 Check the generated docker image.
 
 ```bash
-docker images | grep pos-devnet
+docker images | grep pos-devnet:latest
 ```
 
 The image does not contain any shell, so it cannot be run directly. To inspect its contents, create a container and copy the files out.
 
 ```bash
 tmp_dir=$(mktemp -d)
-container=$(docker create pos-devnet tail -f /dev/null)
-docker cp "$container:/" "$tmp_dir"
+container=$(docker create pos-devnet:latest tail -f /dev/null)
+docker cp "$container:/volumes/." "$tmp_dir/volumes/"
+docker cp "$container:/docker-compose.yaml" "$tmp_dir/docker-compose.yaml"
 docker rm "$container"
 echo "Snapshot data extracted to $tmp_dir"
 ```
