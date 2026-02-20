@@ -101,6 +101,12 @@ backup_docker_volumes() {
         ) &
     done
     wait
+
+    # The alpine container runs as root, so the tar.gz files are root-owned.
+    # Fix ownership so they can be cleaned up without sudo.
+    docker run --rm \
+        -v "$volume_folder_path":/backup \
+        alpine chown -R "$(id -u):$(id -g)" /backup
 }
 
 ##############################################################################

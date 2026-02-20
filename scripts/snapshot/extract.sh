@@ -42,7 +42,7 @@ for f in "$volume_folder_path"/*.tar.gz; do
   (
     name=$(basename "$f" .tar.gz)
     mkdir -p "$volume_folder_path/$name"
-    tar -xzf "$f" -C "$volume_folder_path/$name"
+    tar -xzf "$f" -C "$volume_folder_path/$name" --no-same-owner
     log_info "Extracted: $name"
     rm "$f"
   ) &
