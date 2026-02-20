@@ -115,17 +115,14 @@ generate_docker_compose() {
     mapfile -t CONTAINERS < <(docker ps --all --filter "network=kt-$enclave_name" --format "{{.Names}}" \
         | grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|read|run|reader|deriver|deployer|generator|monitor")
 
-    # Generate docker-compose using autocompose.
+    # Generate docker-compose using docker-autocompose.
     # Use array expansion to pass each element as a separate argument
     # Otherwise bash performs word splitting on the result, and since each container name is on its own line
     # (separated by newlines), each becomes a separate argument
-    docker_compose_folder="$HOME/Documents/external/os/docker-autocompose"
-    pushd "$docker_compose_folder"
-    poetry run autocompose "${CONTAINERS[@]}" > "$docker_compose_file"
-
-    # Copy docker-compose to current directory
-    popd
-    mv "$docker_compose_folder/$docker_compose_file" .
+    docker run --rm \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        ghcr.io/red5d/docker-autocompose@sha256:4d878dbda37b77ec6babea06d398095ff46054b06ee507abbb3f1e71eef2e868 \
+        "${CONTAINERS[@]}" > "$docker_compose_file"
 }
 
 configure_networks() {
