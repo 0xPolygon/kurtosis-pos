@@ -13,22 +13,47 @@ source "${SCRIPT_DIR}/log.sh"
 # UTILITY FUNCTIONS
 ##############################################################################
 
-wait_for_block() {
+# Polls all L2 EL RPC endpoints until every node has reached the target block.
+wait_for_rpcs_to_reach_block() {
     local enclave_name="$1"
     local target_block="$2"
 
-    local l2_el_node=$(docker ps --filter "network=kt-$enclave_name" --format "{{.Names}}" | grep l2-el | sort | head -n 1 | awk -F'--' '{print $1}')
-    local l2_rpc_url=$(kurtosis port print $enclave_name "$l2_el_node" rpc)
-    log_info "Using RPC URL: $l2_rpc_url"
+    # Get all L2 EL service names (strip UUID suffix)
+    mapfile -t l2_el_services < <(docker ps --filter "network=kt-$enclave_name" --format "{{.Names}}" \
+        | grep l2-el | sort | awk -F'--' '{print $1}')
 
-    while true; do
-        block_number=$(cast bn --rpc-url "$l2_rpc_url")
-        log_info "L2 block: $block_number/$target_block"
-        if [[ $block_number -ge $target_block ]]; then
-            break
-        fi
-        sleep 5
+    # Resolve RPC URLs once — they don't change between checks
+    declare -A rpc_urls
+    for service in "${l2_el_services[@]}"; do
+        rpc_urls[$service]=$(kurtosis port print "$enclave_name" "$service" rpc)
     done
+
+    # Poll each service until all have reached the target block
+    local num_steps=50
+    for step in $(seq 1 "$num_steps"); do
+        log_info "Check ${step}/${num_steps}"
+        local all_ready=true
+        for service in "${l2_el_services[@]}"; do
+            local block_number status
+            block_number=$(cast bn --rpc-url "${rpc_urls[$service]}")
+            if [[ "$block_number" -lt "$target_block" ]]; then
+                status="NOT READY"
+                all_ready=false
+            else
+                status="OK"
+            fi
+            log_info "- $service: $block_number/$target_block - $status"
+        done
+
+        if $all_ready; then
+            log_info "All L2 RPCs reached block $target_block"
+            return 0
+        fi
+        log_info "Not all L2 RPCs reached block $target_block, retrying in 10s..."
+        sleep 10
+    done
+    log_error "Not all L2 RPCs reached block $target_block after $num_steps steps"
+    return 1
 }
 
 ##############################################################################
@@ -401,8 +426,7 @@ log_info "Using enclave name: $enclave_name"
 
 target_block=256 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"
-wait_for_block "$enclave_name" "$target_block"
-log_info "L2 has reached block $target_block"
+wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 
 log_info "Stopping the kurtosis enclave"
 kurtosis enclave stop "$enclave_name"
