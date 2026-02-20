@@ -23,10 +23,10 @@ rm -rf ./tmp
 Extract the snapshot data.
 
 ```bash
-./scripts/snapshot/extract.sh pos-devnet-large:v1.2.12
+./scripts/snapshot/extract.sh pos-devnet-large:v1.2.13
 ```
 
-Snapshot data will be extracted to `./tmp` by default. You can change the output directory by passing it as a second argument, for example: `./scripts/snapshot/extract.sh pos-devnet-large:v1.2.12 ./dir`.
+Snapshot data will be extracted to `./tmp` by default. You can change the output directory by passing it as a second argument.
 
 Feel free to inspect the extracted data and make any changes to the configuration files if needed.
 
@@ -76,7 +76,10 @@ Note that bor was not correctly flushing data to disk during shutdown in the pas
 :::
 
 ```bash
-kurtosis run --enclave pos --args-file .github/configs/large.yml.norun .
+kurtosis run \
+    --enclave pos \
+    --args-file .github/configs/large.yml.norun \
+    github.com/0xPolygon/kurtosis-pos@v1.2.13
 ```
 
 ### Snapshot the enclave
