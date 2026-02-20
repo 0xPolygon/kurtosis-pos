@@ -71,6 +71,10 @@ You can also create your own snapshot from a kurtosis enclave using the `snapsho
 
 Deploy a kurtosis enclave using the configuration of your choice.
 
+:::warning  
+Note that bor was not correctly flushing data to disk during shutdown in the past, which caused snapshots to be corrupted. This issue was fixed in [v2.6.0](https://github.com/0xPolygon/bor/releases/tag/v2.6.0). Unfortunately, the snapshots won't work with older bor versions.  
+:::
+
 ```bash
 kurtosis run --enclave pos --args-file .github/configs/large.yml.norun .
 ```
