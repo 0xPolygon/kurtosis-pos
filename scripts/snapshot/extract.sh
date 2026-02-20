@@ -6,8 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/log.sh"
 
 # Parse arguments
-default_image_name="pos-devnet"
-image_name="${1:-$default_image_name}"
+image_name="${1:-""}"
 if [[ -z "$image_name" ]]; then
   log_error "Image name is required"
   exit 1
