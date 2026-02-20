@@ -36,6 +36,3 @@ polygon_pos_package:
       cl_type: heimdall-v2
       el_type: bor
       el_image: 0xpolygon/bor:2.6.0-amd64
-
-  additional_services:
-    - observability
