@@ -1,0 +1,62 @@
+name: snapshot
+
+on:
+  schedule:
+    - cron: 0 6 * * * # Run this workflow every day at 6 AM Paris time (UTC).
+  workflow_dispatch:
+
+# Permissions required to pull images from GAR
+permissions:
+  contents: read
+  actions: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ENCLAVE_NAME: pos
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Deploy devnet
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} .
+
+      - name: Create snapshot
+        run: ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
+
+      - name: Verify snapshot image exists
+        run: docker image inspect pos-devnet
+
+      - uses: ./.github/actions/cleanup
+        if: always()
+
+      - name: Extract snapshot data
+        run: ./scripts/snapshot/extract.sh pos-devnet
+
+      - name: Restore devnet from snapshot
+        run: ./scripts/snapshot/restore.sh
+
+      - name: Verify restored devnet produces blocks
+        run: |
+          target_block=200
+          while true; do
+            block=$(cast bn --rpc-url localhost:9545)
+            echo "L2 block: $block/$target_block"
+            if [[ "$block" -ge "$target_block" ]]; then
+              echo "Restored devnet is producing blocks!"
+              break
+            fi
+            sleep 5
+          done
