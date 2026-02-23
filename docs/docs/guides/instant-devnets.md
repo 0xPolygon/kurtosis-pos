@@ -23,7 +23,7 @@ rm -rf ./tmp
 Extract the snapshot data.
 
 ```bash
-./scripts/snapshot/extract.sh pos-devnet-large:v1.2.13
+./scripts/snapshot/extract.sh europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-devnet-large:v1.2.13
 ```
 
 Snapshot data will be extracted to `./tmp` by default. You can change the output directory by passing it as a second argument.
