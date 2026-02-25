@@ -76,18 +76,17 @@ dev:
   l1_backend: anvil
 
 anvil:
-  image: ghcr.io/foundry-rs/foundry:v1.5.1
   network_id: "3151908"
   block_time: 1
   slots_in_epoch: 2
 ```
 
-| Field          | Type   | Default                           | Description                                                                                           |
-| -------------- | ------ | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.5.1 | Anvil container image                                                                                 |
-| network_id     | string | 3151908                           | L1 network/chain ID                                                                                   |
-| block_time     | int    | 1                                 | Block time in seconds                                                                                 |
-| slots_in_epoch | int    | 2                                 | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
+| Field          | Type   | Default                               | Description                                                                                           |
+| -------------- | ------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.6.0-rc1 | Anvil container image                                                                                 |
+| network_id     | string | 3151908                               | L1 network/chain ID                                                                                   |
+| block_time     | int    | 1                                     | Block time in seconds                                                                                 |
+| slots_in_epoch | int    | 2                                     | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
 
 ## L2 Configuration
 
@@ -124,27 +123,27 @@ These global settings apply to all participants unless overridden at the partici
 
 Default: a single validator.
 
-| Field                            | Type   | Default                     | Description                                                                                         |
-| -------------------------------- | ------ | --------------------------- | --------------------------------------------------------------------------------------------------- |
-| kind                             | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`                                    |
-| cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                                    |
-| cl_image                         | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                                                             |
-| cl_queue_image                   | string | rabbitmq:4.2.2              | Image for the CL queue                                                                              |
-| cl_log_level                     | string | info                        | Log level for the CL client                                                                         |
-| cl_log_format                    | string | text                        | Log format for the CL client                                                                        |
-| cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                               |
-| cl_compact_enabled               | bool   | false                       | Compaction enabling.                                                                                |
-| cl_compaction_interval           | int    | 1000                        | Minimal blocks necessary to run a new compaction routine                                            |
-| cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                                    |
-| cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                                   |
-| el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                                 |
-| el_image                         | string | 0xpolygon/bor:2.6.0-beta2   | Image for the EL client (bor: `0xpolygon/bor:2.6.0-beta2`, erigon: `0xpolygon/erigon:v3.4.0-beta2`) |
-| el_log_level                     | string | info                        | Log level for the EL client                                                                         |
-| el_log_format                    | string | text                        | Log format for the EL client                                                                        |
-| el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                              |
-| el_bor_sync_with_witness         | bool   | false                       | Enable bor to sync new blocks using witnesses                                                       |
-| el_bor_stateless_parallel_import | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)           |
-| count                            | int    | 1                           | Number of nodes to spin up for this participant                                                     |
+| Field                            | Type   | Default                     | Description                                                                               |
+| -------------------------------- | ------ | --------------------------- | ----------------------------------------------------------------------------------------- |
+| kind                             | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`                          |
+| cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                          |
+| cl_image                         | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                                                   |
+| cl_queue_image                   | string | rabbitmq:4.2.4              | Image for the CL queue                                                                    |
+| cl_log_level                     | string | info                        | Log level for the CL client                                                               |
+| cl_log_format                    | string | text                        | Log format for the CL client                                                              |
+| cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                     |
+| cl_compact_enabled               | bool   | false                       | Compaction enabling.                                                                      |
+| cl_compaction_interval           | int    | 1000                        | Minimal blocks necessary to run a new compaction routine                                  |
+| cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                          |
+| cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                         |
+| el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                       |
+| el_image                         | string | 0xpolygon/bor:2.5.9         | Image for the EL client (bor: `0xpolygon/bor:2.5.9`, erigon: `0xpolygon/erigon:v3.3.7`)   |
+| el_log_level                     | string | info                        | Log level for the EL client                                                               |
+| el_log_format                    | string | text                        | Log format for the EL client                                                              |
+| el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                    |
+| el_bor_sync_with_witness         | bool   | false                       | Enable bor to sync new blocks using witnesses                                             |
+| el_bor_stateless_parallel_import | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`) |
+| count                            | int    | 1                           | Number of nodes to spin up for this participant                                           |
 
 ### `setup_images`
 
@@ -168,8 +167,8 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | validator_top_up_fee_amount_eth       | int    | 2000               | Top up fee amount in ether for each validator                      |
 | cl_chain_id                           | string | heimdall-4927      | CL network ID                                                      |
 | cl_environment                        | string | -                  | CL environment: `mainnet`, `mumbai`, or `local` (optional)         |
-| cl_span_poll_interval                 | string | 0m15s              | Span poll interval on the CL chain                                 |
-| cl_checkpoint_poll_interval           | string | 1m0s               | Checkpoint poll interval on the CL chain                           |
+| cl_span_poll_interval                 | string | 5s                 | Span poll interval on the CL chain                                 |
+| cl_checkpoint_poll_interval           | string | 5s                 | Checkpoint poll interval on the CL chain                           |
 | cl_max_age_num_blocks                 | int    | 100000             | Genesis evidence setting, useful to set smaller pruning intervals  |
 | el_chain_id                           | string | "4927"             | EL network ID                                                      |
 | el_block_interval_seconds             | int    | 1                  | Seconds per block on the EL chain                                  |
