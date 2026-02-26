@@ -121,7 +121,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         "el_block_interval_seconds": 1,
         "el_sprint_duration": constants.EL_SPRINT_DURATION,
         "el_span_duration": constants.EL_SPAN_DURATION,
-        "el_gas_limit": 65000000,
+        "el_gas_limit": 1000000000,
         # Polygon PoS hard fork configurations
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),

@@ -34,6 +34,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   etherbase = "{{.address}}"
   # Block extra data set by the miner (default: client version)
   extradata = "{{.extradata}}"
+  gasprice = "10000000000"
 {{- end }}
 
 [witness]
@@ -81,9 +82,11 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
 
 [jsonrpc]
   # Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap) (default: 1)
-  txfeecap = 0.4194304
+  txfeecap = 0
   # Filename for IPC socket/pipe within the datadir (explicit paths escape it)
   ipcpath = "{{.data_folder_path}}/bor.ipc"
+  # Allow unprotected transactions (EIP-155)
+  allow-unprotected-txs = true
   [jsonrpc.http]
     # Enable the HTTP-RPC server (default: false)
     enabled = true
@@ -172,7 +175,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
 [txpool]
   # Minimum gas price limit to enforce for acceptance into the pool.
   # Regardless the value set, it will be enforced to 25000000000 for all networks (default: 25000000000)
-  pricelimit = 25000000000
+  pricelimit = 10000000000
   # Minimum number of executable transaction slots guaranteed per account
   accountslots = 256
   # Maximum number of executable transaction slots for all accounts
