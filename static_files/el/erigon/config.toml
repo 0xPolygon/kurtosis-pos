@@ -54,3 +54,7 @@ allow-insecure-unlock = true
 # [telemetry]
 "metrics.addr" = "0.0.0.0"
 "metrics.port" = {{.metrics_port_number}}
+
+# [rpc]
+"rpc.allow-unprotected-txs" = true
+"rpc.txfeecap" = 5
