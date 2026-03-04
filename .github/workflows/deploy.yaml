@@ -205,6 +205,14 @@ jobs:
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-rabbitmq
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-v2-validator
 
+      - name: Clean up L2 persistent volumes
+        run: |
+          enclave_uuid=$(kurtosis enclave inspect ${{ env.ENCLAVE_NAME }} --full-uuids | awk '/^UUID:/ {print $2}')
+          docker volume ls -q | grep -E "l2-(cl|el).*-data--$enclave_uuid" | while read -r v; do
+            echo "Cleaning volume: $v"
+            docker run --rm -v "$v:/data" alpine sh -c 'rm -rf /data/*'
+          done
+
       - name: Deploy devnet for the second time
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
