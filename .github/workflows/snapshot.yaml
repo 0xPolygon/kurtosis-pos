@@ -40,7 +40,6 @@ jobs:
         run: docker image inspect pos-devnet
 
       - uses: ./.github/actions/cleanup
-        if: always()
 
       - name: Extract snapshot data
         run: ./scripts/snapshot/extract.sh pos-devnet
