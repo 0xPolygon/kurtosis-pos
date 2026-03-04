@@ -40,7 +40,7 @@ jobs:
         run: docker image inspect pos-devnet
 
       - name: Remove the kurtosis enclave
-        run: kurtosis clean --all
+        run: kurtosis enclave rm --force ${{ env.ENCLAVE_NAME }}
 
       - name: Extract snapshot data
         run: ./scripts/snapshot/extract.sh pos-devnet
