@@ -9,6 +9,7 @@ This guide will show you how to spin up PoS devnets under 20 seconds using snaps
 ## Restore from snapshot
 
 We provide two snapshot types:
+
 - **small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities.
 - **large**: the environment contains an L1 chain and an L2 chain with 7 heimdall-v2/bor validators, 3 rpc nodes (one stateless bor node, one stateful bor node, one stateful erigon node) and one archive bor node. Useful for testing in a more realistic environment.
 
