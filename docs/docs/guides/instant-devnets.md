@@ -26,7 +26,7 @@ rm -rf ./tmp
 Extract the snapshot data.
 
 ```bash
-./scripts/snapshot/extract.sh ghcr.io/0xpolygon/pos-devnet-large:v1.2.13
+./scripts/snapshot/extract.sh ghcr.io/0xpolygon/pos-devnet-large:v1.2.14
 ```
 
 Snapshot data will be extracted to `./tmp` by default. You can change the output directory by passing it as a second argument.
