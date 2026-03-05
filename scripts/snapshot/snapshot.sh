@@ -353,6 +353,22 @@ add_health_checks() {
             else . end
         )
     ' "$docker_compose_file"
+
+    # Bor (L2 EL) health check
+    yq --in-place --yaml-output \
+        --arg enclave_name "$enclave_name" '
+        .services |= with_entries(
+            if .key | test("^" + $enclave_name + "-l2-el-[0-9]+-") then
+                .value.healthcheck = {
+                    "test": ["CMD-SHELL", "curl -sf --max-time 5 -X POST -H \"Content-Type: application/json\" -d \"{\\\"method\\\":\\\"eth_blockNumber\\\",\\\"params\\\":[],\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\"}\" http://localhost:8545 | grep -q result"],
+                    "interval": "5s",
+                    "timeout": "10s",
+                    "retries": 12,
+                    "start_period": "30s"
+                }
+            else . end
+        )
+    ' "$docker_compose_file"
 }
 
 configure_ports() {
