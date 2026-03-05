@@ -77,10 +77,7 @@ Note that bor was not correctly flushing data to disk during shutdown in the pas
 :::
 
 ```bash
-kurtosis run \
-    --enclave pos \
-    --args-file .github/configs/large.yml.norun \
-    github.com/0xPolygon/kurtosis-pos@v1.2.13
+kurtosis run --enclave pos --args-file .github/configs/large.yml.norun .
 ```
 
 ### Snapshot the enclave
