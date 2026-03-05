@@ -173,8 +173,7 @@ configure_networks() {
         '.services[].networks = [$new_network]' "$docker_compose_file"
 
     # Remove unnecessary fields from all services
-    # TODO: Check if we can remove hostnames?
-    yq --in-place --yaml-output 'del(.version, .services[].ports, .services[].labels, .services[].logging, .services[].stdin_open, .services[].ipc)' "$docker_compose_file"
+    yq --in-place --yaml-output 'del(.version, .services[].ports, .services[].labels, .services[].logging, .services[].stdin_open, .services[].ipc, .services[].hostname)' "$docker_compose_file"
 }
 
 sanitize_service_names() {
