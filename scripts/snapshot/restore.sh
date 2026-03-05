@@ -65,7 +65,7 @@ log_info "Docker volumes restored"
 
 log_info "Starting devnet using docker-compose"
 docker_compose_file="$snapshot_folder/docker-compose.yaml"
-docker compose --file "$docker_compose_file" up --detach
+docker compose --file "$docker_compose_file" up --detach --wait
 log_info "Devnet started"
 
 log_info "Use 'docker compose --file $docker_compose_file down --volumes' to remove the devnet"
