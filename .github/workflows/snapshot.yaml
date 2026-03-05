@@ -36,14 +36,14 @@ jobs:
       - name: Create snapshot
         run: ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
 
-      - name: Verify snapshot image exists
-        run: docker image inspect pos-devnet
-
       - name: Remove the kurtosis enclave
         run: kurtosis enclave rm --force ${{ env.ENCLAVE_NAME }}
 
       - name: Extract snapshot data
         run: ./scripts/snapshot/extract.sh pos-devnet
+
+      - name: Debug
+        run: cat ./tmp/docker-compose.yaml
 
       - name: Restore devnet from snapshot
         run: ./scripts/snapshot/restore.sh
