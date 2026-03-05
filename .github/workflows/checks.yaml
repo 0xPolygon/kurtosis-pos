@@ -33,14 +33,14 @@ jobs:
         run: kurtosis lint .
       
       - name: Run markdown linter
-        uses: rvben/rumdl@dea83e1c9817fecba3476633f0631e95e570048e # v0.1.25
+        uses: rvben/rumdl@4b94bdaae7515ee1af0bb3ec8a14c19a117ccfda # v0.1.35
 
   typos:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
-      - uses: crate-ci/typos@57b11c6b7e54c402ccd9cda953f1072ec4f78e33 # v1.43.5
+      - uses: crate-ci/typos@631208b7aac2daa8b707f55e7331f9112b0e062d # v1.44.0
 
   unit:
     runs-on: ubuntu-latest
