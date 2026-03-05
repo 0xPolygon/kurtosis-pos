@@ -42,15 +42,12 @@ jobs:
       - name: Extract snapshot data
         run: ./scripts/snapshot/extract.sh pos-devnet
 
-      - name: Debug
-        run: cat ./tmp/docker-compose.yaml
-
       - name: Restore devnet from snapshot
         run: ./scripts/snapshot/restore.sh
 
       - name: Verify restored devnet produces blocks
         run: |
-          target_block=200
+          target_block=$((256+200)) # 200 blocks after the snapshot block
           while true; do
             block=$(cast bn --rpc-url localhost:9545)
             echo "L2 block: $block/$target_block"
