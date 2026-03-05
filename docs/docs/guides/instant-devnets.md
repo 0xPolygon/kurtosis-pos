@@ -10,8 +10,10 @@ This guide will show you how to spin up PoS devnets under 20 seconds using snaps
 
 We provide two snapshot types:
 
-- **small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities.
-- **large**: the environment contains an L1 chain and an L2 chain with 7 heimdall-v2/bor validators, 3 rpc nodes (one stateless bor node, one stateful bor node, one stateful erigon node) and one archive bor node. Useful for testing in a more realistic environment.
+- **pos-devnet-small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities. It is based on the default configuration of the package.
+- **pos-devnet-large**: the environment contains an L1 chain and an L2 chain with 7 heimdall-v2/bor validators, 3 rpc nodes (one stateless bor node, one stateful bor node, one stateful erigon node) and one archive bor node. Useful for testing in a more realistic environment. It is based on `.github/configs/large.yml.norun`.
+
+Images are hosted on GHCR. The tags correspond to the kurtosis-pos package versions.
 
 Environments are snapshotted around block 100 on the L2 chain, which should be enough for most testing purposes.
 
@@ -24,7 +26,7 @@ rm -rf ./tmp
 Extract the snapshot data.
 
 ```bash
-./scripts/snapshot/extract.sh europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/pos-devnet-large:v1.2.13
+./scripts/snapshot/extract.sh ghcr.io/0xpolygon/pos-devnet-large:v1.2.13
 ```
 
 Snapshot data will be extracted to `./tmp` by default. You can change the output directory by passing it as a second argument.
