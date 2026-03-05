@@ -113,6 +113,9 @@ backup_docker_volumes() {
     done < "$temp_mounts"
     rm -f "$temp_mounts"
 
+    # Pull alpine image once before parallel execution to avoid rate limits
+    docker pull alpine
+
     # Backup volumes using sanitized names
     for v in "${!volume_mapping[@]}"; do
         (
