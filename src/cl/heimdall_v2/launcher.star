@@ -115,7 +115,7 @@ def launch(
                         shared.CONFIG_FOLDER_PATH
                     ),
                     # Auto-generate node keys (no pre-generated validator keys for rpc/archive nodes).
-                    "heimdalld init --home /tmp/init-data",
+                    "heimdalld init {} --home /tmp/init-data".format(cl_node_name),
                     "cp /tmp/init-data/config/node_key.json /tmp/init-data/config/priv_validator_key.json {}/config/".format(
                         shared.CONFIG_FOLDER_PATH
                     ),
