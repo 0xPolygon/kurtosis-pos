@@ -92,8 +92,21 @@ dev:
 Stop the validators to avoid any issues when deploying the L2 contracts.
 
 ```bash
+kurtosis service stop pos l2-cl-1-heimdall-v2-bor-validator
+kurtosis service stop pos l2-cl-1-rabbitmq
 kurtosis service stop pos l2-el-1-bor-heimdall-v2-validator
-kurtosis service stop pos l2-el-2-bor-heimdall-v2-validator
+```
+
+## Clean up L2 Persistent Volumes
+
+Clean up persistent volumes to avoid any issue with the new L2 participants.
+
+```bash
+enclave_uuid=$(kurtosis enclave inspect pos --full-uuids | awk '/^UUID:/ {print $2}')
+docker volume ls -q | grep -E "l2-(cl|el).*-data--$enclave_uuid" | while read -r v; do
+  echo "Cleaning volume: $v"
+  docker run --rm -v "$v:/data" alpine sh -c 'rm -rf /data/*'
+done
 ```
 
 ## Re-deploy Only L2 Participants
