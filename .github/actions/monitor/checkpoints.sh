@@ -37,12 +37,12 @@ for step in $(seq 1 "${num_steps}"); do
   CHECKPOINTS_COUNT=$(curl "${api_url}/checkpoints/count" | jq --raw-output '.ack_count')
   log_info "Got checkpoints count: ${CHECKPOINTS_COUNT}"
   if [[ "${CHECKPOINTS_COUNT}" -ge "${target}" ]]; then
-    log_info "Target checkpoints reached"
+    log_info "Target checkpoints reached" "target=${target}"
     exit 0
   fi
   sleep 5
 done
 
 # If the code reaches here, the target was not met within the allowed steps
-log_error "Target checkpoints have not been reached"
+log_error "Target checkpoints have not been reached" "target=${target}"
 exit 1

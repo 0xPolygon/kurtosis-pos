@@ -67,11 +67,11 @@ monitor_rpc() {
 
   # Check if target was reached for this RPC
   if [[ "${LATEST_BLOCK}" -lt "${target}" || "${FINALIZED_BLOCK}" -lt "${target}" ]]; then
-    log_error "Target block height has not been reached for ${rpc_name}"
+    log_error "Target block height has not been reached for ${rpc_name}" "target=${target}"
     return 1
   fi
 
-  log_info "Target block height reached for all block types (latest and finalized) for ${rpc_name}"
+  log_info "Target block height reached for all block types (latest and finalized) for ${rpc_name}" "target=${target}"
   return 0
 }
 
@@ -132,9 +132,9 @@ done
 
 # Check if any RPC failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more RPCs failed to reach target block height"
+  log_error "One or more RPCs failed to reach target block height" "target=${target}"
   exit 1
 fi
 
-log_info "All RPCs have reached target block height"
+log_info "All RPCs have reached target block height" "target=${target}"
 exit 0

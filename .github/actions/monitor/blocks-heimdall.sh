@@ -40,11 +40,11 @@ monitor_cl() {
   done
 
   if [[ "${LATEST_BLOCK}" -lt "${target}" ]]; then
-    log_error "Target block height not reached for ${cl_name}"
+    log_error "Target block height not reached for ${cl_name}" "target=${target}"
     return 1
   fi
 
-  log_info "Target block height reached for ${cl_name}"
+  log_info "Target block height reached for ${cl_name}" "target=${target}"
   return 0
 }
 
@@ -105,9 +105,9 @@ done
 
 # Check if any CL node failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more CL nodes failed to reach target block height"
+  log_error "One or more CL nodes failed to reach target block height" "target=${target}"
   exit 1
 fi
 
-log_info "All CL nodes have reached target block height"
+log_info "All CL nodes have reached target block height" "target=${target}"
 exit 0

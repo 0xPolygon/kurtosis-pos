@@ -36,12 +36,12 @@ for step in $(seq 1 "${num_steps}"); do
   SPAN_ID=$(curl -s "${api_url}/bor/spans/latest" | jq --raw-output '.span.id')
   log_info "Got latest span id: ${SPAN_ID}"
   if [[ "${SPAN_ID}" =~ ^[0-9]+$ ]] && [[ "${SPAN_ID}" -ge "${target}" ]]; then
-    log_info "Target span id reached"
+    log_info "Target span id reached" "target=${target}"
     exit 0
   fi
   sleep 5
 done
 
 # If the code reaches here, the target was not met within the allowed steps
-log_error "Target span id has not been reached"
+log_error "Target span id has not been reached" "target=${target}"
 exit 1
