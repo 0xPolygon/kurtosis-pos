@@ -258,6 +258,7 @@ comet_bft_rpc_url = "http://0.0.0.0:{{.rpc_port_number}}"
 # Polygon Sub Graph URL for self-heal mechanism (optional)
 sub_graph_url = ""
 
+{{ if eq .kind "validator" }}
 #### Bridge configs ####
 
 # AMQP endpoint
@@ -284,5 +285,6 @@ main_chain_max_gas_price = "400000000000"
 
 ##### Timeout Config #####
 no_ack_wait_time = "30m0s"
+{{ end }}
 
 chain = "{{.cl_environment}}"
