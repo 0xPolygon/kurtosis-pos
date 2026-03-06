@@ -121,8 +121,11 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
-    first_cl_node = all_participants[0].cl_context
-    wait.wait_for_l2_startup(plan, first_cl_node.api_url)
+    validators = [
+        p for p in all_participants if p.kind == constants.PARTICIPANT_KIND.validator
+    ]
+    first_validator = validators[0]
+    wait.wait_for_l2_startup(plan, first_validator.cl_context.api_url)
 
     # Return the L2 context.
     return struct(
