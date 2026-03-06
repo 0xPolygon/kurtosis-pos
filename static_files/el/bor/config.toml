@@ -66,7 +66,7 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
     static-nodes = {{.static_nodes}}
 
 [heimdall]
-  # URL of the heimdall server (default: http://localhost:1317)
+  # URL of the heimdall server (comma-separated for failover: "url1,url2,url3") (default: http://localhost:1317)
   url = "{{.cl_api_url}}"
   # Address of the heimdall ws subscription server (default: "")
   ws-address = "{{.cl_ws_rpc_url}}"

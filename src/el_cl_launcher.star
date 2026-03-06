@@ -48,7 +48,7 @@ def launch(
     participant_index = 0
     validator_index = 0
     all_participants = []
-    first_cl_context = None
+    all_cl_contexts = []
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
@@ -73,18 +73,31 @@ def launch(
                     l1_rpc_url,
                     container_proc_manager_artifact,
                 )
-                if not first_cl_context:
-                    first_cl_context = cl_context
+                all_cl_contexts.append(cl_context)
 
             # Retrieve the correct CL api url.
+            # Validators use their own CL node. Non-validators get
+            # comma-separated heimdall URLs for failover (bor), or a
+            # single URL via round-robin (erigon, which doesn't support
+            # multiple heimdall URLs).
             cl_api_url = None
             cl_ws_rpc_url = None
             if cl_context:
                 cl_api_url = cl_context.api_url
                 cl_ws_rpc_url = cl_context.ws_rpc_url
-            elif first_cl_context:
-                cl_api_url = first_cl_context.api_url
-                cl_ws_rpc_url = first_cl_context.ws_rpc_url
+            elif len(all_cl_contexts) > 0:
+                el_type = participant.get("el_type")
+                if el_type == constants.EL_TYPE.bor:
+                    cl_api_url = ",".join([ctx.api_url for ctx in all_cl_contexts])
+                    cl_ws_rpc_url = ",".join(
+                        [ctx.ws_rpc_url for ctx in all_cl_contexts]
+                    )
+                else:
+                    assigned_cl_context = all_cl_contexts[
+                        participant_index % len(all_cl_contexts)
+                    ]
+                    cl_api_url = assigned_cl_context.api_url
+                    cl_ws_rpc_url = assigned_cl_context.ws_rpc_url
             else:
                 fail("No CL node deployed yet...")
 
@@ -106,12 +119,19 @@ def launch(
             )
 
             # Add the node to the all_participants array.
+            # Non-validators reference a validator's CL context (round-robin)
+            # for metadata such as startup wait checks.
+            effective_cl_context = (
+                cl_context
+                if cl_context
+                else all_cl_contexts[participant_index % len(all_cl_contexts)]
+            )
             all_participants.append(
                 participant_module.new_participant(
                     kind=participant.get("kind"),
                     cl_type=participant.get("cl_type"),
                     el_type=participant.get("el_type"),
-                    cl_context=cl_context or first_cl_context,
+                    cl_context=effective_cl_context,
                     el_context=el_context,
                 )
             )
@@ -134,7 +154,7 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
-    wait.wait_for_l2_startup(plan, first_cl_context.api_url)
+    wait.wait_for_l2_startup(plan, all_cl_contexts[0].api_url)
 
     # Return the L2 context.
     return struct(
