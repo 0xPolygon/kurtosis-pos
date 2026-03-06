@@ -129,7 +129,7 @@ def launch(
                         shared.CONFIG_FOLDER_PATH
                     ),
                     # Start heimdall without the bridge using the container proc manager script.
-                    "/usr/local/share/container-proc-manager.sh heimdalld start --home {} --log_no_color --rest-server".format(
+                    "/usr/local/share/container-proc-manager.sh heimdalld start --all --home {} --log_no_color --rest-server".format(
                         shared.CONFIG_FOLDER_PATH,
                     ),
                 ]
