@@ -6,9 +6,10 @@ set -euo pipefail
 # Example: ./blocks.sh kt-pos first  # Check only the first RPC
 # Example: ./blocks.sh kt-pos all    # Check all RPCs (default)
 
-# Source logging library
+# Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/log.sh"
+source "${SCRIPT_DIR}/docker.sh"
 
 # Function to monitor a single RPC
 monitor_rpc() {
@@ -98,13 +99,9 @@ log_info "Using check mode: ${check_mode}"
 
 # Get EL containers
 if [[ "${check_mode}" == "first" ]]; then
-  containers=$(docker ps --filter "network=${docker_network}" --filter "name=l2-el" --format '{{.Names}}' | sort -V | head -n 1)
+  containers=$(get_el_containers "${docker_network}" | head -n 1)
 else
-  containers=$(docker ps --filter "network=${docker_network}" --filter "name=l2-el" --format '{{.Names}}' | sort -V)
-fi
-if [[ -z "${containers}" ]]; then
-  log_error "No running l2-el containers found in network ${docker_network}"
-  exit 1
+  containers=$(get_el_containers "${docker_network}")
 fi
 log_info "Found container(s): ${containers}"
 

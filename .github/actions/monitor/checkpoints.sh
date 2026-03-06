@@ -5,9 +5,10 @@ set -euo pipefail
 # Usage: ./checkpoints.sh <docker_network>
 # Example: ./checkpoints.sh kt-pos
 
-# Source logging library
+# Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/log.sh"
+source "${SCRIPT_DIR}/docker.sh"
 
 log_info "Monitoring checkpoints progress"
 
@@ -19,17 +20,7 @@ if [[ -z "${docker_network}" ]]; then
 fi
 log_info "Using docker network: ${docker_network}"
 
-cl_container=$(docker ps --filter "network=${docker_network}" --filter "name=l2-cl-1" --format '{{.Names}}' | grep -v rabbitmq | head -1)
-if [[ -z "${cl_container}" ]]; then
-  log_error "No running CL container in network '${docker_network}'"
-  exit 1
-fi
-host_port=$(docker port "${cl_container}" 1317 2>/dev/null | head -1 | sed 's/0.0.0.0/127.0.0.1/')
-if [[ -z "${host_port}" ]]; then
-  log_error "No published port 1317 for container ${cl_container}"
-  exit 1
-fi
-api_url="http://${host_port}"
+api_url=$(get_any_cl_api_url "${docker_network}")
 log_info "Using API url: ${api_url}"
 
 target="1"
