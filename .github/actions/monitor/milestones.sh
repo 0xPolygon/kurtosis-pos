@@ -2,33 +2,32 @@
 set -euo pipefail
 
 # This script monitors milestones progress in a Polygon PoS devnet.
-# Usage: ./milestones.sh <enclave_name>
-# Example: ./milestones.sh pos
+# Usage: ./milestones.sh <docker_network>
+# Example: ./milestones.sh kt-pos
 
-# Source logging library
+# Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/log.sh"
+source "${SCRIPT_DIR}/lib/log.sh"
+source "${SCRIPT_DIR}/lib/docker.sh"
 
 log_info "Monitoring milestones progress"
 
 # Validate input parameters
-enclave_name=${1:-"pos"}
-if [[ -z "${enclave_name}" ]]; then
-  log_error "Enclave name must be provided"
+docker_network=${1:-"kt-pos"}
+if [[ -z "${docker_network}" ]]; then
+  log_error "Docker network name must be provided"
   exit 1
 fi
-log_info "Using enclave name: ${enclave_name}"
+log_info "Using docker network: ${docker_network}"
 
-cl_name="l2-cl-1-heimdall-v2-bor-validator"
-log_info "Using CL node: ${cl_name}"
-
-api_url=$(kurtosis port print "${enclave_name}" "${cl_name}" http)
+# Get CL API URL
+api_url=$(get_any_cl_api_url "${docker_network}")
 log_info "Using API url: ${api_url}"
 
+# Monitor milestone progress
 target="10"
 log_info "Using target: ${target}"
 
-# Monitor milestone progress
 num_steps=100
 gas_price_factor=1
 for step in $(seq 1 "${num_steps}"); do

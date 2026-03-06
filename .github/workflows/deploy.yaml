@@ -37,7 +37,7 @@ jobs:
       - name: Deploy devnet
         run: |
           set -o pipefail
-          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity=detailed . 2>&1 | tee run.log
 
       - uses: ./.github/actions/monitor
 
@@ -98,7 +98,7 @@ jobs:
       - name: Deploy devnet
         run: |
           set -o pipefail
-          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity=detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
 
       - uses: ./.github/actions/monitor
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
@@ -130,7 +130,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy L1 devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@e0c96ff24829d91ced75b9ce0594e589e4b463e4 # 2026-02-17
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity=detailed --args-file=./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@e0c96ff24829d91ced75b9ce0594e589e4b463e4 # 2026-02-17
 
       - name: Wait for L1 to be ready
         run: |
@@ -146,7 +146,7 @@ jobs:
           done
 
       - name: Deploy L2 devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity=detailed --args-file=./.github/configs/nightly/external-l1/polygon-pos-with-external-l1.yml .
 
       - uses: ./.github/actions/monitor
         with:
@@ -172,7 +172,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy devnet for the first time
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity=detailed .
 
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
@@ -214,7 +214,7 @@ jobs:
           done
 
       - name: Deploy devnet for the second time
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity=detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
       - uses: ./.github/actions/monitor
 

@@ -2,10 +2,10 @@ name: monitor
 description: Monitor blockchain progress (blocks, milestones, checkpoints)
 
 inputs:
-  enclave_name:
-    description: The name of the Kurtosis enclave
+  docker_network:
+    description: Docker network name
     required: false
-    default: pos
+    default: kt-pos
   skip_milestones:
     description: Skip milestone monitoring
     required: false
@@ -18,23 +18,23 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Inspect enclave
+    - name: List containers
       shell: bash
-      run: kurtosis enclave inspect ${{ inputs.enclave_name }}
+      run: docker ps --filter "network=${{ inputs.docker_network }}" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
 
     - name: Monitor block progress
       working-directory: .github/actions/monitor
       shell: bash
-      run: ./blocks.sh ${{ inputs.enclave_name }}
+      run: ./blocks.sh ${{ inputs.docker_network }}
 
     - name: Monitor milestone progress
       if: inputs.skip_milestones != 'true'
       working-directory: .github/actions/monitor
       shell: bash
-      run: ./milestones.sh ${{ inputs.enclave_name }}
+      run: ./milestones.sh ${{ inputs.docker_network }}
 
     - name: Monitor checkpoint progress
       if: inputs.skip_checkpoints != 'true'
       working-directory: .github/actions/monitor
       shell: bash
-      run: ./checkpoints.sh ${{ inputs.enclave_name }}
+      run: ./checkpoints.sh ${{ inputs.docker_network }}

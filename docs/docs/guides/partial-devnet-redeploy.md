@@ -114,7 +114,7 @@ done
 You can now run the package and it will only re-deploy the L2 participants. The deployment should be much faster!
 
 ```bash
-kurtosis run --enclave pos --args-file params.yml .
+kurtosis run --enclave=pos --args-file=params.yml .
 ```
 
 You may want to check the logs of the new Bor service if any issues arise.
