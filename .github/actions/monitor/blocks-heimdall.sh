@@ -30,7 +30,7 @@ monitor_cl() {
     log_info "Check ${step}/${num_steps} for ${cl_name}"
 
     LATEST_BLOCK=$(curl -s "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')
-    log_info "Got Heimdall block height: ${LATEST_BLOCK}"
+    log_info "Got block height: ${LATEST_BLOCK}"
 
     if [[ "${LATEST_BLOCK}" -ge "${target}" ]]; then
       break
@@ -40,11 +40,11 @@ monitor_cl() {
   done
 
   if [[ "${LATEST_BLOCK}" -lt "${target}" ]]; then
-    log_error "Target Heimdall block height not reached for ${cl_name}"
+    log_error "Target block height not reached for ${cl_name}"
     return 1
   fi
 
-  log_info "Target Heimdall block height reached for ${cl_name}"
+  log_info "Target block height reached for ${cl_name}"
   return 0
 }
 
