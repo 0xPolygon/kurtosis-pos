@@ -82,8 +82,7 @@ def launch(
         },
     )
 
-    is_validator = cl_keys_artifact != None
-
+    is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
     if is_validator:
         heimdall_cmds = [
             " && ".join(
