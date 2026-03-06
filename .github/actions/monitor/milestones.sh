@@ -20,13 +20,14 @@ if [[ -z "${docker_network}" ]]; then
 fi
 log_info "Using docker network: ${docker_network}"
 
+# Get CL API URL
 api_url=$(get_any_cl_api_url "${docker_network}")
 log_info "Using API url: ${api_url}"
 
+# Monitor milestone progress
 target="10"
 log_info "Using target: ${target}"
 
-# Monitor milestone progress
 num_steps=100
 gas_price_factor=1
 for step in $(seq 1 "${num_steps}"); do
