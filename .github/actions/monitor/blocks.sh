@@ -2,9 +2,8 @@
 set -euo pipefail
 
 # This script monitors block progress in a Polygon PoS devnet.
-# Usage: ./blocks.sh <docker_network> [first|all]
-# Example: ./blocks.sh kt-pos first  # Check only the first RPC
-# Example: ./blocks.sh kt-pos all    # Check all RPCs (default)
+# Usage: ./blocks.sh <docker_network>
+# Example: ./blocks.sh kt-pos
 
 # Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -90,39 +89,25 @@ if [[ -z "${docker_network}" ]]; then
 fi
 log_info "Using docker network: ${docker_network}"
 
-check_mode=${2:-"all"}
-if [[ "${check_mode}" != "first" && "${check_mode}" != "all" ]]; then
-  log_error "Check mode must be 'first' or 'all'"
-  exit 1
-fi
-log_info "Using check mode: ${check_mode}"
-
 # Get EL containers
-if [[ "${check_mode}" == "first" ]]; then
-  containers=$(get_el_containers "${docker_network}" | head -n 1)
-else
-  containers=$(get_el_containers "${docker_network}")
-fi
+containers=$(get_el_containers "${docker_network}")
 log_info "Found container(s): ${containers}"
 
-target="40" # a sprint is 16 blocks so 40 is ~2.5 sprints, which should be enough to see progress
-log_info "Using target: ${target}"
-
-# Monitor block progress for each RPC in parallel
 declare -a pids=()
 declare -a container_array=()
-
 while IFS= read -r container; do
   container_array+=("${container}")
 done <<< "${containers}"
 
-# Launch monitoring jobs in parallel
+# Monitor block progress for each RPC, in parallel
+target="40" # a sprint is 16 blocks so 40 is ~2.5 sprints, which should be enough to see progress
+log_info "Using target: ${target}"
+
 for container in "${container_array[@]}"; do
   monitor_rpc "${container}" "${target}" &
   pids+=($!)
 done
 
-# Wait for all background jobs and collect exit codes
 failed=0
 for pid in "${pids[@]}"; do
   if ! wait "${pid}"; then
