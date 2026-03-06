@@ -25,7 +25,7 @@ log_info "Using CL node: ${cl_name}"
 api_url=$(kurtosis port print "${enclave_name}" "${cl_name}" http)
 log_info "Using API url: ${api_url}"
 
-target="1"
+target="2"
 log_info "Using target span id: ${target}"
 
 # Monitor span progress
