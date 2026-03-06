@@ -26,6 +26,7 @@ def launch(
                     "{}/app.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH)
                 ),
                 data={
+                    "kind": participant.get("kind"),
                     # Network params.
                     "cl_environment": network_params.get("cl_environment"),
                     "cl_min_retain_blocks": participant.get("cl_min_retain_blocks"),
@@ -81,28 +82,76 @@ def launch(
         },
     )
 
-    heimdall_cmds = [
-        " && ".join(
-            [
-                # Copy CL validator config inside heimdall config folder.
-                "cp /opt/data/genesis/genesis.json /opt/data/keys/node_key.json /opt/data/keys/priv_validator_key.json {}/config/".format(
-                    shared.CONFIG_FOLDER_PATH
-                ),
-                "mkdir -p {}/data".format(shared.CONFIG_FOLDER_PATH),
-                "cp /opt/data/keys/priv_validator_state.json {}/data/priv_validator_state.json".format(
-                    shared.CONFIG_FOLDER_PATH
-                ),
-                # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
-                'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
-                    shared.CONFIG_FOLDER_PATH
-                ),
-                # Start heimdall using the container proc manager script.
-                "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --home {} --log_no_color --rest-server".format(
-                    shared.CONFIG_FOLDER_PATH,
-                ),
-            ]
-        )
-    ]
+    is_validator = cl_keys_artifact != None
+
+    if is_validator:
+        heimdall_cmds = [
+            " && ".join(
+                [
+                    # Copy CL validator config inside heimdall config folder.
+                    "cp /opt/data/genesis/genesis.json /opt/data/keys/node_key.json /opt/data/keys/priv_validator_key.json {}/config/".format(
+                        shared.CONFIG_FOLDER_PATH
+                    ),
+                    "mkdir -p {}/data".format(shared.CONFIG_FOLDER_PATH),
+                    "cp /opt/data/keys/priv_validator_state.json {}/data/priv_validator_state.json".format(
+                        shared.CONFIG_FOLDER_PATH
+                    ),
+                    # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
+                    'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
+                        shared.CONFIG_FOLDER_PATH
+                    ),
+                    # Start heimdall with the bridge using the container proc manager script.
+                    "/usr/local/share/container-proc-manager.sh heimdalld start --all --bridge --home {} --log_no_color --rest-server".format(
+                        shared.CONFIG_FOLDER_PATH,
+                    ),
+                ]
+            )
+        ]
+    else:
+        heimdall_cmds = [
+            " && ".join(
+                [
+                    # Auto-generate node keys (no pre-generated validator keys for rpc/archive nodes).
+                    "heimdalld init --home /tmp/init-data",
+                    "cp /tmp/init-data/config/node_key.json /tmp/init-data/config/priv_validator_key.json {}/config/".format(
+                        shared.CONFIG_FOLDER_PATH
+                    ),
+                    "mkdir -p {}/data".format(shared.CONFIG_FOLDER_PATH),
+                    "cp /tmp/init-data/data/priv_validator_state.json {}/data/priv_validator_state.json".format(
+                        shared.CONFIG_FOLDER_PATH
+                    ),
+                    # Copy CL genesis inside heimdall config folder.
+                    "cp /opt/data/genesis/genesis.json {}/config/".format(
+                        shared.CONFIG_FOLDER_PATH
+                    ),
+                    # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
+                    'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
+                        shared.CONFIG_FOLDER_PATH
+                    ),
+                    # Start heimdall without the bridge using the container proc manager script.
+                    "/usr/local/share/container-proc-manager.sh heimdalld start --home {} --log_no_color --rest-server".format(
+                        shared.CONFIG_FOLDER_PATH,
+                    ),
+                ]
+            )
+        ]
+
+    files = {
+        # app data
+        shared.APP_DATA_FOLDER_PATH: Directory(
+            persistent_key="{}-data".format(cl_node_name)
+        ),
+        "{}/data".format(shared.CONFIG_FOLDER_PATH): Directory(
+            persistent_key="{}-config-data".format(cl_node_name)
+        ),
+        # config
+        "{}/config".format(shared.CONFIG_FOLDER_PATH): heimdall_node_config_artifacts,
+        "/opt/data/genesis": cl_genesis_artifact,
+        # utils scripts
+        "/usr/local/share": container_proc_manager_artifact,
+    }
+    if is_validator:
+        files["/opt/data/keys"] = cl_keys_artifact
 
     return plan.add_service(
         name="{}".format(cl_node_name),
@@ -134,23 +183,7 @@ def launch(
                     application_protocol="http",
                 ),
             },
-            files={
-                # app data
-                shared.APP_DATA_FOLDER_PATH: Directory(
-                    persistent_key="{}-data".format(cl_node_name)
-                ),
-                "{}/data".format(shared.CONFIG_FOLDER_PATH): Directory(
-                    persistent_key="{}-config-data".format(cl_node_name)
-                ),
-                # config
-                "{}/config".format(
-                    shared.CONFIG_FOLDER_PATH
-                ): heimdall_node_config_artifacts,
-                "/opt/data/genesis": cl_genesis_artifact,
-                "/opt/data/keys": cl_keys_artifact,
-                # utils scripts
-                "/usr/local/share": container_proc_manager_artifact,
-            },
+            files=files,
             entrypoint=["sh", "-c"],
             cmd=["&&".join(heimdall_cmds)],
             max_cpu=shared.MAX_CPU,

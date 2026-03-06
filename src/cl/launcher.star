@@ -22,13 +22,23 @@ def launch(
     l1_rpc_url,
     container_proc_manager_artifact,
 ):
-    rabbitmq_image = participant.get("cl_queue_image")
-    rabbitmq_url = rabbitmq.launch(plan, id, rabbitmq_image)
+    is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
+
+    rabbitmq_url = ""
+    if is_validator:
+        rabbitmq_image = participant.get("cl_queue_image")
+        rabbitmq_url = rabbitmq.launch(plan, id, rabbitmq_image)
 
     launch_method = _get_launcher(plan, participant)
     cl_node_name = generate_name(participant, id)
-    el_node_name = el_launcher.generate_name(participant, id)
-    el_rpc_url = "http://{}:{}".format(el_node_name, el_shared.RPC_PORT_NUMBER)
+
+    # el_rpc_url is only used by the heimdall bridge to query bor for checkpoint data.
+    # Non-validator nodes don't run the bridge, so they don't need it.
+    el_rpc_url = ""
+    if is_validator:
+        el_node_name = el_launcher.generate_name(participant, id)
+        el_rpc_url = "http://{}:{}".format(el_node_name, el_shared.RPC_PORT_NUMBER)
+
     service = launch_method(
         plan,
         cl_node_name,
