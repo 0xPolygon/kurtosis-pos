@@ -12,6 +12,9 @@ MAX_CPU = 1000  # in milicores (1 core)
 MAX_MEM = 2048  # in megabytes (2 GB)
 
 
+# RabbitMQ is only needed for validator nodes.
+# It provides the AMQP message broker used by the bridge to submit checkpoints to L1 and handle span/checkpoint events.
+# RPC nodes don't run the bridge and don't need RabbitMQ at all.
 def launch(plan, id, image):
     name = "l2-cl-{}-rabbitmq".format(id)
     service = plan.add_service(
