@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # This script monitors block progress in a Polygon PoS devnet.
-# Usage: ./blocks.sh <enclave_name> [first|all]
-# Example: ./blocks.sh pos first  # Check only the first RPC
-# Example: ./blocks.sh pos all    # Check all RPCs (default)
+# Usage: ./blocks.sh <docker_network> [first|all]
+# Example: ./blocks.sh kt-pos first  # Check only the first RPC
+# Example: ./blocks.sh kt-pos all    # Check all RPCs (default)
 
 # Source logging library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -12,15 +12,19 @@ source "${SCRIPT_DIR}/log.sh"
 
 # Function to monitor a single RPC
 monitor_rpc() {
-  local rpc_entry="$1"
-  local enclave_name="$2"
-  local target="$3"
-  local rpc_name="${rpc_entry%%--*}"
+  local container="$1"
+  local target="$2"
+  local rpc_name="${container%%--*}"
 
   log_info "Checking RPC: ${rpc_name}"
 
-  local rpc_url
-  rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
+  local host_port
+  host_port=$(docker port "${container}" 8545 2>/dev/null | head -1 | sed 's/0.0.0.0/127.0.0.1/')
+  if [[ -z "${host_port}" ]]; then
+    log_error "No published port 8545 for container ${container}"
+    return 1
+  fi
+  local rpc_url="http://${host_port}"
   log_info "Using rpc url: ${rpc_url}"
 
   local num_steps=100
@@ -78,12 +82,12 @@ monitor_rpc() {
 log_info "Monitoring block progress"
 
 # Validate input parameters
-enclave_name=${1:-"pos"}
-if [[ -z "${enclave_name}" ]]; then
-  log_error "Enclave name must be provided"
+docker_network=${1:-"kt-pos"}
+if [[ -z "${docker_network}" ]]; then
+  log_error "Docker network name must be provided"
   exit 1
 fi
-log_info "Using enclave name: ${enclave_name}"
+log_info "Using docker network: ${docker_network}"
 
 check_mode=${2:-"all"}
 if [[ "${check_mode}" != "first" && "${check_mode}" != "all" ]]; then
@@ -92,33 +96,32 @@ if [[ "${check_mode}" != "first" && "${check_mode}" != "all" ]]; then
 fi
 log_info "Using check mode: ${check_mode}"
 
-# Get RPC names
+# Get EL containers
 if [[ "${check_mode}" == "first" ]]; then
-  rpc_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-el/ && /RUNNING/ {print $2 "--" $1}' | head -n 1)
+  containers=$(docker ps --filter "network=${docker_network}" --filter "name=l2-el" --format '{{.Names}}' | sort -V | head -n 1)
 else
-  rpc_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-el/ && /RUNNING/ {print $2 "--" $1}')
+  containers=$(docker ps --filter "network=${docker_network}" --filter "name=l2-el" --format '{{.Names}}' | sort -V)
 fi
-if [[ -z "${rpc_names}" ]]; then
-  log_error "No running l2-el services found in enclave ${enclave_name}"
+if [[ -z "${containers}" ]]; then
+  log_error "No running l2-el containers found in network ${docker_network}"
   exit 1
 fi
-log_info "Found RPC(s): ${rpc_names}"
+log_info "Found container(s): ${containers}"
 
 target="40" # a sprint is 16 blocks so 40 is ~2.5 sprints, which should be enough to see progress
 log_info "Using target: ${target}"
 
 # Monitor block progress for each RPC in parallel
 declare -a pids=()
-declare -a rpc_array=()
+declare -a container_array=()
 
-# Convert rpc_names to array
-while IFS= read -r rpc_entry; do
-  rpc_array+=("${rpc_entry}")
-done <<< "${rpc_names}"
+while IFS= read -r container; do
+  container_array+=("${container}")
+done <<< "${containers}"
 
 # Launch monitoring jobs in parallel
-for rpc_entry in "${rpc_array[@]}"; do
-  monitor_rpc "${rpc_entry}" "${enclave_name}" "${target}" &
+for container in "${container_array[@]}"; do
+  monitor_rpc "${container}" "${target}" &
   pids+=($!)
 done
 

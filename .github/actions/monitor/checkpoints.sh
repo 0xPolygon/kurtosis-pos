@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # This script monitors checkpoints progress in a Polygon PoS devnet.
-# Usage: ./checkpoints.sh <enclave_name>
-# Example: ./checkpoints.sh pos
+# Usage: ./checkpoints.sh <docker_network>
+# Example: ./checkpoints.sh kt-pos
 
 # Source logging library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -12,17 +12,24 @@ source "${SCRIPT_DIR}/log.sh"
 log_info "Monitoring checkpoints progress"
 
 # Validate input parameters
-enclave_name=${1:-"pos"}
-if [[ -z "${enclave_name}" ]]; then
-  log_error "Enclave name must be provided"
+docker_network=${1:-"kt-pos"}
+if [[ -z "${docker_network}" ]]; then
+  log_error "Docker network name must be provided"
   exit 1
 fi
-log_info "Using enclave name: ${enclave_name}"
+log_info "Using docker network: ${docker_network}"
 
-cl_name="l2-cl-1-heimdall-v2-bor-validator"
-log_info "Using CL node: ${cl_name}"
-
-api_url=$(kurtosis port print "${enclave_name}" "${cl_name}" http)
+cl_container=$(docker ps --filter "network=${docker_network}" --filter "name=l2-cl-1" --format '{{.Names}}' | grep -v rabbitmq | head -1)
+if [[ -z "${cl_container}" ]]; then
+  log_error "No running CL container in network '${docker_network}'"
+  exit 1
+fi
+host_port=$(docker port "${cl_container}" 1317 2>/dev/null | head -1 | sed 's/0.0.0.0/127.0.0.1/')
+if [[ -z "${host_port}" ]]; then
+  log_error "No published port 1317 for container ${cl_container}"
+  exit 1
+fi
+api_url="http://${host_port}"
 log_info "Using API url: ${api_url}"
 
 target="1"
