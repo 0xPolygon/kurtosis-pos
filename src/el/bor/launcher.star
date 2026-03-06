@@ -93,27 +93,33 @@ def launch(
         name=el_node_name,
         config=ServiceConfig(
             image=participant.get("el_image"),
-            # All port checks are disabled, see the comment above.
+            # Port readiness checks are disabled because bor may take a long time
+            # to start while waiting for heimdall to sync.
             ports={
                 shared.RPC_PORT_ID: PortSpec(
                     number=shared.RPC_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 shared.WS_PORT_ID: PortSpec(
                     number=shared.WS_PORT_NUMBER,
                     application_protocol="ws",
+                    wait=None,
                 ),
                 shared.DISCOVERY_PORT_ID: PortSpec(
                     number=shared.DISCOVERY_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 shared.METRICS_PORT_ID: PortSpec(
                     number=shared.METRICS_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
                 shared.PPROF_PORT_ID: PortSpec(
                     number=shared.PPROF_PORT_NUMBER,
                     application_protocol="http",
+                    wait=None,
                 ),
             },
             files={
