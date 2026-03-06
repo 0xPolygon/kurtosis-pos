@@ -24,6 +24,8 @@ def launch(
 ):
     is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
 
+    # rabbitmq_url is only used by validator nodes to run the heimdall bridge.
+    # Non-validator nodes don't run the bridge, so they don't need it.
     rabbitmq_url = ""
     if is_validator:
         rabbitmq_image = participant.get("cl_queue_image")
