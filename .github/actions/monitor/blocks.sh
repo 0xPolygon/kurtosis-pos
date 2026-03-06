@@ -8,8 +8,8 @@ set -euo pipefail
 
 # Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/log.sh"
-source "${SCRIPT_DIR}/docker.sh"
+source "${SCRIPT_DIR}/lib/log.sh"
+source "${SCRIPT_DIR}/lib/docker.sh"
 
 # Function to monitor a single RPC
 monitor_rpc() {
