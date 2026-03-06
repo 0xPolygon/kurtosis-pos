@@ -87,7 +87,7 @@ def launch(
         heimdall_cmds = [
             " && ".join(
                 [
-                    # Copy CL validator config inside heimdall config folder.
+                    # Copy CL genesis, node and validator keys inside heimdall config folder.
                     "cp /opt/data/genesis/genesis.json /opt/data/keys/node_key.json /opt/data/keys/priv_validator_key.json {}/config/".format(
                         shared.CONFIG_FOLDER_PATH
                     ),
@@ -110,6 +110,10 @@ def launch(
         heimdall_cmds = [
             " && ".join(
                 [
+                    # Copy CL genesis inside heimdall config folder.
+                    "cp /opt/data/genesis/genesis.json {}/config/".format(
+                        shared.CONFIG_FOLDER_PATH
+                    ),
                     # Auto-generate node keys (no pre-generated validator keys for rpc/archive nodes).
                     "heimdalld init --home /tmp/init-data",
                     "cp /tmp/init-data/config/node_key.json /tmp/init-data/config/priv_validator_key.json {}/config/".format(
@@ -117,10 +121,6 @@ def launch(
                     ),
                     "mkdir -p {}/data".format(shared.CONFIG_FOLDER_PATH),
                     "cp /tmp/init-data/data/priv_validator_state.json {}/data/priv_validator_state.json".format(
-                        shared.CONFIG_FOLDER_PATH
-                    ),
-                    # Copy CL genesis inside heimdall config folder.
-                    "cp /opt/data/genesis/genesis.json {}/config/".format(
                         shared.CONFIG_FOLDER_PATH
                     ),
                     # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
