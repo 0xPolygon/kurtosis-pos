@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script monitors block progress in a Polygon PoS devnet.
-# Usage: ./blocks.sh <enclave_name> [first|all]
-# Example: ./blocks.sh pos first  # Check only the first RPC
-# Example: ./blocks.sh pos all    # Check all RPCs (default)
+# This script monitors Bor block progress in a Polygon PoS devnet.
+# Usage: ./blocks-bor.sh <enclave_name> [first|all]
+# Example: ./blocks-bor.sh pos first  # Check only the first RPC
+# Example: ./blocks-bor.sh pos all    # Check all RPCs (default)
 
 # Source logging library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
