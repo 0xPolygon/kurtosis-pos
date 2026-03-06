@@ -243,7 +243,6 @@ max-txs = -1
 # RPC endpoint for ethereum chain
 eth_rpc_url = "{{.l1_rpc_url}}"
 
-{{ if eq .kind "validator" }}
 # RPC endpoint for bor chain
 bor_rpc_url = "{{.el_rpc_url}}"
 
@@ -252,7 +251,6 @@ bor_grpc_flag = "false"
 
 # GRPC endpoint for bor chain
 bor_grpc_url = "localhost:3131"
-{{ end }}
 
 # RPC endpoint for cometBFT
 comet_bft_rpc_url = "http://0.0.0.0:{{.rpc_port_number}}"
