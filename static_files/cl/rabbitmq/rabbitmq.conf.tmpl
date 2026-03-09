@@ -1,0 +1,7 @@
+log.console = true
+log.console.level = {{.log_level}}
+{{if eq .log_format "json"}}
+log.console.formatter = "json"
+{{end}}
+log.file = false
+
