@@ -16,15 +16,29 @@ def run(plan, ethereum_args, preregistered_validator_keys_mnemonic, admin_addres
     if preregistered_validator_keys_mnemonic != default_l2_mnemonic:
         fail("Using a different mnemonic is not supported for now.")
 
+    # Apply log format and client-specific extra params to each participant.
+    log_format = ethereum_args.get("global_log_format")
+    participants = [
+        _apply_participant_params(p, log_format)
+        for p in ethereum_args.get("participants")
+    ]
+
+    # Build clean args without custom properties before passing to the ethereum-package.
+    clean_ethereum_args = {}
+    for k, v in ethereum_args.items():
+        if k != "global_log_format":
+            clean_ethereum_args[k] = v
+    clean_ethereum_args["participants"] = participants
+
     # Define prefunded accounts on L1.
-    l1_network_params = ethereum_args.get("network_params")
+    l1_network_params = clean_ethereum_args.get("network_params")
     prefunded_accounts = _merge_l1_prefunded_accounts(admin_address, l1_network_params)
-    ethereum_args["network_params"] = l1_network_params | {
+    clean_ethereum_args["network_params"] = l1_network_params | {
         "prefunded_accounts": json.encode(prefunded_accounts)
     }
 
     # Deploy the ethereum package.
-    l1 = import_module(ETHEREUM_PACKAGE).run(plan, ethereum_args)
+    l1 = import_module(ETHEREUM_PACKAGE).run(plan, clean_ethereum_args)
     plan.print(l1)
     if len(l1.all_participants) < 1:
         fail("The L1 package did not start any participants.")
@@ -33,6 +47,36 @@ def run(plan, ethereum_args, preregistered_validator_keys_mnemonic, admin_addres
         plan, str(l1.all_participants[0].cl_context.beacon_http_url)
     )
     return l1
+
+
+def _apply_participant_params(participant, log_format):
+    participant = dict(participant)
+    el_type = participant.get("el_type")
+    cl_type = participant.get("cl_type")
+
+    # Client-specific EL extra params.
+    el_extra_params = {
+        "geth": [
+            "--log.format={}".format(
+                "json" if log_format == constants.LOG_FORMAT.json else "terminal"
+            ),
+        ],
+    }
+    participant["el_extra_params"] = participant.get(
+        "el_extra_params", []
+    ) + el_extra_params.get(el_type)
+
+    # Client-specific CL extra params.
+    cl_extra_params = {
+        "lighthouse": (
+            ["--log-format=JSON"] if log_format == constants.LOG_FORMAT.json else []
+        )
+    }
+    participant["cl_extra_params"] = participant.get(
+        "cl_extra_params", []
+    ) + cl_extra_params.get(cl_type)
+
+    return participant
 
 
 def _merge_l1_prefunded_accounts(admin_address, l1_network_params):
