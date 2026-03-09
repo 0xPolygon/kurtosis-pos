@@ -14,17 +14,13 @@ source "${SCRIPT_DIR}/lib/docker.sh"
 monitor_el_node() {
   local container="$1"
   local target="$2"
-  local rpc_name="${container%%--*}"
-  log_info "Checking RPC: ${rpc_name}"
-
   local host_port
   host_port=$(docker port "${container}" 8545 2>/dev/null | head -1 | sed 's/0.0.0.0/127.0.0.1/')
   if [[ -z "${host_port}" ]]; then
-    log_error "No published port 8545 for container ${container}"
+    log_error "No published port 8545" "container=${container}"
     return 1
   fi
   local rpc_url="http://${host_port}"
-  log_info "Using rpc url: ${rpc_url}"
 
   local num_steps=100
   local gas_price_factor=1
@@ -32,11 +28,9 @@ monitor_el_node() {
   local finalized_block=0
 
   for step in $(seq 1 "${num_steps}"); do
-    log_info "Check ${step}/${num_steps} for ${rpc_name}"
-
     latest_block=$(cast bn --rpc-url "${rpc_url}")
     finalized_block=$(cast bn finalized --rpc-url "${rpc_url}")
-    log_info "Got block height: latest=${latest_block}, finalized=${finalized_block}"
+    log_debug "Check" "container=${container}" "step=${step}/${num_steps}" "latest=${latest_block}" "finalized=${finalized_block}"
     if [[ "${latest_block}" -ge "${target}" && "${finalized_block}" -ge "${target}" ]]; then
       break
     fi
@@ -46,7 +40,7 @@ monitor_el_node() {
     gas_price=$(cast gas-price --rpc-url "$rpc_url")
     gas_price=$(bc -l <<< "$gas_price * $gas_price_factor" | sed 's/\..*//')
 
-    log_info "Sending a test transaction"
+    log_debug "Sending a test transaction"
     set +e
     cast send \
       --legacy \
@@ -70,15 +64,13 @@ monitor_el_node() {
 
   # Check if target was reached for this RPC
   if [[ "${latest_block}" -lt "${target}" || "${finalized_block}" -lt "${target}" ]]; then
-    log_error "Target block height has not been reached for ${rpc_name}" "target=${target}"
+    log_error "Target block height not reached" "container=${container}" "target=${target}"
     return 1
   fi
 
-  log_info "Target block height reached for all block types (latest and finalized) for ${rpc_name}" "target=${target}"
+  log_info "Target block height reached" "container=${container}" "target=${target}"
   return 0
 }
-
-log_info "Monitoring Bor block progress"
 
 # Validate input parameters
 docker_network=${1:-"kt-pos"}
@@ -86,8 +78,6 @@ if [[ -z "${docker_network}" ]]; then
   log_error "Docker network name must be provided"
   exit 1
 fi
-log_info "Using docker network: ${docker_network}"
-
 # A sprint is 16 blocks, so 40 blocks should be enough to see progress.
 # This can be overridden by providing a second argument.
 target=${2:-"40"}
@@ -95,7 +85,7 @@ if [[ -z "${target}" ]]; then
   log_error "Target block height must be provided"
   exit 1
 fi
-log_info "Using target block height: ${target}"
+log_info "Monitoring Bor block progress" "network=${docker_network}" "target=${target}"
 
 # Get EL containers
 containers=$(get_el_containers "${docker_network}")
@@ -105,7 +95,12 @@ declare -a container_array=()
 while IFS= read -r container; do
   container_array+=("${container}")
 done <<< "${containers}"
-log_info "Found ${#container_array[@]} container(s)" "containers=$(IFS=,; echo "${container_array[*]}")"
+count=${#container_array[@]}
+if [[ "${count}" -eq 1 ]]; then
+  log_info "Found 1 container" "container=${container_array[0]}"
+else
+  log_info "Found ${count} containers" "containers=$(IFS=,; echo "${container_array[*]}")"
+fi
 
 # Monitor block progress for each container, in parallel
 for container in "${container_array[@]}"; do
@@ -122,9 +117,9 @@ done
 
 # Check if any EL node failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more EL nodes failed to reach target block height" "target=${target}"
+  log_error "One or more containers failed to reach target block height" "target=${target}"
   exit 1
 fi
 
-log_info "All EL nodes have reached target block height" "target=${target}"
+log_info "Devnet reached target block height"
 exit 0
