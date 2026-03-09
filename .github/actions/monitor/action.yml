@@ -1,5 +1,5 @@
 name: monitor
-description: Monitor blockchain progress (blocks, milestones, checkpoints)
+description: Monitor blockchain progress (blocks, milestones, checkpoints, spans, validators)
 
 inputs:
   docker_network:
@@ -14,6 +14,10 @@ inputs:
     description: Skip checkpoint monitoring
     required: false
     default: 'false'
+  skip_spans:
+    description: Skip span monitoring
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -22,10 +26,21 @@ runs:
       shell: bash
       run: docker ps --filter "network=${{ inputs.docker_network }}" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
 
-    - name: Monitor block progress
+    - name: Monitor Bor block progress
       working-directory: .github/actions/monitor
       shell: bash
-      run: ./blocks.sh ${{ inputs.docker_network }}
+      run: ./blocks-bor.sh ${{ inputs.enclave_name }}
+
+    - name: Monitor Heimdall block progress
+      working-directory: .github/actions/monitor
+      shell: bash
+      run: ./blocks-heimdall.sh ${{ inputs.enclave_name }}
+
+    - name: Monitor span progress
+      if: inputs.skip_spans != 'true'
+      working-directory: .github/actions/monitor
+      shell: bash
+      run: ./spans.sh ${{ inputs.enclave_name }}
 
     - name: Monitor milestone progress
       if: inputs.skip_milestones != 'true'

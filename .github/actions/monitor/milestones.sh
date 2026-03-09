@@ -36,12 +36,12 @@ for step in $(seq 1 "${num_steps}"); do
   MILESTONES_COUNT=$(curl "${api_url}/milestones/count" | jq --raw-output '.count')
   log_info "Got milestones count: ${MILESTONES_COUNT}"
   if [[ "${MILESTONES_COUNT}" -ge "${target}" ]]; then
-    log_info "Target milestones reached"
+    log_info "Target milestones reached" "target=${target}"
     exit 0
   fi
   sleep 5
 done
 
 # If the code reaches here, the target was not met within the allowed steps
-log_error "Target milestones have not been reached"
+log_error "Target milestones have not been reached" "target=${target}"
 exit 1
