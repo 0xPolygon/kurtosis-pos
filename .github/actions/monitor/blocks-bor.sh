@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script monitors block progress in a Polygon PoS devnet.
-# Usage: ./blocks.sh <enclave_name> [first|all]
-# Example: ./blocks.sh pos first  # Check only the first RPC
-# Example: ./blocks.sh pos all    # Check all RPCs (default)
+# This script monitors Bor block progress in a Polygon PoS devnet.
+# Usage: ./blocks-bor.sh <enclave_name> [first|all]
+# Example: ./blocks-bor.sh pos first  # Check only the first RPC
+# Example: ./blocks-bor.sh pos all    # Check all RPCs (default)
 
 # Source logging library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -33,7 +33,7 @@ monitor_rpc() {
 
     LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}")
     FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}")
-    log_info "Got blocks: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
+    log_info "Got block height: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
     if [[ "${LATEST_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
       break
     fi
@@ -67,15 +67,15 @@ monitor_rpc() {
 
   # Check if target was reached for this RPC
   if [[ "${LATEST_BLOCK}" -lt "${target}" || "${FINALIZED_BLOCK}" -lt "${target}" ]]; then
-    log_error "Target blocks have not been reached for ${rpc_name}"
+    log_error "Target block height has not been reached for ${rpc_name}" "target=${target}"
     return 1
   fi
 
-  log_info "Target blocks reached for all block types (latest and finalized) for ${rpc_name}"
+  log_info "Target block height reached for all block types (latest and finalized) for ${rpc_name}" "target=${target}"
   return 0
 }
 
-log_info "Monitoring block progress"
+log_info "Monitoring Bor block progress"
 
 # Validate input parameters
 enclave_name=${1:-"pos"}
@@ -132,9 +132,9 @@ done
 
 # Check if any RPC failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more RPCs failed to reach target blocks"
+  log_error "One or more RPCs failed to reach target block height" "target=${target}"
   exit 1
 fi
 
-log_info "All RPCs have reached target blocks"
+log_info "All RPCs have reached target block height" "target=${target}"
 exit 0

@@ -153,6 +153,7 @@ def sanity_check_polygon_args(plan, input_args):
 
     participants = input_args.get("participants")
     _validate_participants_count(participants)
+    _validate_participants_have_validator(participants)
     for p in participants:
         _validate_participant(p)
 
@@ -301,6 +302,16 @@ def _validate_chain_ids(cl_chain_id, el_chain_id):
                 expected_cl_chain_id, cl_chain_id
             )
         )
+
+
+def _validate_participants_have_validator(participants):
+    for p in participants:
+        if (
+            p.get("kind") == constants.PARTICIPANT_KIND.validator
+            and p.get("count", 0) > 0
+        ):
+            return
+    fail("At least one validator participant is required.")
 
 
 def _validate_participants_count(participants):
