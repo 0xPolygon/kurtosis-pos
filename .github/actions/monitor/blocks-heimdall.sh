@@ -86,7 +86,7 @@ for pid in "${pids[@]}"; do
   fi
 done
 
-# Check if any CL node failed
+# Check if any container failed
 if [[ "${failed}" -eq 1 ]]; then
   log_error "One or more containers failed to reach target block height" "target=${target}"
   exit 1

@@ -62,7 +62,7 @@ monitor_el_node() {
     sleep 5
   done
 
-  # Check if target was reached for this RPC
+  # Check if target was reached for this container
   if [[ "${latest_block}" -lt "${target}" || "${finalized_block}" -lt "${target}" ]]; then
     log_error "Target block height not reached" "container=${container}" "target=${target}"
     return 1
@@ -115,7 +115,7 @@ for pid in "${pids[@]}"; do
   fi
 done
 
-# Check if any EL node failed
+# Check if any container failed
 if [[ "${failed}" -eq 1 ]]; then
   log_error "One or more containers failed to reach target block height" "target=${target}"
   exit 1
