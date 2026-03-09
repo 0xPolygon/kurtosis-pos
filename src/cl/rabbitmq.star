@@ -12,17 +12,22 @@ MAX_CPU = 1000  # in milicores (1 core)
 MAX_MEM = 2048  # in megabytes (2 GB)
 
 
-def launch(plan, id, image):
+def launch(plan, id, image, log_format):
+    # Configure environment variables.
+    env_vars = {
+        "RABBITMQ_NODE_PORT": str(RABBITMQ_AMQP_PORT_NUMBER),
+        "RABBITMQ_DEFAULT_USER": constants.RABBITMQ_USERNAME,
+        "RABBITMQ_DEFAULT_PASS": constants.RABBITMQ_PASSWORD,
+    }
+    if log_format == constants.LOG_FORMAT.json:
+        env_vars["RABBITMQ_LOG_CONSOLE_FORMATTER"] = "json"
+
     name = "l2-cl-{}-rabbitmq".format(id)
     service = plan.add_service(
         name=name,
         config=ServiceConfig(
             image=image,
-            env_vars={
-                "RABBITMQ_NODE_PORT": str(RABBITMQ_AMQP_PORT_NUMBER),
-                "RABBITMQ_DEFAULT_USER": constants.RABBITMQ_USERNAME,
-                "RABBITMQ_DEFAULT_PASS": constants.RABBITMQ_PASSWORD,
-            },
+            env_vars=env_vars,
             files={
                 # app data
                 APP_DATA_FOLDER_PATH: Directory(persistent_key="{}-data".format(name)),
