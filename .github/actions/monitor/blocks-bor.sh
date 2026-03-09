@@ -68,7 +68,7 @@ monitor_el_node() {
     return 1
   fi
 
-  log_info "Target block height reached" "container=${container}" "target=${target}"
+  log_info "Target block height reached" "container=${container}"
   return 0
 }
 
