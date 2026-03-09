@@ -2,20 +2,19 @@
 set -euo pipefail
 
 # This script monitors block progress in a Polygon PoS devnet.
-# Usage: ./blocks-bor.sh <docker_network>
-# Example: ./blocks-bpr.sh kt-pos
+# Usage: ./blocks-bor.sh <docker_network> [target_block]
+# Example: ./blocks-bor.sh kt-pos 100
 
 # Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/log.sh"
 source "${SCRIPT_DIR}/lib/docker.sh"
 
-# Function to monitor a single RPC
-monitor_rpc() {
+# Function to monitor an EL node
+monitor_el_node() {
   local container="$1"
   local target="$2"
   local rpc_name="${container%%--*}"
-
   log_info "Checking RPC: ${rpc_name}"
 
   local host_port
@@ -29,16 +28,16 @@ monitor_rpc() {
 
   local num_steps=100
   local gas_price_factor=1
-  local LATEST_BLOCK=0
-  local FINALIZED_BLOCK=0
+  local latest_block=0
+  local finalized_block=0
 
   for step in $(seq 1 "${num_steps}"); do
     log_info "Check ${step}/${num_steps} for ${rpc_name}"
 
-    LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}")
-    FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}")
-    log_info "Got block height: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
-    if [[ "${LATEST_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
+    latest_block=$(cast bn --rpc-url "${rpc_url}")
+    finalized_block=$(cast bn finalized --rpc-url "${rpc_url}")
+    log_info "Got block height: latest=${latest_block}, finalized=${finalized_block}"
+    if [[ "${latest_block}" -ge "${target}" && "${finalized_block}" -ge "${target}" ]]; then
       break
     fi
 
@@ -70,7 +69,7 @@ monitor_rpc() {
   done
 
   # Check if target was reached for this RPC
-  if [[ "${LATEST_BLOCK}" -lt "${target}" || "${FINALIZED_BLOCK}" -lt "${target}" ]]; then
+  if [[ "${latest_block}" -lt "${target}" || "${finalized_block}" -lt "${target}" ]]; then
     log_error "Target block height has not been reached for ${rpc_name}" "target=${target}"
     return 1
   fi
@@ -89,6 +88,15 @@ if [[ -z "${docker_network}" ]]; then
 fi
 log_info "Using docker network: ${docker_network}"
 
+# A sprint is 16 blocks, so 40 blocks should be enough to see progress.
+# This can be overridden by providing a second argument.
+target=${2:-"40"}
+if [[ -z "${target}" ]]; then
+  log_error "Target block height must be provided"
+  exit 1
+fi
+log_info "Using target block height: ${target}"
+
 # Get EL containers
 containers=$(get_el_containers "${docker_network}")
 log_info "Found container(s): ${containers}"
@@ -99,12 +107,9 @@ while IFS= read -r container; do
   container_array+=("${container}")
 done <<< "${containers}"
 
-# Monitor block progress for each RPC, in parallel
-target="40" # a sprint is 16 blocks so 40 is ~2.5 sprints, which should be enough to see progress
-log_info "Using target: ${target}"
-
+# Monitor block progress for each container, in parallel
 for container in "${container_array[@]}"; do
-  monitor_rpc "${container}" "${target}" &
+  monitor_el_node "${container}" "${target}" &
   pids+=($!)
 done
 
@@ -115,11 +120,11 @@ for pid in "${pids[@]}"; do
   fi
 done
 
-# Check if any RPC failed
+# Check if any EL node failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more RPCs failed to reach target block height" "target=${target}"
+  log_error "One or more EL nodes failed to reach target block height" "target=${target}"
   exit 1
 fi
 
-log_info "All RPCs have reached target block height" "target=${target}"
+log_info "All EL nodes have reached target block height" "target=${target}"
 exit 0
