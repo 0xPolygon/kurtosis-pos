@@ -70,13 +70,13 @@ log_info "Using target block height: ${target}"
 
 # Get CL containers
 containers=$(get_cl_containers "${docker_network}")
-log_info "Found container(s): ${containers}"
 
 declare -a pids=()
 declare -a container_array=()
 while IFS= read -r container; do
   container_array+=("${container}")
 done <<< "${containers}"
+log_info "Found ${#container_array[@]} container(s)" "containers=$(IFS=,; echo "${container_array[*]}")"
 
 # Monitor block progress for each container, in parallel
 for container in "${container_array[@]}"; do
