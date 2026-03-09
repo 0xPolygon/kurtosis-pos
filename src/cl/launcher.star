@@ -22,9 +22,13 @@ def launch(
     l1_rpc_url,
     container_proc_manager_artifact,
 ):
-    rabbitmq_image = participant.get("cl_queue_image")
-    rabbitmq_log_format = participant.get("cl_log_format")
-    rabbitmq_url = rabbitmq.launch(plan, id, rabbitmq_image, rabbitmq_log_format)
+    rabbitmq_url = rabbitmq.launch(
+        plan,
+        id,
+        participant.get("cl_queue_image"),
+        participant.get("cl_log_level"),
+        participant.get("cl_log_format"),
+    )
 
     launch_method = _get_launcher(plan, participant)
     cl_node_name = generate_name(participant, id)

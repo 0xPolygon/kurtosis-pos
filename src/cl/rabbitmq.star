@@ -12,12 +12,13 @@ MAX_CPU = 1000  # in milicores (1 core)
 MAX_MEM = 2048  # in megabytes (2 GB)
 
 
-def launch(plan, id, image, log_format):
+def launch(plan, id, image, log_level, log_format):
     # Configure environment variables.
     env_vars = {
         "RABBITMQ_NODE_PORT": str(RABBITMQ_AMQP_PORT_NUMBER),
         "RABBITMQ_DEFAULT_USER": constants.RABBITMQ_USERNAME,
         "RABBITMQ_DEFAULT_PASS": constants.RABBITMQ_PASSWORD,
+        "RABBITMQ_LOG_CONSOLE_LEVEL": _log_level(log_level),
     }
     if log_format == constants.LOG_FORMAT.json:
         env_vars["RABBITMQ_LOG_CONSOLE_FORMATTER"] = "json"
@@ -48,3 +49,18 @@ def launch(plan, id, image, log_format):
         name,
         RABBITMQ_AMQP_PORT_NUMBER,
     )
+
+
+def _log_level(log_level):
+    # RabbitMQ log levels: debug, info, warning, error, critical.
+    # trace and warn are mapped to the closest RabbitMQ equivalent.
+    map = {
+        constants.LOG_LEVEL.trace: "debug",
+        constants.LOG_LEVEL.debug: "debug",
+        constants.LOG_LEVEL.info: "info",
+        constants.LOG_LEVEL.warn: "warning",
+        constants.LOG_LEVEL.error: "error",
+    }
+    if log_level not in map:
+        fail("Invalid log level: " + log_level)
+    return map[log_level]
