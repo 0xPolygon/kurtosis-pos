@@ -32,7 +32,7 @@ monitor_cl_node() {
   for step in $(seq 1 "${num_steps}"); do
     log_info "Check ${step}/${num_steps} for ${api_name}"
 
-    latest_block=$(curl -s "${api_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')
+    latest_block=$(curl -s "${api_url}/status" | jq --raw-output '.latest_block_height')
     log_info "Got block height: ${latest_block}"
 
     if [[ "${latest_block}" -ge "${target}" ]]; then
