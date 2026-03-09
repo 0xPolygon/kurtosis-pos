@@ -26,7 +26,7 @@ monitor_cl_node() {
   local latest_block=0
 
   for step in $(seq 1 "${num_steps}"); do
-    latest_block=$(curl -s "${api_url}/status" | jq --raw-output '.latest_block_height')
+    latest_block=$(curl -sS "${api_url}/status" | jq --raw-output '.latest_block_height')
     log_debug "Check" "container=${container}" "step=${step}/${num_steps}" "latest=${latest_block}"
 
     if [[ "${latest_block}" -ge "${target}" ]]; then
