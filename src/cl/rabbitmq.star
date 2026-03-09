@@ -28,7 +28,7 @@ def launch(plan, id, image, log_level, log_format):
                 ),
                 data={
                     "log_level": _log_level(log_level),
-                    "log_format": log_format,
+                    "log_format": _log_formatter(log_format),
                 },
             ),
         },
@@ -81,3 +81,14 @@ def _log_level(log_level):
     if log_level not in map:
         fail("Invalid log level: " + log_level)
     return map[log_level]
+
+
+def _log_formatter(log_format):
+    # RabbitMQ log formats: plaintext, json
+    map = {
+        constants.LOG_FORMAT.text: "plaintext",
+        constants.LOG_FORMAT.json: "json",
+    }
+    if log_format not in map:
+        fail("Invalid log format: " + log_format)
+    return map[log_format]
