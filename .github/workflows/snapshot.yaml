@@ -45,29 +45,13 @@ jobs:
       - name: Restore devnet from snapshot
         run: ./scripts/snapshot/restore.sh
 
-      - name: Verify restored devnet produces blocks
-        run: |
-          target_block=$((256+100)) # 100 blocks after the snapshot block
-          num_steps=50
-          for step in $(seq 1 $num_steps); do
-            echo "Check $step/$num_steps"
-            all_ready=true
-            while IFS= read -r container; do
-              port=$(docker port "$container" 8545 | cut -d: -f2)
-              block=$(cast bn --rpc-url localhost:$port)
-              if [[ "$block" -lt "$target_block" ]]; then
-                echo "- $container: $block/$target_block - NOT READY"
-                all_ready=false
-              else
-                echo "- $container: $block/$target_block - OK"
-              fi
-            done < <(docker ps --filter "network=${{ env.ENCLAVE_NAME }}" --format "{{.Names}}" | grep l2-el | sort)
-            if $all_ready; then
-              echo "All L2 RPCs reached block $target_block"
-              exit 0
-            fi
-            echo "Not all L2 RPCs reached block $target_block, retrying in 10s..."
-            sleep 10
-          done
-          echo "Not all L2 RPCs reached block $target_block after $num_steps steps"
-          exit 1
+      - name: List containers
+        run: docker ps --filter "network=kt-${{ env.ENCLAVE_NAME }}" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+
+      - name: Monitor Bor block progress
+        working-directory: .github/actions/monitor
+        run: ./blocks-bor.sh kt-${{ env.ENCLAVE_NAME }} 356 # 100 blocks after the snapshot block
+
+      - name: Monitor Heimdall block progress
+        working-directory: .github/actions/monitor
+        run: ./blocks-heimdall.sh kt-${{ env.ENCLAVE_NAME }} 100
