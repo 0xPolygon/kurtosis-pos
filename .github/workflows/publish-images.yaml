@@ -80,7 +80,7 @@ jobs:
       # This ensures reproducible builds tied to a specific contracts version.
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.POS_CONTRACTS_IMAGE_NAME }}
           tags: |
@@ -135,7 +135,7 @@ jobs:
       # This ensures reproducible builds tied to a specific contracts version.
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.EL_GENESIS_BUILDER_IMAGE_NAME }}
           tags: |
@@ -190,7 +190,7 @@ jobs:
       # This ensures reproducible builds tied to a specific Heimdall version.
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.VALIDATOR_CONFIG_IMAGE_NAME }}
           tags: |
