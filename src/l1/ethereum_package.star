@@ -53,6 +53,7 @@ def _apply_participant_params(participant, log_format):
     participant = dict(participant)
     el_type = participant.get("el_type")
     cl_type = participant.get("cl_type")
+    vc_type = participant.get("vc_type")
 
     # Client-specific EL extra params.
     el_extra_params = {
@@ -75,6 +76,16 @@ def _apply_participant_params(participant, log_format):
     participant["cl_extra_params"] = participant.get(
         "cl_extra_params", []
     ) + cl_extra_params.get(cl_type)
+
+    # Client-specific VC extra params.
+    vc_extra_params = {
+        "lighthouse": (
+            ["--log-format=JSON"] if log_format == constants.LOG_FORMAT.json else []
+        )
+    }
+    participant["vc_extra_params"] = participant.get(
+        "vc_extra_params", []
+    ) + vc_extra_params.get(vc_type)
 
     return participant
 
