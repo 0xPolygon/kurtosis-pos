@@ -27,8 +27,13 @@ def launch(
     rabbitmq_url = ""
     is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
     if is_validator:
-        rabbitmq_image = participant.get("cl_queue_image")
-        rabbitmq_url = rabbitmq.launch(plan, id, rabbitmq_image)
+        rabbitmq_url = rabbitmq.launch(
+            plan,
+            id,
+            participant.get("cl_queue_image"),
+            participant.get("cl_log_level"),
+            participant.get("cl_log_format"),
+        )
 
     launch_method = _get_launcher(plan, participant)
     cl_node_name = generate_name(participant, id)

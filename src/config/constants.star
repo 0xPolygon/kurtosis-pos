@@ -50,13 +50,13 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.0",
-    "l1_cl_image": "sigp/lighthouse:v8.1.1",
+    "l1_el_image": "ethereum/client-go:v1.17.1",
+    "l1_cl_image": "sigp/lighthouse:v8.1.2",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.6.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.6.0",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.3.7",
+    "l2_el_bor_image": "0xpolygon/bor:2.6.2",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.4.0",
     "l2_cl_queue_image": "rabbitmq:4.2.4",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:d96d592",
@@ -66,9 +66,9 @@ IMAGES = {
     # additional services
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
-    "prometheus_image": "prom/prometheus:v3.9.1",
-    "grafana_image": "grafana/grafana:12.3.3",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v5.1.0",
+    "prometheus_image": "prom/prometheus:v3.10.0",
+    "grafana_image": "grafana/grafana:12.3.4",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v5.1.2",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 

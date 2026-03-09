@@ -25,7 +25,6 @@ polygon_pos_package:
       el_bor_sync_with_witness: false
       cl_type: heimdall-v2
       el_type: erigon
-      el_image: 0xpolygon/erigon:v3.4.0
 
     # Bor archive node
     - kind: archive
