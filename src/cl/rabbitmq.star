@@ -48,9 +48,7 @@ def launch(plan, id, image, log_level, log_format):
             },
             files={
                 APP_DATA_FOLDER_PATH: Directory(persistent_key="{}-data".format(name)),
-                APP_CONFIG_FOLDER_PATH: Directory(
-                    persistent_key="{}-config".format(name)
-                ),
+                APP_CONFIG_FOLDER_PATH: config_artifact,
             },
             ports={
                 RABBITMQ_AMQP_PORT_ID: PortSpec(
