@@ -1,0 +1,56 @@
+polygon_pos_package:
+  participants:
+    # Bor validator nodes — mixed versions to test KZG precompile compatibility.
+    # Validators 1-2: pre-LisovoPro (has KZG precompile at 0x0a)
+    # Validators 3-4: post-LisovoPro (KZG precompile removed)
+    # This tests whether blocks produced by old-version block producers
+    # containing KZG precompile calls cause execution failures on newer nodes.
+    - kind: validator
+      count: 2
+      el_bor_produce_witness: true
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.5.9
+
+    - kind: validator
+      count: 2
+      el_bor_produce_witness: true
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3-beta
+
+    # RPC nodes — mixed versions to test client-side compatibility.
+    # Stateless witness sync on new version consuming blocks from old producers.
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: true
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3-beta
+
+    # Stateful RPC on old version syncing blocks from new producers.
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: false
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.5.9
+
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: false
+      cl_type: heimdall-v2
+      el_type: erigon
+      el_image: 0xpolygon/erigon:v3.4.0
+
+    # Bor archive node on new version — must replay all blocks including
+    # those produced by old-version validators.
+    - kind: archive
+      count: 1
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3-beta
+  additional_services:
+    - bridge_spammer
+    - observability
+    - tx_spammer
