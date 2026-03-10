@@ -10,8 +10,8 @@ This guide will show you how to spin up PoS devnets under 20 seconds using snaps
 
 We provide two snapshot types:
 
-- **small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities.
-- **large**: the environment contains an L1 chain and an L2 chain with 7 heimdall-v2/bor validators, 3 rpc nodes (one stateless bor node, one stateful bor node, one stateful erigon node) and one archive bor node. Useful for testing in a more realistic environment.
+- **pos-devnet-small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities.
+- **pos-devnet-large**: the environment contains an L1 chain and an L2 chain with 7 heimdall-v2/bor validators, 3 rpc nodes (one stateless bor node, one stateful bor node, one stateful erigon node) and one archive bor node. Useful for testing in a more realistic environment.
 
 Environments are snapshotted around block 100 on the L2 chain, which should be enough for most testing purposes.
 
@@ -77,10 +77,7 @@ Note that bor was not correctly flushing data to disk during shutdown in the pas
 :::
 
 ```bash
-kurtosis run \
-    --enclave pos \
-    --args-file .github/configs/large.yml.norun \
-    github.com/0xPolygon/kurtosis-pos@v1.2.13
+kurtosis run --enclave=pos --args-file=.github/configs/large.yml.norun .
 ```
 
 ### Snapshot the enclave

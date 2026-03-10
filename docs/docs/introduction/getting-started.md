@@ -13,7 +13,7 @@ Make sure you have installed the [required tools](./installation.md)!
 1. Deploy a local Polygon PoS devnet.
 
 ```bash
-kurtosis run --enclave pos github.com/0xPolygon/kurtosis-pos
+kurtosis run --enclave=pos github.com/0xPolygon/kurtosis-pos
 ```
 
 where `pos` is the name of the enclave, you can choose any name you like.

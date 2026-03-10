@@ -2,100 +2,83 @@
 set -euo pipefail
 
 # This script monitors Heimdall block progress in a Polygon PoS devnet.
-# Usage: ./blocks-heimdall.sh <enclave_name> [first|all]
-# Example: ./blocks-heimdall.sh pos first  # Check only the first CL node
-# Example: ./blocks-heimdall.sh pos all    # Check all CL nodes (default)
+# Usage: ./blocks-heimdall.sh <enclave_name> [target_block]
+# Example: ./blocks-heimdall.sh pos 100
 
-# Source logging library
+# Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/log.sh"
+source "${SCRIPT_DIR}/lib/log.sh"
+source "${SCRIPT_DIR}/lib/docker.sh"
 
-# Function to monitor a single CL node
-monitor_cl() {
-  local cl_entry="$1"
-  local enclave_name="$2"
-  local target="$3"
-  local cl_name="${cl_entry%%--*}"
-
-  log_info "Checking CL node: ${cl_name}"
-
-  local rpc_url
-  rpc_url=$(kurtosis port print "${enclave_name}" "${cl_name}" rpc)
-  log_info "Using rpc url: ${rpc_url}"
+# Function to monitor a CL node
+monitor_cl_node() {
+  local container="$1"
+  local target="$2"
+  local host_port
+  host_port=$(docker port "${container}" 1317 2>/dev/null | head -1 | sed 's/0.0.0.0/127.0.0.1/')
+  if [[ -z "${host_port}" ]]; then
+    log_error "No published port 1317" "container=${container}"
+    return 1
+  fi
+  local api_url="http://${host_port}"
 
   local num_steps=100
-  local LATEST_BLOCK=0
+  local latest_block=0
 
   for step in $(seq 1 "${num_steps}"); do
-    log_info "Check ${step}/${num_steps} for ${cl_name}"
+    latest_block=$(curl -sS "${api_url}/status" | jq --raw-output '.latest_block_height')
+    log_debug "Check" "container=${container}" "step=${step}/${num_steps}" "latest=${latest_block}"
 
-    LATEST_BLOCK=$(curl -s "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')
-    log_info "Got block height: ${LATEST_BLOCK}"
-
-    if [[ "${LATEST_BLOCK}" -ge "${target}" ]]; then
+    if [[ "${latest_block}" -ge "${target}" ]]; then
       break
     fi
 
     sleep 5
   done
 
-  if [[ "${LATEST_BLOCK}" -lt "${target}" ]]; then
-    log_error "Target block height not reached for ${cl_name}" "target=${target}"
+  if [[ "${latest_block}" -lt "${target}" ]]; then
+    log_error "Target block height not reached" "container=${container}" "target=${target}"
     return 1
   fi
 
-  log_info "Target block height reached for ${cl_name}" "target=${target}"
+  log_info "Target block height reached" "container=${container}"
   return 0
 }
 
-log_info "Monitoring Heimdall block progress"
-
 # Validate input parameters
-enclave_name=${1:-"pos"}
-if [[ -z "${enclave_name}" ]]; then
-  log_error "Enclave name must be provided"
+docker_network=${1:-"kt-pos"}
+if [[ -z "${docker_network}" ]]; then
+  log_error "Docker network name must be provided"
   exit 1
 fi
-log_info "Using enclave name: ${enclave_name}"
-
-check_mode=${2:-"all"}
-if [[ "${check_mode}" != "first" && "${check_mode}" != "all" ]]; then
-  log_error "Check mode must be 'first' or 'all'"
+target=${2:-"100"}
+if [[ -z "${target}" ]]; then
+  log_error "Target block height must be provided"
   exit 1
 fi
-log_info "Using check mode: ${check_mode}"
+log_info "Monitoring Heimdall block progress" "network=${docker_network}" "target=${target}"
 
-# Get CL node names (exclude rabbitmq services)
-if [[ "${check_mode}" == "first" ]]; then
-  cl_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-cl/ && !/rabbitmq/ && /RUNNING/ {print $2 "--" $1}' | head -n 1)
-else
-  cl_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-cl/ && !/rabbitmq/ && /RUNNING/ {print $2 "--" $1}')
-fi
-if [[ -z "${cl_names}" ]]; then
-  log_error "No running l2-cl services found in enclave ${enclave_name}"
-  exit 1
-fi
-log_info "Found CL node(s): ${cl_names}"
+# Get CL containers
+containers=$(get_cl_containers "${docker_network}")
 
-target="40"
-log_info "Using target: ${target}"
-
-# Monitor block progress for each CL node in parallel
 declare -a pids=()
-declare -a cl_array=()
+declare -a container_array=()
+while IFS= read -r container; do
+  container_array+=("${container}")
+done <<< "${containers}"
+count=${#container_array[@]}
+if [[ "${count}" -eq 1 ]]; then
+  log_info "Found 1 container" "container=${container_array[0]}"
+else
+  log_info "Found ${count} containers" "containers=$(IFS=,; echo "${container_array[*]}")"
+fi
 
-# Convert cl_names to array
-while IFS= read -r cl_entry; do
-  cl_array+=("${cl_entry}")
-done <<< "${cl_names}"
-
-# Launch monitoring jobs in parallel
-for cl_entry in "${cl_array[@]}"; do
-  monitor_cl "${cl_entry}" "${enclave_name}" "${target}" &
+# Monitor block progress for each container, in parallel
+for container in "${container_array[@]}"; do
+  monitor_cl_node "${container}" "${target}" &
   pids+=($!)
 done
 
-# Wait for all background jobs and collect exit codes
 failed=0
 for pid in "${pids[@]}"; do
   if ! wait "${pid}"; then
@@ -103,11 +86,11 @@ for pid in "${pids[@]}"; do
   fi
 done
 
-# Check if any CL node failed
+# Check if any container failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more CL nodes failed to reach target block height" "target=${target}"
+  log_error "One or more containers failed to reach target block height" "target=${target}"
   exit 1
 fi
 
-log_info "All CL nodes have reached target block height" "target=${target}"
+log_info "Devnet reached target block height"
 exit 0
