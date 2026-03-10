@@ -115,4 +115,5 @@ EL_HARD_FORK_BLOCKS = {
     "dandeli": 256,
     "lisovo": 256,
     "lisovoPro": 256,
+    "giugliano": 256,
 }
