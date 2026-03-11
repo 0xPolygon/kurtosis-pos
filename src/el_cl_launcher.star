@@ -48,7 +48,6 @@ def launch(
     participant_index = 0
     validator_index = 0
     all_participants = []
-    all_cl_contexts = []
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
@@ -58,48 +57,23 @@ def launch(
                 )
             )
 
-            # If the participant is a validator, launch the CL node and it's dedicated AMQP server.
-            cl_context = {}
+            # Launch the CL node.
+            # Validators use pre-generated keys and run the bridge; rpc/archive nodes use
+            # auto-generated keys and run as full nodes without the bridge.
+            cl_keys_artifact = None
             if is_validator:
                 cl_keys_artifact = cl_validator_config_artifacts.keys[validator_index]
-                cl_context = cl_launcher.launch(
-                    plan,
-                    participant,
-                    participant_index + 1,
-                    network_params,
-                    cl_genesis_artifact,
-                    cl_keys_artifact,
-                    cl_node_ids,
-                    l1_rpc_url,
-                    container_proc_manager_artifact,
-                )
-                all_cl_contexts.append(cl_context)
-
-            # Retrieve the correct CL api url.
-            # Validators use their own CL node. Non-validators get
-            # comma-separated heimdall URLs for failover (bor), or a
-            # single URL via round-robin (erigon, which doesn't support
-            # multiple heimdall URLs).
-            cl_api_url = None
-            cl_ws_rpc_url = None
-            if cl_context:
-                cl_api_url = cl_context.api_url
-                cl_ws_rpc_url = cl_context.ws_rpc_url
-            elif len(all_cl_contexts) > 0:
-                el_type = participant.get("el_type")
-                if el_type == constants.EL_TYPE.bor:
-                    cl_api_url = ",".join([ctx.api_url for ctx in all_cl_contexts])
-                    cl_ws_rpc_url = ",".join(
-                        [ctx.ws_rpc_url for ctx in all_cl_contexts]
-                    )
-                else:
-                    assigned_cl_context = all_cl_contexts[
-                        participant_index % len(all_cl_contexts)
-                    ]
-                    cl_api_url = assigned_cl_context.api_url
-                    cl_ws_rpc_url = assigned_cl_context.ws_rpc_url
-            else:
-                fail("No CL node deployed yet...")
+            cl_context = cl_launcher.launch(
+                plan,
+                participant,
+                participant_index + 1,
+                network_params,
+                cl_genesis_artifact,
+                cl_keys_artifact,
+                cl_node_ids,
+                l1_rpc_url,
+                container_proc_manager_artifact,
+            )
 
             # Launch the EL node.
             el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
@@ -110,8 +84,8 @@ def launch(
                 participant_index + 1,
                 network_params,
                 el_genesis_artifact,
-                cl_api_url,
-                cl_ws_rpc_url,
+                cl_context.api_url,
+                cl_context.ws_rpc_url,
                 el_account,
                 network_data.el_static_nodes,
                 container_proc_manager_artifact,
@@ -131,7 +105,7 @@ def launch(
                     kind=participant.get("kind"),
                     cl_type=participant.get("cl_type"),
                     el_type=participant.get("el_type"),
-                    cl_context=effective_cl_context,
+                    cl_context=cl_context,
                     el_context=el_context,
                 )
             )
@@ -154,7 +128,11 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
-    wait.wait_for_l2_startup(plan, all_cl_contexts[0].api_url)
+    validators = [
+        p for p in all_participants if p.kind == constants.PARTICIPANT_KIND.validator
+    ]
+    first_validator = validators[0]
+    wait.wait_for_l2_startup(plan, first_validator.cl_context.api_url)
 
     # Return the L2 context.
     return struct(
