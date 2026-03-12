@@ -1,0 +1,72 @@
+# Archive node sync test.
+#
+# Adds an archive node to an already running devnet.
+# The archive node syncs from genesis against the existing validators.
+#
+# Prerequisites:
+#   1. A running devnet (e.g. `kurtosis run --enclave pos --args-file .github/configs/large-v263.yml .`)
+#   2. Export genesis and contract artifacts:
+#
+#        mkdir -p .github/configs/archive-sync
+#        kurtosis files inspect pos l2-cl-genesis genesis.json | jq > .github/configs/archive-sync/l2-cl-genesis.json
+#        kurtosis files inspect pos l2-el-genesis genesis.json | jq > .github/configs/archive-sync/l2-el-genesis.json
+#        kurtosis files inspect pos matic-contract-addresses contractAddresses.json | jq > .github/configs/archive-sync/matic-contract-addresses.json
+#
+# Usage:
+#   kurtosis run --enclave pos --args-file .github/configs/archive-sync.yml .
+#
+# IMPORTANT: existing_participants must list ALL participants from the original
+# deployment in the same order. This ensures the new archive node gets a unique
+# participant index and P2P identity (prefunded account). If existing_participants
+# is incomplete, the new node may collide with an existing node's P2P key.
+
+polygon_pos_package:
+  participants:
+    - kind: archive
+      count: 1
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+
+
+dev:
+  should_deploy_l1: false
+  l1_rpc_url: http://el-1-geth-lighthouse:8545
+
+  should_deploy_matic_contracts: false
+  l2_cl_genesis_filepath: .github/configs/archive-sync/l2-cl-genesis.json
+  l2_el_genesis_filepath: .github/configs/archive-sync/l2-el-genesis.json
+  matic_contract_addresses_filepath: .github/configs/archive-sync/matic-contract-addresses.json
+
+  # IMPORTANT: List ALL participants from the original deployment so the new
+  # archive node gets the correct participant index (13) and a unique P2P key.
+  existing_participants:
+    - kind: validator
+      count: 8
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: true
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: false
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: false
+      cl_type: heimdall-v2
+      el_type: erigon
+      el_image: 0xpolygon/erigon:v3.4.0
+    - kind: archive
+      count: 1
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+

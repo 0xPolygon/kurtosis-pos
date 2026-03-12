@@ -1,0 +1,63 @@
+polygon_pos_package:
+  participants:
+    # Bor validator nodes — 8 validators with mixed versions simulating
+    # production environment. All running UNFIXED bor versions that contain
+    # the WIT protocol peer lock bug (bor#2120). The chaos test
+    # (bor-p2p-block-producer-delay) should trigger span rotation here.
+
+    # Validators 1-3: latest stable release
+    - kind: validator
+      count: 3
+      el_bor_produce_witness: true
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+
+    # Validators 4-5: previous stable release
+    - kind: validator
+      count: 2
+      el_bor_produce_witness: true
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.2
+
+    # Validators 6-8: older stable release
+    - kind: validator
+      count: 3
+      el_bor_produce_witness: true
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.0
+
+    # RPC nodes — mixed versions matching production.
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: true
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: false
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.0
+
+    - kind: rpc
+      count: 1
+      el_bor_sync_with_witness: false
+      cl_type: heimdall-v2
+      el_type: erigon
+      el_image: 0xpolygon/erigon:v3.4.0
+
+    # Bor archive node
+    - kind: archive
+      count: 1
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+  additional_services:
+    - bridge_spammer
+    - observability
+    - tx_spammer

@@ -124,6 +124,7 @@ DEV_PARAMS = [
     "l2_el_genesis_filepath",
     "l2_cl_genesis_filepath",
     "matic_contract_addresses_filepath",
+    "existing_participants",  # list, describes already-running participants for correct indexing and peer discovery
 ]
 
 
@@ -153,7 +154,6 @@ def sanity_check_polygon_args(plan, input_args):
 
     participants = input_args.get("participants")
     _validate_participants_count(participants)
-    _validate_participants_have_validator(participants)
     for p in participants:
         _validate_participant(p)
 

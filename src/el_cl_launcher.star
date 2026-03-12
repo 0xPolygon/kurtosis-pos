@@ -20,20 +20,54 @@ def launch(
     el_genesis_artifact,
     cl_genesis_artifact,
     l1_rpc_url,
+    participant_start_index=0,
 ):
     network_params = polygon_pos_args.get("network_params")
 
-    # Prepare network data and generate validator configs.
-    network_data = _prepare_network_data(participants)
-    cl_validator_config_artifacts = _generate_cl_validator_config(
-        plan,
-        network_data.cl_validator_configs_str,
-        network_data.cl_validator_keystores,
-        polygon_pos_args,
+    # Prepare network data for ALL participants (existing + new) so that
+    # static nodes and persistent peers include the full network topology.
+    network_data = _prepare_network_data(participants, participant_start_index)
+
+    # For existing EL nodes, replace the generated enode URLs with the actual
+    # ones from the running services. The generated enode URLs use prefunded
+    # account public keys which should match, but querying the actual enodes
+    # ensures correctness (similar to _read_existing_cl_peer_ids for Heimdall).
+    existing_el_enodes = _read_existing_el_enodes(
+        plan, participants, participant_start_index
     )
-    cl_node_ids = _read_cl_persistent_peers(
-        plan, cl_validator_config_artifacts.persistent_peers
+    for i, enode in enumerate(existing_el_enodes):
+        network_data.el_static_nodes[i] = enode
+
+    # Generate validator keys and peer IDs.
+    # For new deployments, run the config generator to create keys.
+    # For existing validators (before participant_start_index), query their
+    # actual node IDs from the running services since the config generator
+    # is not deterministic for node keys.
+    cl_validator_config_artifacts = None
+    cl_node_ids = ""
+
+    # Collect peer IDs from existing (already running) validators.
+    existing_peer_ids = _read_existing_cl_peer_ids(
+        plan, participants, participant_start_index
     )
+
+    # Generate keys for new validators (if any).
+    new_validator_configs_str = network_data.new_cl_validator_configs_str
+    if new_validator_configs_str:
+        cl_validator_config_artifacts = _generate_cl_validator_config(
+            plan,
+            new_validator_configs_str,
+            network_data.new_cl_validator_keystores,
+            polygon_pos_args,
+        )
+        new_peer_ids = _read_cl_persistent_peers(
+            plan, cl_validator_config_artifacts.persistent_peers
+        )
+        cl_node_ids = ",".join(
+            [p for p in [existing_peer_ids, new_peer_ids] if p]
+        )
+    else:
+        cl_node_ids = existing_peer_ids
 
     # Generate file artifact for the container process manager.
     # This script is used to stop heimdall client processes running inside the container without
@@ -44,69 +78,72 @@ def launch(
         src=CONTAINER_PROC_MANAGER_FILE_PATH,
     )
 
-    # Start each participant.
+    # Start each participant, skipping those before participant_start_index.
     participant_index = 0
     validator_index = 0
     all_participants = []
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
-            plan.print(
-                "Launching participant {} with config: {}".format(
-                    participant_index + 1, str(participant)
+            if participant_index >= participant_start_index:
+                plan.print(
+                    "Launching participant {} with config: {}".format(
+                        participant_index + 1, str(participant)
+                    )
                 )
-            )
 
-            # Launch the CL node.
-            # Validators use pre-generated keys and run the bridge; rpc/archive nodes use
-            # auto-generated keys and run as full nodes without the bridge.
-            cl_keys_artifact = None
-            if is_validator:
-                cl_keys_artifact = cl_validator_config_artifacts.keys[validator_index]
-            cl_context = cl_launcher.launch(
-                plan,
-                participant,
-                participant_index + 1,
-                network_params,
-                cl_genesis_artifact,
-                cl_keys_artifact,
-                cl_node_ids,
-                l1_rpc_url,
-                container_proc_manager_artifact,
-            )
-
-            # Launch the EL node.
-            el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
-            ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
-            el_context = el_launcher.launch(
-                plan,
-                participant,
-                participant_index + 1,
-                network_params,
-                el_genesis_artifact,
-                cl_context.api_url,
-                cl_context.ws_rpc_url,
-                el_account,
-                network_data.el_static_nodes,
-                container_proc_manager_artifact,
-                ethstats_server_params,
-            )
-
-            # Add the node to the all_participants array.
-            all_participants.append(
-                participant_module.new_participant(
-                    kind=participant.get("kind"),
-                    cl_type=participant.get("cl_type"),
-                    el_type=participant.get("el_type"),
-                    cl_context=cl_context,
-                    el_context=el_context,
+                # Launch the CL node.
+                # Validators use pre-generated keys and run the bridge; rpc/archive nodes use
+                # auto-generated keys and run as full nodes without the bridge.
+                cl_keys_artifact = None
+                if is_validator and cl_validator_config_artifacts:
+                    cl_keys_artifact = cl_validator_config_artifacts.keys[validator_index]
+                cl_context = cl_launcher.launch(
+                    plan,
+                    participant,
+                    participant_index + 1,
+                    network_params,
+                    cl_genesis_artifact,
+                    cl_keys_artifact,
+                    cl_node_ids,
+                    l1_rpc_url,
+                    container_proc_manager_artifact,
                 )
-            )
 
-            # Increment the indexes.
-            participant_index += 1
-            if is_validator:
+                # Launch the EL node.
+                el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
+                ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
+                el_context = el_launcher.launch(
+                    plan,
+                    participant,
+                    participant_index + 1,
+                    network_params,
+                    el_genesis_artifact,
+                    cl_context.api_url,
+                    cl_context.ws_rpc_url,
+                    el_account,
+                    network_data.el_static_nodes,
+                    container_proc_manager_artifact,
+                    ethstats_server_params,
+                )
+
+                # Add the node to the all_participants array.
+                all_participants.append(
+                    participant_module.new_participant(
+                        kind=participant.get("kind"),
+                        cl_type=participant.get("cl_type"),
+                        el_type=participant.get("el_type"),
+                        cl_context=cl_context,
+                        el_context=el_context,
+                    )
+                )
+
+            # Always increment participant_index to track position across the full list.
+            # Only increment validator_index for deployed validators (it indexes
+            # into the newly generated key artifacts, not the full validator list).
+            if participant_index >= participant_start_index and is_validator:
                 validator_index += 1
+            participant_index += 1
 
     # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:
@@ -121,11 +158,13 @@ def launch(
 
     # Wait for the devnet to reach a certain state.
     # The first producer should have committed a span.
+    # Skip this step when no validators are deployed (e.g. adding nodes to a running network).
     validators = [
         p for p in all_participants if p.kind == constants.PARTICIPANT_KIND.validator
     ]
-    first_validator = validators[0]
-    wait.wait_for_l2_startup(plan, first_validator.cl_context.api_url)
+    if len(validators) > 0:
+        first_validator = validators[0]
+        wait.wait_for_l2_startup(plan, first_validator.cl_context.api_url)
 
     # Return the L2 context.
     return struct(
@@ -134,24 +173,22 @@ def launch(
     )
 
 
-def _prepare_network_data(participants):
-    # An array of strings containing validator configurations.
-    # Each string should follow the format: "<private_key>,<p2p_url>".
-    cl_validator_configs = []
-    # An array of keystores for CL validators.
-    cl_validator_keystores = []
-    # An array of EL enode URLs.
+def _prepare_network_data(participants, participant_start_index=0):
+    # An array of EL enode URLs for the full network.
     el_static_nodes = []
+    # Validator configs and keystores for NEW validators only (to be generated).
+    new_cl_validator_configs = []
+    new_cl_validator_keystores = []
 
     # Iterate through all participants in the network and generate necessary configurations.
     participant_index = 0
-    validator_index = 0
+    new_validator_index = 0
     for _, p in enumerate(participants):
         for _ in range(p.get("count")):
             el_node_name = _generate_el_node_name(p, participant_index + 1)
             account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
 
-            # Generate the EL enode url.
+            # Generate the EL enode url for ALL participants.
             enode_url = _generate_enode_url(
                 p,
                 account.eth_tendermint.public_key.removeprefix("0x"),
@@ -159,9 +196,10 @@ def _prepare_network_data(participants):
             )
             el_static_nodes.append(enode_url)
 
-            # Generate validator configurations.
+            # Generate validator configurations only for NEW validators.
             is_validator = p.get("kind") == constants.PARTICIPANT_KIND.validator
-            if is_validator:
+            is_new = participant_index >= participant_start_index
+            if is_validator and is_new:
                 cl_node_name = _generate_cl_node_name(p, participant_index + 1)
 
                 # Generate the CL validator config.
@@ -173,29 +211,104 @@ def _prepare_network_data(participants):
                     cl_node_name,
                     cl_shared.NODE_LISTEN_PORT_NUMBER,
                 )
-                cl_validator_configs.append(cl_validator_config)
+                new_cl_validator_configs.append(cl_validator_config)
 
                 # Generate the validator CL keystores.
-                cl_validator_keystores.append(
+                new_cl_validator_keystores.append(
                     StoreSpec(
                         src="{}/{}/config/".format(
-                            constants.CL_CLIENT_CONFIG_PATH, validator_index + 1
+                            constants.CL_CLIENT_CONFIG_PATH, new_validator_index + 1
                         ),
                         name="{}-keys".format(cl_node_name),
                     )
                 )
 
-                # Increment the validator index.
-                validator_index += 1
+                # Increment the new validator index.
+                new_validator_index += 1
 
             # Increment the participant index.
             participant_index += 1
 
     return struct(
-        cl_validator_configs_str=";".join(cl_validator_configs),
-        cl_validator_keystores=cl_validator_keystores,
+        new_cl_validator_configs_str=";".join(new_cl_validator_configs),
+        new_cl_validator_keystores=new_cl_validator_keystores,
         el_static_nodes=el_static_nodes,
     )
+
+
+def _read_existing_cl_peer_ids(plan, participants, participant_start_index):
+    """Query running validators for their actual CometBFT node IDs."""
+    if participant_start_index == 0:
+        return ""
+
+    peer_entries = []
+    participant_index = 0
+    for _, p in enumerate(participants):
+        is_validator = p.get("kind") == constants.PARTICIPANT_KIND.validator
+        for _ in range(p.get("count")):
+            if participant_index >= participant_start_index:
+                break
+            if is_validator:
+                cl_node_name = _generate_cl_node_name(p, participant_index + 1)
+                result = plan.run_sh(
+                    name="read-peer-id-{}".format(cl_node_name),
+                    description="Reading node ID from running service '{}'".format(
+                        cl_node_name
+                    ),
+                    image=constants.IMAGES.get("toolbox_image"),
+                    run="curl -sf http://{}:{} -d '{{\"method\":\"status\",\"params\":[],\"id\":1,\"jsonrpc\":\"2.0\"}}' | jq -r '.result.node_info.id' | tr -d '\\n'".format(
+                        cl_node_name,
+                        cl_shared.RPC_PORT_NUMBER,
+                    ),
+                )
+                node_id = result.output
+                peer_entry = "{}@{}:{}".format(
+                    node_id,
+                    cl_node_name,
+                    cl_shared.NODE_LISTEN_PORT_NUMBER,
+                )
+                peer_entries.append(peer_entry)
+            participant_index += 1
+        if participant_index >= participant_start_index:
+            break
+
+    return ",".join(peer_entries)
+
+
+def _read_existing_el_enodes(plan, participants, participant_start_index):
+    """Query running EL nodes for their actual enode URLs."""
+    if participant_start_index == 0:
+        return []
+
+    enodes = []
+    participant_index = 0
+    for _, p in enumerate(participants):
+        for _ in range(p.get("count")):
+            if participant_index >= participant_start_index:
+                break
+            el_node_name = _generate_el_node_name(p, participant_index + 1)
+            # Query admin_nodeInfo and extract just the hex public key from the
+            # enode URL using sed (avoids Starlark string parsing issues on
+            # result.output).
+            result = plan.run_sh(
+                name="read-enode-{}".format(el_node_name),
+                description="Reading enode public key from running service '{}'".format(
+                    el_node_name
+                ),
+                image=constants.IMAGES.get("toolbox_image"),
+                run="curl -sf http://{}:{} -X POST -H 'Content-Type: application/json' -d '{{\"method\":\"admin_nodeInfo\",\"params\":[],\"id\":1,\"jsonrpc\":\"2.0\"}}' | jq -r '.result.enode' | sed 's|enode://||;s|@.*||' | tr -d '\\n'".format(
+                    el_node_name,
+                    el_shared.RPC_PORT_NUMBER,
+                ),
+            )
+            pubkey = result.output
+            enode = _generate_enode_url(p, pubkey, el_node_name)
+            enodes.append(enode)
+            participant_index += 1
+        if participant_index >= participant_start_index:
+            break
+
+    return enodes
 
 
 def _generate_enode_url(participant, eth_public_key, el_node_name):

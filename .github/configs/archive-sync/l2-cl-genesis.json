@@ -1,0 +1,781 @@
+{
+  "app_name": "heimdalld",
+  "app_version": "v0.2.1-polygon",
+  "genesis_time": "2026-03-12T07:47:39.000000000Z",
+  "chain_id": "heimdall-4927",
+  "initial_height": 1,
+  "app_hash": null,
+  "app_state": {
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "1",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000",
+        "max_tx_gas": "1000000",
+        "tx_fees": "1000000000000000"
+      },
+      "accounts": [
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "1",
+          "address": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+          "pub_key": {
+            "@type": "/cosmos.crypto.secp256k1.PubKey",
+            "key": "BJPocX9GsUbr+5kVnrE6XQRMGRmYZWyLeQB7FgUbsf92LQmITkN4PYmN1H9iIK8EAgbKu9Rcmia7J4pSLD1Tih8="
+          },
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "2",
+          "address": "0xeeE6f79486542f85290920073947bc9672C6ACE5",
+          "pub_key": {
+            "@type": "/cosmos.crypto.secp256k1.PubKey",
+            "key": "BA9VTa8ALDWSganFw8tmOcqxIln1cNbRDLFeP4KnnnWqSSTwH1MAaLSgET935pulQ0ygEQChgvvKJgninEqd6R8="
+          },
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "3",
+          "address": "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc",
+          "pub_key": {
+            "@type": "/cosmos.crypto.secp256k1.PubKey",
+            "key": "BMwO60q+UgmZ7jEKoKmkhVJ+3VhMH9npmBFE/yxXTlv4e1VJkCr9BasrXFC9ix8sb2SNpxcj/fVyGv45xv5JGkU="
+          },
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "4",
+          "address": "0xd3cc855bDb41498920792b77aBCB7431617fA9a4",
+          "pub_key": {
+            "@type": "/cosmos.crypto.secp256k1.PubKey",
+            "key": "BHnpyVMQDGJP/H8y9h+zePKBQb68ANUTdv2W1cGzFRfLExgvSJsORXhDDZ2Oct4b5RwMYk966obmUL+G09XaBjo="
+          },
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "5",
+          "address": "0xF2dBc05C1f99b6E3442Dbd5524d1fAB7959Fc939",
+          "pub_key": {
+            "@type": "/cosmos.crypto.secp256k1.PubKey",
+            "key": "BCKZfg3EW1SSahK15mg0eXnfOryMHSvCzsOI5AxWmzW+PLkH0V5ethavzzJ56NCQE3PoHhslFJ5JcDbHZGVC9JI="
+          },
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "6",
+          "address": "0x9bDc763175f3506dEdb5F139854730E23cA82F69",
+          "pub_key": {
+            "@type": "/cosmos.crypto.secp256k1.PubKey",
+            "key": "BHKv9LgWwasaK1jysirm8lRxl/BkGd2Csap+v5vEzWxnm49hb6ZmncI2whKyxYlN7GJRYjn9M3iNwk+M2u2b8Po="
+          },
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "7",
+          "address": "0x307f0aA1456F0B3EDec56D6bA7ebC817D09483cC",
+          "pub_key": {
+            "@type": "/cosmos.crypto.secp256k1.PubKey",
+            "key": "BFSZUiEA3WPgjq2xmqVH7HdbIdjeQ+EnlzplQEIkND3YCGwmbmUeqVU8K522M7dHVBmMmyM633+qHH9CYT0NGM0="
+          },
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "8",
+          "address": "0x2c64Cab78F2A9AAb96514c5151Afa571301D45d9",
+          "pub_key": {
+            "@type": "/cosmos.crypto.secp256k1.PubKey",
+            "key": "BJgFA3V2HW4t12197hD6brfGwv9QhwmD7duTm30h7QAAAeQZvXNhnHfOBJuVEfs9+F5JZdc2XMeD9fSPQQcdCcI="
+          },
+          "sequence": "0"
+        }
+      ]
+    },
+    "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
+      "balances": [
+        {
+          "address": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+          "coins": [
+            {
+              "amount": "10000000000000000000000",
+              "denom": "pol"
+            }
+          ]
+        },
+        {
+          "address": "0xeeE6f79486542f85290920073947bc9672C6ACE5",
+          "coins": [
+            {
+              "amount": "10000000000000000000000",
+              "denom": "pol"
+            }
+          ]
+        },
+        {
+          "address": "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc",
+          "coins": [
+            {
+              "amount": "10000000000000000000000",
+              "denom": "pol"
+            }
+          ]
+        },
+        {
+          "address": "0xd3cc855bDb41498920792b77aBCB7431617fA9a4",
+          "coins": [
+            {
+              "amount": "10000000000000000000000",
+              "denom": "pol"
+            }
+          ]
+        },
+        {
+          "address": "0xF2dBc05C1f99b6E3442Dbd5524d1fAB7959Fc939",
+          "coins": [
+            {
+              "amount": "10000000000000000000000",
+              "denom": "pol"
+            }
+          ]
+        },
+        {
+          "address": "0x9bDc763175f3506dEdb5F139854730E23cA82F69",
+          "coins": [
+            {
+              "amount": "10000000000000000000000",
+              "denom": "pol"
+            }
+          ]
+        },
+        {
+          "address": "0x307f0aA1456F0B3EDec56D6bA7ebC817D09483cC",
+          "coins": [
+            {
+              "amount": "10000000000000000000000",
+              "denom": "pol"
+            }
+          ]
+        },
+        {
+          "address": "0x2c64Cab78F2A9AAb96514c5151Afa571301D45d9",
+          "coins": [
+            {
+              "amount": "10000000000000000000000",
+              "denom": "pol"
+            }
+          ]
+        }
+      ],
+      "supply": [
+        {
+          "amount": "80000000000000000000000",
+          "denom": "pol"
+        }
+      ],
+      "denom_metadata": [],
+      "send_enabled": []
+    },
+    "bor": {
+      "params": {
+        "sprint_duration": "16",
+        "span_duration": "128",
+        "producer_count": "8"
+      },
+      "spans": [
+        {
+          "id": "0",
+          "start_block": "0",
+          "end_block": "127",
+          "validator_set": {
+            "validators": [
+              {
+                "end_epoch": "0",
+                "jailed": false,
+                "last_updated": "",
+                "nonce": "1",
+                "proposer_priority": "0",
+                "pub_key": "BJPocX9GsUbr+5kVnrE6XQRMGRmYZWyLeQB7FgUbsf92LQmITkN4PYmN1H9iIK8EAgbKu9Rcmia7J4pSLD1Tih8=",
+                "signer": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+                "start_epoch": "0",
+                "val_id": "1",
+                "voting_power": "10000"
+              },
+              {
+                "end_epoch": "0",
+                "jailed": false,
+                "last_updated": "",
+                "nonce": "1",
+                "proposer_priority": "0",
+                "pub_key": "BA9VTa8ALDWSganFw8tmOcqxIln1cNbRDLFeP4KnnnWqSSTwH1MAaLSgET935pulQ0ygEQChgvvKJgninEqd6R8=",
+                "signer": "0xeeE6f79486542f85290920073947bc9672C6ACE5",
+                "start_epoch": "0",
+                "val_id": "2",
+                "voting_power": "10000"
+              },
+              {
+                "end_epoch": "0",
+                "jailed": false,
+                "last_updated": "",
+                "nonce": "1",
+                "proposer_priority": "0",
+                "pub_key": "BMwO60q+UgmZ7jEKoKmkhVJ+3VhMH9npmBFE/yxXTlv4e1VJkCr9BasrXFC9ix8sb2SNpxcj/fVyGv45xv5JGkU=",
+                "signer": "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc",
+                "start_epoch": "0",
+                "val_id": "3",
+                "voting_power": "10000"
+              },
+              {
+                "end_epoch": "0",
+                "jailed": false,
+                "last_updated": "",
+                "nonce": "1",
+                "proposer_priority": "0",
+                "pub_key": "BHnpyVMQDGJP/H8y9h+zePKBQb68ANUTdv2W1cGzFRfLExgvSJsORXhDDZ2Oct4b5RwMYk966obmUL+G09XaBjo=",
+                "signer": "0xd3cc855bDb41498920792b77aBCB7431617fA9a4",
+                "start_epoch": "0",
+                "val_id": "4",
+                "voting_power": "10000"
+              },
+              {
+                "end_epoch": "0",
+                "jailed": false,
+                "last_updated": "",
+                "nonce": "1",
+                "proposer_priority": "0",
+                "pub_key": "BCKZfg3EW1SSahK15mg0eXnfOryMHSvCzsOI5AxWmzW+PLkH0V5ethavzzJ56NCQE3PoHhslFJ5JcDbHZGVC9JI=",
+                "signer": "0xF2dBc05C1f99b6E3442Dbd5524d1fAB7959Fc939",
+                "start_epoch": "0",
+                "val_id": "5",
+                "voting_power": "10000"
+              },
+              {
+                "end_epoch": "0",
+                "jailed": false,
+                "last_updated": "",
+                "nonce": "1",
+                "proposer_priority": "0",
+                "pub_key": "BHKv9LgWwasaK1jysirm8lRxl/BkGd2Csap+v5vEzWxnm49hb6ZmncI2whKyxYlN7GJRYjn9M3iNwk+M2u2b8Po=",
+                "signer": "0x9bDc763175f3506dEdb5F139854730E23cA82F69",
+                "start_epoch": "0",
+                "val_id": "6",
+                "voting_power": "10000"
+              },
+              {
+                "end_epoch": "0",
+                "jailed": false,
+                "last_updated": "",
+                "nonce": "1",
+                "proposer_priority": "0",
+                "pub_key": "BFSZUiEA3WPgjq2xmqVH7HdbIdjeQ+EnlzplQEIkND3YCGwmbmUeqVU8K522M7dHVBmMmyM633+qHH9CYT0NGM0=",
+                "signer": "0x307f0aA1456F0B3EDec56D6bA7ebC817D09483cC",
+                "start_epoch": "0",
+                "val_id": "7",
+                "voting_power": "10000"
+              },
+              {
+                "end_epoch": "0",
+                "jailed": false,
+                "last_updated": "",
+                "nonce": "1",
+                "proposer_priority": "0",
+                "pub_key": "BJgFA3V2HW4t12197hD6brfGwv9QhwmD7duTm30h7QAAAeQZvXNhnHfOBJuVEfs9+F5JZdc2XMeD9fSPQQcdCcI=",
+                "signer": "0x2c64Cab78F2A9AAb96514c5151Afa571301D45d9",
+                "start_epoch": "0",
+                "val_id": "8",
+                "voting_power": "10000"
+              }
+            ],
+            "proposer": {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BJPocX9GsUbr+5kVnrE6XQRMGRmYZWyLeQB7FgUbsf92LQmITkN4PYmN1H9iIK8EAgbKu9Rcmia7J4pSLD1Tih8=",
+              "signer": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+              "start_epoch": "0",
+              "val_id": "1",
+              "voting_power": "10000"
+            },
+            "total_voting_power": "80000"
+          },
+          "selected_producers": [
+            {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BJPocX9GsUbr+5kVnrE6XQRMGRmYZWyLeQB7FgUbsf92LQmITkN4PYmN1H9iIK8EAgbKu9Rcmia7J4pSLD1Tih8=",
+              "signer": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+              "start_epoch": "0",
+              "val_id": "1",
+              "voting_power": "10000"
+            },
+            {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BA9VTa8ALDWSganFw8tmOcqxIln1cNbRDLFeP4KnnnWqSSTwH1MAaLSgET935pulQ0ygEQChgvvKJgninEqd6R8=",
+              "signer": "0xeeE6f79486542f85290920073947bc9672C6ACE5",
+              "start_epoch": "0",
+              "val_id": "2",
+              "voting_power": "10000"
+            },
+            {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BMwO60q+UgmZ7jEKoKmkhVJ+3VhMH9npmBFE/yxXTlv4e1VJkCr9BasrXFC9ix8sb2SNpxcj/fVyGv45xv5JGkU=",
+              "signer": "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc",
+              "start_epoch": "0",
+              "val_id": "3",
+              "voting_power": "10000"
+            },
+            {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BHnpyVMQDGJP/H8y9h+zePKBQb68ANUTdv2W1cGzFRfLExgvSJsORXhDDZ2Oct4b5RwMYk966obmUL+G09XaBjo=",
+              "signer": "0xd3cc855bDb41498920792b77aBCB7431617fA9a4",
+              "start_epoch": "0",
+              "val_id": "4",
+              "voting_power": "10000"
+            },
+            {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BCKZfg3EW1SSahK15mg0eXnfOryMHSvCzsOI5AxWmzW+PLkH0V5ethavzzJ56NCQE3PoHhslFJ5JcDbHZGVC9JI=",
+              "signer": "0xF2dBc05C1f99b6E3442Dbd5524d1fAB7959Fc939",
+              "start_epoch": "0",
+              "val_id": "5",
+              "voting_power": "10000"
+            },
+            {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BHKv9LgWwasaK1jysirm8lRxl/BkGd2Csap+v5vEzWxnm49hb6ZmncI2whKyxYlN7GJRYjn9M3iNwk+M2u2b8Po=",
+              "signer": "0x9bDc763175f3506dEdb5F139854730E23cA82F69",
+              "start_epoch": "0",
+              "val_id": "6",
+              "voting_power": "10000"
+            },
+            {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BFSZUiEA3WPgjq2xmqVH7HdbIdjeQ+EnlzplQEIkND3YCGwmbmUeqVU8K522M7dHVBmMmyM633+qHH9CYT0NGM0=",
+              "signer": "0x307f0aA1456F0B3EDec56D6bA7ebC817D09483cC",
+              "start_epoch": "0",
+              "val_id": "7",
+              "voting_power": "10000"
+            },
+            {
+              "end_epoch": "0",
+              "jailed": false,
+              "last_updated": "",
+              "nonce": "1",
+              "proposer_priority": "0",
+              "pub_key": "BJgFA3V2HW4t12197hD6brfGwv9QhwmD7duTm30h7QAAAeQZvXNhnHfOBJuVEfs9+F5JZdc2XMeD9fSPQQcdCcI=",
+              "signer": "0x2c64Cab78F2A9AAb96514c5151Afa571301D45d9",
+              "start_epoch": "0",
+              "val_id": "8",
+              "voting_power": "10000"
+            }
+          ],
+          "bor_chain_id": "4927"
+        }
+      ]
+    },
+    "chainmanager": {
+      "params": {
+        "chain_params": {
+          "heimdall_chain_id": "heimdall-4927",
+          "bor_chain_id": "4927",
+          "pol_token_address": "0x8E1700577B7aE261753c67e1B93Fe60Dd3e205fa",
+          "staking_manager_address": "0x862ff216d822fBF2F381812627D4216d2150e810",
+          "slash_manager_address": "0x1056A4470484357626c01b0eb1d8013DE7876d2b",
+          "root_chain_address": "0x107a27363FE1Ba8578B8a8c76acDB237cDB35533",
+          "staking_info_address": "0x62e60f7d720f15dCB66cB1f7990Fed740C6259c5",
+          "state_sender_address": "0xb661f1577e8749456FA749d44e8A77A9d604e603",
+          "state_receiver_address": "0x0000000000000000000000000000000000001001",
+          "validator_set_address": "0x0000000000000000000000000000000000001000"
+        },
+        "main_chain_tx_confirmations": "1",
+        "bor_chain_tx_confirmations": "1"
+      }
+    },
+    "checkpoint": {
+      "params": {
+        "checkpoint_buffer_time": "120s",
+        "avg_checkpoint_length": "128",
+        "max_checkpoint_length": "1024",
+        "child_chain_block_interval": "10000"
+      },
+      "buffered_checkpoint": null,
+      "last_no_ack": "0",
+      "ack_count": "0",
+      "checkpoints": [],
+      "checkpoint_signatures": {
+        "signatures": []
+      },
+      "checkpoint_signatures_txhash": ""
+    },
+    "clerk": {
+      "event_records": [],
+      "record_sequences": []
+    },
+    "consensus": null,
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": [],
+      "votes": [],
+      "proposals": [],
+      "deposit_params": null,
+      "voting_params": null,
+      "tally_params": null,
+      "params": {
+        "min_deposit": [
+          {
+            "denom": "pol",
+            "amount": "100000000000000000000"
+          }
+        ],
+        "max_deposit_period": "86400s",
+        "voting_period": "86400s",
+        "quorum": "0.334000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto_threshold": "0.334000000000000000",
+        "min_initial_deposit_ratio": "0.000000000000000000",
+        "proposal_cancel_ratio": "0.500000000000000000",
+        "proposal_cancel_dest": "",
+        "expedited_voting_period": "43200s",
+        "expedited_threshold": "0.667000000000000000",
+        "expedited_min_deposit": [
+          {
+            "denom": "pol",
+            "amount": "500000000000000000000"
+          }
+        ],
+        "burn_vote_quorum": false,
+        "burn_proposal_deposit_prevote": false,
+        "burn_vote_veto": true,
+        "min_deposit_ratio": "0.010000000000000000"
+      },
+      "constitution": ""
+    },
+    "milestone": {
+      "milestones": [],
+      "params": {
+        "ff_milestone_block_interval": 100,
+        "ff_milestone_threshold": 1000,
+        "max_milestone_proposition_length": 10
+      }
+    },
+    "params": null,
+    "stake": {
+      "validators": [
+        {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BJPocX9GsUbr+5kVnrE6XQRMGRmYZWyLeQB7FgUbsf92LQmITkN4PYmN1H9iIK8EAgbKu9Rcmia7J4pSLD1Tih8=",
+          "signer": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+          "start_epoch": "0",
+          "val_id": "1",
+          "voting_power": "10000"
+        },
+        {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BA9VTa8ALDWSganFw8tmOcqxIln1cNbRDLFeP4KnnnWqSSTwH1MAaLSgET935pulQ0ygEQChgvvKJgninEqd6R8=",
+          "signer": "0xeeE6f79486542f85290920073947bc9672C6ACE5",
+          "start_epoch": "0",
+          "val_id": "2",
+          "voting_power": "10000"
+        },
+        {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BMwO60q+UgmZ7jEKoKmkhVJ+3VhMH9npmBFE/yxXTlv4e1VJkCr9BasrXFC9ix8sb2SNpxcj/fVyGv45xv5JGkU=",
+          "signer": "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc",
+          "start_epoch": "0",
+          "val_id": "3",
+          "voting_power": "10000"
+        },
+        {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BHnpyVMQDGJP/H8y9h+zePKBQb68ANUTdv2W1cGzFRfLExgvSJsORXhDDZ2Oct4b5RwMYk966obmUL+G09XaBjo=",
+          "signer": "0xd3cc855bDb41498920792b77aBCB7431617fA9a4",
+          "start_epoch": "0",
+          "val_id": "4",
+          "voting_power": "10000"
+        },
+        {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BCKZfg3EW1SSahK15mg0eXnfOryMHSvCzsOI5AxWmzW+PLkH0V5ethavzzJ56NCQE3PoHhslFJ5JcDbHZGVC9JI=",
+          "signer": "0xF2dBc05C1f99b6E3442Dbd5524d1fAB7959Fc939",
+          "start_epoch": "0",
+          "val_id": "5",
+          "voting_power": "10000"
+        },
+        {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BHKv9LgWwasaK1jysirm8lRxl/BkGd2Csap+v5vEzWxnm49hb6ZmncI2whKyxYlN7GJRYjn9M3iNwk+M2u2b8Po=",
+          "signer": "0x9bDc763175f3506dEdb5F139854730E23cA82F69",
+          "start_epoch": "0",
+          "val_id": "6",
+          "voting_power": "10000"
+        },
+        {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BFSZUiEA3WPgjq2xmqVH7HdbIdjeQ+EnlzplQEIkND3YCGwmbmUeqVU8K522M7dHVBmMmyM633+qHH9CYT0NGM0=",
+          "signer": "0x307f0aA1456F0B3EDec56D6bA7ebC817D09483cC",
+          "start_epoch": "0",
+          "val_id": "7",
+          "voting_power": "10000"
+        },
+        {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BJgFA3V2HW4t12197hD6brfGwv9QhwmD7duTm30h7QAAAeQZvXNhnHfOBJuVEfs9+F5JZdc2XMeD9fSPQQcdCcI=",
+          "signer": "0x2c64Cab78F2A9AAb96514c5151Afa571301D45d9",
+          "start_epoch": "0",
+          "val_id": "8",
+          "voting_power": "10000"
+        }
+      ],
+      "current_validator_set": {
+        "validators": [
+          {
+            "end_epoch": "0",
+            "jailed": false,
+            "last_updated": "",
+            "nonce": "1",
+            "proposer_priority": "0",
+            "pub_key": "BJPocX9GsUbr+5kVnrE6XQRMGRmYZWyLeQB7FgUbsf92LQmITkN4PYmN1H9iIK8EAgbKu9Rcmia7J4pSLD1Tih8=",
+            "signer": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+            "start_epoch": "0",
+            "val_id": "1",
+            "voting_power": "10000"
+          },
+          {
+            "end_epoch": "0",
+            "jailed": false,
+            "last_updated": "",
+            "nonce": "1",
+            "proposer_priority": "0",
+            "pub_key": "BA9VTa8ALDWSganFw8tmOcqxIln1cNbRDLFeP4KnnnWqSSTwH1MAaLSgET935pulQ0ygEQChgvvKJgninEqd6R8=",
+            "signer": "0xeeE6f79486542f85290920073947bc9672C6ACE5",
+            "start_epoch": "0",
+            "val_id": "2",
+            "voting_power": "10000"
+          },
+          {
+            "end_epoch": "0",
+            "jailed": false,
+            "last_updated": "",
+            "nonce": "1",
+            "proposer_priority": "0",
+            "pub_key": "BMwO60q+UgmZ7jEKoKmkhVJ+3VhMH9npmBFE/yxXTlv4e1VJkCr9BasrXFC9ix8sb2SNpxcj/fVyGv45xv5JGkU=",
+            "signer": "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc",
+            "start_epoch": "0",
+            "val_id": "3",
+            "voting_power": "10000"
+          },
+          {
+            "end_epoch": "0",
+            "jailed": false,
+            "last_updated": "",
+            "nonce": "1",
+            "proposer_priority": "0",
+            "pub_key": "BHnpyVMQDGJP/H8y9h+zePKBQb68ANUTdv2W1cGzFRfLExgvSJsORXhDDZ2Oct4b5RwMYk966obmUL+G09XaBjo=",
+            "signer": "0xd3cc855bDb41498920792b77aBCB7431617fA9a4",
+            "start_epoch": "0",
+            "val_id": "4",
+            "voting_power": "10000"
+          },
+          {
+            "end_epoch": "0",
+            "jailed": false,
+            "last_updated": "",
+            "nonce": "1",
+            "proposer_priority": "0",
+            "pub_key": "BCKZfg3EW1SSahK15mg0eXnfOryMHSvCzsOI5AxWmzW+PLkH0V5ethavzzJ56NCQE3PoHhslFJ5JcDbHZGVC9JI=",
+            "signer": "0xF2dBc05C1f99b6E3442Dbd5524d1fAB7959Fc939",
+            "start_epoch": "0",
+            "val_id": "5",
+            "voting_power": "10000"
+          },
+          {
+            "end_epoch": "0",
+            "jailed": false,
+            "last_updated": "",
+            "nonce": "1",
+            "proposer_priority": "0",
+            "pub_key": "BHKv9LgWwasaK1jysirm8lRxl/BkGd2Csap+v5vEzWxnm49hb6ZmncI2whKyxYlN7GJRYjn9M3iNwk+M2u2b8Po=",
+            "signer": "0x9bDc763175f3506dEdb5F139854730E23cA82F69",
+            "start_epoch": "0",
+            "val_id": "6",
+            "voting_power": "10000"
+          },
+          {
+            "end_epoch": "0",
+            "jailed": false,
+            "last_updated": "",
+            "nonce": "1",
+            "proposer_priority": "0",
+            "pub_key": "BFSZUiEA3WPgjq2xmqVH7HdbIdjeQ+EnlzplQEIkND3YCGwmbmUeqVU8K522M7dHVBmMmyM633+qHH9CYT0NGM0=",
+            "signer": "0x307f0aA1456F0B3EDec56D6bA7ebC817D09483cC",
+            "start_epoch": "0",
+            "val_id": "7",
+            "voting_power": "10000"
+          },
+          {
+            "end_epoch": "0",
+            "jailed": false,
+            "last_updated": "",
+            "nonce": "1",
+            "proposer_priority": "0",
+            "pub_key": "BJgFA3V2HW4t12197hD6brfGwv9QhwmD7duTm30h7QAAAeQZvXNhnHfOBJuVEfs9+F5JZdc2XMeD9fSPQQcdCcI=",
+            "signer": "0x2c64Cab78F2A9AAb96514c5151Afa571301D45d9",
+            "start_epoch": "0",
+            "val_id": "8",
+            "voting_power": "10000"
+          }
+        ],
+        "proposer": {
+          "end_epoch": "0",
+          "jailed": false,
+          "last_updated": "",
+          "nonce": "1",
+          "proposer_priority": "0",
+          "pub_key": "BJPocX9GsUbr+5kVnrE6XQRMGRmYZWyLeQB7FgUbsf92LQmITkN4PYmN1H9iIK8EAgbKu9Rcmia7J4pSLD1Tih8=",
+          "signer": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E",
+          "start_epoch": "0",
+          "val_id": "1",
+          "voting_power": "10000"
+        },
+        "total_voting_power": "80000"
+      },
+      "staking_sequences": [],
+      "previous_block_validator_set": {},
+      "last_block_txs": {}
+    },
+    "topup": {
+      "topup_sequences": [],
+      "dividend_accounts": [
+        {
+          "fee_amount": "0",
+          "user": "0x97538585a02A3f1B1297EB9979cE1b34ff953f1E"
+        },
+        {
+          "fee_amount": "0",
+          "user": "0xeeE6f79486542f85290920073947bc9672C6ACE5"
+        },
+        {
+          "fee_amount": "0",
+          "user": "0xA831F4E702F374aBf14d8005e21DC6d17d84DfCc"
+        },
+        {
+          "fee_amount": "0",
+          "user": "0xd3cc855bDb41498920792b77aBCB7431617fA9a4"
+        },
+        {
+          "fee_amount": "0",
+          "user": "0xF2dBc05C1f99b6E3442Dbd5524d1fAB7959Fc939"
+        },
+        {
+          "fee_amount": "0",
+          "user": "0x9bDc763175f3506dEdb5F139854730E23cA82F69"
+        },
+        {
+          "fee_amount": "0",
+          "user": "0x307f0aA1456F0B3EDec56D6bA7ebC817D09483cC"
+        },
+        {
+          "fee_amount": "0",
+          "user": "0x2c64Cab78F2A9AAb96514c5151Afa571301D45d9"
+        }
+      ]
+    }
+  },
+  "consensus_params": {
+    "block": {
+      "max_bytes": 22020096,
+      "max_gas": -1
+    },
+    "blob": {
+      "max_bytes": 0
+    },
+    "evidence": {
+      "max_age_num_blocks": 100000,
+      "max_age_duration": 172800000000000,
+      "max_bytes": 1048576
+    },
+    "validator": {
+      "pub_key_types": [
+        "secp256k1"
+      ]
+    },
+    "version": {
+      "app": 0
+    },
+    "abci": {
+      "vote_extensions_enable_height": 1
+    }
+  }
+}

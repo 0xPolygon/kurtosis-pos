@@ -21,7 +21,17 @@ def run(plan, args):
     ) = input_parser.input_parser(plan, args)
 
     participants = polygon_pos_args.get("participants")
-    validator_accounts = get_validator_accounts(participants)
+    existing_participants = dev_args.get("existing_participants", [])
+
+    # Build the full participant list: existing (not deployed) + new (deployed).
+    all_participants_config = existing_participants + participants
+    participant_start_index = math.sum(
+        [p.get("count", 1) for p in existing_participants]
+    )
+
+    validator_accounts = get_validator_accounts(all_participants_config)
+    if participant_start_index == 0 and len(validator_accounts) == 0:
+        fail("There must be at least one validator among the participants!")
     l2_network_params = polygon_pos_args.get("network_params")
     admin_private_key = hex.normalize(l2_network_params.get("admin_private_key"))
     admin_address = wallet.derive_address_from_private_key(
@@ -131,42 +141,46 @@ def run(plan, args):
     # Deploy network participants.
     participants_count = math.sum([p.get("count") for p in participants])
     plan.print(
-        "Launching a Polygon PoS devnet with {} participants, including {} validators, and the following network params: {}".format(
-            participants_count, len(validator_accounts), participants
+        "Launching {} new participant(s) (start index: {}) with the following network params: {}".format(
+            participants_count, participant_start_index, participants
         )
     )
     l2_context = el_cl_launcher.launch(
         plan,
-        participants,
+        all_participants_config,
         polygon_pos_args,
         l2_el_genesis_artifact,
         l2_cl_genesis_artifact,
         l1_context.rpc_url,
+        participant_start_index,
     )
     l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
 
-    # Deploy MATIC contracts to L2.
-    contract_addresses_artifact = (
-        contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
+    # Deploy MATIC contracts to L2 and additional services.
+    # Skip when adding nodes to a running network (participant_start_index > 0)
+    # since contracts are already deployed and services are already running.
+    if participant_start_index == 0:
+        contract_addresses_artifact = (
+            contract_deployer.deploy_l2_contracts_and_synchronise_l1_state(
+                plan,
+                polygon_pos_args,
+                l1_context.rpc_url,
+                l2_rpc_url,
+                admin_private_key,
+                l1_contract_addresses_artifact,
+            )
+        )
+
+        # Deploy additional services.
+        additional_services_launcher.launch(
             plan,
             polygon_pos_args,
-            l1_context.rpc_url,
-            l2_rpc_url,
-            admin_private_key,
-            l1_contract_addresses_artifact,
+            l1_context,
+            l2_context,
+            l2_network_params,
+            l2_el_genesis_artifact,
+            contract_addresses_artifact,
         )
-    )
-
-    # Deploy additional services.
-    additional_services_launcher.launch(
-        plan,
-        polygon_pos_args,
-        l1_context,
-        l2_context,
-        l2_network_params,
-        l2_el_genesis_artifact,
-        contract_addresses_artifact,
-    )
 
 
 def get_validator_accounts(participants):
@@ -181,8 +195,5 @@ def get_validator_accounts(participants):
                 account = prefunded_accounts[id]
                 validator_accounts.append(account)
             id += 1
-
-    if len(validator_accounts) == 0:
-        fail("There must be at least one validator among the participants!")
 
     return validator_accounts

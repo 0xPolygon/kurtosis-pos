@@ -7,6 +7,7 @@ DEV_ARGS = {
     "l1_backend": constants.L1_BACKEND.ethereum_package,
     "should_deploy_l1": True,
     "should_deploy_matic_contracts": True,
+    "existing_participants": [],
 }
 
 
