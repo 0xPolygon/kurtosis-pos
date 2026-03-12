@@ -177,9 +177,7 @@ jobs:
       - name: Inspect enclave
         run: kurtosis enclave inspect ${{ env.ENCLAVE_NAME }}
 
-      - name: Monitor block progress
-        working-directory: .github/actions/monitor
-        run: ./blocks.sh ${{ env.ENCLAVE_NAME }}
+      - uses: ./.github/actions/monitor
 
       - name: Retrieve L2 CL genesis file
         working-directory: .github/configs/nightly/cl-el-genesis

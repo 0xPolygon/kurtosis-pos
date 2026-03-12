@@ -20,6 +20,9 @@ ANVIL_ARGS = {
 
 ETHEREUM_PACKAGE_ARGS = {
     "global_log_level": constants.LOG_LEVEL.info,
+    # Custom property to set log format for all clients in the package.
+    # Supported log formats are defined in `constants.LOG_FORMAT`.
+    "global_log_format": constants.LOG_FORMAT.text,
     "participants": [
         {
             # General
@@ -192,15 +195,27 @@ def _parse_anvil_args(plan, anvil_args):
 
 def _parse_ethereum_args(plan, ethereum_args):
     # Create a mutable copy of ethereum_args.
-    if ethereum_args:
-        ethereum_args = dict(ethereum_args)
+    ethereum_args = dict(ethereum_args) if ethereum_args else {}
 
-    # Set default params if not provided.
-    if "network_params" not in ethereum_args:
-        ethereum_args = dict(ETHEREUM_PACKAGE_ARGS)
+    # Set default top-level params if not provided.
+    for k, v in ETHEREUM_PACKAGE_ARGS.items():
+        if k != "network_params":
+            ethereum_args.setdefault(k, v)
 
+    # Set default network_params if not provided.
+    network_params = ethereum_args.get("network_params", {})
     for k, v in ETHEREUM_PACKAGE_ARGS.get("network_params", {}).items():
-        ethereum_args.get("network_params", {}).setdefault(k, v)
+        network_params.setdefault(k, v)
+    ethereum_args["network_params"] = network_params
+
+    # Validate global_log_format.
+    log_format = ethereum_args.get("global_log_format")
+    if log_format not in sanity_check.VALID_LOG_FORMATS:
+        fail(
+            'Invalid "global_log_format": "{}". Allowed values: {}.'.format(
+                log_format, sanity_check.VALID_LOG_FORMATS
+            )
+        )
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(ethereum_args)
