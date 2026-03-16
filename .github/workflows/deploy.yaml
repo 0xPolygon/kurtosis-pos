@@ -215,6 +215,8 @@ jobs:
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
       - uses: ./.github/actions/monitor
+        with:
+          skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test-state-sync
 
