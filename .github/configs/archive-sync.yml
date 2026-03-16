@@ -7,11 +7,19 @@
 #   1. A running devnet (e.g. `kurtosis run --enclave pos --args-file .github/configs/large-v263.yml .`)
 #   2. Export genesis and contract artifacts:
 #
-#        mkdir -p .github/configs/archive-sync
-#        kurtosis files inspect pos l2-cl-genesis genesis.json | jq > .github/configs/archive-sync/l2-cl-genesis.json
-#        kurtosis files inspect pos l2-el-genesis genesis.json | jq > .github/configs/archive-sync/l2-el-genesis.json
-#        kurtosis files inspect pos matic-contract-addresses contractAddresses.json | jq > .github/configs/archive-sync/matic-contract-addresses.json
+      #  mkdir -p .github/configs/archive-sync
+      #  kurtosis files inspect pos l2-cl-genesis genesis.json | jq > .github/configs/archive-sync/l2-cl-genesis.json
+      #  kurtosis files inspect pos l2-el-genesis genesis.json | jq > .github/configs/archive-sync/l2-el-genesis.json
+      #  kurtosis files inspect pos matic-contract-addresses contractAddresses.json | jq > .github/configs/archive-sync/matic-contract-addresses.json
+
+#   3. Patch the EL genesis to include blobSchedule (required for Cancun+ chains).
+#      The Kurtosis-exported genesis omits this field, which causes a
+#      "calculating blob fee on unsupported fork" panic during sync.
 #
+      #  jq '.config.blobSchedule = {"cancun":{"target":3,"max":6,"baseFeeUpdateFraction":3338477}}' \
+      #    .github/configs/archive-sync/l2-el-genesis.json > tmp.json \
+      #    && mv tmp.json .github/configs/archive-sync/l2-el-genesis.json
+
 # Usage:
 #   kurtosis run --enclave pos --args-file .github/configs/archive-sync.yml .
 #

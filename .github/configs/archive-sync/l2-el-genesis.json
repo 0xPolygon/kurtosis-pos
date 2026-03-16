@@ -28,11 +28,11 @@
       "ahmedabadBlock": 0,
       "bhilaiBlock": 0,
       "rioBlock": 256,
-      "madhugiriBlock": 256,
-      "madhugiriProBlock": 256,
-      "dandeliBlock": 256,
-      "lisovoBlock": 256,
-      "lisovoProBlock": 256,
+      "madhugiriBlock": 320,
+      "madhugiriProBlock": 384,
+      "dandeliBlock": 448,
+      "lisovoBlock": 512,
+      "lisovoProBlock": 576,
       "stateSyncConfirmationDelay": {
         "0": 32
       },
@@ -60,9 +60,16 @@
         "256": "0x000000000000000000000000000000000000ba5e"
       }
     },
-    "nonce": "0x0"
+    "nonce": "0x0",
+    "blobSchedule": {
+      "cancun": {
+        "target": 3,
+        "max": 6,
+        "baseFeeUpdateFraction": 3338477
+      }
+    }
   },
-  "timestamp": "0x69b26f9d",
+  "timestamp": "0x69b27dc7",
   "extraData": "",
   "gasLimit": "0x3b9aca00",
   "difficulty": "0x1",
