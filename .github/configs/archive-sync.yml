@@ -21,7 +21,7 @@
       #    && mv tmp.json .github/configs/archive-sync/l2-el-genesis.json
 
 # Usage:
-#   kurtosis run --enclave pos --args-file .github/configs/archive-sync.yml .
+  # kurtosis run --enclave pos --args-file .github/configs/archive-sync.yml .
 #
 # IMPORTANT: existing_participants must list ALL participants from the original
 # deployment in the same order. This ensures the new archive node gets a unique
@@ -34,7 +34,7 @@ polygon_pos_package:
       count: 1
       cl_type: heimdall-v2
       el_type: bor
-      el_image: 0xpolygon/bor:2.6.3
+      el_image: 0xpolygon/bor:2.7.0-beta
 
 
 dev:
@@ -53,28 +53,28 @@ dev:
       count: 8
       cl_type: heimdall-v2
       el_type: bor
-      el_image: 0xpolygon/bor:2.6.3
+      el_image: 0xpolygon/bor:2.7.0-beta
     - kind: rpc
       count: 1
       el_bor_sync_with_witness: true
       cl_type: heimdall-v2
       el_type: bor
-      el_image: 0xpolygon/bor:2.6.3
+      el_image: 0xpolygon/bor:2.7.0-beta
     - kind: rpc
       count: 1
       el_bor_sync_with_witness: false
       cl_type: heimdall-v2
       el_type: bor
-      el_image: 0xpolygon/bor:2.6.3
+      el_image: 0xpolygon/bor:2.7.0-beta
     - kind: rpc
       count: 1
       el_bor_sync_with_witness: false
       cl_type: heimdall-v2
       el_type: erigon
-      el_image: 0xpolygon/erigon:v3.4.0
+      el_image: 0xpolygon/erigon:v3.5.0-beta2
     - kind: archive
       count: 1
       cl_type: heimdall-v2
       el_type: bor
-      el_image: 0xpolygon/bor:2.6.3
+      el_image: 0xpolygon/bor:2.7.0-beta
 
