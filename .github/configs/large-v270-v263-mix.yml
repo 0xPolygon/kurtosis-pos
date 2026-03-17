@@ -1,0 +1,59 @@
+# Mixed v2.7.0-beta / v2.6.3 version test.
+#
+# Tests network stability when validators run different Bor versions across
+# the Giugliano hard fork boundary (block 640). Pre-fork both versions should
+# agree on consensus. Post-fork v2.7.0 enables PIP-66 (early block
+# announcements) — v2.6.3 validators don't recognize Giugliano and may
+# reject early-announced blocks or fork off.
+#
+# Validator split: 4x v2.7.0-beta + 4x v2.6.3 (50/50 to maximise friction).
+# RPC/archive nodes on both versions to observe sync behavior from each side.
+
+polygon_pos_package:
+  participants:
+    # v2.7.0-beta validators (Giugliano-aware)
+    - kind: validator
+      count: 4
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.7.0-beta
+
+    # v2.6.3 validators (no Giugliano support)
+    - kind: validator
+      count: 4
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+
+    # RPC node on v2.7.0-beta — should follow the v2.7.0 fork
+    - kind: rpc
+      count: 1
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.7.0-beta
+
+    # RPC node on v2.6.3 — observe if it stalls or forks post-Giugliano
+    - kind: rpc
+      count: 1
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.6.3
+
+    # Erigon RPC as a cross-client control
+    - kind: rpc
+      count: 1
+      cl_type: heimdall-v2
+      el_type: erigon
+      el_image: 0xpolygon/erigon:v3.5.0-beta2
+
+    # Archive node on v2.7.0-beta — syncs from genesis through the fork
+    - kind: archive
+      count: 1
+      cl_type: heimdall-v2
+      el_type: bor
+      el_image: 0xpolygon/bor:2.7.0-beta
+
+  additional_services:
+    - bridge_spammer
+    - observability
+    - tx_spammer
