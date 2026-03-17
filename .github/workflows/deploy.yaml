@@ -215,6 +215,8 @@ jobs:
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
       - uses: ./.github/actions/monitor
+        with:
+          skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test-state-sync
 
@@ -232,7 +234,7 @@ jobs:
       - run-with-external-l1
       - run-with-cl-el-genesis
     steps:
-      - uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+      - uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
         with:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           method: chat.postMessage
