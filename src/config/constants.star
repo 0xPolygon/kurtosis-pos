@@ -98,25 +98,6 @@ CL_INDEXER_PRUNING_ENABLED = False
 ETHSTATS_SERVER_PORT_NUMBER = 3000
 ETHSTATS_SERVER_WS_SECRET = "sharedsecret"
 
-EL_HARD_FORK_BLOCKS = {
-    "jaipur": 0,
-    "delhi": 0,
-    "indore": 0,
-    "agra": 0,
-    "napoli": 0,
-    "ahmedabad": 0,
-    "bhilai": 0,
-    # rio must be enabled at block 256 because it's hardcoded in heimdall-v2 codebase
-    # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
-    "rio": 256,
-    # hardforks happening after rio should also be enabled at block 256 or later
-    "madhugiri": 256,
-    "madhugiriPro": 256,
-    "dandeli": 256,
-    "lisovo": 256,
-    "lisovoPro": 256,
-}
-
 # EL_HARD_FORK_BLOCKS = {
 #     "jaipur": 0,
 #     "delhi": 0,
@@ -125,10 +106,31 @@ EL_HARD_FORK_BLOCKS = {
 #     "napoli": 0,
 #     "ahmedabad": 0,
 #     "bhilai": 0,
+#     # rio must be enabled at block 256 because it's hardcoded in heimdall-v2 codebase
+#     # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
 #     "rio": 256,
-#     "madhugiri": 320,
-#     "madhugiriPro": 384,
-#     "dandeli": 448,
-#     "lisovo": 512,
-#     "lisovoPro": 576,
+#     # hardforks happening after rio should also be enabled at block 256 or later
+#     "madhugiri": 256,
+#     "madhugiriPro": 256,
+#     "dandeli": 256,
+#     "lisovo": 256,
+#     "lisovoPro": 256,
+#     "giugliano": 256,
 # }
+
+EL_HARD_FORK_BLOCKS = {
+    "jaipur": 0,
+    "delhi": 0,
+    "indore": 0,
+    "agra": 0,
+    "napoli": 0,
+    "ahmedabad": 0,
+    "bhilai": 0,
+    "rio": 256,
+    "madhugiri": 320,
+    "madhugiriPro": 384,
+    "dandeli": 448,
+    "lisovo": 512,
+    "lisovoPro": 576,
+    "giugliano": 640,
+}
