@@ -22,6 +22,9 @@ echo "DEFAULT_EL_CHAIN_ID: ${DEFAULT_EL_CHAIN_ID}"
 echo "Processing templates..."
 npm run template:process -- --bor-chain-id "${EL_CHAIN_ID}"
 
+echo "Generating interfaces..."
+npm run generate:interfaces
+
 echo "Compiling the Polygon PoS contracts..."
 forge build
 
