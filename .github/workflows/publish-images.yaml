@@ -29,13 +29,13 @@ env:
 
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
-  POS_CONTRACTS_BRANCH: anvil-pos
-  POS_CONTRACTS_COMMIT_SHA: d96d592 # 2025/08/01
+  POS_CONTRACTS_BRANCH: leovct/anvil-pos
+  POS_CONTRACTS_COMMIT_SHA: 94c136c # 2026-03-18
 
   # pos-el-genesis-builder settings
   EL_GENESIS_BUILDER_IMAGE_NAME: 0xPolygon/pos-el-genesis-builder
   GENESIS_CONTRACTS_BRANCH: master
-  GENESIS_CONTRACTS_COMMIT_SHA: 96a19dd # 2025/01/08
+  GENESIS_CONTRACTS_COMMIT_SHA: 96a19dd # 2025¬01¬08
 
   # pos-validator-config-generator settings
   VALIDATOR_CONFIG_IMAGE_NAME: 0xPolygon/pos-validator-config-generator
