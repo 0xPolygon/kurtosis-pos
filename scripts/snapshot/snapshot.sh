@@ -57,6 +57,19 @@ wait_for_rpcs_to_reach_block() {
 }
 
 ##############################################################################
+# UTILITY FUNCTIONS
+##############################################################################
+
+# List enclave containers, excluding kurtosis internals and ephemeral jobs.
+# Usage: get_enclave_containers <enclave_name> [--all]
+get_enclave_containers() {
+    local enclave_name="$1"
+    local extra_args="${2:-}"
+    docker ps $extra_args --filter "network=kt-$enclave_name" --format "{{.Names}}" \
+        | grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|read|run|reader|deriver|deployer|generator|monitor"
+}
+
+##############################################################################
 # DOCKER VOLUMES BACKUP
 ##############################################################################
 
@@ -73,8 +86,7 @@ backup_docker_volumes() {
     trap "rm -f '$temp_mounts'" EXIT
 
     # Get all containers (including stopped ones) for this enclave
-    mapfile -t CONTAINERS < <(docker ps --all --filter "network=kt-$enclave_name" --format "{{.Names}}" \
-        | grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|read|run|reader|deriver|deployer|generator|monitor")
+    mapfile -t CONTAINERS < <(get_enclave_containers "$enclave_name" --all)
 
     # Extract volume mounts from all containers
     for container in "${CONTAINERS[@]}"; do
@@ -146,8 +158,7 @@ generate_docker_compose() {
     local docker_compose_file="$2"
 
     # Store container names in an array
-    mapfile -t CONTAINERS < <(docker ps --all --filter "network=kt-$enclave_name" --format "{{.Names}}" \
-        | grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|read|run|reader|deriver|deployer|generator|monitor")
+    mapfile -t CONTAINERS < <(get_enclave_containers "$enclave_name" --all)
 
     # Generate docker-compose using docker-autocompose.
     # Use array expansion to pass each element as a separate argument
@@ -445,6 +456,14 @@ log_info "Using enclave name: $enclave_name"
 target_block=256 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"
 wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
+
+log_info "Stopping containers with extended timeout for clean database flush"
+mapfile -t containers < <(get_enclave_containers "$enclave_name")
+for container in "${containers[@]}"; do
+    docker stop --time=120 "$container" &
+done
+wait
+log_info "All containers stopped"
 
 log_info "Stopping the kurtosis enclave"
 kurtosis enclave stop "$enclave_name"
