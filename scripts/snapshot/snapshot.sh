@@ -460,7 +460,7 @@ wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 log_info "Stopping containers with extended timeout for clean database flush"
 mapfile -t containers < <(get_enclave_containers "$enclave_name")
 for container in "${containers[@]}"; do
-    docker stop --time=120 "$container" &
+    docker stop --timeout=120 "$container" &
 done
 wait
 log_info "All containers stopped"
