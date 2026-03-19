@@ -64,6 +64,12 @@ Tear down the devnet when you're done:
 docker compose --file ./tmp/docker-compose.yaml down --volumes
 ```
 
+You may also need to remove the snapshot data:
+
+```bash
+sudo rm -rf ./tmp
+```
+
 ## Create a snapshot from a kurtosis enclave
 
 You can also create your own snapshot from a kurtosis enclave using the `snapshot` script.
