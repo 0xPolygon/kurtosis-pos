@@ -147,9 +147,9 @@ Default: a single validator.
 
 ### `setup_images`
 
-|           Field            |  Type  |                        Default                         |                 Description                 |
+| Field                      | Type   | Default                                                | Description                                 |
 | -------------------------- | ------ | ------------------------------------------------------ | ------------------------------------------- |
-| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:049b35d4        | Image used to deploy MATIC contracts to L1  |
+| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:049b35d4       | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
 | validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.6.0 | Image used to generate validator configs    |
 
