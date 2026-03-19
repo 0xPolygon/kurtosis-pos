@@ -76,6 +76,14 @@ Deploy a kurtosis enclave using the configuration of your choice.
 Note that bor was not correctly flushing data to disk during shutdown in the past, which caused snapshots to be corrupted. This issue was fixed in [v2.6.0](https://github.com/0xPolygon/bor/releases/tag/v2.6.0). Unfortunately, the snapshots won't work with older bor versions.  
 :::
 
+For a simple environment to perform basic testing:
+
+```bash
+kurtosis run --enclave=pos .
+```
+
+For a more realistic environment with multiple validators and rpc nodes:
+
 ```bash
 kurtosis run --enclave=pos --args-file=.github/configs/large.yml.norun .
 ```
