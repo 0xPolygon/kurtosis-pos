@@ -30,7 +30,7 @@ env:
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
   POS_CONTRACTS_BRANCH: leovct/anvil-pos
-  POS_CONTRACTS_COMMIT_SHA: 9a339e5 # 2026-03-20
+  POS_CONTRACTS_COMMIT_SHA: 6dc87a5 # 2026-03-20
 
   # pos-el-genesis-builder settings
   EL_GENESIS_BUILDER_IMAGE_NAME: 0xPolygon/pos-el-genesis-builder
