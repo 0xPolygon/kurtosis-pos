@@ -2,7 +2,7 @@ FROM node:20-slim
 LABEL description="Polygon PoS contracts deployment image"
 LABEL author="devtools@polygon.technology"
 
-ARG POS_CONTRACTS_BRANCH="leovct/anvil-pos"
+ARG POS_CONTRACTS_BRANCH="anvil-pos"
 ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="38560f35"
 
 ENV FOUNDRY_VERSION="stable"
