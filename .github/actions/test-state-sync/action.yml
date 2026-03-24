@@ -13,7 +13,7 @@ inputs:
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
-    default: 2687c0c751e7cae2deaf4e99b13ae0d0ef97b2d7
+    default: b76f51b3c9bf05a775df9f6cc93707d9e0ea57cc
 
 runs:
   using: composite
