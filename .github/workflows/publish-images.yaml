@@ -30,7 +30,7 @@ env:
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
   POS_CONTRACTS_BRANCH: leovct/map-pol-to-l2-native-token
-  POS_CONTRACTS_COMMIT_SHA: 86e7317 # 2026-03-24
+  POS_CONTRACTS_COMMIT_SHA: "86e7317"
 
   # pos-el-genesis-builder settings
   EL_GENESIS_BUILDER_IMAGE_NAME: 0xPolygon/pos-el-genesis-builder
