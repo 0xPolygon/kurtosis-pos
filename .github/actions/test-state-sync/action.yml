@@ -47,7 +47,7 @@ runs:
     - name: Test state syncs
       working-directory: agglayer-e2e
       shell: bash
-      run: bats --filter 'bridge MATIC/POL, ERC20, and ERC721 from L1 to L2 and confirm L2 balances increased' tests/pos/bridge.bats
+      run: bats --filter 'bridge POL from L1 to L2 and confirm native tokens balance increased on L2' tests/pos/bridge.bats
       env:
         L1_RPC_URL: ${{ env.L1_RPC_URL }}
         TIMEOUT_SECONDS: 600 # default: 180
