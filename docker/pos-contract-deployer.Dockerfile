@@ -3,7 +3,7 @@ LABEL description="Polygon PoS contracts deployment image"
 LABEL author="devtools@polygon.technology"
 
 ARG POS_CONTRACTS_BRANCH="leovct/map-pol-to-l2-native-token"
-ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="86e7317"
+ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="603b22f"
 
 ENV FOUNDRY_VERSION="stable"
 ENV EL_CHAIN_ID="4927"
