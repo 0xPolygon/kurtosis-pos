@@ -2,10 +2,6 @@ name: run-e2e-tests
 description: Run end-to-end pos tests
 
 inputs:
-  enclave_name:
-    description: The name of the kurtosis enclave
-    required: false
-    default: pos
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
