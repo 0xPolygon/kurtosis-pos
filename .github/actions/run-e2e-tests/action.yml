@@ -1,0 +1,46 @@
+name: run-e2e-tests
+description: Run end-to-end pos tests
+
+inputs:
+  enclave_name:
+    description: The name of the kurtosis enclave
+    required: false
+    default: pos
+  agglayer_e2e_tag:
+    description: The git tag, branch, or commit hash of agglayer/e2e
+    required: false
+    default: 66e9be9698279396e53a36734d92779c65668dba
+
+runs:
+  using: composite
+  steps:
+    - name: Clone agglayer/e2e
+      uses: actions/checkout@v6
+      with:
+        repository: agglayer/e2e
+        path: agglayer-e2e
+        ref: ${{ inputs.agglayer_e2e_tag }}
+
+    - name: Install bats
+      uses: bats-core/bats-action@42fcc8700f773c075a16a90eb11674c0318ad507 # 3.0.1
+      with:
+        support-path: ${{ github.workspace }}/lib/bats-support
+        assert-path: ${{ github.workspace }}/lib/bats-assert
+        detik-path: ${{ github.workspace }}/lib/bats-detik
+        file-path: ${{ github.workspace }}/lib/bats-file
+
+    - name: Run bridge tests
+      working-directory: agglayer-e2e
+      shell: bash
+      run: |
+        bats --filter-tags bridge tests/pos/bridge.bats
+        bats --filter-tags withdraw tests/pos/bridge.bats
+      env:
+        TIMEOUT_SECONDS: 600 # default: 180
+
+    - name: Run validator tests
+      working-directory: agglayer-e2e
+      shell: bash
+      run: bats tests/pos/validators.bats
+      env:
+        TIMEOUT_SECONDS: 600 # default: 180
