@@ -42,6 +42,9 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                     "lisovo_pro_fork_block": network_params.get(
                         "lisovo_pro_fork_block"
                     ),
+                    "deterministic_state_sync_fork_block": network_params.get(
+                        "deterministic_state_sync_fork_block"
+                    ),
                 },
             )
         },

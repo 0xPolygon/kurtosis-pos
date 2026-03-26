@@ -1,3 +1,5 @@
 tmp/
 test
 params.yml
+.idea
+.DS_Store

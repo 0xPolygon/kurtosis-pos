@@ -278,8 +278,9 @@ sh_checkpoint_ack_interval = "30m0s"
 sh_max_depth_duration = "24h0m0s"
 
 #### gas price configs (EIP-1559) ####
-main_chain_gas_fee_cap = "500000000000"
-main_chain_gas_tip_cap = "10000000000"
+# Commented out: not supported by heimdall-v2 <= 0.6.0. Uncomment when minimum version supports these fields.
+# main_chain_gas_fee_cap = "500000000000"
+# main_chain_gas_tip_cap = "10000000000"
 
 ##### Timeout Config #####
 no_ack_wait_time = "30m0s"

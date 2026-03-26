@@ -139,6 +139,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         "dandeli_fork_block": constants.EL_HARD_FORK_BLOCKS.get("dandeli"),
         "lisovo_fork_block": constants.EL_HARD_FORK_BLOCKS.get("lisovo"),
         "lisovo_pro_fork_block": constants.EL_HARD_FORK_BLOCKS.get("lisovoPro"),
+        "deterministic_state_sync_fork_block": constants.EL_HARD_FORK_BLOCKS.get("deterministicStateSync"),
     },
     "additional_services": [],
 }
