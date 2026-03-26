@@ -68,6 +68,13 @@ jq --arg a "${admin_address}" --arg b "${ADMIN_BALANCE_WEI}" \
   '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
+# Add the EIP-2935 block hash history contract to the alloc field.
+eip2935_address="0000F90827F1C53a10cb7A02335B175320002935"
+eip2935_code="0x3373fffffffffffffffffffffffffffffffffffffffe14604657602036036042575f35600143038111604257611fff81430311604257611fff9006545f5260205ff35b5f5ffd5b5f35611fff60014303065500"
+jq --arg a "${eip2935_address}" --arg c "${eip2935_code}" \
+  '.alloc[$a] = {"balance": "0x0", "code": $c}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
+mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
+
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
 jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
   "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" > tmp.json
