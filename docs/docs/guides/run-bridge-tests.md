@@ -44,12 +44,13 @@ After the tests complete, you should see output similar to:
 
 ```bash
 pos/plasma-bridge.bats
- ✓ bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased
- ✓ bridge some ERC20 tokens from L1 to L2 and confirm L2 ERC20 balance increased
- ✓ bridge an ERC721 token from L1 to L2 and confirm L2 ERC721 balance increased
- ✓ bridge MATIC/POL, ERC20, and ERC721 from L1 to L2 and confirm L2 balances increased
+ ✓ bridge POL from L1 to L2 via Plasma bridge and confirm native tokens balance increased on L2
+ ✓ bridge MATIC from L1 to L2 via Plasma bridge and confirm native tokens balance increased on L2
+ ✓ bridge ETH from L1 to L2 via Plasma bridge and confirm MaticWeth balance increased on L2
+ ✓ bridge ERC20 tokens from L1 to L2 via Plasma bridge and confirm ERC20 balance increased on L2
+ ✓ bridge ERC721 token from L1 to L2 via Plasma bridge and confirm ERC721 balance increased on L2
 
-4 tests, 0 failures
+5 tests, 0 failures
 ```
 
 If any tests fail, check the logs in your Kurtosis enclave for more details.
