@@ -10,8 +10,8 @@ This guide will show you how to spin up PoS devnets under 20 seconds using snaps
 
 We provide two snapshot types:
 
-- **small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities.
-- **large**: the environment contains an L1 chain and an L2 chain with 7 heimdall-v2/bor validators, 3 rpc nodes (one stateless bor node, one stateful bor node, one stateful erigon node) and one archive bor node. Useful for testing in a more realistic environment.
+- **pos-devnet-small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities.
+- **pos-devnet-large**: the environment contains an L1 chain and an L2 chain with 7 heimdall-v2/bor validators, 3 rpc nodes (one stateless bor node, one stateful bor node, one stateful erigon node) and one archive bor node. Useful for testing in a more realistic environment.
 
 Environments are snapshotted around block 100 on the L2 chain, which should be enough for most testing purposes.
 
@@ -64,6 +64,12 @@ Tear down the devnet when you're done:
 docker compose --file ./tmp/docker-compose.yaml down --volumes
 ```
 
+You may also need to remove the snapshot data:
+
+```bash
+sudo rm -rf ./tmp
+```
+
 ## Create a snapshot from a kurtosis enclave
 
 You can also create your own snapshot from a kurtosis enclave using the `snapshot` script.
@@ -76,11 +82,16 @@ Deploy a kurtosis enclave using the configuration of your choice.
 Note that bor was not correctly flushing data to disk during shutdown in the past, which caused snapshots to be corrupted. This issue was fixed in [v2.6.0](https://github.com/0xPolygon/bor/releases/tag/v2.6.0). Unfortunately, the snapshots won't work with older bor versions.  
 :::
 
+For a simple environment to perform basic testing:
+
 ```bash
-kurtosis run \
-    --enclave pos \
-    --args-file .github/configs/large.yml.norun \
-    github.com/0xPolygon/kurtosis-pos@v1.2.13
+kurtosis run --enclave=pos .
+```
+
+For a more realistic environment with multiple validators and rpc nodes:
+
+```bash
+kurtosis run --enclave=pos --args-file=.github/configs/large.yml.norun .
 ```
 
 ### Snapshot the enclave

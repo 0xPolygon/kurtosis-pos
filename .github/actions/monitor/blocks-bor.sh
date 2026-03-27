@@ -1,40 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script monitors Bor block progress in a Polygon PoS devnet.
-# Usage: ./blocks-bor.sh <enclave_name> [first|all]
-# Example: ./blocks-bor.sh pos first  # Check only the first RPC
-# Example: ./blocks-bor.sh pos all    # Check all RPCs (default)
+# This script monitors block progress in a Polygon PoS devnet.
+# Usage: ./blocks-bor.sh <docker_network> [target_block]
+# Example: ./blocks-bor.sh kt-pos 100
 
-# Source logging library
+# Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/log.sh"
+source "${SCRIPT_DIR}/lib/log.sh"
+source "${SCRIPT_DIR}/lib/docker.sh"
 
-# Function to monitor a single RPC
-monitor_rpc() {
-  local rpc_entry="$1"
-  local enclave_name="$2"
-  local target="$3"
-  local rpc_name="${rpc_entry%%--*}"
-
-  log_info "Checking RPC: ${rpc_name}"
-
-  local rpc_url
-  rpc_url=$(kurtosis port print "${enclave_name}" "${rpc_name}" rpc)
-  log_info "Using rpc url: ${rpc_url}"
+# Function to monitor an EL node
+monitor_el_node() {
+  local container="$1"
+  local target="$2"
+  local host_port
+  host_port=$(docker port "${container}" 8545 2>/dev/null | head -1 | sed 's/0.0.0.0/127.0.0.1/')
+  if [[ -z "${host_port}" ]]; then
+    log_error "No published port 8545" "container=${container}"
+    return 1
+  fi
+  local rpc_url="http://${host_port}"
 
   local num_steps=100
   local gas_price_factor=1
-  local LATEST_BLOCK=0
-  local FINALIZED_BLOCK=0
+  local latest_block=0
+  local finalized_block=0
 
   for step in $(seq 1 "${num_steps}"); do
-    log_info "Check ${step}/${num_steps} for ${rpc_name}"
-
-    LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}")
-    FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}")
-    log_info "Got block height: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
-    if [[ "${LATEST_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
+    latest_block=$(cast bn --rpc-url "${rpc_url}")
+    finalized_block=$(cast bn finalized --rpc-url "${rpc_url}")
+    log_debug "Check" "container=${container}" "step=${step}/${num_steps}" "latest=${latest_block}" "finalized=${finalized_block}"
+    if [[ "${latest_block}" -ge "${target}" && "${finalized_block}" -ge "${target}" ]]; then
       break
     fi
 
@@ -43,7 +40,7 @@ monitor_rpc() {
     gas_price=$(cast gas-price --rpc-url "$rpc_url")
     gas_price=$(bc -l <<< "$gas_price * $gas_price_factor" | sed 's/\..*//')
 
-    log_info "Sending a test transaction"
+    log_debug "Sending a test transaction"
     set +e
     cast send \
       --legacy \
@@ -65,64 +62,52 @@ monitor_rpc() {
     sleep 5
   done
 
-  # Check if target was reached for this RPC
-  if [[ "${LATEST_BLOCK}" -lt "${target}" || "${FINALIZED_BLOCK}" -lt "${target}" ]]; then
-    log_error "Target block height has not been reached for ${rpc_name}" "target=${target}"
+  # Check if target was reached for this container
+  if [[ "${latest_block}" -lt "${target}" || "${finalized_block}" -lt "${target}" ]]; then
+    log_error "Target block height not reached" "container=${container}" "target=${target}"
     return 1
   fi
 
-  log_info "Target block height reached for all block types (latest and finalized) for ${rpc_name}" "target=${target}"
+  log_info "Target block height reached" "container=${container}"
   return 0
 }
 
-log_info "Monitoring Bor block progress"
-
 # Validate input parameters
-enclave_name=${1:-"pos"}
-if [[ -z "${enclave_name}" ]]; then
-  log_error "Enclave name must be provided"
+docker_network=${1:-"kt-pos"}
+if [[ -z "${docker_network}" ]]; then
+  log_error "Docker network name must be provided"
   exit 1
 fi
-log_info "Using enclave name: ${enclave_name}"
-
-check_mode=${2:-"all"}
-if [[ "${check_mode}" != "first" && "${check_mode}" != "all" ]]; then
-  log_error "Check mode must be 'first' or 'all'"
+# A sprint is 16 blocks, so 40 blocks should be enough to see progress.
+# This can be overridden by providing a second argument.
+target=${2:-"40"}
+if [[ -z "${target}" ]]; then
+  log_error "Target block height must be provided"
   exit 1
 fi
-log_info "Using check mode: ${check_mode}"
+log_info "Monitoring Bor block progress" "network=${docker_network}" "target=${target}"
 
-# Get RPC names
-if [[ "${check_mode}" == "first" ]]; then
-  rpc_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-el/ && /RUNNING/ {print $2 "--" $1}' | head -n 1)
-else
-  rpc_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-el/ && /RUNNING/ {print $2 "--" $1}')
-fi
-if [[ -z "${rpc_names}" ]]; then
-  log_error "No running l2-el services found in enclave ${enclave_name}"
-  exit 1
-fi
-log_info "Found RPC(s): ${rpc_names}"
+# Get EL containers
+containers=$(get_el_containers "${docker_network}")
 
-target="40" # a sprint is 16 blocks so 40 is ~2.5 sprints, which should be enough to see progress
-log_info "Using target: ${target}"
-
-# Monitor block progress for each RPC in parallel
 declare -a pids=()
-declare -a rpc_array=()
+declare -a container_array=()
+while IFS= read -r container; do
+  container_array+=("${container}")
+done <<< "${containers}"
+count=${#container_array[@]}
+if [[ "${count}" -eq 1 ]]; then
+  log_info "Found 1 container" "container=${container_array[0]}"
+else
+  log_info "Found ${count} containers" "containers=$(IFS=,; echo "${container_array[*]}")"
+fi
 
-# Convert rpc_names to array
-while IFS= read -r rpc_entry; do
-  rpc_array+=("${rpc_entry}")
-done <<< "${rpc_names}"
-
-# Launch monitoring jobs in parallel
-for rpc_entry in "${rpc_array[@]}"; do
-  monitor_rpc "${rpc_entry}" "${enclave_name}" "${target}" &
+# Monitor block progress for each container, in parallel
+for container in "${container_array[@]}"; do
+  monitor_el_node "${container}" "${target}" &
   pids+=($!)
 done
 
-# Wait for all background jobs and collect exit codes
 failed=0
 for pid in "${pids[@]}"; do
   if ! wait "${pid}"; then
@@ -130,11 +115,11 @@ for pid in "${pids[@]}"; do
   fi
 done
 
-# Check if any RPC failed
+# Check if any container failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more RPCs failed to reach target block height" "target=${target}"
+  log_error "One or more containers failed to reach target block height" "target=${target}"
   exit 1
 fi
 
-log_info "All RPCs have reached target block height" "target=${target}"
+log_info "Devnet reached target block height"
 exit 0

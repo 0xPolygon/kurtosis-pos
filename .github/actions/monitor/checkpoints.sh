@@ -2,47 +2,37 @@
 set -euo pipefail
 
 # This script monitors checkpoints progress in a Polygon PoS devnet.
-# Usage: ./checkpoints.sh <enclave_name>
-# Example: ./checkpoints.sh pos
+# Usage: ./checkpoints.sh <docker_network>
+# Example: ./checkpoints.sh kt-pos
 
-# Source logging library
+# Source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/log.sh"
-
-log_info "Monitoring checkpoints progress"
+source "${SCRIPT_DIR}/lib/log.sh"
+source "${SCRIPT_DIR}/lib/docker.sh"
 
 # Validate input parameters
-enclave_name=${1:-"pos"}
-if [[ -z "${enclave_name}" ]]; then
-  log_error "Enclave name must be provided"
+docker_network=${1:-"kt-pos"}
+if [[ -z "${docker_network}" ]]; then
+  log_error "Docker network name must be provided"
   exit 1
 fi
-log_info "Using enclave name: ${enclave_name}"
-
-cl_name="l2-cl-1-heimdall-v2-bor-validator"
-log_info "Using CL node: ${cl_name}"
-
-api_url=$(kurtosis port print "${enclave_name}" "${cl_name}" http)
-log_info "Using API url: ${api_url}"
-
 target="1"
-log_info "Using target: ${target}"
+log_info "Monitoring checkpoints progress" "network=${docker_network}" "target=${target}"
+
+# Get CL API URL
+api_url=$(get_any_cl_api_url "${docker_network}")
 
 # Monitor checkpoint progress
 num_steps=100
-gas_price_factor=1
 for step in $(seq 1 "${num_steps}"); do
-  log_info "Check ${step}/${num_steps}"
-
-  CHECKPOINTS_COUNT=$(curl "${api_url}/checkpoints/count" | jq --raw-output '.ack_count')
-  log_info "Got checkpoints count: ${CHECKPOINTS_COUNT}"
-  if [[ "${CHECKPOINTS_COUNT}" -ge "${target}" ]]; then
-    log_info "Target checkpoints reached" "target=${target}"
+  checkpoints_count=$(curl -sS "${api_url}/checkpoints/count" | jq --raw-output '.ack_count')
+  log_debug "Check" "step=${step}/${num_steps}" "count=${checkpoints_count}"
+  if [[ "${checkpoints_count}" -ge "${target}" ]]; then
+    log_info "Devnet reached target checkpoints"
     exit 0
   fi
   sleep 5
 done
 
-# If the code reaches here, the target was not met within the allowed steps
-log_error "Target checkpoints have not been reached" "target=${target}"
+log_error "Target checkpoints not reached" "target=${target}"
 exit 1

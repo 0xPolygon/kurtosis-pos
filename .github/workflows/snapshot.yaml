@@ -31,15 +31,13 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file .github/configs/large.yml.norun .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file=.github/configs/large.yml.norun .
 
       - name: Create snapshot
         run: ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
 
-      - name: Verify snapshot image exists
-        run: docker image inspect pos-devnet
-
-      - uses: ./.github/actions/cleanup
+      - name: Remove the kurtosis enclave
+        run: kurtosis enclave rm --force ${{ env.ENCLAVE_NAME }}
 
       - name: Extract snapshot data
         run: ./scripts/snapshot/extract.sh pos-devnet
@@ -47,15 +45,13 @@ jobs:
       - name: Restore devnet from snapshot
         run: ./scripts/snapshot/restore.sh
 
-      - name: Verify restored devnet produces blocks
-        run: |
-          target_block=200
-          while true; do
-            block=$(cast bn --rpc-url localhost:9545)
-            echo "L2 block: $block/$target_block"
-            if [[ "$block" -ge "$target_block" ]]; then
-              echo "Restored devnet is producing blocks!"
-              break
-            fi
-            sleep 5
-          done
+      - name: List containers
+        run: docker ps --filter "network=kt-${{ env.ENCLAVE_NAME }}" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+
+      - name: Monitor Bor block progress
+        working-directory: .github/actions/monitor
+        run: ./blocks-bor.sh kt-${{ env.ENCLAVE_NAME }} 356 # 100 blocks after the snapshot block
+
+      - name: Monitor Heimdall block progress
+        working-directory: .github/actions/monitor
+        run: ./blocks-heimdall.sh kt-${{ env.ENCLAVE_NAME }} 100
