@@ -43,7 +43,7 @@ kurtosis service exec pos test-runner "bats --filter-tags pos,bridge --recursive
 After the tests complete, you should see output similar to:
 
 ```bash
-pos/bridge.bats
+pos/plasma-bridge.bats
  ✓ bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased
  ✓ bridge some ERC20 tokens from L1 to L2 and confirm L2 ERC20 balance increased
  ✓ bridge an ERC721 token from L1 to L2 and confirm L2 ERC721 balance increased

@@ -5,7 +5,7 @@ inputs:
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
-    default: 37d404cb4a38143b8e116b58a4f4ff104c258b33
+    default: bf669bf6a3f6e0a6ef282b74a1ea3893cd21d31c
 
 runs:
   using: composite
@@ -29,8 +29,8 @@ runs:
       working-directory: agglayer-e2e
       shell: bash
       run: |
-        bats --filter-tags bridge tests/pos/bridge.bats
-        bats --filter-tags withdraw tests/pos/bridge.bats
+        bats --filter-tags bridge tests/pos/plasma-bridge.bats
+        bats --filter-tags withdraw tests/pos/plasma-bridge.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 
