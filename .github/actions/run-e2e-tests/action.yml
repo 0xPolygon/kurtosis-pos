@@ -6,6 +6,10 @@ inputs:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
     default: a65d806d9e72ee3c6db10b5ab6838bfb3bfd6e57
+  polygon_cli_tag:
+    description: The git tag, branch, or commit hash of polygon-cli
+    required: false
+    default: 66ecb2f # built on top of v0.1.108
 
 runs:
   using: composite
@@ -24,6 +28,15 @@ runs:
         assert-path: ${{ github.workspace }}/lib/bats-assert
         detik-path: ${{ github.workspace }}/lib/bats-detik
         file-path: ${{ github.workspace }}/lib/bats-file
+
+    - name: Install Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: "1.26"
+
+    - name: Install polygon-cli
+      shell: bash
+      run: go install github.com/0xPolygon/polygon-cli@${{ inputs.polygon_cli_tag }}
 
     - name: Run bridge tests
       working-directory: agglayer-e2e
