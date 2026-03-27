@@ -137,7 +137,7 @@ Default: a single validator.
 | cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                          |
 | cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                         |
 | el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                       |
-| el_image                         | string | 0xpolygon/bor:2.6.2         | Image for the EL client (bor: `0xpolygon/bor:2.6.2`, erigon: `0xpolygon/erigon:v3.4.0`)   |
+| el_image                         | string | 0xpolygon/bor:2.7.0         | Image for the EL client (bor: `0xpolygon/bor:2.7.0`, erigon: `0xpolygon/erigon:v3.5.0`)   |
 | el_log_level                     | string | info                        | Log level for the EL client                                                               |
 | el_log_format                    | string | text                        | Log format for the EL client                                                              |
 | el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                    |
@@ -188,6 +188,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | dandeli_fork_block                    | int    | 256                | Block number for Dandeli hard fork activation                      |
 | lisovo_fork_block                     | int    | 256                | Block number for Lisovo hard fork activation                       |
 | lisovo_pro_fork_block                 | int    | 256                | Block number for Lisovo Pro hard fork activation                   |
+| giugliano_fork_block                  | int    | 256                | Block number for Giugliano hard fork activation                    |
 
 ### `additional_services`
 
