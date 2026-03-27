@@ -29,8 +29,8 @@ env:
 
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
-  POS_CONTRACTS_BRANCH: leovct/map-pol-to-l2-native-token
-  POS_CONTRACTS_COMMIT_SHA: "f1c2f5d1"
+  POS_CONTRACTS_BRANCH: anvil-pos
+  POS_CONTRACTS_COMMIT_SHA: "bc28cfd8"
 
   # pos-el-genesis-builder settings
   EL_GENESIS_BUILDER_IMAGE_NAME: 0xPolygon/pos-el-genesis-builder
