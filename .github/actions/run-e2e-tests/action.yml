@@ -5,7 +5,7 @@ inputs:
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
-    default: 773196bd67d12696ebc19f6c6122392c9dbe16c3
+    default: 2ab883ab2361becb57107bc75dc213e313fa164c
 
 runs:
   using: composite
@@ -37,6 +37,6 @@ runs:
     - name: Run validator tests
       working-directory: agglayer-e2e
       shell: bash
-      run: bats tests/pos/validators.bats
+      run: bats tests/pos/validator.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
