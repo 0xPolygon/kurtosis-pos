@@ -6,6 +6,10 @@ sidebar_position: 2
 
 This guide will show you how to run end-to-end (e2e) bridge tests against a Kurtosis devnet.
 
+:::note
+The devnet deploys the **Plasma bridge** only (DepositManager, WithdrawManager, predicates). The newer **PoS bridge** (RootChainManager/FxPortal) is not deployed. All bridge tests cover the Plasma bridge flow.
+:::
+
 :::info
 This guide assumes you have a running devnet, if that's not the case, you can head to the [Getting Started](../introduction/getting-started.md) section.
 :::
