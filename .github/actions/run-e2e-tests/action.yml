@@ -9,7 +9,7 @@ inputs:
   polygon_cli_tag:
     description: The git tag, branch, or commit hash of polygon-cli
     required: false
-    default: 66ecb2f # built on top of v0.1.108
+    default: afa6df5420ad657800f50c28da132307e85bae35 # built on top of v0.1.108
 
 runs:
   using: composite
