@@ -42,6 +42,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                     "lisovo_pro_fork_block": network_params.get(
                         "lisovo_pro_fork_block"
                     ),
+                    "giugliano_fork_block": network_params.get("giugliano_fork_block"),
                 },
             )
         },
