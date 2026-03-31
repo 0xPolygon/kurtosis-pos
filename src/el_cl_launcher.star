@@ -49,7 +49,7 @@ def launch(
     participant_index = 0
     validator_index = 0
     cl_contexts = []
-    participant_list = []  # flat list of (participant, is_validator) for phase 2
+    participant_list = []  # flat list of participants for phase 2
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
@@ -78,7 +78,7 @@ def launch(
             )
 
             cl_contexts.append(cl_context)
-            participant_list.append((participant, is_validator))
+            participant_list.append(participant)
 
             # Increment the indexes.
             participant_index += 1
@@ -89,7 +89,7 @@ def launch(
     participant_index = 0
     all_participants = []
     ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
-    for i, (participant, _) in enumerate(participant_list):
+    for i, participant in enumerate(participant_list):
         plan.print(
             "Launching EL for participant {} with config: {}".format(
                 participant_index + 1, str(participant)
