@@ -21,7 +21,7 @@ permissions:
 env:
   # Number of parallel runs per config. 20 gives >99.9% chance of detecting a
   # 33% failure rate; adjust once the devnet is stable.
-  RUN_COUNT: 20
+  RUN_COUNT: 30
   # Configs to test. "default" runs without an args file (1 validator); all
   # others map to .github/configs/<config>.yml.
   CONFIGS: '["default", "heimdall-v2-bor", "heimdall-v2-mix"]'
