@@ -85,8 +85,6 @@ jobs:
         uses: ./.github/actions/monitor
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
-          skip_milestones: 'true'
-          skip_checkpoints: 'true'
 
       - name: Record result
         if: always()
