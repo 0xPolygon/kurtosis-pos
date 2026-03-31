@@ -1,0 +1,220 @@
+name: stability
+
+# Runs independent kurtosis-pos deployments per config in parallel to measure
+# startup failure rate. Each job deploys one enclave, uploads the full run log as
+# an artifact, and records success or failure. The summary job aggregates results
+# per config and posts a GitHub job summary.
+
+on:
+  # Schedule: daily while the devnet is stabilising; migrate to Mon/Wed/Fri
+  # (`0 6 * * 1,3,5`) once the failure rate is consistently near 0%.
+  schedule:
+    - cron: 0 6 * * * # Run this workflow every day at 6 AM UTC.
+  workflow_dispatch:
+
+# Permissions required to pull images from GAR.
+permissions:
+  contents: read
+  actions: write
+  id-token: write
+
+env:
+  # Number of parallel runs per config. 20 gives >99.9% chance of detecting a
+  # 33% failure rate; adjust once the devnet is stable.
+  RUN_COUNT: 20
+  # Configs to test. "default" runs without an args file (1 validator); all
+  # others map to .github/configs/<config>.yml.
+  CONFIGS: '["default", "heimdall-v2-bor", "heimdall-v2-mix"]'
+  # Kurtosis enclave name. Reused across all jobs — safe because each job runs on
+  # its own runner with an isolated Docker daemon.
+  ENCLAVE_NAME: pos
+  # Slack channel ID for the post-run notification.
+  DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      index: ${{ steps.set.outputs.index }}
+      configs: ${{ steps.set.outputs.configs }}
+    steps:
+      - id: set
+        run: |
+          echo "index=$(seq 1 ${{ env.RUN_COUNT }} | jq -sc .)" >> $GITHUB_OUTPUT
+          echo 'configs<<EOF' >> $GITHUB_OUTPUT
+          echo '${{ env.CONFIGS }}' >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+  stability-run:
+    needs: [generate-matrix]
+    name: run-${{ matrix.config }}-${{ matrix.index }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJson(needs.generate-matrix.outputs.configs) }}
+        index: ${{ fromJson(needs.generate-matrix.outputs.index) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Deploy devnet
+        id: deploy
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          if [[ "${{ matrix.config }}" == "default" ]]; then
+            kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+          else
+            kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=.github/configs/${{ matrix.config }}.yml . 2>&1 | tee run.log
+          fi
+
+      - name: Monitor devnet
+        id: monitor
+        if: steps.deploy.outcome == 'success'
+        continue-on-error: true
+        uses: ./.github/actions/monitor
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+
+      - name: Record result
+        if: always()
+        run: |
+          if [[ "${{ steps.deploy.outcome }}" == "success" && "${{ steps.monitor.outcome }}" == "success" ]]; then
+            result="success"
+          else
+            result="failure"
+          fi
+          echo "Run ${{ matrix.config }}-${{ matrix.index }}: $result"
+          echo "$result" > "result-${{ matrix.config }}-${{ matrix.index }}.txt"
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stability-${{ matrix.config }}-${{ matrix.index }}
+          path: |
+            result-${{ matrix.config }}-${{ matrix.index }}.txt
+            run.log
+
+      - uses: ./.github/actions/cleanup
+        if: always()
+        with:
+          args_filename: ${{ matrix.config }}-${{ matrix.index }}
+
+  stability-summary:
+    needs: [generate-matrix, stability-run]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Download all results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: stability-*
+          merge-multiple: true
+          path: results/
+
+      - name: Generate summary
+        id: summary
+        env:
+          CONFIGS: ${{ needs.generate-matrix.outputs.configs }}
+        run: |
+          declare -A total_map success_map failures_map rate_map
+          configs=()
+
+          # First pass: collect stats per config.
+          for config in $(echo "$CONFIGS" | jq -r '.[]'); do
+            configs+=("$config")
+            total=0
+            success=0
+
+            for f in results/result-${config}-*.txt; do
+              [[ -f "$f" ]] || continue
+              result=$(cat "$f")
+              total=$((total + 1))
+              [[ "$result" == "success" ]] && success=$((success + 1))
+            done
+
+            failures=$((total - success))
+            failure_rate=$(( total > 0 ? failures * 100 / total : 0 ))
+
+            total_map[$config]=$total
+            success_map[$config]=$success
+            failures_map[$config]=$failures
+            rate_map[$config]=$failure_rate
+
+            echo "${config}: total=$total success=$success failures=$failures rate=${failure_rate}%"
+          done
+
+          # Second pass: build a single table with configs as columns.
+          header="| |"
+          separator="|---|"
+          for config in "${configs[@]}"; do
+            header+=" \`${config}\` |"
+            separator+="---|"
+          done
+
+          total_row="| Total runs |"
+          success_row="| ✅ Success |"
+          failures_row="| ❌ Failure |"
+          rate_row="| **Failure rate** |"
+          for config in "${configs[@]}"; do
+            total_row+=" ${total_map[$config]} |"
+            success_row+=" ${success_map[$config]} |"
+            failures_row+=" ${failures_map[$config]} |"
+            rate_row+=" **${rate_map[$config]}%** |"
+          done
+
+          {
+            echo "## Startup Stability Results"
+            echo ""
+            echo "$header"
+            echo "$separator"
+            echo "$total_row"
+            echo "$success_row"
+            echo "$failures_row"
+            echo "$rate_row"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Build Slack summary lines.
+          slack_lines=""
+          for config in "${configs[@]}"; do
+            if [[ ${total_map[$config]} -eq 0 ]]; then
+              echo "No results found for \`${config}\`." >> "$GITHUB_STEP_SUMMARY"
+              slack_lines+="• \`${config}\`: no results\n"
+            elif [[ ${failures_map[$config]} -eq 0 ]]; then
+              slack_lines+="• \`${config}\`: 0 failures out of ${total_map[$config]} runs ✅\n"
+            else
+              slack_lines+="• \`${config}\`: ${failures_map[$config]} failures out of ${total_map[$config]} runs (${rate_map[$config]}%) ❌\n"
+            fi
+          done
+
+          echo "slack_lines=$slack_lines" >> "$GITHUB_OUTPUT"
+
+      - uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
+        if: always()
+        with:
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          method: chat.postMessage
+          payload: |
+            {
+              "channel": "${{ env.DEVTOOLS_SLACK_ALERTS_CHANNEL_ID }}",
+              "text": "Kurtosis PoS Startup Stability",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis PoS Startup Stability> — ${{ contains(needs.stability-run.result, 'failure') && 'some runs failed ⚠️' || 'all runs passed ✅' }}\n${{ steps.summary.outputs.slack_lines }}"
+                  }
+                }
+              ]
+            }
