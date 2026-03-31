@@ -49,7 +49,6 @@ def launch(
     participant_index = 0
     validator_index = 0
     cl_contexts = []
-    participant_list = []  # flat list of participants for phase 2
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
@@ -78,7 +77,6 @@ def launch(
             )
 
             cl_contexts.append(cl_context)
-            participant_list.append(participant)
 
             # Increment the indexes.
             participant_index += 1
@@ -89,41 +87,42 @@ def launch(
     participant_index = 0
     all_participants = []
     ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
-    for i, participant in enumerate(participant_list):
-        plan.print(
-            "Launching EL for participant {} with config: {}".format(
-                participant_index + 1, str(participant)
+    for _, participant in enumerate(participants):
+        for _ in range(participant.get("count")):
+            plan.print(
+                "Launching EL for participant {} with config: {}".format(
+                    participant_index + 1, str(participant)
+                )
             )
-        )
 
-        cl_context = cl_contexts[i]
-        el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
-        el_context = el_launcher.launch(
-            plan,
-            participant,
-            participant_index + 1,
-            network_params,
-            el_genesis_artifact,
-            cl_context.api_url,
-            cl_context.ws_rpc_url,
-            el_account,
-            network_data.el_static_nodes,
-            container_proc_manager_artifact,
-            ethstats_server_params,
-        )
-
-        # Add the node to the all_participants array.
-        all_participants.append(
-            participant_module.new_participant(
-                kind=participant.get("kind"),
-                cl_type=participant.get("cl_type"),
-                el_type=participant.get("el_type"),
-                cl_context=cl_context,
-                el_context=el_context,
+            cl_context = cl_contexts[participant_index]
+            el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
+            el_context = el_launcher.launch(
+                plan,
+                participant,
+                participant_index + 1,
+                network_params,
+                el_genesis_artifact,
+                cl_context.api_url,
+                cl_context.ws_rpc_url,
+                el_account,
+                network_data.el_static_nodes,
+                container_proc_manager_artifact,
+                ethstats_server_params,
             )
-        )
 
-        participant_index += 1
+            # Add the node to the all_participants array.
+            all_participants.append(
+                participant_module.new_participant(
+                    kind=participant.get("kind"),
+                    cl_type=participant.get("cl_type"),
+                    el_type=participant.get("el_type"),
+                    cl_context=cl_context,
+                    el_context=el_context,
+                )
+            )
+
+            participant_index += 1
 
     # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:
