@@ -53,7 +53,7 @@ jobs:
     needs: [generate-matrix]
     name: run-${{ matrix.config }}-${{ matrix.index }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -78,10 +78,24 @@ jobs:
             kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=.github/configs/${{ matrix.config }}.yml . 2>&1 | tee run.log
           fi
 
+      - name: Monitor devnet
+        id: monitor
+        if: steps.deploy.outcome == 'success'
+        continue-on-error: true
+        uses: ./.github/actions/monitor
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+          skip_milestones: 'true'
+          skip_checkpoints: 'true'
+
       - name: Record result
         if: always()
         run: |
-          result="${{ steps.deploy.outcome }}"
+          if [[ "${{ steps.deploy.outcome }}" == "success" && "${{ steps.monitor.outcome }}" == "success" ]]; then
+            result="success"
+          else
+            result="failure"
+          fi
           echo "Run ${{ matrix.config }}-${{ matrix.index }}: $result"
           echo "$result" > "result-${{ matrix.config }}-${{ matrix.index }}.txt"
 
