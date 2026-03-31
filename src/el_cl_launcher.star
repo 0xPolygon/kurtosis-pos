@@ -49,7 +49,7 @@ def launch(
     participant_index = 0
     validator_index = 0
     cl_contexts = []
-    for _, participant in enumerate(participants):
+    for participant in participants:
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
             plan.print(
@@ -87,7 +87,7 @@ def launch(
     participant_index = 0
     all_participants = []
     ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
-    for _, participant in enumerate(participants):
+    for participant in participants:
         for _ in range(participant.get("count")):
             plan.print(
                 "Launching EL for participant {} with config: {}".format(
