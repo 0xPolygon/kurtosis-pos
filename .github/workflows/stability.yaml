@@ -97,7 +97,7 @@ jobs:
       - uses: ./.github/actions/cleanup
         if: always()
         with:
-          args_filename: ${{ matrix.config }}
+          args_filename: ${{ matrix.config }}-${{ matrix.index }}
 
   stability-summary:
     needs: [generate-matrix, stability-run]
