@@ -21,7 +21,7 @@ permissions:
 env:
   # Number of parallel runs per config. 20 gives >99.9% chance of detecting a
   # 33% failure rate; adjust once the devnet is stable.
-  RUN_COUNT: 20
+  RUN_COUNT: 30
   # Configs to test. "default" runs without an args file (1 validator); all
   # others map to .github/configs/<config>.yml.
   CONFIGS: '["default", "heimdall-v2-bor", "heimdall-v2-mix"]'
@@ -207,13 +207,13 @@ jobs:
           payload: |
             {
               "channel": "${{ env.DEVTOOLS_SLACK_ALERTS_CHANNEL_ID }}",
-              "text": "Kurtosis PoS Startup Stability",
+              "text": "Kurtosis PoS Startup Stability - Nightly Report",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis PoS Startup Stability> — ${{ contains(needs.stability-run.result, 'failure') && 'some runs failed ⚠️' || 'all runs passed ✅' }}\n${{ steps.summary.outputs.slack_lines }}"
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis PoS Startup Stability Nightly Report>\n${{ steps.summary.outputs.slack_lines }}"
                   }
                 }
               ]
