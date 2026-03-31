@@ -50,7 +50,7 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.1",
+    "l1_el_image": "ethereum/client-go:v1.17.2",
     "l1_cl_image": "sigp/lighthouse:v8.1.3",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
     # layer 2
