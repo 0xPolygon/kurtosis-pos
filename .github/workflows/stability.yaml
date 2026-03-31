@@ -213,7 +213,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis PoS Startup Stability>\n${{ steps.summary.outputs.slack_lines }}"
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis PoS Startup Stability Report>\n${{ steps.summary.outputs.slack_lines }}"
                   }
                 }
               ]
