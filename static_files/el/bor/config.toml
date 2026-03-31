@@ -34,7 +34,14 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   etherbase = "{{.address}}"
   # Block extra data set by the miner (default: client version)
   extradata = "{{.extradata}}"
-  gasprice = "10000000000"
+  # Allow gas tip override (default: false)
+  allow-gas-tip-override = true
+  # Minimum gas price for mining a transaction (default: "24000000000")
+  gasprice = "24000000000"
+  # Enable transaction prefetching during mining (default: false)
+  prefetch = true
+  # Percentage of gas limit to use for prefetching (default: 100)
+  prefetchGasLimitPercent = 100
 {{- end }}
 
 [witness]

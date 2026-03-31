@@ -25,7 +25,7 @@ env:
 jobs:
   run-without-args:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
 
@@ -42,6 +42,10 @@ jobs:
       - uses: ./.github/actions/monitor
 
       - uses: ./.github/actions/test-state-sync
+
+      - uses: ./.github/actions/run-e2e-tests
+        # Only run the full suite of e2e tests in nightly runs or when manually triggered, to avoid excessive runtime in regular PR runs.
+        if: ${{ contains(github.event_name, 'schedule') || contains(github.event_name, 'workflow_dispatch') }}
 
       - uses: ./.github/actions/cleanup
         if: always()

@@ -51,15 +51,15 @@ ADDITIONAL_SERVICES = struct(
 IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.17.1",
-    "l1_cl_image": "sigp/lighthouse:v8.1.2",
+    "l1_cl_image": "sigp/lighthouse:v8.1.3",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.6.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.6.2",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.4.0",
+    "l2_el_bor_image": "0xpolygon/bor:2.7.0",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.5.0",
     "l2_cl_queue_image": "rabbitmq:4.2.4",
     # utilities
-    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:c70a9b9",
+    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:bc28cfd8",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.6.0",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",

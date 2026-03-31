@@ -6,6 +6,10 @@ sidebar_position: 2
 
 This guide will show you how to run end-to-end (e2e) bridge tests against a Kurtosis devnet.
 
+:::note
+The devnet deploys the **Plasma bridge** only (DepositManager, WithdrawManager, predicates). The newer **PoS bridge** (RootChainManager/FxPortal) is not deployed. All bridge tests cover the Plasma bridge flow.
+:::
+
 :::info
 This guide assumes you have a running devnet, if that's not the case, you can head to the [Getting Started](../introduction/getting-started.md) section.
 :::
@@ -43,13 +47,14 @@ kurtosis service exec pos test-runner "bats --filter-tags pos,bridge --recursive
 After the tests complete, you should see output similar to:
 
 ```bash
-pos/bridge.bats
- ✓ bridge MATIC/POL from L1 to L2 and confirm L2 MATIC/POL balance increased
- ✓ bridge some ERC20 tokens from L1 to L2 and confirm L2 ERC20 balance increased
- ✓ bridge an ERC721 token from L1 to L2 and confirm L2 ERC721 balance increased
- ✓ bridge MATIC/POL, ERC20, and ERC721 from L1 to L2 and confirm L2 balances increased
+pos/plasma-bridge.bats
+ ✓ bridge POL from L1 to L2 via Plasma bridge and confirm native tokens balance increased on L2
+ ✓ bridge MATIC from L1 to L2 via Plasma bridge and confirm native tokens balance increased on L2
+ ✓ bridge ETH from L1 to L2 via Plasma bridge and confirm MaticWeth balance increased on L2
+ ✓ bridge ERC20 tokens from L1 to L2 via Plasma bridge and confirm ERC20 balance increased on L2
+ ✓ bridge ERC721 token from L1 to L2 via Plasma bridge and confirm ERC721 balance increased on L2
 
-4 tests, 0 failures
+5 tests, 0 failures
 ```
 
 If any tests fail, check the logs in your Kurtosis enclave for more details.

@@ -60,6 +60,14 @@ forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
 mkdir -p /opt/contracts
 cp contractAddresses.json /opt/contracts
 
+# Set the WithdrawManager exit period to 1 to allow near-immediate exits in the devnet.
+# Note: This matches the Sepolia configuration (HALF_EXIT_PERIOD=1, exitWindow=0).
+# This is done via cast send instead of a forge script to avoid gas estimation issues.
+echo "Updating the WithdrawManager exit period to 1..."
+withdraw_manager_proxy_address=$(jq -r '.root.WithdrawManagerProxy' "${CONTRACT_ADDRESSES_FILE}")
+cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
+  "${withdraw_manager_proxy_address}" "updateExitPeriod(uint256)" 1
+
 if [[ -s "${CONTRACT_ADDRESSES_FILE}" ]]; then
   echo "Polygon PoS contracts deployed to L1:"
   cat "${CONTRACT_ADDRESSES_FILE}"
