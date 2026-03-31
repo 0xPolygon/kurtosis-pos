@@ -21,7 +21,7 @@ def wait_for_l1_startup(plan, cl_rpc_url):
                 "done",
             ]
         ),
-        wait="5m",
+        wait="10m",
     )
 
 
@@ -45,5 +45,5 @@ def wait_for_l2_startup(plan, cl_api_url):
                 "done",
             ]
         ),
-        wait="5m",
+        wait="10m",
     )
