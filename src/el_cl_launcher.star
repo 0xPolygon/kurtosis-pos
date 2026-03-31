@@ -44,15 +44,16 @@ def launch(
         src=CONTAINER_PROC_MANAGER_FILE_PATH,
     )
 
-    # Start each participant.
+    # Phase 1: launch all CL nodes first so Heimdall reaches quorum before any EL node
+    # requests span data.
     participant_index = 0
     validator_index = 0
-    all_participants = []
-    for _, participant in enumerate(participants):
+    cl_contexts = []
+    for participant in participants:
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
             plan.print(
-                "Launching participant {} with config: {}".format(
+                "Launching CL for participant {} with config: {}".format(
                     participant_index + 1, str(participant)
                 )
             )
@@ -75,9 +76,27 @@ def launch(
                 container_proc_manager_artifact,
             )
 
-            # Launch the EL node.
+            cl_contexts.append(cl_context)
+
+            # Increment the indexes.
+            participant_index += 1
+            if is_validator:
+                validator_index += 1
+
+    # Phase 2: launch all EL nodes, pairing each with its CL context from phase 1.
+    participant_index = 0
+    all_participants = []
+    ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
+    for participant in participants:
+        for _ in range(participant.get("count")):
+            plan.print(
+                "Launching EL for participant {} with config: {}".format(
+                    participant_index + 1, str(participant)
+                )
+            )
+
+            cl_context = cl_contexts[participant_index]
             el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
-            ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
             el_context = el_launcher.launch(
                 plan,
                 participant,
@@ -103,10 +122,7 @@ def launch(
                 )
             )
 
-            # Increment the indexes.
             participant_index += 1
-            if is_validator:
-                validator_index += 1
 
     # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:
