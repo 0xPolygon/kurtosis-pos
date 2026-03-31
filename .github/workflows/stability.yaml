@@ -44,7 +44,7 @@ jobs:
     steps:
       - id: set
         run: |
-          echo "index=$(seq 1 ${{ env.RUN_COUNT }} | jq -s .)" >> $GITHUB_OUTPUT
+          echo "index=$(seq 1 ${{ env.RUN_COUNT }} | jq -sc .)" >> $GITHUB_OUTPUT
           echo "configs=${{ env.CONFIGS }}" >> $GITHUB_OUTPUT
 
   stability-run:
