@@ -36,14 +36,13 @@ runs:
 
     - name: Install polygon-cli
       shell: bash
-      run: |
-        go install github.com/0xPolygon/polygon-cli@${{ inputs.polygon_cli_tag }}
-        echo "$HOME/go/bin" >> "$GITHUB_PATH"
+      run: go install github.com/0xPolygon/polygon-cli@${{ inputs.polygon_cli_tag }}
 
     - name: Run bridge tests
       working-directory: agglayer-e2e
       shell: bash
       run: |
+        export PATH="$PATH:$HOME/go/bin"
         bats --filter-tags bridge tests/pos/plasma-bridge.bats
         bats --filter-tags withdraw tests/pos/plasma-bridge.bats
       env:
@@ -52,6 +51,8 @@ runs:
     - name: Run validator tests
       working-directory: agglayer-e2e
       shell: bash
-      run: bats tests/pos/validator.bats
+      run: |
+        export PATH="$PATH:$HOME/go/bin"
+        bats tests/pos/validator.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
