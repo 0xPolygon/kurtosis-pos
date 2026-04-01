@@ -36,7 +36,9 @@ runs:
 
     - name: Install polygon-cli
       shell: bash
-      run: go install github.com/0xPolygon/polygon-cli@${{ inputs.polygon_cli_tag }}
+      run: |
+        go install github.com/0xPolygon/polygon-cli@${{ inputs.polygon_cli_tag }}
+        echo "$HOME/go/bin" >> "$GITHUB_PATH"
 
     - name: Run bridge tests
       working-directory: agglayer-e2e
