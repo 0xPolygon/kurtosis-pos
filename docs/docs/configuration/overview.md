@@ -11,13 +11,13 @@ This section explains how to customize your Polygon PoS devnet deployment.
 You can pass custom arguments using the `--args-file` flag:
 
 ```bash
-kurtosis run --enclave pos --args-file params.yml .
+kurtosis run --enclave=pos --args-file=params.yml .
 ```
 
 Alternatively, you can specify arguments directly on the command line:
 
 ```bash
-kurtosis run --enclave pos . \
+kurtosis run --enclave=pos . \
   '{"polygon_pos_package": {"network_params": {"el_chain_id": "98765"}}}"'
 ```
 
@@ -36,7 +36,7 @@ This configuration deploys 4 heimdall-v2/bor validator nodes as well as 2 rpc no
 To deploy this environment:
 
 ```bash
-kurtosis run --enclave pos --args-file .github/configs/heimdall-v2-bor.yml .
+kurtosis run --enclave=pos --args-file=.github/configs/heimdall-v2-bor.yml .
 ```
 
 ### Heimdall-v2/Erigon Devnet
@@ -46,7 +46,7 @@ This configuration deploys 4 heimdall-v2/erigon validator nodes as well as 2 rpc
 To deploy this environment:
 
 ```bash
-kurtosis run --enclave pos --args-file .github/configs/heimdall-v2-erigon.yml .
+kurtosis run --enclave=pos --args-file=.github/configs/heimdall-v2-erigon.yml .
 ```
 
 ### Observability
@@ -56,7 +56,7 @@ This configuration is ideal for development teams who need a complete testing en
 To deploy this environment:
 
 ```bash
-kurtosis run --enclave pos --args-file .github/configs/additional-services.yml .
+kurtosis run --enclave=pos --args-file=.github/configs/additional-services.yml .
 ```
 
 Explore the [Configuration Schema](reference.md) for a detailed breakdown of all available options.
