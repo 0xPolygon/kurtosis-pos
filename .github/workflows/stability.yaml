@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: stability-${{ matrix.config }}-${{ matrix.index }}
           path: |
@@ -115,7 +115,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Download all results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: stability-*
           merge-multiple: true
