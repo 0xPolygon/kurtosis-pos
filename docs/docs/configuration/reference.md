@@ -128,7 +128,7 @@ Default: a single validator.
 | kind                             | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`                          |
 | cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                          |
 | cl_image                         | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                                                   |
-| cl_queue_image                   | string | rabbitmq:4.2.4              | Image for the CL queue                                                                    |
+| cl_queue_image                   | string | rabbitmq:4.2.5              | Image for the CL queue                                                                    |
 | cl_log_level                     | string | info                        | Log level for the CL client                                                               |
 | cl_log_format                    | string | text                        | Log format for the CL client                                                              |
 | cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                     |
@@ -137,7 +137,7 @@ Default: a single validator.
 | cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                          |
 | cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                         |
 | el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                       |
-| el_image                         | string | 0xpolygon/bor:2.7.0         | Image for the EL client (bor: `0xpolygon/bor:2.7.0`, erigon: `0xpolygon/erigon:v3.5.0`)   |
+| el_image                         | string | 0xpolygon/bor:2.7.1         | Image for the EL client (bor: `0xpolygon/bor:2.7.1`, erigon: `0xpolygon/erigon:v3.5.0`)   |
 | el_log_level                     | string | info                        | Log level for the EL client                                                               |
 | el_log_format                    | string | text                        | Log format for the EL client                                                              |
 | el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                    |
