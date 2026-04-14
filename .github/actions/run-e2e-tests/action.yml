@@ -22,7 +22,7 @@ runs:
         ref: ${{ inputs.agglayer_e2e_tag }}
 
     - name: Install bats
-      uses: bats-core/bats-action@42fcc8700f773c075a16a90eb11674c0318ad507 # 3.0.1
+      uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
       with:
         support-path: ${{ github.workspace }}/lib/bats-support
         assert-path: ${{ github.workspace }}/lib/bats-assert
