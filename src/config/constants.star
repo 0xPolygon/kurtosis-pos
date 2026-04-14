@@ -57,7 +57,7 @@ IMAGES = {
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.6.0",
     "l2_el_bor_image": "0xpolygon/bor:2.7.1",
     "l2_el_erigon_image": "0xpolygon/erigon:v3.5.0",
-    "l2_cl_queue_image": "rabbitmq:4.2.4",
+    "l2_cl_queue_image": "rabbitmq:4.2.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:bc28cfd8",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
