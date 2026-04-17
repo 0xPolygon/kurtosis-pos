@@ -89,7 +89,7 @@ def launch(plan, participant, ...):
     service = plan.add_service(name=..., config=ServiceConfig(...))
     return context.new_context(
         service_name=service.name,
-        rpc_http_url="http://{}:{}".format(service.ip_address, RPC_PORT_NUMBER),
+        rpc_http_url=service.ports[RPC_PORT_ID].url,
     )
 
 # DO — context.star
