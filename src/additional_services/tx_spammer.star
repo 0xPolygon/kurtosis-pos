@@ -28,10 +28,10 @@ def launch(
 
     # Start the tx spammer service on L1.
     tx_spammer_artifact = plan.upload_files(
+        name="tx-spammer-script",
         src="../../static_files/additional_services/tx-spammer/{}".format(
             TX_SPAMMER_SCRIPT_NAME
         ),
-        name="tx-spammer-script",
     )
     _start_tx_spammer_service(
         plan,
@@ -68,7 +68,7 @@ def _start_tx_spammer_service(plan, name, script_artifact, private_key, rpc_url)
         config=ServiceConfig(
             image=constants.IMAGES.get("toolbox_image"),
             files={
-                "/opt": Directory(artifact_names=[script_artifact]),
+                "/opt": script_artifact,
             },
             env_vars={
                 "PRIVATE_KEY": private_key,

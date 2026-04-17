@@ -7,13 +7,15 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 ANVIL_PORT_ID = "rpc"
 ANVIL_PORT_NUMBER = 8545
 
+ANVIL_GENESIS_FILE_PATH = "../../static_files/l1/anvil/genesis.json"
+
 
 def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
     genesis_artifact = plan.render_templates(
         name="l1-anvil-genesis",
         config={
             "genesis.json": struct(
-                template=read_file(src="../../static_files/l1/anvil/genesis.json"),
+                template=read_file(ANVIL_GENESIS_FILE_PATH),
                 data={
                     "admin_address": admin_address,
                     "admin_balance_wei": hex.int_to_hex(
@@ -30,7 +32,7 @@ def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
             image=anvil_args.get("image"),
             ports={
                 ANVIL_PORT_ID: PortSpec(
-                    ANVIL_PORT_NUMBER, application_protocol="http", wait="5s"
+                    number=ANVIL_PORT_NUMBER, application_protocol="http", wait="5s"
                 ),
             },
             files={

@@ -10,8 +10,8 @@ def deploy_l1_contracts(
     setup_images = polygon_pos_args.get("setup_images")
     contract_deployer_image = setup_images.get("contract_deployer")
     contract_deployer_config_artifact = plan.upload_files(
-        src=CONTRACTS_CONFIG_FILE_PATH,
         name="matic-contracts-l1-deployer-config",
+        src=CONTRACTS_CONFIG_FILE_PATH,
     )
 
     validator_accounts_formatted = _format_validator_accounts(validator_accounts)
@@ -74,8 +74,8 @@ def deploy_l2_contracts_and_synchronise_l1_state(
     setup_images = polygon_pos_args.get("setup_images")
     contract_deployer_image = setup_images.get("contract_deployer")
     contract_deployer_config_artifact = plan.upload_files(
-        src=CONTRACTS_CONFIG_FILE_PATH,
         name="matic-contracts-l2-deployer-config",
+        src=CONTRACTS_CONFIG_FILE_PATH,
     )
 
     result = plan.run_sh(

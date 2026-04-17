@@ -12,7 +12,8 @@ def launch(
             image=ethstats_server_params.get("image"),
             ports={
                 "http": PortSpec(
-                    constants.ETHSTATS_SERVER_PORT_NUMBER, application_protocol="http"
+                    number=constants.ETHSTATS_SERVER_PORT_NUMBER,
+                    application_protocol="http",
                 )
             },
             env_vars={

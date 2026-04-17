@@ -1,6 +1,9 @@
 shared = import_module("./shared.star")
 util = import_module("./util.star")
 
+METRICS_PORT_ID = "metrics"
+METRICS_PORT_NUMBER = 9090
+
 
 def launch(
     plan,
@@ -11,36 +14,29 @@ def launch(
     l1_rpcs = util.l1_rpcs(l1_context)
     l2_urls = util.l2_urls(l2_context)
 
-    status_checker_config_artifact = plan.render_templates(
+    status_checker_config_artifact = plan.upload_files(
         name="status-checker-config",
-        config={
-            "config.yml": struct(
-                template=read_file(
-                    src="../../static_files/additional_services/status-checker/config.yml",
-                ),
-                data={},
-            ),
-        },
+        src="../../static_files/additional_services/status-checker/config.yml",
     )
 
     status_checker_checks_artifact = plan.upload_files(
-        src="../../static_files/additional_services/status-checker/checks",
         name="status-checker-checks",
+        src="../../static_files/additional_services/status-checker/checks",
     )
 
     plan.add_service(
         name="status-checker",
         config=ServiceConfig(
             image=status_checker_params.get("image"),
-            files={
-                "/etc/status-checker": Directory(
-                    artifact_names=[status_checker_config_artifact]
-                ),
-                "/opt/status-checker/checks": Directory(
-                    artifact_names=[status_checker_checks_artifact]
-                ),
+            ports={
+                METRICS_PORT_ID: PortSpec(
+                    number=METRICS_PORT_NUMBER, application_protocol="http"
+                )
             },
-            ports={"metrics": PortSpec(9090, application_protocol="http")},
+            files={
+                "/etc/status-checker": status_checker_config_artifact,
+                "/opt/status-checker/checks": status_checker_checks_artifact,
+            },
             env_vars={
                 "L1_RPCS": json.encode(l1_rpcs),
                 "L2_URLS": json.encode(l2_urls),
