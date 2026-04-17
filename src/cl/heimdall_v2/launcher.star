@@ -185,7 +185,7 @@ def launch(
             },
             files=files,
             entrypoint=["sh", "-c"],
-            cmd=["&&".join(heimdall_cmds)],
+            cmd=[" && ".join(heimdall_cmds)],
             max_cpu=shared.MAX_CPU,
             max_memory=shared.MAX_MEM,
         ),

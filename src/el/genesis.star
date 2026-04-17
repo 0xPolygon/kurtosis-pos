@@ -50,8 +50,8 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
 
     # Generate the alloc field of the EL genesis and return the final EL genesis.
     el_genesis_builder_script_artifact = plan.upload_files(
-        src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
         name="l2-el-genesis-builder-config",
+        src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
     )
     result = plan.run_sh(
         name="l2-el-genesis-generator",

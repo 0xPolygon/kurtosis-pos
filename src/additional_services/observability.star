@@ -10,6 +10,7 @@ GRAFANA_DASHBOARDS = "../../static_files/additional_services/grafana/dashboards"
 
 PANOPTICHAIN_PORT = 9090
 PANOPTICHAIN_METRICS_PATH = "/metrics"
+PANOPTICHAIN_CONFIG_FILE_PATH = "../../static_files/additional_services/panoptichain/config.yml"
 
 
 def launch(
@@ -60,9 +61,7 @@ def launch_panoptichain(
         name="panoptichain-config",
         config={
             "config.yml": struct(
-                template=read_file(
-                    src="../../static_files/additional_services/panoptichain/config.yml"
-                ),
+                template=read_file(PANOPTICHAIN_CONFIG_FILE_PATH),
                 data={
                     "l1_chain_id": l1_context.chain_id,
                     "l2_chain_id": l2_context.el_chain_id,
@@ -83,7 +82,7 @@ def launch_panoptichain(
         config=ServiceConfig(
             image=constants.IMAGES.get("panoptichain_image"),
             ports={
-                "metrics": PortSpec(PANOPTICHAIN_PORT, application_protocol="http"),
+                "metrics": PortSpec(number=PANOPTICHAIN_PORT, application_protocol="http"),
             },
             files={"/etc/panoptichain": panoptichain_config_artifact},
             max_cpu=shared.MAX_CPU,
@@ -133,7 +132,7 @@ def generate_metrics_jobs(l2_participants, panoptichain_url):
 
 def launch_grafana(plan, prometheus_url):
     grafana_dashboards_files_artifact = plan.upload_files(
-        src=GRAFANA_DASHBOARDS, name="grafana-dashboards"
+        name="grafana-dashboards", src=GRAFANA_DASHBOARDS
     )
     # no max cpu or mem limits for grafana
     import_module(GRAFANA_PACKAGE).run(

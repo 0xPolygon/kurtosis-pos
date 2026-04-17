@@ -15,11 +15,15 @@ MAX_CPU = 1000  # in milicores (1 core)
 MAX_MEM = 2048  # in megabytes (2 GB)
 
 
+def generate_name(id):
+    return "l2-cl-{}-rabbitmq".format(id)
+
+
 # RabbitMQ is only needed for validator nodes.
 # It provides the AMQP message broker used by the bridge to submit checkpoints to L1 and handle span/checkpoint events.
 # RPC nodes don't run the bridge and don't need RabbitMQ at all.
 def launch(plan, id, image, log_level, log_format):
-    name = "l2-cl-{}-rabbitmq".format(id)
+    name = generate_name(id)
 
     # Render the rabbitmq config file.
     config_artifact = plan.render_templates(
@@ -41,6 +45,16 @@ def launch(plan, id, image, log_level, log_format):
         name=name,
         config=ServiceConfig(
             image=image,
+            ports={
+                RABBITMQ_AMQP_PORT_ID: PortSpec(
+                    number=RABBITMQ_AMQP_PORT_NUMBER,
+                    application_protocol="amqp",
+                )
+            },
+            files={
+                APP_DATA_FOLDER_PATH: Directory(persistent_key="{}-data".format(name)),
+                APP_CONFIG_FOLDER_PATH: config_artifact,
+            },
             env_vars={
                 "RABBITMQ_NODE_PORT": str(RABBITMQ_AMQP_PORT_NUMBER),
                 "RABBITMQ_DEFAULT_USER": constants.RABBITMQ_USERNAME,
@@ -48,16 +62,6 @@ def launch(plan, id, image, log_level, log_format):
                 "RABBITMQ_CONFIG_FILE": "{}/rabbitmq.conf".format(
                     APP_CONFIG_FOLDER_PATH
                 ),
-            },
-            files={
-                APP_DATA_FOLDER_PATH: Directory(persistent_key="{}-data".format(name)),
-                APP_CONFIG_FOLDER_PATH: config_artifact,
-            },
-            ports={
-                RABBITMQ_AMQP_PORT_ID: PortSpec(
-                    number=RABBITMQ_AMQP_PORT_NUMBER,
-                    application_protocol="amqp",
-                )
             },
             max_cpu=MAX_CPU,
             max_memory=MAX_MEM,

@@ -41,4 +41,4 @@ def launch(
         elif svc == constants.ADDITIONAL_SERVICES.tx_spammer:
             tx_spammer.launch(plan, l1_context, l2_context, l2_network_params)
         else:
-            fail("Invalid additional service: %s" % (svc))
+            fail("Invalid additional service: '{}'.".format(svc))

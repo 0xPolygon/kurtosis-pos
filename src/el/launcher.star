@@ -59,11 +59,12 @@ def launch(
 
 def _generate_keys(plan, el_node_name, private_key):
     keys_generator_artifact = plan.upload_files(
-        src=EL_KEYS_GENERATOR_FOLDER_PATH,
         name="{}-keys-generator-config".format(el_node_name),
+        src=EL_KEYS_GENERATOR_FOLDER_PATH,
     )
     result = plan.run_sh(
         name="{}-keys-generator".format(el_node_name),
+        description="Generating L2 EL node keys for '{}'".format(el_node_name),
         image=constants.IMAGES.get("toolbox_image"),
         env_vars={
             "EL_CLIENT_CONFIG_PATH": constants.EL_CLIENT_CONFIG_PATH,
