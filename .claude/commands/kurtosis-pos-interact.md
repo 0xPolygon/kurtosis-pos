@@ -171,7 +171,7 @@ Both root and child contract addresses live in the same `contractAddresses.json`
 **L1 root + child contracts** (`contractAddresses.json`):
 
 ```bash
-kurtosis files download pos contract-addresses ./output/
+kurtosis files download pos matic-contract-addresses ./output/
 
 # Examples
 jq '.root.StateSender'             ./output/contractAddresses.json  # l1_state_sender
