@@ -19,12 +19,21 @@ compatibility: Requires a running kurtosis-pos enclave.
 kurtosis enclave inspect pos
 
 # Print the URL for a specific port
-kurtosis port print pos l2-el-0-bor-heimdall-v2-validator rpc
+kurtosis port print pos el-1-geth-lighthouse rpc                # L1 EL
+kurtosis port print pos cl-1-lighthouse-geth http               # L1 CL
+kurtosis port print pos l2-el-0-bor-heimdall-v2-validator rpc   # L2 EL
+kurtosis port print pos l2-cl-0-heimdall-v2-bor-validator http  # L2 CL API
+kurtosis port print pos l2-cl-0-heimdall-v2-bor-validator rpc   # L2 CL RPC
 
 # List all file artifacts in the enclave
 kurtosis files ls pos
 
-# Download a specific artifact
+# Inspect a file inside an artifact directly (no download needed)
+kurtosis files inspect pos l2-el-genesis genesis.json | jq
+kurtosis files inspect pos l2-cl-genesis genesis.json | jq
+kurtosis files inspect pos matic-contract-addresses contractAddresses.json | jq
+
+# Download a full artifact to disk
 kurtosis files download pos <artifact-name> ./output/
 ```
 
@@ -66,6 +75,24 @@ cast send \
   --rpc-url $RPC_URL \
   <to_address> \
   --value 1ether
+```
+
+---
+
+## Load testing with polycli
+
+```bash
+PK="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea"
+RPC_URL=$(kurtosis port print pos l2-el-0-bor-heimdall-v2-validator rpc)
+
+# Transfer load (mode t)
+polycli loadtest --rpc-url "$RPC_URL" --private-key "$PK" --verbosity 700 --requests 5000 --rate-limit 10 --mode t
+
+# ERC-20 load (mode 2)
+polycli loadtest --rpc-url "$RPC_URL" --private-key "$PK" --verbosity 700 --requests 500  --rate-limit 10 --mode 2
+
+# Uniswap v3 load (mode v3)
+polycli loadtest --rpc-url "$RPC_URL" --private-key "$PK" --verbosity 700 --requests 500  --rate-limit 10 --mode v3
 ```
 
 ---
@@ -171,18 +198,26 @@ Full jq paths for all contracts: `src/contracts/util.star` (`ROOT_CONTRACTS_MAPP
 ## Heimdall REST API (CL)
 
 ```bash
-# Get the CL REST API port
-CL_URL=$(kurtosis port print pos l2-cl-0-heimdall-v2-bor-validator rest)
+# REST API (port: http / 1317)
+CL_URL=$(kurtosis port print pos l2-cl-0-heimdall-v2-bor-validator http)
 
-# Latest span
-curl -s $CL_URL/bor/latest-span | jq .
+# Spans
+curl -s $CL_URL/bor/spans/latest | jq .          # latest span
+curl -s $CL_URL/bor/latest-span | jq .            # same, alternate endpoint
 
-# Latest milestone
-curl -s $CL_URL/milestone/latest | jq .
+# Milestones
+curl -s $CL_URL/milestone/latest | jq .           # latest milestone
+curl -s $CL_URL/milestones/count | jq .           # total milestone count
 
-# Checkpoint count
-curl -s $CL_URL/checkpoints/count | jq .
+# Checkpoints
+curl -s $CL_URL/checkpoints/count | jq .          # total checkpoint count (.ack_count)
+curl -s $CL_URL/checkpoints/list | jq .           # list of all checkpoints
 
-# Checkpoint list
-curl -s $CL_URL/checkpoints/list | jq .
+# State syncs (clerk)
+curl -s $CL_URL/clerk/event-record/list | jq .    # state sync event records
+
+# Tendermint RPC (port: rpc / 26657)
+CL_RPC_URL=$(kurtosis port print pos l2-cl-0-heimdall-v2-bor-validator rpc)
+
+curl -s $CL_RPC_URL/status | jq .result.sync_info.latest_block_height  # latest CL block
 ```
