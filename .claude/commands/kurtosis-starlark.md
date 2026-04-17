@@ -207,6 +207,18 @@ rpc_url = "http://{}:8545".format(service.ip_address)
 rpc_url = service.ports[shared.RPC_PORT_ID].url
 ```
 
+### `svc-hostname-not-ip` — Use service name as hostname for inter-service URLs, never `service.ip_address`
+
+Within a Kurtosis enclave, every service is reachable by its name as a stable DNS hostname. `service.ip_address` is dynamic and harder to reason about. Use the service name when constructing URLs that one service passes to another. Reserve `service.ports[PORT_ID].url` for the service you just created (it returns the external/mapped URL).
+
+```python
+# DON'T — ip_address is dynamic
+el_rpc_url = "http://{}:{}".format(service.ip_address, shared.RPC_PORT_NUMBER)
+
+# DO — service name is the stable intra-enclave hostname
+el_rpc_url = "http://{}:{}".format(el_node_name, shared.RPC_PORT_NUMBER)
+```
+
 ### `svc-resource-limits` — Set `max_cpu` and `max_memory` from layer-specific `shared.star` constants
 
 | Layer | `MAX_CPU` (milicores) | `MAX_MEM` (MB) |
@@ -566,5 +578,6 @@ static_files/genesis.json       ← clearly static
 | `src=` before `name=` in `upload_files` | `art-upload-arg-order` | `name=` always first |
 | Dynamic value interpolated into `run=` string | `sh-env-vars-not-interpolation` | Pass via `env_vars=` |
 | Reimplementing `hex()`, `sum()`, or `**` | `util-builtins` | Use `hex.star`, `math.star` |
+| `service.ip_address` in inter-service URL | `svc-hostname-not-ip` | Use service name as hostname |
 | Passing raw URL strings between launchers | `util-context-struct` | Return and accept context structs |
 | `plan.wait()` for non-HTTP or arithmetic conditions | `util-wait-run-sh` | Use `plan.run_sh` + polling loop |
