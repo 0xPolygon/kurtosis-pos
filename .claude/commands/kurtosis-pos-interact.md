@@ -129,6 +129,45 @@ RPC_URL=$(kurtosis port print pos l2-el-0-bor-heimdall-v2-validator rpc)
 
 ---
 
+## Reading contract addresses from artifacts
+
+Contract addresses are stored in two artifacts produced during deployment. Download them and query with `jq`.
+
+Polygon PoS uses a two-layer contract architecture:
+
+- **Root contracts** — deployed on L1. Handle staking, checkpointing, and the deposit/withdrawal bridge (e.g. `RootChain`, `StakeManager`, `StateSender`).
+- **Child contracts** — deployed on L2. The counterpart contracts that receive state syncs and manage the child chain (e.g. `ChildChain`, child tokens).
+- **L2 genesis contracts** — baked into the L2 genesis block, not deployed via transaction (e.g. `StateReceiver`, `ValidatorSet`). Their addresses come from `genesis.json`, not `contractAddresses.json`.
+
+Both root and child contract addresses live in the same `contractAddresses.json` artifact under `.root.*` and `.child.*` respectively.
+
+**L1 root + child contracts** (`contractAddresses.json`):
+
+```bash
+kurtosis files download pos contract-addresses ./output/
+
+# Examples
+jq '.root.StateSender'             ./output/contractAddresses.json  # l1_state_sender
+jq '.root.RootChainProxy'          ./output/contractAddresses.json  # l1_root_chain_proxy
+jq '.root.StakeManagerProxy'       ./output/contractAddresses.json  # l1_stake_manager_proxy
+jq '.root.tokens.MaticToken'       ./output/contractAddresses.json  # l1_matic_token
+jq '.child.ChildChain'             ./output/contractAddresses.json  # l2_child_chain
+```
+
+**L2 genesis contracts** (`genesis.json`):
+
+```bash
+kurtosis files download pos l2-el-genesis ./output/
+
+jq '.config.bor.stateReceiverContract' ./output/genesis.json  # l2_state_receiver
+jq '.config.bor.validatorContract'     ./output/genesis.json  # l2_validator_contract
+jq '.config.bor.burntContract["0"]'    ./output/genesis.json  # l2_burnt_contract
+```
+
+Full jq paths for all contracts: `src/contracts/util.star` (`ROOT_CONTRACTS_MAPPING`, `CHILD_CONTRACTS_MAPPING`, `L2_GENESIS_CONTRACTS_MAPPING`).
+
+---
+
 ## Heimdall REST API (CL)
 
 ```bash
