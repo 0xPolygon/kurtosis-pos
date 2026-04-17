@@ -272,6 +272,21 @@ artifact = plan.render_templates(
 )
 ```
 
+**Exception:** `render_templates` with `data={}` is acceptable when the file *path itself* is a runtime value (e.g. read from parsed args), because `upload_files` requires a literal `src=` path and cannot accept a variable. In that case an empty `data={}` is the correct approach — the template variable substitution is a no-op but the dynamic path lookup is the point.
+
+```python
+# Acceptable — path comes from args, upload_files cannot be used
+artifact = plan.render_templates(
+    name="l2-el-genesis",
+    config={
+        "genesis.json": struct(
+            template=read_file(src=dev_args.get("l2_el_genesis_filepath")),
+            data={},
+        )
+    },
+)
+```
+
 ### `art-upload-arg-order` — `name=` before `src=` in `plan.upload_files()`
 
 ```python
@@ -545,7 +560,7 @@ static_files/genesis.json       ← clearly static
 | `fail("msg: %s" % val)` | `err-format-not-percent` | `fail("msg: '{}'.".format(val))` |
 | `"&&".join(cmds)` no spaces | `sh-join-separator` | `" && ".join(cmds)` |
 | `dict(args)` two-branch copy | `args-defensive-copy` | `dict(args) if args else {}` |
-| `render_templates` with `data={}` | `art-static-vs-dynamic` | Use `upload_files` for static files |
+| `render_templates` with `data={}` and a literal path | `art-static-vs-dynamic` | Use `upload_files` for static files (exception: path is a runtime variable) |
 | Hardcoded image string in launcher | `mod-images-dict` | `constants.IMAGES.get("key")` |
 | Service name built inline with `.format()` | `mod-generate-name` | Dedicated `generate_name(participant, id)` |
 | `src=` before `name=` in `upload_files` | `art-upload-arg-order` | `name=` always first |
