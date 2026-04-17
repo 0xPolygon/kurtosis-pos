@@ -251,7 +251,7 @@ Focus: block production correctness, validator coordination, and finality guaran
 | Scenario | How to trigger |
 |---|---|
 | Missed block (producer skip) | Stop only the scheduled bor producer for one sprint; observe if next producer takes over |
-| Checkpoint submission delay | Throttle heimdall via Docker CPU/memory limits (see throttling note below); observe how far bor continues without checkpoints |
+| Checkpoint submission delay | Throttle heimdall via Docker CPU/memory limits (see throttling note above); observe how far bor continues without checkpoints |
 | Validator set change propagation | Add or remove a validator via contracts; observe how quickly bor picks up the new span |
 | Finality regression after L1 issue | Restart L1 mid-checkpoint; observe if heimdall resubmits or skips |
 | Mixed client consensus | Use `heimdall-v2-mix.yml` (bor + erigon validators); check state root agreement |
@@ -371,13 +371,13 @@ Pumba is a Docker chaos tool that wraps `tc netem` and container lifecycle opera
 go install github.com/alexei-led/pumba@latest
 
 # Add 200ms latency to all traffic on a bor container
-pumba netem --duration 60s delay --time 200 $(docker ps --format "{{.Names}}" | grep "bor-heimdall-v2-validator")
+pumba netem --duration 60s delay --time 200 $(docker ps --filter "label=com.kurtosistech.enclave-id=$ENCLAVE" --format "{{.Names}}" | grep "bor-heimdall-v2-validator")
 
 # Random packet loss (15%) on a heimdall container
-pumba netem --duration 60s loss --percent 15 $(docker ps --format "{{.Names}}" | grep "heimdall-v2-bor-validator")
+pumba netem --duration 60s loss --percent 15 $(docker ps --filter "label=com.kurtosistech.enclave-id=$ENCLAVE" --format "{{.Names}}" | grep "heimdall-v2-bor-validator")
 
 # Kill and restart a container on a schedule
-pumba --random kill --signal SIGKILL $(docker ps --format "{{.Names}}" | grep "l2-el")
+pumba --random kill --signal SIGKILL $(docker ps --filter "label=com.kurtosistech.enclave-id=$ENCLAVE" --format "{{.Names}}" | grep "l2-el")
 ```
 
 - Repo: https://github.com/alexei-led/pumba
@@ -387,17 +387,47 @@ pumba --random kill --signal SIGKILL $(docker ps --format "{{.Names}}" | grep "l
 
 ## Anomaly signals
 
-Stop and document a finding when any of these occur:
+Any `ERROR` log line is worth investigating — treat all errors as potential findings until proven benign.
+`WARN` log lines are sometimes significant; flag them when they correlate with observable degradation.
 
-- **Blocks stall** — L2 block number stops advancing for >1 sprint (>16 blocks)
+### What degradation looks like
+
+The network is degraded when any of the following stops working:
+
+- Blocks are not produced
+- Milestones are not progressing
+- Checkpoints are not submitted to L1
+- Transactions are submitted but never included in a block
+- Bridge deposits on L1 are not reflected on L2
+
+### Timing reference (devnet)
+
+Devnet block time is ~2 seconds. Use these thresholds to decide when to stop waiting and document a finding:
+
+| Signal | Wait before flagging |
+|---|---|
+| Blocks stall | 2 sprints — ~64 seconds (32 blocks) |
+| Milestone stall | 3 milestone intervals — ~90 seconds (default interval: 30s) |
+| Checkpoint stall | 1 span — ~4 minutes (128 blocks) |
+| Transaction not included | 3 blocks — ~6 seconds |
+| State sync not processed | 2 sprints after confirmed L1 deposit — ~64 seconds |
+| Validator not recovered after restart | 1 span — ~4 minutes |
+
+### Signal checklist
+
+Stop and document when any of these occur:
+
+- **Blocks stall** — L2 block number not advancing for >2 sprints (~64 seconds)
 - **Service crash** — any `l2-el-*` or `l2-cl-*` container exits unexpectedly
-- **Checkpoint failure** — heimdall stops submitting checkpoints to L1
-- **Milestone stall** — milestone height in heimdall stops advancing while Bor block production continues
-- **State sync not processed** — L1 deposit confirmed on L1 but L2 balance not updated after several sprints
-- **State divergence** — two validators report different latest block hash or heimdall height
+- **Checkpoint failure** — no new checkpoint on L1 for >1 span (~4 minutes)
+- **Milestone stall** — milestone height not advancing for >90 seconds
+- **State sync not processed** — L2 balance unchanged >2 sprints after a confirmed L1 deposit
+- **Transaction not included** — submitted tx absent from all blocks for >3 blocks (~6 seconds)
+- **State divergence** — two validators report different block hash or heimdall height for the same block number
 - **Consensus error** — log lines containing `consensus failure`, `double sign`, `equivocation`, or `panic`
 - **Unexpected revert** — a transaction reverts that should succeed (or succeeds that should revert)
-- **Log anomalies** — `ERROR` or `WARN` lines that don't appear in a clean baseline run
+- **Any ERROR log** — treat as a finding; investigate before dismissing
+- **WARN log correlated with degradation** — flag if a WARN appears at the same time as any signal above
 
 ---
 
@@ -421,6 +451,12 @@ cast block-number --rpc-url http://$(kurtosis port print $ENCLAVE l2-el-0-bor-he
 
 # Latest L2 block details
 cast block latest --rpc-url http://$(kurtosis port print $ENCLAVE l2-el-0-bor-heimdall-v2-validator rpc)
+
+# Latest milestone (soft finality)
+curl -s http://$(kurtosis port print $ENCLAVE l2-cl-0-heimdall-v2-bor-validator http)/milestone/latest | tee findings/$SLUG/milestone-latest.json
+
+# Latest checkpoint on L1 (hard finality)
+curl -s http://$(kurtosis port print $ENCLAVE l2-cl-0-heimdall-v2-bor-validator http)/checkpoints/latest | tee findings/$SLUG/checkpoint-latest.json
 
 # Heimdall node status (all validators)
 for n in $(seq 0 $((N_VALIDATORS - 1))); do
