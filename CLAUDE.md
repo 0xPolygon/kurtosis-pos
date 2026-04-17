@@ -73,3 +73,4 @@ Type `/kurtosis-pos` for the full index. Quick links:
 - `/kurtosis-pos-test` — unit tests, e2e bats tests, bridge flows, chaos
 - `/kurtosis-pos-quality` — CI, formatting, typos, docs, publish-images
 - `/kurtosis-starlark` — writing or reviewing `.star` files
+- `/kurtosis-pos-investigate` — autonomous bug finding in bor and heimdall-v2
