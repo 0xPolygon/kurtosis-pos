@@ -80,3 +80,13 @@ def test_sanity_check_with_ethstats_server(plan):
             "image": constants.IMAGES.get("ethstats_server_image"),
         },
     }
+
+
+def test_sanity_check_dev_args_invalid_lst_deployer_param(plan):
+    args = input_parser.DEV_ARGS | {
+        "lst_deployer_params": {"reword_fee": 100},  # typo of reward_fee
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_dev_args(plan, args),
+        'Invalid parameter: "lst_deployer_params.reword_fee"',
+    )

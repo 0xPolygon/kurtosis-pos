@@ -125,6 +125,14 @@ DEV_PARAMS = [
     "l2_el_genesis_filepath",
     "l2_cl_genesis_filepath",
     "matic_contract_addresses_filepath",
+    "deploy_lst_contracts",  # boolean — opt-in sPOL/LST contract deployment
+    "lst_deployer_params",  # dict — see LST_DEPLOYER_PARAMS for allowed keys
+]
+
+LST_DEPLOYER_PARAMS = [
+    "reward_fee",
+    "fee_receiver",
+    "max_divergence",
 ]
 
 
@@ -208,6 +216,16 @@ def sanity_check_dev_args(plan, input_args):
         if param not in DEV_PARAMS:
             fail(
                 'Invalid parameter: "{}". Allowed fields: {}.'.format(param, DEV_PARAMS)
+            )
+
+    # Validate lst_deployer_params keys.
+    lst_params = input_args.get("lst_deployer_params") or {}
+    for param in lst_params.keys():
+        if param not in LST_DEPLOYER_PARAMS:
+            fail(
+                'Invalid parameter: "lst_deployer_params.{}". Allowed fields: {}.'.format(
+                    param, LST_DEPLOYER_PARAMS
+                )
             )
 
     # Validate values.

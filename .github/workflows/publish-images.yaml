@@ -5,6 +5,7 @@ name: publish-images
 # - pos-contract-deployer: POS_CONTRACTS_BRANCH, POS_CONTRACTS_COMMIT_SHA
 # - pos-el-genesis-builder: GENESIS_CONTRACTS_BRANCH, GENESIS_CONTRACTS_COMMIT_SHA
 # - pos-validator-config-generator: HEIMDALL_V2_VERSION, POLYGON_CLI_VERSION
+# - spol-contract-deployer: SPOL_CONTRACTS_BRANCH, SPOL_CONTRACTS_COMMIT_SHA
 on:
   # Manual trigger (for publishing)
   workflow_dispatch:
@@ -19,6 +20,7 @@ on:
           - pos-contract-deployer
           - pos-el-genesis-builder
           - pos-validator-config-generator
+          - spol-contract-deployer
 
 concurrency:
   group: publish-images
@@ -41,6 +43,11 @@ env:
   VALIDATOR_CONFIG_IMAGE_NAME: 0xPolygon/pos-validator-config-generator
   HEIMDALL_V2_VERSION: 0.6.0
   POLYGON_CLI_VERSION: v0.1.102
+
+  # spol-contract-deployer settings
+  SPOL_CONTRACTS_IMAGE_NAME: 0xPolygon/spol-contract-deployer
+  SPOL_CONTRACTS_BRANCH: main
+  SPOL_CONTRACTS_COMMIT_SHA: "3c4bdf6c"
 
 jobs:
   publish-pos-contract-deployer:
@@ -205,5 +212,60 @@ jobs:
         uses: actions/attest-build-provenance@v4
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.VALIDATOR_CONFIG_IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+  publish-spol-contract-deployer:
+    # Run on PR/push (inputs.image doesn't exist), OR on manual trigger if selected
+    if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'spol-contract-deployer'
+    environment: publish-images
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
+      - uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+      - uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tag images with the specific spol-contracts commit SHA for version control.
+      # This ensures reproducible builds tied to a specific contracts version.
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.SPOL_CONTRACTS_IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.SPOL_CONTRACTS_COMMIT_SHA }}
+
+      - name: Build and push docker image
+        id: push
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: docker
+          file: docker/spol-contract-deployer.Dockerfile
+          build-args: |
+            SPOL_CONTRACTS_BRANCH=${{ env.SPOL_CONTRACTS_BRANCH }}
+            SPOL_CONTRACTS_TAG_OR_COMMIT_SHA=${{ env.SPOL_CONTRACTS_COMMIT_SHA }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.SPOL_CONTRACTS_IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true

@@ -1,0 +1,15 @@
+dev:
+  l1_backend: "anvil"
+  should_deploy_l1: true
+  should_deploy_matic_contracts: true
+  deploy_lst_contracts: true
+  lst_deployer_params:
+    reward_fee: 50
+    max_divergence: 10
+polygon_pos_package:
+  participants:
+    - kind: "validator"
+      el_type: "bor"
+      count: 1
+  network_params:
+    el_chain_id: "4927"
