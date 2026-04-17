@@ -10,7 +10,9 @@ GRAFANA_DASHBOARDS = "../../static_files/additional_services/grafana/dashboards"
 
 PANOPTICHAIN_PORT = 9090
 PANOPTICHAIN_METRICS_PATH = "/metrics"
-PANOPTICHAIN_CONFIG_FILE_PATH = "../../static_files/additional_services/panoptichain/config.yml"
+PANOPTICHAIN_CONFIG_FILE_PATH = (
+    "../../static_files/additional_services/panoptichain/config.yml"
+)
 
 
 def launch(
@@ -82,7 +84,9 @@ def launch_panoptichain(
         config=ServiceConfig(
             image=constants.IMAGES.get("panoptichain_image"),
             ports={
-                "metrics": PortSpec(number=PANOPTICHAIN_PORT, application_protocol="http"),
+                "metrics": PortSpec(
+                    number=PANOPTICHAIN_PORT, application_protocol="http"
+                ),
             },
             files={"/etc/panoptichain": panoptichain_config_artifact},
             max_cpu=shared.MAX_CPU,

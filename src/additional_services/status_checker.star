@@ -28,7 +28,11 @@ def launch(
         name="status-checker",
         config=ServiceConfig(
             image=status_checker_params.get("image"),
-            ports={METRICS_PORT_ID: PortSpec(number=METRICS_PORT_NUMBER, application_protocol="http")},
+            ports={
+                METRICS_PORT_ID: PortSpec(
+                    number=METRICS_PORT_NUMBER, application_protocol="http"
+                )
+            },
             files={
                 "/etc/status-checker": status_checker_config_artifact,
                 "/opt/status-checker/checks": status_checker_checks_artifact,
