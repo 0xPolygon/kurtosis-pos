@@ -17,15 +17,15 @@ compatibility: Requires kurtosis CLI with a running engine and Go 1.23+.
 
 ## Prerequisites
 
-| Tool | Purpose | Install |
-|---|---|---|
-| `kurtosis` | Run and manage enclaves | [docs.kurtosis.com/install](https://docs.kurtosis.com/install) |
-| `docker` | Container runtime | [docs.docker.com/get-docker](https://docs.docker.com/get-docker/) |
-| `go` 1.23+ | Build `kurtosis-test` | `brew install go` |
-| `kurtosis-test` | Run `*_test.star` unit tests | see install below |
-| `cast` (Foundry) | Send transactions, read chain state | `curl -L https://foundry.paradigm.xyz \| bash` |
-| `typos-cli` | Check for typos | `cargo install typos-cli` |
-| `rumdl` | Lint markdown | `cargo install rumdl` |
+| Tool             | Purpose                             | Install                                                           |
+| ---------------- | ----------------------------------- | ----------------------------------------------------------------- |
+| `kurtosis`       | Run and manage enclaves             | [docs.kurtosis.com/install](https://docs.kurtosis.com/install)    |
+| `docker`         | Container runtime                   | [docs.docker.com/get-docker](https://docs.docker.com/get-docker/) |
+| `go` 1.23+       | Build `kurtosis-test`               | `brew install go`                                                 |
+| `kurtosis-test`  | Run `*_test.star` unit tests        | see install below                                                 |
+| `cast` (Foundry) | Send transactions, read chain state | `curl -L https://foundry.paradigm.xyz \| bash`                    |
+| `typos-cli`      | Check for typos                     | `cargo install typos-cli`                                         |
+| `rumdl`          | Lint markdown                       | `cargo install rumdl`                                             |
 
 ```bash
 # Install kurtosis-test (requires Go 1.23+)
@@ -41,7 +41,7 @@ kurtosis engine start
 
 ## Repo map
 
-```
+```text
 main.star                        # Entry point — start here to trace any deployment flow
 src/
   config/
@@ -75,14 +75,14 @@ docs/                            # Docusaurus documentation site
 
 ## Common starting points
 
-| Task | Files to touch |
-|---|---|
+| Task                       | Files to touch                                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Add a new config parameter | `input_parser.star` (default + parsing) → `sanity_check.star` (validation) → `docs/docs/configuration/reference.md` |
-| Add a new optional service | `additional_services/<name>.star` → `additional_services/launcher.star` → `constants.star` (`ADDITIONAL_SERVICES`) |
-| Change a client image tag | `constants.star` (`IMAGES`) → `publish-images.yaml` (if it's a setup image) |
-| Add a new EL/CL client | `src/el/<client>/launcher.star` + `context.star` → `el/launcher.star` (`LAUNCHERS` dict + `EL_TYPE` enum) |
-| Add a new hard fork | `constants.star` (`EL_HARD_FORK_BLOCKS`) → `input_parser.star` → `sanity_check.star` |
-| Update docs | `docs/docs/configuration/reference.md` (params), `docs/docs/guides/` (workflows) |
+| Add a new optional service | `additional_services/<name>.star` → `additional_services/launcher.star` → `constants.star` (`ADDITIONAL_SERVICES`)  |
+| Change a client image tag  | `constants.star` (`IMAGES`) → `publish-images.yaml` (if it's a setup image)                                         |
+| Add a new EL/CL client     | `src/el/<client>/launcher.star` + `context.star` → `el/launcher.star` (`LAUNCHERS` dict + `EL_TYPE` enum)           |
+| Add a new hard fork        | `constants.star` (`EL_HARD_FORK_BLOCKS`) → `input_parser.star` → `sanity_check.star`                                |
+| Update docs                | `docs/docs/configuration/reference.md` (params), `docs/docs/guides/` (workflows)                                    |
 
 ---
 

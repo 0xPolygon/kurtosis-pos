@@ -12,16 +12,16 @@ compatibility: Requires kurtosis CLI. All patterns derived from the kurtosis-pos
 
 ## Rule categories
 
-| Priority | Category | Impact | Prefix |
-|---|---|---|---|
-| 1 | Module structure | CRITICAL | `mod-` |
-| 2 | Service configuration | CRITICAL | `svc-` |
-| 3 | Artifact handling | HIGH | `art-` |
-| 4 | Args parsing | HIGH | `args-` |
-| 5 | Error handling | MEDIUM | `err-` |
-| 6 | Shell commands | MEDIUM | `sh-` |
-| 7 | Starlark utilities | LOW | `util-` |
-| 8 | Templates | LOW | `tmpl-` |
+| Priority | Category              | Impact   | Prefix  |
+| -------- | --------------------- | -------- | ------- |
+| 1        | Module structure      | CRITICAL | `mod-`  |
+| 2        | Service configuration | CRITICAL | `svc-`  |
+| 3        | Artifact handling     | HIGH     | `art-`  |
+| 4        | Args parsing          | HIGH     | `args-` |
+| 5        | Error handling        | MEDIUM   | `err-`  |
+| 6        | Shell commands        | MEDIUM   | `sh-`   |
+| 7        | Starlark utilities    | LOW      | `util-` |
+| 8        | Templates             | LOW      | `tmpl-` |
 
 ---
 
@@ -221,11 +221,11 @@ el_rpc_url = "http://{}:{}".format(el_node_name, shared.RPC_PORT_NUMBER)
 
 ### `svc-resource-limits` — Set `max_cpu` and `max_memory` from layer-specific `shared.star` constants
 
-| Layer | `MAX_CPU` (milicores) | `MAX_MEM` (MB) |
-|---|---|---|
-| L2 EL (bor/erigon) | 4000 | 16384 |
-| L2 CL (heimdall-v2) | 2000 | 4096 |
-| Additional services | 1000 | 2048 |
+| Layer               | `MAX_CPU` (milicores) | `MAX_MEM` (MB) |
+| ------------------- | --------------------- | -------------- |
+| L2 EL (bor/erigon)  | 4000                  | 16384          |
+| L2 CL (heimdall-v2) | 2000                  | 4096           |
+| Additional services | 1000                  | 2048           |
 
 ```python
 config=ServiceConfig(..., max_cpu=shared.MAX_CPU, max_memory=shared.MAX_MEM)
@@ -557,7 +557,7 @@ gcmode = {{ if eq .kind "archive" }}"archive"{{ else }}"full"{{ end }}
 
 ### `tmpl-extension` — Use `.tmpl` extension for template files
 
-```
+```text
 static_files/config.toml.tmpl  ← clearly a template
 static_files/genesis.json       ← clearly static
 ```
@@ -566,18 +566,18 @@ static_files/genesis.json       ← clearly static
 
 ## Common anti-patterns
 
-| Anti-pattern | Rule | Fix |
-|---|---|---|
-| `PortSpec(8545, ...)` positional | `svc-portspec-keyword` | `PortSpec(number=8545, ...)` |
-| `fail("msg: %s" % val)` | `err-format-not-percent` | `fail("msg: '{}'.".format(val))` |
-| `"&&".join(cmds)` no spaces | `sh-join-separator` | `" && ".join(cmds)` |
-| `dict(args)` two-branch copy | `args-defensive-copy` | `dict(args) if args else {}` |
-| `render_templates` with `data={}` and a literal path | `art-static-vs-dynamic` | Use `upload_files` for static files (exception: path is a runtime variable) |
-| Hardcoded image string in launcher | `mod-images-dict` | `constants.IMAGES.get("key")` |
-| Service name built inline with `.format()` | `mod-generate-name` | Dedicated `generate_name(participant, id)` |
-| `src=` before `name=` in `upload_files` | `art-upload-arg-order` | `name=` always first |
-| Dynamic value interpolated into `run=` string | `sh-env-vars-not-interpolation` | Pass via `env_vars=` |
-| Reimplementing `hex()`, `sum()`, or `**` | `util-builtins` | Use `hex.star`, `math.star` |
-| `service.ip_address` in inter-service URL | `svc-hostname-not-ip` | Use service name as hostname |
-| Passing raw URL strings between launchers | `util-context-struct` | Return and accept context structs |
-| `plan.wait()` for non-HTTP or arithmetic conditions | `util-wait-run-sh` | Use `plan.run_sh` + polling loop |
+| Anti-pattern                                         | Rule                            | Fix                                                                         |
+| ---------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------- |
+| `PortSpec(8545, ...)` positional                     | `svc-portspec-keyword`          | `PortSpec(number=8545, ...)`                                                |
+| `fail("msg: %s" % val)`                              | `err-format-not-percent`        | `fail("msg: '{}'.".format(val))`                                            |
+| `"&&".join(cmds)` no spaces                          | `sh-join-separator`             | `" && ".join(cmds)`                                                         |
+| `dict(args)` two-branch copy                         | `args-defensive-copy`           | `dict(args) if args else {}`                                                |
+| `render_templates` with `data={}` and a literal path | `art-static-vs-dynamic`         | Use `upload_files` for static files (exception: path is a runtime variable) |
+| Hardcoded image string in launcher                   | `mod-images-dict`               | `constants.IMAGES.get("key")`                                               |
+| Service name built inline with `.format()`           | `mod-generate-name`             | Dedicated `generate_name(participant, id)`                                  |
+| `src=` before `name=` in `upload_files`              | `art-upload-arg-order`          | `name=` always first                                                        |
+| Dynamic value interpolated into `run=` string        | `sh-env-vars-not-interpolation` | Pass via `env_vars=`                                                        |
+| Reimplementing `hex()`, `sum()`, or `**`             | `util-builtins`                 | Use `hex.star`, `math.star`                                                 |
+| `service.ip_address` in inter-service URL            | `svc-hostname-not-ip`           | Use service name as hostname                                                |
+| Passing raw URL strings between launchers            | `util-context-struct`           | Return and accept context structs                                           |
+| `plan.wait()` for non-HTTP or arithmetic conditions  | `util-wait-run-sh`              | Use `plan.run_sh` + polling loop                                            |

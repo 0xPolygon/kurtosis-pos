@@ -99,13 +99,13 @@ Run these after deploy to confirm the devnet is healthy. Each script polls until
 
 Enable via `additional_services: [observability]` in your config.
 
-| Service | URL (after `kurtosis port print`) | Purpose |
-|---|---|---|
-| `prometheus` | port `http` | Metrics scraping |
-| `grafana` | port `http` | Dashboards |
-| `panoptichain` | port `http` | Multi-chain block/tx stats |
-| `ethstats-server` | port `http` | Live node dashboard |
-| `status-checker` | port `http` | Network health monitor |
+| Service           | URL (after `kurtosis port print`) | Purpose                    |
+| ----------------- | --------------------------------- | -------------------------- |
+| `prometheus`      | port `http`                       | Metrics scraping           |
+| `grafana`         | port `http`                       | Dashboards                 |
+| `panoptichain`    | port `http`                       | Multi-chain block/tx stats |
+| `ethstats-server` | port `http`                       | Live node dashboard        |
+| `status-checker`  | port `http`                       | Network health monitor     |
 
 ```bash
 # Get Grafana URL

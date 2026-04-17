@@ -61,16 +61,16 @@ bats --filter "withdraw ERC721 token from L2"      tests/pos/plasma-bridge.bats 
 
 **Never run `validator.bats` in full in a random order** — test 8 removes the genesis validator from consensus, permanently degrading the devnet.
 
-| # | Test | Safety |
-|---|---|---|
-| 1 | `add new validator` | Safe — uses a fresh generated keypair |
-| 2 | `update validator stake` | Safe — increases validator 1 stake |
-| 3 | `update validator top-up fee` | Safe |
-| 4 | `update signer` | Permanent signer change on validator 1 |
-| 5 | `delegate to a validator` | Safe — must run before test 6 |
-| 6 | `undelegate from a validator` | Requires test 5 to have run first |
-| 7 | `withdraw validator rewards` | Safe |
-| 8 | `remove validator` | **DESTRUCTIVE** — removes genesis validator 1. Always run last. |
+| #   | Test                          | Safety                                                          |
+| --- | ----------------------------- | --------------------------------------------------------------- |
+| 1   | `add new validator`           | Safe — uses a fresh generated keypair                           |
+| 2   | `update validator stake`      | Safe — increases validator 1 stake                              |
+| 3   | `update validator top-up fee` | Safe                                                            |
+| 4   | `update signer`               | Permanent signer change on validator 1                          |
+| 5   | `delegate to a validator`     | Safe — must run before test 6                                   |
+| 6   | `undelegate from a validator` | Requires test 5 to have run first                               |
+| 7   | `withdraw validator rewards`  | Safe                                                            |
+| 8   | `remove validator`            | **DESTRUCTIVE** — removes genesis validator 1. Always run last. |
 
 ```bash
 # Run individual safe tests

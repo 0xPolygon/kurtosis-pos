@@ -14,14 +14,14 @@ compatibility: Requires kurtosis CLI 1.15.2+, cargo (typos-cli, rumdl), and gh C
 
 ## CI workflows
 
-| Workflow | Trigger | What it does |
-|---|---|---|
-| `checks.yaml` | PR / push to main | Lint (kurtosis + rumdl), typos, unit tests. Pins `KURTOSIS_VERSION: 1.15.2`. |
-| `deploy.yaml` | PR / push / daily | Deploys configs in `.github/configs/` (excludes `.norun`). On schedule/`workflow_dispatch` only, also runs `nightly/` configs. PR merges skip nightly configs. |
-| `stability.yaml` | Daily / `workflow_dispatch` | 30 parallel deploys per config; measures failure rate |
-| `snapshot.yaml` | `workflow_dispatch` | Deploys a devnet, takes a snapshot, publishes it as a Docker image |
-| `publish-images.yaml` | `workflow_dispatch` | Builds and pushes the three setup Docker images |
-| `docs.yaml` | PR / push to main | Builds the Docusaurus site; fails on broken links |
+| Workflow              | Trigger                     | What it does                                                                                                                                                   |
+| --------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `checks.yaml`         | PR / push to main           | Lint (kurtosis + rumdl), typos, unit tests. Pins `KURTOSIS_VERSION: 1.15.2`.                                                                                   |
+| `deploy.yaml`         | PR / push / daily           | Deploys configs in `.github/configs/` (excludes `.norun`). On schedule/`workflow_dispatch` only, also runs `nightly/` configs. PR merges skip nightly configs. |
+| `stability.yaml`      | Daily / `workflow_dispatch` | 30 parallel deploys per config; measures failure rate                                                                                                          |
+| `snapshot.yaml`       | `workflow_dispatch`         | Deploys a devnet, takes a snapshot, publishes it as a Docker image                                                                                             |
+| `publish-images.yaml` | `workflow_dispatch`         | Builds and pushes the three setup Docker images                                                                                                                |
+| `docs.yaml`           | PR / push to main           | Builds the Docusaurus site; fails on broken links                                                                                                              |
 
 ---
 
@@ -97,13 +97,13 @@ npm run serve   # preview at http://localhost:3000
 
 ### What to update and when
 
-| Code change | Doc file to update |
-|---|---|
-| New or renamed config param | `docs/docs/configuration/reference.md` |
-| New or renamed service / port | `docs/docs/introduction/` + `docs/docs/guides/interact-with-the-devnet.md` |
-| New additional service | `docs/docs/guides/` |
-| New script or changed script interface | Relevant guide under `docs/docs/guides/` |
-| Hard fork block change | Any guide that references activation blocks |
+| Code change                            | Doc file to update                                                         |
+| -------------------------------------- | -------------------------------------------------------------------------- |
+| New or renamed config param            | `docs/docs/configuration/reference.md`                                     |
+| New or renamed service / port          | `docs/docs/introduction/` + `docs/docs/guides/interact-with-the-devnet.md` |
+| New additional service                 | `docs/docs/guides/`                                                        |
+| New script or changed script interface | Relevant guide under `docs/docs/guides/`                                   |
+| Hard fork block change                 | Any guide that references activation blocks                                |
 
 Always update docs **in the same PR** as the code change — never in a follow-up.
 
@@ -130,11 +130,11 @@ Category order and landing pages are defined in `_category_.json`:
 
 Three images are maintained in this repo and hosted on `ghcr.io/0xPolygon/`:
 
-| Image | Dockerfile | Purpose |
-|---|---|---|
-| `ghcr.io/0xpolygon/pos-contract-deployer:<sha>` | `docker/pos-contract-deployer.Dockerfile` | Deploy MATIC contracts to L1 and L2 |
-| `ghcr.io/0xpolygon/pos-el-genesis-builder:<sha>` | `docker/pos-el-genesis-builder.Dockerfile` | Generate EL genesis |
-| `ghcr.io/0xpolygon/pos-validator-config-generator:<ver>` | `docker/pos-validator-config-generator.Dockerfile` | Generate CL validator config |
+| Image                                                    | Dockerfile                                         | Purpose                             |
+| -------------------------------------------------------- | -------------------------------------------------- | ----------------------------------- |
+| `ghcr.io/0xpolygon/pos-contract-deployer:<sha>`          | `docker/pos-contract-deployer.Dockerfile`          | Deploy MATIC contracts to L1 and L2 |
+| `ghcr.io/0xpolygon/pos-el-genesis-builder:<sha>`         | `docker/pos-el-genesis-builder.Dockerfile`         | Generate EL genesis                 |
+| `ghcr.io/0xpolygon/pos-validator-config-generator:<ver>` | `docker/pos-validator-config-generator.Dockerfile` | Generate CL validator config        |
 
 Built manually via `workflow_dispatch` — not on every push.
 
@@ -160,7 +160,7 @@ Images are tagged with upstream commit SHA or version string — never `latest`.
 
 Suffix a config file with `.norun` to keep it valid but skip it in `deploy.yaml`:
 
-```
+```text
 .github/configs/large.yml.norun   ← valid YAML, excluded from CI matrix
 ```
 

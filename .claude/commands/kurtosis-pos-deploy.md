@@ -75,16 +75,16 @@ polygon_pos_package:
 
 ### Key defaults
 
-| Parameter | Value |
-|---|---|
-| L1 chain ID | `3151908` |
-| L2 EL chain ID | `4927` |
-| L2 CL chain ID | `heimdall-4927` |
-| Bor image | `0xpolygon/bor:2.7.1` |
-| Heimdall-v2 image | `0xpolygon/heimdall-v2:0.6.0` |
-| Sprint duration | 16 blocks |
-| Rio HF activation | block 256 |
-| Admin address | `0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9` |
+| Parameter         | Value                                                                |
+| ----------------- | -------------------------------------------------------------------- |
+| L1 chain ID       | `3151908`                                                            |
+| L2 EL chain ID    | `4927`                                                               |
+| L2 CL chain ID    | `heimdall-4927`                                                      |
+| Bor image         | `0xpolygon/bor:2.7.1`                                                |
+| Heimdall-v2 image | `0xpolygon/heimdall-v2:0.6.0`                                        |
+| Sprint duration   | 16 blocks                                                            |
+| Rio HF activation | block 256                                                            |
+| Admin address     | `0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9`                         |
 | Admin private key | `0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea` |
 
 All image tags and chain constants: `src/config/constants.star`.
@@ -94,41 +94,41 @@ Pre-funded accounts: `src/prefunded_accounts/accounts.star`.
 
 ## Ready-made configs (`.github/configs/`)
 
-| File | Setup |
-|---|---|
-| `heimdall-v2-bor.yml` | 2 validators + 2 bor RPCs |
-| `heimdall-v2-mix.yml` | 2 validators + 2 erigon RPCs |
-| `all.yml` | 1 validator + 1 bor RPC (different chain IDs) |
-| `additional-services.yml` | All optional services enabled |
-| `l1-backends/anvil.yml` | Lightweight Anvil L1 |
-| `l1-backends/ethereum-package.yml` | Full ethereum-package L1 |
+| File                               | Setup                                         |
+| ---------------------------------- | --------------------------------------------- |
+| `heimdall-v2-bor.yml`              | 2 validators + 2 bor RPCs                     |
+| `heimdall-v2-mix.yml`              | 2 validators + 2 erigon RPCs                  |
+| `all.yml`                          | 1 validator + 1 bor RPC (different chain IDs) |
+| `additional-services.yml`          | All optional services enabled                 |
+| `l1-backends/anvil.yml`            | Lightweight Anvil L1                          |
+| `l1-backends/ethereum-package.yml` | Full ethereum-package L1                      |
 
 Files with a `.norun` suffix (e.g. `large.yml.norun`) are valid configs excluded from the CI matrix — too large for regular PRs but usable via `workflow_dispatch`.
 
 **Nightly-only configs** live under `.github/configs/nightly/` and are only included in the CI matrix on scheduled runs and `workflow_dispatch` — not on PR merges:
 
-| Config | Purpose |
-|---|---|
-| `nightly/external-l1/polygon-pos-with-external-l1.yml` | Connect to an already-running L1 via `l1_rpc_url` |
+| Config                                                     | Purpose                                               |
+| ---------------------------------------------------------- | ----------------------------------------------------- |
+| `nightly/external-l1/polygon-pos-with-external-l1.yml`     | Connect to an already-running L1 via `l1_rpc_url`     |
 | `nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml` | Supply pre-built genesis files and contract addresses |
-| `nightly/additional-services/` | One config per optional service for isolated testing |
+| `nightly/additional-services/`                             | One config per optional service for isolated testing  |
 
 ---
 
 ## Service naming (0-indexed)
 
-| Role | Service name |
-|---|---|
-| L2 EL validator (bor) | `l2-el-<n>-bor-heimdall-v2-validator` |
-| L2 CL validator | `l2-cl-<n>-heimdall-v2-bor-validator` |
-| L2 EL RPC (bor) | `l2-el-<n>-bor-heimdall-v2-rpc` |
-| L2 CL RPC | `l2-cl-<n>-heimdall-v2-bor-rpc` |
-| L2 EL archive (bor) | `l2-el-<n>-bor-heimdall-v2-archive` |
-| RabbitMQ (per-node) | `l2-cl-<n>-rabbitmq` |
-| L1 EL (geth) | `el-1-geth-lighthouse` |
-| L1 CL (lighthouse) | `cl-1-lighthouse-geth` |
-| Observability | `prometheus`, `grafana`, `panoptichain` |
-| Extras | `status-checker`, `bridge-spammer`, `tx-spammer` |
+| Role                  | Service name                                     |
+| --------------------- | ------------------------------------------------ |
+| L2 EL validator (bor) | `l2-el-<n>-bor-heimdall-v2-validator`            |
+| L2 CL validator       | `l2-cl-<n>-heimdall-v2-bor-validator`            |
+| L2 EL RPC (bor)       | `l2-el-<n>-bor-heimdall-v2-rpc`                  |
+| L2 CL RPC             | `l2-cl-<n>-heimdall-v2-bor-rpc`                  |
+| L2 EL archive (bor)   | `l2-el-<n>-bor-heimdall-v2-archive`              |
+| RabbitMQ (per-node)   | `l2-cl-<n>-rabbitmq`                             |
+| L1 EL (geth)          | `el-1-geth-lighthouse`                           |
+| L1 CL (lighthouse)    | `cl-1-lighthouse-geth`                           |
+| Observability         | `prometheus`, `grafana`, `panoptichain`          |
+| Extras                | `status-checker`, `bridge-spammer`, `tx-spammer` |
 
 ---
 
@@ -182,12 +182,12 @@ Snapshots are Docker-compose based (not `kurtosis run`) and restore in ~20 secon
 
 ## Troubleshooting
 
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| Deploy hangs at L1 startup | `ethereum-package` slow to finalize | Switch to `l1_backend: anvil` |
-| Service not found | Typo in service name | Run `kurtosis enclave inspect pos` to see exact names |
-| Bor not producing blocks | Rio HF not reached yet | Wait for block 256; use monitor scripts |
-| Contract deploy fails | Admin account not funded | Ensure `should_deploy_l1: true` and L1 completed first |
-| Image not found | Local image tag mismatch | Set `--image-download always` or push image first |
-| Port conflict | Another enclave running | Run `kurtosis enclave ls` and remove stale enclaves |
-| Partial redeploy fails | L1 services stopped | Ensure original enclave is still running |
+| Symptom                    | Likely cause                        | Fix                                                    |
+| -------------------------- | ----------------------------------- | ------------------------------------------------------ |
+| Deploy hangs at L1 startup | `ethereum-package` slow to finalize | Switch to `l1_backend: anvil`                          |
+| Service not found          | Typo in service name                | Run `kurtosis enclave inspect pos` to see exact names  |
+| Bor not producing blocks   | Rio HF not reached yet              | Wait for block 256; use monitor scripts                |
+| Contract deploy fails      | Admin account not funded            | Ensure `should_deploy_l1: true` and L1 completed first |
+| Image not found            | Local image tag mismatch            | Set `--image-download always` or push image first      |
+| Port conflict              | Another enclave running             | Run `kurtosis enclave ls` and remove stale enclaves    |
+| Partial redeploy fails     | L1 services stopped                 | Ensure original enclave is still running               |

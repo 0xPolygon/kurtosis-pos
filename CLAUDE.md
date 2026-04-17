@@ -26,28 +26,28 @@ kurtosis run --enclave pos .                                       # deploy
 
 ## Service naming (0-indexed)
 
-| Role | Service name |
-|---|---|
-| L2 EL validator (bor) | `l2-el-<n>-bor-heimdall-v2-validator` |
-| L2 CL validator | `l2-cl-<n>-heimdall-v2-bor-validator` |
-| L2 EL RPC (bor) | `l2-el-<n>-bor-heimdall-v2-rpc` |
-| L2 CL RPC | `l2-cl-<n>-heimdall-v2-bor-rpc` |
-| L1 EL (geth) | `el-1-geth-lighthouse` |
-| L1 CL (lighthouse) | `cl-1-lighthouse-geth` |
-| Observability | `prometheus`, `grafana`, `panoptichain` |
+| Role                  | Service name                            |
+| --------------------- | --------------------------------------- |
+| L2 EL validator (bor) | `l2-el-<n>-bor-heimdall-v2-validator`   |
+| L2 CL validator       | `l2-cl-<n>-heimdall-v2-bor-validator`   |
+| L2 EL RPC (bor)       | `l2-el-<n>-bor-heimdall-v2-rpc`         |
+| L2 CL RPC             | `l2-cl-<n>-heimdall-v2-bor-rpc`         |
+| L1 EL (geth)          | `el-1-geth-lighthouse`                  |
+| L1 CL (lighthouse)    | `cl-1-lighthouse-geth`                  |
+| Observability         | `prometheus`, `grafana`, `panoptichain` |
 
 ## Quick reference
 
-| | |
-|---|---|
-| L1 chain ID | `3151908` |
-| L2 EL chain ID | `4927` |
-| L2 CL chain ID | `heimdall-4927` |
-| Bor image | `0xpolygon/bor:2.7.1` |
-| Heimdall-v2 image | `0xpolygon/heimdall-v2:0.6.0` |
-| Sprint duration | 16 blocks |
-| Rio hard fork | block 256 (required by Heimdall-v2) |
-| Admin address | `0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9` |
+|                               |                                                                      |
+| ----------------------------- | -------------------------------------------------------------------- |
+| L1 chain ID                   | `3151908`                                                            |
+| L2 EL chain ID                | `4927`                                                               |
+| L2 CL chain ID                | `heimdall-4927`                                                      |
+| Bor image                     | `0xpolygon/bor:2.7.1`                                                |
+| Heimdall-v2 image             | `0xpolygon/heimdall-v2:0.6.0`                                        |
+| Sprint duration               | 16 blocks                                                            |
+| Rio hard fork                 | block 256 (required by Heimdall-v2)                                  |
+| Admin address                 | `0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9`                         |
 | Admin private key (L1 and L2) | `0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea` |
 
 All image tags and chain constants: `src/config/constants.star`.
@@ -56,12 +56,12 @@ Pre-funded accounts: `src/prefunded_accounts/accounts.star`.
 
 ## Key files
 
-| Task | File |
-|---|---|
+| Task                      | File                                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Add/change a config param | `src/config/input_parser.star` → `src/config/sanity_check.star` → `docs/docs/configuration/reference.md` |
-| Bump an image tag | `src/config/constants.star` → `publish-images.yaml` (setup images only) |
-| Add an optional service | `src/additional_services/<name>.star` → `src/additional_services/launcher.star` |
-| Change node startup | `src/el_cl_launcher.star` |
+| Bump an image tag         | `src/config/constants.star` → `publish-images.yaml` (setup images only)                                  |
+| Add an optional service   | `src/additional_services/<name>.star` → `src/additional_services/launcher.star`                          |
+| Change node startup       | `src/el_cl_launcher.star`                                                                                |
 
 ## Skills
 
