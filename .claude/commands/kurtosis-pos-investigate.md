@@ -165,6 +165,59 @@ kurtosis enclave rm --force $ENCLAVE
 
 Iterate on this list as new scenarios are discovered. For each scenario: trigger the condition, then watch the anomaly signals section for signs of failure.
 
+### Service throttling (Docker resource limits)
+
+Apply resource pressure to a running service without stopping it:
+
+```bash
+# Find the container ID for a kurtosis service
+CONTAINER=$(docker ps --format "{{.ID}}\t{{.Names}}" | grep "<service-name>" | awk '{print $1}')
+
+# Throttle CPU (e.g. limit to 0.2 cores)
+docker update --cpus 0.2 $CONTAINER
+
+# Throttle memory
+docker update --memory 256m --memory-swap 256m $CONTAINER
+
+# Throttle IO — relative weight 10–1000, default 500 (cgroup v1 only; may not work on all systems)
+docker update --blkio-weight 10 $CONTAINER
+
+# Remove limits
+docker update --cpus 0 --memory 0 $CONTAINER
+```
+
+### Network degradation (tc / iptables)
+
+Inject network faults into a running container using `tc` (traffic control) or `iptables`. Run these inside the container via `kurtosis service shell` or `docker exec`.
+
+```bash
+# Shell into a service container
+kurtosis service shell $ENCLAVE <service-name>
+
+# Add 200ms latency to all outbound traffic (requires iproute2 in the container)
+tc qdisc add dev eth0 root netem delay 200ms
+
+# Add latency + jitter (200ms ± 50ms)
+tc qdisc add dev eth0 root netem delay 200ms 50ms
+
+# Random packet loss (10%)
+tc qdisc add dev eth0 root netem loss 10%
+
+# Corrupt packets (1%)
+tc qdisc add dev eth0 root netem corrupt 1%
+
+# Remove all tc rules
+tc qdisc del dev eth0 root
+
+# Drop all traffic to a specific peer IP (iptables)
+iptables -A OUTPUT -d <peer-ip> -j DROP
+
+# Remove the drop rule
+iptables -D OUTPUT -d <peer-ip> -j DROP
+```
+
+Note: `tc netem` requires the `iproute2` package and kernel `netem` module. `iptables` requires `NET_ADMIN` capability. Both may or may not be available depending on the container image and Docker configuration. Verify with `tc qdisc show` and `iptables -L` before relying on these.
+
 ### Reliability
 
 Focus: state consistency, liveness, and recovery under stress.
@@ -181,6 +234,11 @@ Focus: state consistency, liveness, and recovery under stress.
 | Steady tx load (L1+L2) | Deploy with `tx_spammer` at startup — sends 100 requests at 50 req/s every 10s on both L1 and L2 |
 | Steady bridge load | Deploy with `bridge_spammer` at startup — bridges 1 MATIC/POL + 1 ERC20 from L1 to L2 every ~5s |
 | Checkpoint timeout | Stop all heimdall validators, observe bor behavior |
+| High latency between validators | Inject 500ms+ latency on validator containers via `tc netem delay` (see network degradation note above) |
+| Packet loss between validators | Inject 10–30% packet loss on validator containers via `tc netem loss` |
+| Network partition (drop peer traffic) | Drop traffic to a specific peer IP via `iptables -A OUTPUT -d <peer-ip> -j DROP` inside a validator container |
+| CPU-starved heimdall | `docker update --cpus 0.1` on heimdall containers; observe checkpoint and milestone delays |
+| Memory-pressured bor | `docker update --memory 256m` on a bor container; observe mempool and block production under pressure |
 | Sprint boundary behavior | Monitor block production at every multiple of 16 blocks (devnet sprint; mainnet is also 16 but verify via `EL_SPRINT_DURATION` in `src/config/constants.star`) |
 | Span transition | Monitor validator producer rotation at every multiple of 128 blocks (devnet span = 8 sprints × 16; mainnet span is much larger — always use devnet values from `src/config/constants.star`) |
 | Rio hard fork transition | Observe block production and state around block 256 |
@@ -193,7 +251,7 @@ Focus: block production correctness, validator coordination, and finality guaran
 | Scenario | How to trigger |
 |---|---|
 | Missed block (producer skip) | Stop only the scheduled bor producer for one sprint; observe if next producer takes over |
-| Checkpoint submission delay | Throttle or pause heimdall; observe how far bor continues without checkpoints |
+| Checkpoint submission delay | Throttle heimdall via Docker CPU/memory limits (see throttling note below); observe how far bor continues without checkpoints |
 | Validator set change propagation | Add or remove a validator via contracts; observe how quickly bor picks up the new span |
 | Finality regression after L1 issue | Restart L1 mid-checkpoint; observe if heimdall resubmits or skips |
 | Mixed client consensus | Use `heimdall-v2-mix.yml` (bor + erigon validators); check state root agreement |
@@ -236,6 +294,26 @@ Focus: invariant violations, unauthorised state changes, and protocol abuse via 
 
 The primary attack surface is the set of **exposed HTTP/WebSocket endpoints**. For each service, enumerate available endpoints, then probe with unexpected inputs, boundary values, unauthorised calls, and replayed requests.
 
+**Reaching service endpoints:**
+
+```bash
+# Bor JSON-RPC
+BOR_RPC=$(kurtosis port print $ENCLAVE l2-el-0-bor-heimdall-v2-validator rpc)
+
+# Heimdall REST API (port id: http, default: 1317)
+HEIMDALL_REST=$(kurtosis port print $ENCLAVE l2-cl-0-heimdall-v2-bor-validator http)
+curl http://$HEIMDALL_REST/heimdall/v1/...   # enumerate routes from heimdall-v2 repo
+
+# Heimdall gRPC (port id: grpc, default: 3132)
+HEIMDALL_GRPC=$(kurtosis port print $ENCLAVE l2-cl-0-heimdall-v2-bor-validator grpc)
+
+# Heimdall CometBFT RPC (port id: rpc, default: 26657)
+HEIMDALL_COMET=$(kurtosis port print $ENCLAVE l2-cl-0-heimdall-v2-bor-validator rpc)
+
+# RabbitMQ management UI (port id: management, default: 15672) — if exposed
+RABBITMQ_MGMT=$(kurtosis port print $ENCLAVE l2-cl-0-rabbitmq management 2>/dev/null)
+```
+
 | Scenario | How to trigger |
 |---|---|
 | Bor JSON-RPC abuse | Probe `admin_*`, `debug_*`, `txpool_*`, `personal_*` methods — check which are exposed and whether they accept unauthenticated calls |
@@ -258,11 +336,60 @@ The primary attack surface is the set of **exposed HTTP/WebSocket endpoints**. F
 
 ---
 
+## Chaos testing frameworks
+
+Manual scenarios cover known failure modes. These two frameworks go further — Jepsen finds consistency violations systematically, Antithesis finds them deterministically.
+
+### Jepsen
+
+Jepsen is a fault injection and consistency verification framework for distributed systems. It is famous for uncovering consensus and safety bugs in databases, queues, and blockchain nodes. It works by:
+
+1. Deploying a cluster of nodes
+2. Running concurrent client workloads (reads, writes, transactions)
+3. Injecting faults (network partitions, node kills, clock skew) during the workload
+4. Checking a consistency model (linearizability, sequential consistency, etc.) against the observed history
+
+Jepsen tests are written in Clojure and operate over SSH. Since kurtosis-pos services are reachable via exposed ports, a Jepsen test could target the Bor JSON-RPC and Heimdall REST API directly.
+
+- Repo: https://github.com/jepsen-io/jepsen
+- Particularly relevant for: checkpoint safety, milestone finality, validator set consistency, bridge replay
+
+### Antithesis
+
+Antithesis is a deterministic simulation testing platform. Unlike Jepsen (which injects faults probabilistically), Antithesis runs software in a fully deterministic, instrumented environment where every source of non-determinism (network, disk, time) is controlled. This allows it to reliably reproduce rare bugs and systematically explore all reachable states.
+
+- Website: https://antithesis.com
+- Requires deeper instrumentation of bor and heimdall-v2 binaries
+- Particularly relevant for: race conditions, consensus edge cases, state machine correctness
+
+### Pumba (Docker-native, lower barrier)
+
+Pumba is a Docker chaos tool that wraps `tc netem` and container lifecycle operations. It requires no cluster setup or instrumentation — it runs directly against the Docker containers kurtosis creates.
+
+```bash
+# Install
+go install github.com/alexei-led/pumba@latest
+
+# Add 200ms latency to all traffic on a bor container
+pumba netem --duration 60s delay --time 200 $(docker ps --format "{{.Names}}" | grep "bor-heimdall-v2-validator")
+
+# Random packet loss (15%) on a heimdall container
+pumba netem --duration 60s loss --percent 15 $(docker ps --format "{{.Names}}" | grep "heimdall-v2-bor-validator")
+
+# Kill and restart a container on a schedule
+pumba --random kill --signal SIGKILL $(docker ps --format "{{.Names}}" | grep "l2-el")
+```
+
+- Repo: https://github.com/alexei-led/pumba
+- Lower barrier than Jepsen/Antithesis — works immediately against a running kurtosis enclave
+
+---
+
 ## Anomaly signals
 
 Stop and document a finding when any of these occur:
 
-- **Blocks stall** — L2 block number stops advancing for >1 sprint (>16 blocks of time)
+- **Blocks stall** — L2 block number stops advancing for >1 sprint (>16 blocks)
 - **Service crash** — any `l2-el-*` or `l2-cl-*` container exits unexpectedly
 - **Checkpoint failure** — heimdall stops submitting checkpoints to L1
 - **Milestone stall** — milestone height in heimdall stops advancing while Bor block production continues
@@ -298,6 +425,11 @@ cast block latest --rpc-url http://$(kurtosis port print $ENCLAVE l2-el-0-bor-he
 # Heimdall node status (all validators)
 for n in $(seq 0 $((N_VALIDATORS - 1))); do
   kurtosis service exec $ENCLAVE l2-cl-$n-heimdall-v2-bor-validator -- heimdalld status > findings/$SLUG/heimdall-status-$n.json
+done
+
+# RabbitMQ logs (relevant for state sync and coordination scenarios)
+for n in $(seq 0 $((N_VALIDATORS - 1))); do
+  kurtosis service logs $ENCLAVE l2-cl-$n-rabbitmq > findings/$SLUG/rabbitmq-$n.log
 done
 
 # L1 logs (relevant for checkpoint submission and bridge deposit scenarios)
