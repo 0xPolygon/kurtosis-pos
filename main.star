@@ -7,6 +7,7 @@ el_genesis = import_module("./src/el/genesis.star")
 hex = import_module("./src/hex/hex.star")
 input_parser = import_module("./src/config/input_parser.star")
 l1_launcher = import_module("./src/l1/launcher.star")
+lst_deployer = import_module("./src/contracts/lst_deployer.star")
 math = import_module("./src/math/math.star")
 prefunded_accounts_module = import_module("./src/prefunded_accounts/accounts.star")
 wallet = import_module("./src/wallet/wallet.star")
@@ -156,6 +157,21 @@ def run(plan, args):
             l1_contract_addresses_artifact,
         )
     )
+
+    # Optionally deploy sPOL/LST contracts. The resulting addresses are exposed
+    # via the kurtosis artifact named "lst-contract-addresses"; downstream
+    # consumers read that artifact by name rather than through a return value.
+    if dev_args.get("deploy_lst_contracts"):
+        lst_deployer.deploy_lst_contracts(
+            plan,
+            polygon_pos_args,
+            dev_args,
+            l1_context.rpc_url,
+            l2_rpc_url,
+            admin_private_key,
+            admin_address,
+            contract_addresses_artifact,
+        )
 
     # Deploy additional services.
     additional_services_launcher.launch(

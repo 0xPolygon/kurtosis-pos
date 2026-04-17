@@ -1,6 +1,6 @@
 constants = import_module("../config/constants.star")
 
-CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
+CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts/pos"
 
 
 def deploy_l1_contracts(

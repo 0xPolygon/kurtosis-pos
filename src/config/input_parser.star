@@ -7,6 +7,12 @@ DEV_ARGS = {
     "l1_backend": constants.L1_BACKEND.ethereum_package,
     "should_deploy_l1": True,
     "should_deploy_matic_contracts": True,
+    "deploy_lst_contracts": False,
+    "lst_deployer_params": {
+        "reward_fee": 50,
+        "fee_receiver": "",
+        "max_divergence": 10,
+    },
 }
 
 
@@ -279,6 +285,20 @@ def _parse_dev_args(plan, dev_args):
     # Set default params if not provided.
     for k, v in DEV_ARGS.items():
         dev_args.setdefault(k, v)
+
+    # Merge lst_deployer_params defaults for any missing keys.
+    lst_params = dev_args.get("lst_deployer_params", {})
+    if lst_params:
+        lst_params = dict(lst_params)
+    else:
+        lst_params = dict(DEV_ARGS.get("lst_deployer_params", {}))
+    for k, v in DEV_ARGS.get("lst_deployer_params", {}).items():
+        lst_params.setdefault(k, v)
+    dev_args["lst_deployer_params"] = lst_params
+
+    # Validate: deploy_lst_contracts requires should_deploy_l1.
+    if dev_args.get("deploy_lst_contracts") and not dev_args.get("should_deploy_l1"):
+        fail("deploy_lst_contracts requires should_deploy_l1=True")
 
     # Sanity check and return the result.
     sanity_check.sanity_check_dev_args(plan, dev_args)
