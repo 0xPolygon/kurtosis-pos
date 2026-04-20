@@ -37,14 +37,14 @@ def deploy_spol_contracts(
         env_vars={
             "PRIVATE_KEY": private_key,
             "L1_RPC_URL": l1_rpc_url,
-            "L2_RPC_URL": l2_rpc_url,
             "L1_CHAIN_ID": str(constants.L1_CHAIN_ID),
+            "L2_RPC_URL": l2_rpc_url,
             "L2_CHAIN_ID": str(network_params.get("el_chain_id")),
             "ADMIN_ADDRESS": admin_address,
+            "STATE_SYNCER_L2": constants.L2_STATE_RECEIVER_ADDRESS,
             "REWARD_FEE": "50",
             "FEE_RECEIVER": "",
             "MAX_DIVERGENCE": "10",
-            "STATE_SYNCER_L2": constants.L2_STATE_RECEIVER_ADDRESS,
         },
         files={
             "/opt/data": contract_deployer_config_artifact,
