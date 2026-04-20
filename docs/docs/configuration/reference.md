@@ -19,7 +19,7 @@ dev:
   l1_backend: ethereum-package
   should_deploy_l1: true
   should_deploy_matic_contracts: true
-  should_deploy_spol_contracts: false
+  should_deploy_spol_contracts: true
 ```
 
 |             Field             |  Type  |     Default      |                                   Description                                    |
@@ -27,7 +27,7 @@ dev:
 | l1_backend                    | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight |
 | should_deploy_l1              | bool   | true             | Whether to deploy the L1 chain                                                   |
 | should_deploy_matic_contracts | bool   | true             | Whether to deploy Polygon PoS contracts to L1                                    |
-| should_deploy_spol_contracts          | bool   | false            | Whether to deploy the sPOL / LST contract suite on top of the base PoS devnet    |
+| should_deploy_spol_contracts          | bool   | true             | Whether to deploy the sPOL / LST contract suite on top of the base PoS devnet    |
 
 ### LST Deployer
 
