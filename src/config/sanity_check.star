@@ -211,7 +211,6 @@ def sanity_check_dev_args(plan, input_args):
                 'Invalid parameter: "{}". Allowed fields: {}.'.format(param, DEV_PARAMS)
             )
 
-
     # Validate values.
     l1_backend = input_args.get("l1_backend")
     if l1_backend not in VALID_L1_BACKENDS:

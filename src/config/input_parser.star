@@ -282,7 +282,9 @@ def _parse_dev_args(plan, dev_args):
         dev_args.setdefault(k, v)
 
     # Validate: should_deploy_spol_contracts requires should_deploy_l1.
-    if dev_args.get("should_deploy_spol_contracts") and not dev_args.get("should_deploy_l1"):
+    if dev_args.get("should_deploy_spol_contracts") and not dev_args.get(
+        "should_deploy_l1"
+    ):
         fail("should_deploy_spol_contracts requires should_deploy_l1=True")
 
     # Sanity check and return the result.

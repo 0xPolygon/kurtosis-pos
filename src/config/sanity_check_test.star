@@ -80,5 +80,3 @@ def test_sanity_check_with_ethstats_server(plan):
             "image": constants.IMAGES.get("ethstats_server_image"),
         },
     }
-
-
