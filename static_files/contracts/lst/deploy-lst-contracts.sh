@@ -22,8 +22,6 @@ STATE_SENDER_L1=$(jq -re '.root.StateSender' "${ADDR}")
 CHECKPOINT_MANAGER=$(jq -re '.root.RootChainProxy' "${ADDR}")
 CHILD_CHAIN_MANAGER=$(jq -re '.child.ChildChain' "${ADDR}")
 POL_TOKEN_L2=$(jq -re '.child.tokens.MaticToken' "${ADDR}")
-# STATE_SYNCER_L2 is a genesis-level system contract passed in as an env var
-# from lst_deployer.star (sourced from constants.star).
 FEE_RECEIVER_VALUE="${FEE_RECEIVER:-$ADMIN_ADDRESS}"
 
 # Deploy mock PolygonMigration + RootChainManager on L1 — the real contracts
