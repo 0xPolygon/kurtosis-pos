@@ -28,7 +28,7 @@ kurtosis run --enclave pos --args-file .github/configs/heimdall-v2-bor.yml .
 # Fastest: anvil L1 backend (~3–4 min)
 kurtosis run --enclave pos --args-file .github/configs/l1-backends/anvil.yml .
 
-# Fastest of all: restore from snapshot (~20 sec)
+# Fastest of all: restore from snapshot (~20 sec) — currently broken, use normal deploy until fixed
 ./scripts/snapshot/extract.sh <docker-image>
 ./scripts/snapshot/restore.sh [snapshot_folder]
 

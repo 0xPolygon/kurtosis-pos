@@ -69,9 +69,10 @@ cast block latest --rpc-url $RPC_URL
 # Check an account balance
 cast balance 0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9 --rpc-url $RPC_URL
 
-# Send a transaction (use env var for private key)
+# Send a transaction
+PRIVATE_KEY=0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea
 cast send \
-  --private-key 0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea \
+  --private-key $PRIVATE_KEY \
   --rpc-url $RPC_URL \
   <to_address> \
   --value 1ether

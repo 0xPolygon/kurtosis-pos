@@ -1,3 +1,10 @@
+---
+name: kurtosis-pos-investigate
+description: Autonomous bug investigation for bor and heimdall-v2. Covers protocol mechanisms (spans, milestones, checkpoints, state syncs), scenario categories (reliability, consensus, HA, EVM, security), chaos frameworks (Pumba, Jepsen, Antithesis), anomaly signal checklist with timing thresholds, evidence collection, and bug report format.
+allowed-tools: Bash, Read, Glob, Grep, Write
+compatibility: Requires kurtosis CLI with a running engine and Docker.
+---
+
 ## Related skills
 
 - **kurtosis-pos-deploy** — snapshot create/restore, full deploy
