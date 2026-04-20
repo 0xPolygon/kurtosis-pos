@@ -6,7 +6,6 @@ LST_CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts/lst"
 def deploy_lst_contracts(
     plan,
     polygon_pos_args,
-    dev_args,
     l1_rpc_url,
     l2_rpc_url,
     private_key,
@@ -25,11 +24,6 @@ def deploy_lst_contracts(
     artifact by name, so this function does not return it.
     """
     network_params = polygon_pos_args.get("network_params")
-    lst_deployer_params = dev_args.get("lst_deployer_params", {})
-
-    reward_fee = lst_deployer_params.get("reward_fee", 50)
-    fee_receiver = lst_deployer_params.get("fee_receiver", "")
-    max_divergence = lst_deployer_params.get("max_divergence", 10)
 
     contract_deployer_config_artifact = plan.upload_files(
         src=LST_CONTRACTS_CONFIG_FILE_PATH,
@@ -47,9 +41,9 @@ def deploy_lst_contracts(
             "L1_CHAIN_ID": str(constants.L1_CHAIN_ID),
             "L2_CHAIN_ID": str(network_params.get("el_chain_id")),
             "ADMIN_ADDRESS": admin_address,
-            "REWARD_FEE": str(reward_fee),
-            "FEE_RECEIVER": fee_receiver,
-            "MAX_DIVERGENCE": str(max_divergence),
+            "REWARD_FEE": "50",
+            "FEE_RECEIVER": "",
+            "MAX_DIVERGENCE": "10",
             "STATE_SYNCER_L2": constants.L2_STATE_RECEIVER_ADDRESS,
         },
         files={

@@ -58,25 +58,6 @@ def test_parse_polygon_pos_args_without_log_params(plan):
     expect.eq(participant0["cl_log_format"], "text")
 
 
-def test_parse_dev_args_lst_deployer_params_defaults(plan):
-    # Omitted lst_deployer_params should be filled in from DEV_ARGS defaults.
-    parsed_args = input_parser._parse_dev_args(plan, {})
-    lst_params = parsed_args["lst_deployer_params"]
-    expect.eq(lst_params["reward_fee"], 50)
-    expect.eq(lst_params["max_divergence"], 10)
-    expect.eq(lst_params["fee_receiver"], "")
-
-
-def test_parse_dev_args_lst_deployer_params_partial_override(plan):
-    # User-supplied keys win; unspecified keys fall back to defaults.
-    parsed_args = input_parser._parse_dev_args(
-        plan, {"lst_deployer_params": {"reward_fee": 100}}
-    )
-    lst_params = parsed_args["lst_deployer_params"]
-    expect.eq(lst_params["reward_fee"], 100)
-    expect.eq(lst_params["max_divergence"], 10)
-
-
 def test_parse_dev_args_lst_requires_deploy_l1(plan):
     expect.fails(
         lambda: input_parser._parse_dev_args(

@@ -165,7 +165,6 @@ def run(plan, args):
         lst_deployer.deploy_lst_contracts(
             plan,
             polygon_pos_args,
-            dev_args,
             l1_context.rpc_url,
             l2_rpc_url,
             admin_private_key,
