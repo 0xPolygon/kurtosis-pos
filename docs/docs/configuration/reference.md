@@ -22,12 +22,12 @@ dev:
   should_deploy_spol_contracts: true
 ```
 
-|             Field             |  Type  |     Default      |                                   Description                                    |
+| Field                         | Type   | Default          | Description                                                                      |
 | ----------------------------- | ------ | ---------------- | -------------------------------------------------------------------------------- |
 | l1_backend                    | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight |
 | should_deploy_l1              | bool   | true             | Whether to deploy the L1 chain                                                   |
 | should_deploy_matic_contracts | bool   | true             | Whether to deploy Polygon PoS contracts to L1                                    |
-| should_deploy_spol_contracts          | bool   | true             | Whether to deploy Polygon sPOL/LST contracts    |
+| should_deploy_spol_contracts  | bool   | true             | Whether to deploy Polygon sPOL/LST contracts                                     |
 
 ### LST Deployer
 
