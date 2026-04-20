@@ -182,9 +182,7 @@ def input_parser(plan, input_args):
 
 
 def _parse_anvil_args(plan, anvil_args):
-    # Create a mutable copy of anvil_args.
-    if anvil_args:
-        anvil_args = dict(anvil_args)
+    anvil_args = dict(anvil_args) if anvil_args else {}
 
     # Set default params if not provided.
     for k, v in ANVIL_ARGS.items():
@@ -223,9 +221,7 @@ def _parse_ethereum_args(plan, ethereum_args):
 
 
 def _parse_polygon_pos_args(plan, polygon_pos_args):
-    # Create a mutable copy of polygon_pos_args.
-    if polygon_pos_args:
-        polygon_pos_args = dict(polygon_pos_args)
+    polygon_pos_args = dict(polygon_pos_args) if polygon_pos_args else {}
 
     # Parse the polygon pos input args and set defaults if needed.
     result = {}

@@ -216,11 +216,12 @@ def _generate_cl_validator_config(
     setup_images = polygon_pos_args.get("setup_images")
     network_params = polygon_pos_args.get("network_params")
     cl_keys_generator_artifact = plan.upload_files(
-        src=CL_KEYS_GENERATOR_FOLDER_PATH,
         name="l2-cl-validator-keys-generator-config",
+        src=CL_KEYS_GENERATOR_FOLDER_PATH,
     )
     result = plan.run_sh(
         name="l2-cl-validator-keys-generator",
+        description="Generating L2 CL validator keys and node configuration",
         image=setup_images.get("validator_config_generator"),
         env_vars={
             "CL_CHAIN_ID": network_params.get("cl_chain_id"),
