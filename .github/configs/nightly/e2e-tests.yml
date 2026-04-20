@@ -4,8 +4,3 @@ polygon_pos_package:
       el_type: bor
       cl_type: heimdall-v2
       count: 2
-  network_params:
-    # consensus layer
-    cl_chain_id: heimdall-4928
-    # execution layer
-    el_chain_id: 4928
