@@ -50,6 +50,7 @@ def deploy_lst_contracts(
             "REWARD_FEE": str(reward_fee),
             "FEE_RECEIVER": fee_receiver,
             "MAX_DIVERGENCE": str(max_divergence),
+            "STATE_SYNCER_L2": constants.L2_STATE_RECEIVER_ADDRESS,
         },
         files={
             "/opt/data": contract_deployer_config_artifact,

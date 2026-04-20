@@ -64,7 +64,7 @@ cp contractAddresses.json /opt/contracts
 # Note: This matches the Sepolia configuration (HALF_EXIT_PERIOD=1, exitWindow=0).
 # This is done via cast send instead of a forge script to avoid gas estimation issues.
 echo "Updating the WithdrawManager exit period to 1..."
-withdraw_manager_proxy_address=$(jq -r '.root.WithdrawManagerProxy' "${CONTRACT_ADDRESSES_FILE}")
+withdraw_manager_proxy_address=$(jq -re '.root.WithdrawManagerProxy' "${CONTRACT_ADDRESSES_FILE}")
 cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
   "${withdraw_manager_proxy_address}" "updateExitPeriod(uint256)" 1
 
@@ -107,8 +107,8 @@ echo "Updating the validator threshold to type(uint256).max..."
 validator_threshold=$(cast max-uint)
 calldata=$(cast calldata "updateValidatorThreshold(uint)" "${validator_threshold}")
 
-governance_proxy_address=$(jq -r '.root.GovernanceProxy' "${CONTRACT_ADDRESSES_FILE}")
-stake_manager_proxy_address=$(jq -r '.root.StakeManagerProxy' "${CONTRACT_ADDRESSES_FILE}")
+governance_proxy_address=$(jq -re '.root.GovernanceProxy' "${CONTRACT_ADDRESSES_FILE}")
+stake_manager_proxy_address=$(jq -re '.root.StakeManagerProxy' "${CONTRACT_ADDRESSES_FILE}")
 cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
   "${governance_proxy_address}" "update(address,bytes)" "${stake_manager_proxy_address}" "${calldata}"
 

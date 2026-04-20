@@ -75,6 +75,9 @@ IMAGES = {
 
 L1_CHAIN_ID = "3151908"  # 0x301824
 EL_CHAIN_ID = "4927"
+
+# Genesis-level system contracts deployed at fixed addresses on every PoS network.
+L2_STATE_RECEIVER_ADDRESS = "0x0000000000000000000000000000000000001001"
 CL_CHAIN_ID = (
     "heimdall-" + EL_CHAIN_ID
 )  # Follows the standard "heimdall-<el_chain_id>".

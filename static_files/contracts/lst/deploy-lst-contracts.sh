@@ -8,18 +8,22 @@ set -euxo pipefail
 
 cd /opt/spol-contracts
 
-# Read addresses from kurtosis PoS artifact
-STAKE_MANAGER=$(jq -r '.root.StakeManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-MATIC_TOKEN_L1=$(jq -r '.root.tokens.MaticToken' /opt/data/pos-addresses/contractAddresses.json)
-POL_TOKEN_L1=$(jq -r '.root.tokens.PolToken' /opt/data/pos-addresses/contractAddresses.json)
-WITHDRAW_MANAGER=$(jq -r '.root.WithdrawManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-ERC20_PREDICATE=$(jq -r '.root.predicates.ERC20Predicate' /opt/data/pos-addresses/contractAddresses.json)
-DEPOSIT_MANAGER=$(jq -r '.root.DepositManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-STATE_SENDER_L1=$(jq -r '.root.StateSender' /opt/data/pos-addresses/contractAddresses.json)
-CHECKPOINT_MANAGER=$(jq -r '.root.RootChainProxy' /opt/data/pos-addresses/contractAddresses.json)
-CHILD_CHAIN_MANAGER=$(jq -r '.child.ChildChain' /opt/data/pos-addresses/contractAddresses.json)
-STATE_SYNCER_L2="0x0000000000000000000000000000000000001001"
-POL_TOKEN_L2="0x0000000000000000000000000000000000001010"
+# Read addresses from kurtosis PoS artifact.
+# jq -re exits non-zero when a key is missing or null, so set -e will catch
+# malformed/incomplete artifacts before any forge deploy runs.
+ADDR=/opt/data/pos-addresses/contractAddresses.json
+STAKE_MANAGER=$(jq -re '.root.StakeManagerProxy' "${ADDR}")
+MATIC_TOKEN_L1=$(jq -re '.root.tokens.MaticToken' "${ADDR}")
+POL_TOKEN_L1=$(jq -re '.root.tokens.PolToken' "${ADDR}")
+WITHDRAW_MANAGER=$(jq -re '.root.WithdrawManagerProxy' "${ADDR}")
+ERC20_PREDICATE=$(jq -re '.root.predicates.ERC20Predicate' "${ADDR}")
+DEPOSIT_MANAGER=$(jq -re '.root.DepositManagerProxy' "${ADDR}")
+STATE_SENDER_L1=$(jq -re '.root.StateSender' "${ADDR}")
+CHECKPOINT_MANAGER=$(jq -re '.root.RootChainProxy' "${ADDR}")
+CHILD_CHAIN_MANAGER=$(jq -re '.child.ChildChain' "${ADDR}")
+POL_TOKEN_L2=$(jq -re '.child.tokens.MaticToken' "${ADDR}")
+# STATE_SYNCER_L2 is a genesis-level system contract passed in as an env var
+# from lst_deployer.star (sourced from constants.star).
 FEE_RECEIVER_VALUE="${FEE_RECEIVER:-$ADMIN_ADDRESS}"
 
 # Deploy mock PolygonMigration + RootChainManager on L1 — the real contracts
@@ -29,8 +33,8 @@ export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 forge script script/mock/DeployMocks.s.sol:DeployMocksScript \
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy
 
-POLYGON_MIGRATION=$(jq -r '.polygonMigration' script/mockAddresses.json)
-ROOT_CHAIN_MANAGER=$(jq -r '.rootChainManager' script/mockAddresses.json)
+POLYGON_MIGRATION=$(jq -re '.polygonMigration' script/mockAddresses.json)
+ROOT_CHAIN_MANAGER=$(jq -re '.rootChainManager' script/mockAddresses.json)
 
 # Build the kurtosis-devnet scenario and write it under the "ethereum-polygon"
 # top-level key. loadConfigFromJson reads addresses from whatever top-level key
