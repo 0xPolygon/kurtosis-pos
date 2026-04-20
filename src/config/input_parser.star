@@ -7,7 +7,7 @@ DEV_ARGS = {
     "l1_backend": constants.L1_BACKEND.ethereum_package,
     "should_deploy_l1": True,
     "should_deploy_matic_contracts": True,
-    "deploy_lst_contracts": False,
+    "should_deploy_spol_contracts": False,
 }
 
 
@@ -281,9 +281,9 @@ def _parse_dev_args(plan, dev_args):
     for k, v in DEV_ARGS.items():
         dev_args.setdefault(k, v)
 
-    # Validate: deploy_lst_contracts requires should_deploy_l1.
-    if dev_args.get("deploy_lst_contracts") and not dev_args.get("should_deploy_l1"):
-        fail("deploy_lst_contracts requires should_deploy_l1=True")
+    # Validate: should_deploy_spol_contracts requires should_deploy_l1.
+    if dev_args.get("should_deploy_spol_contracts") and not dev_args.get("should_deploy_l1"):
+        fail("should_deploy_spol_contracts requires should_deploy_l1=True")
 
     # Sanity check and return the result.
     sanity_check.sanity_check_dev_args(plan, dev_args)

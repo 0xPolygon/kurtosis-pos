@@ -19,7 +19,7 @@ dev:
   l1_backend: ethereum-package
   should_deploy_l1: true
   should_deploy_matic_contracts: true
-  deploy_lst_contracts: false
+  should_deploy_spol_contracts: false
 ```
 
 |             Field             |  Type  |     Default      |                                   Description                                    |
@@ -27,15 +27,15 @@ dev:
 | l1_backend                    | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight |
 | should_deploy_l1              | bool   | true             | Whether to deploy the L1 chain                                                   |
 | should_deploy_matic_contracts | bool   | true             | Whether to deploy Polygon PoS contracts to L1                                    |
-| deploy_lst_contracts          | bool   | false            | Whether to deploy the sPOL / LST contract suite on top of the base PoS devnet    |
+| should_deploy_spol_contracts          | bool   | false            | Whether to deploy the sPOL / LST contract suite on top of the base PoS devnet    |
 
 ### LST Deployer
 
-When `dev.deploy_lst_contracts: true`, the package deploys the full sPOL contract suite to L1 and L2 on top of the base PoS devnet. Requires `dev.should_deploy_l1: true`. Customize the deployer with an `lst_deployer_params` property:
+When `dev.should_deploy_spol_contracts: true`, the package deploys the full sPOL contract suite to L1 and L2 on top of the base PoS devnet. Requires `dev.should_deploy_l1: true`. Customize the deployer with an `lst_deployer_params` property:
 
 ```yml title="params.yml"
 dev:
-  deploy_lst_contracts: true
+  should_deploy_spol_contracts: true
   lst_deployer_params:
     reward_fee: 50
     fee_receiver: ""

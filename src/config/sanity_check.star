@@ -125,7 +125,7 @@ DEV_PARAMS = [
     "l2_el_genesis_filepath",
     "l2_cl_genesis_filepath",
     "matic_contract_addresses_filepath",
-    "deploy_lst_contracts",  # boolean — opt-in sPOL/LST contract deployment
+    "should_deploy_spol_contracts",  # boolean — opt-in sPOL/LST contract deployment
 ]
 
 

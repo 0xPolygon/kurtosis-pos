@@ -3,7 +3,7 @@ constants = import_module("../config/constants.star")
 LST_CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts/lst"
 
 
-def deploy_lst_contracts(
+def deploy_spol_contracts(
     plan,
     polygon_pos_args,
     l1_rpc_url,

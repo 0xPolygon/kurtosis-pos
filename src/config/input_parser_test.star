@@ -65,8 +65,8 @@ def test_parse_dev_args_lst_requires_deploy_l1(plan):
             {
                 "should_deploy_l1": False,
                 "l1_rpc_url": "http://example:8545",
-                "deploy_lst_contracts": True,
+                "should_deploy_spol_contracts": True,
             },
         ),
-        "deploy_lst_contracts requires should_deploy_l1=True",
+        "should_deploy_spol_contracts requires should_deploy_l1=True",
     )

@@ -13,7 +13,7 @@ Optional features:
 
 - Run a transaction spammer to simulate network load.
 - Deploy monitoring solutions such as [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), [Panoptichain](https://github.com/0xPolygon/panoptichain) and [Blockscout](https://www.blockscout.com/) to observe the network.
-- Deploy the [sPOL / LST](https://github.com/0xPolygon/spol-contracts) contract suite on top of the base PoS devnet (see the `deploy_lst_contracts` option in the [configuration reference](./docs/docs/configuration/reference.md#lst-deployer)).
+- Deploy the [sPOL / LST](https://github.com/0xPolygon/spol-contracts) contract suite on top of the base PoS devnet (see the `should_deploy_spol_contracts` option in the [configuration reference](./docs/docs/configuration/reference.md#lst-deployer)).
 
 > 🚨 This package is for development and testing only — **not for production use!**
 
