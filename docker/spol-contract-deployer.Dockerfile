@@ -2,7 +2,6 @@ FROM node:20-slim
 LABEL description="Polygon sPOL (LST) contracts deployment image"
 LABEL author="devtools@polygon.technology"
 
-ARG SPOL_CONTRACTS_BRANCH="main"
 ARG SPOL_CONTRACTS_TAG_OR_COMMIT_SHA="main"
 
 ENV FOUNDRY_VERSION="stable"
@@ -21,10 +20,16 @@ RUN apt-get update \
   && bash /root/.foundry/bin/foundryup --install ${FOUNDRY_VERSION} \
   && cp /root/.foundry/bin/* /usr/local/bin \
   && rm /tmp/foundry-install.sh \
-  # Prepare spol contracts (shallow clone at pinned ref)
-  && git clone --branch ${SPOL_CONTRACTS_BRANCH} --depth 1 https://github.com/0xPolygon/spol-contracts . \
-  && git checkout ${SPOL_CONTRACTS_TAG_OR_COMMIT_SHA} \
-  && find . -name .git -exec rm -rf {} + 2>/dev/null || true
+  # Check out spol-contracts at the pinned ref. The previous implementation used
+  # `git clone --depth 1 --branch main` followed by `git checkout <sha>`, but the
+  # shallow clone only fetches the tip of main, so the checkout silently failed
+  # (its non-zero exit swallowed by the `|| true` on the following `find`) and
+  # the image was always built from whatever main currently pointed at — not the
+  # SHA the tag claimed. Use a full clone so the checkout works for any ref form
+  # the caller passes: short SHA, full SHA, tag, or branch name.
+  && git clone https://github.com/0xPolygon/spol-contracts . \
+  && git checkout "${SPOL_CONTRACTS_TAG_OR_COMMIT_SHA}" \
+  && rm -rf .git
 
 # Overlay kurtosis-specific mocks and validator-setup script into script/mock/.
 # These files compile alongside the upstream sPOL source during the forge build below,
