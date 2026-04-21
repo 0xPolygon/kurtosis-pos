@@ -12,37 +12,37 @@ source "${SCRIPT_DIR}/log.sh"
 ############################################################################
 
 restore_docker_volumes() {
-    local volume_folder_path="$1"
+  local volume_folder_path="$1"
 
-    # Restore from archives (.tar.gz)
-    for v in "$volume_folder_path"/*.tar.gz; do
-        [[ -f "$v" ]] || continue
-        (
-            volume_name=$(basename "$v" .tar.gz | sed 's/_/--/g')
-            echo "$volume_name"
-            docker volume create "$volume_name" >/dev/null
-            docker run --rm \
-                -v "$volume_name":/data \
-                -v "$volume_folder_path":/backup \
-                alpine tar xzf /backup/$(basename "$v") -C /data
-        ) &
-    done
+  # Restore from archives (.tar.gz)
+  for v in "$volume_folder_path"/*.tar.gz; do
+    [[ -f "$v" ]] || continue
+    (
+      volume_name=$(basename "$v" .tar.gz | sed 's/_/--/g')
+      echo "$volume_name"
+      docker volume create "$volume_name" > /dev/null
+      docker run --rm \
+        -v "$volume_name":/data \
+        -v "$volume_folder_path":/backup \
+        alpine tar xzf /backup/$(basename "$v") -C /data
+    ) &
+  done
 
-    # Restore from directories
-    for d in "$volume_folder_path"/*/; do
-        [[ -d "$d" ]] || continue
-        (
-            volume_name=$(basename "$d" | sed 's/_/--/g')
-            echo "$volume_name"
-            docker volume create "$volume_name" >/dev/null
-            docker run --rm \
-                -v "$volume_name":/data \
-                -v "$(realpath "$d")":/backup \
-                alpine sh -c "cd /backup && tar cf - . | tar xf - -C /data"
-        ) &
-    done
+  # Restore from directories
+  for d in "$volume_folder_path"/*/; do
+    [[ -d "$d" ]] || continue
+    (
+      volume_name=$(basename "$d" | sed 's/_/--/g')
+      echo "$volume_name"
+      docker volume create "$volume_name" > /dev/null
+      docker run --rm \
+        -v "$volume_name":/data \
+        -v "$(realpath "$d")":/backup \
+        alpine sh -c "cd /backup && tar cf - . | tar xf - -C /data"
+    ) &
+  done
 
-    wait
+  wait
 }
 
 ##############################################################################
