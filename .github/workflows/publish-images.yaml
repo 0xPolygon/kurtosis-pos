@@ -5,7 +5,7 @@ name: publish-images
 # - pos-contract-deployer: POS_CONTRACTS_BRANCH, POS_CONTRACTS_COMMIT_SHA
 # - pos-el-genesis-builder: GENESIS_CONTRACTS_BRANCH, GENESIS_CONTRACTS_COMMIT_SHA
 # - pos-validator-config-generator: HEIMDALL_V2_VERSION, POLYGON_CLI_VERSION
-# - spol-contract-deployer: SPOL_CONTRACTS_BRANCH, SPOL_CONTRACTS_COMMIT_SHA
+# - spol-contract-deployer: SPOL_CONTRACTS_COMMIT_SHA
 on:
   # Manual trigger (for publishing)
   workflow_dispatch:
@@ -46,7 +46,6 @@ env:
 
   # spol-contract-deployer settings
   SPOL_CONTRACTS_IMAGE_NAME: 0xPolygon/spol-contract-deployer
-  SPOL_CONTRACTS_BRANCH: main
   SPOL_CONTRACTS_COMMIT_SHA: "3c4bdf6c"
 
 jobs:
@@ -254,7 +253,6 @@ jobs:
           context: docker
           file: docker/spol-contract-deployer.Dockerfile
           build-args: |
-            SPOL_CONTRACTS_BRANCH=${{ env.SPOL_CONTRACTS_BRANCH }}
             SPOL_CONTRACTS_TAG_OR_COMMIT_SHA=${{ env.SPOL_CONTRACTS_COMMIT_SHA }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
