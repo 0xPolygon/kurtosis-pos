@@ -13,3 +13,8 @@ polygon_pos_package:
       count: 1
   network_params:
     el_chain_id: "4927"
+    # Compress checkpoint cadence so sPOL e2e tests can observe
+    # burn → checkpoint → exit round-trips inside a single test timeout
+    # (~15–20s vs mainnet defaults of 2–3 minutes).
+    cl_avg_checkpoint_length: "8"
+    cl_checkpoint_buffer_time: "10s"

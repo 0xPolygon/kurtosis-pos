@@ -125,6 +125,10 @@ POLYGON_POS_PACKAGE_ARGS = {
         "cl_span_poll_interval": "5s",
         "cl_checkpoint_poll_interval": "5s",
         "cl_max_age_num_blocks": 100000,
+        # Mainnet-conservative checkpoint cadence — test profiles override these
+        # in their params file to get ~15–20s cadence instead of 2–3 minutes.
+        "cl_avg_checkpoint_length": "128",
+        "cl_checkpoint_buffer_time": "120s",
         # EL network params.
         "el_chain_id": constants.EL_CHAIN_ID,
         "el_block_interval_seconds": 1,
