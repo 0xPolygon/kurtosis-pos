@@ -334,7 +334,8 @@ def _parse_participants(participants, log_level, log_format):
             p.setdefault(k, v)
 
         # Fill in any missing fields with default values for bor participants.
-        if el_type == constants.EL_TYPE.bor:
+        # Re-read el_type from p so the defaulted value (set just above) is also honoured.
+        if p.get("el_type") == constants.EL_TYPE.bor:
             for k, v in POLYGON_POS_EL_BOR_PARTICIPANT.items():
                 p.setdefault(k, v)
 
