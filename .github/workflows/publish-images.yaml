@@ -79,7 +79,7 @@ jobs:
         id: push
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
-          context: docker
+          context: .
           file: docker/pos-contract-deployer.Dockerfile
           build-args: |
             POS_CONTRACTS_BRANCH=${{ env.POS_CONTRACTS_BRANCH }}
