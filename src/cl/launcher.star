@@ -40,6 +40,7 @@ def launch(
 
     el_node_name = el_launcher.generate_name(participant, id)
     el_rpc_url = "http://{}:{}".format(el_node_name, el_shared.RPC_PORT_NUMBER)
+    el_grpc_url = "http://{}:{}".format(el_node_name, el_shared.GRPC_PORT_NUMBER)
 
     service = launch_method(
         plan,
@@ -51,6 +52,7 @@ def launch(
         node_ids,
         l1_rpc_url,
         el_rpc_url,
+        el_grpc_url,
         rabbitmq_url,
         container_proc_manager_artifact,
     )
