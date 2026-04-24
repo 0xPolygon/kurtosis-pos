@@ -66,7 +66,7 @@ def deploy_l2(
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="matic-contract-addresses-with-pos-portal",
+                name="pos-portal-addresses",
             ),
         ],
         run="bash /opt/data/l2/deploy-pos-portal.sh",

@@ -19,7 +19,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
-                    "el_chain_id": network_params.get("el_chain_id"),
+                    "el_chain_id": constants.EL_CHAIN_ID,
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_gas_limit_hex": hex.int_to_hex(
                         network_params.get("el_gas_limit")
@@ -58,9 +58,9 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
         description="Generating L2 EL genesis",
         image=setup_images.get("el_genesis_builder"),
         env_vars={
-            "EL_CHAIN_ID": str(network_params.get("el_chain_id")),
+            "EL_CHAIN_ID": str(constants.EL_CHAIN_ID),
             "DEFAULT_EL_CHAIN_ID": constants.EL_CHAIN_ID,
-            "CL_CHAIN_ID": str(network_params.get("cl_chain_id")),
+            "CL_CHAIN_ID": str(constants.CL_CHAIN_ID),
             "DEFAULT_CL_CHAIN_ID": constants.CL_CHAIN_ID,
             # Note that we don't add the admin address to the alloc in starlark because
             # admin_address is a Kurtosis future string. We can't perform any string
