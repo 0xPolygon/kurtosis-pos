@@ -29,6 +29,7 @@ POLYGON_POS_PARAMS = {
     ],
     "setup_images": [
         "contract_deployer",
+        "pos_portal_deployer",
         "el_genesis_builder",
         "validator_config_generator",
     ],

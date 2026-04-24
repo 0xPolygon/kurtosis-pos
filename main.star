@@ -2,6 +2,7 @@ additional_services_launcher = import_module("./src/additional_services/launcher
 cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/config/constants.star")
 contract_deployer = import_module("./src/contracts/deployer.star")
+pos_portal_deployer = import_module("./src/contracts/pos_portal_deployer.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis = import_module("./src/el/genesis.star")
 hex = import_module("./src/hex/hex.star")
@@ -82,6 +83,15 @@ def run(plan, args):
             validator_accounts,
         )
 
+        # Deploy pos-portal L1 (root) contracts on top of pos-contracts.
+        l1_contract_addresses_artifact = pos_portal_deployer.deploy_l1_pos_portal(
+            plan,
+            polygon_pos_args,
+            l1_context.rpc_url,
+            admin_private_key,
+            l1_contract_addresses_artifact,
+        )
+
         l2_cl_genesis_artifact = cl_genesis.generate(
             plan,
             polygon_pos_args,
@@ -155,6 +165,16 @@ def run(plan, args):
             admin_private_key,
             l1_contract_addresses_artifact,
         )
+    )
+
+    # Deploy pos-portal L2 (child) contracts and cross-chain wiring.
+    contract_addresses_artifact = pos_portal_deployer.deploy_l2_pos_portal_and_wire(
+        plan,
+        polygon_pos_args,
+        l1_context.rpc_url,
+        l2_rpc_url,
+        admin_private_key,
+        contract_addresses_artifact,
     )
 
     # Deploy additional services.
