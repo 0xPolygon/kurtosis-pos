@@ -30,7 +30,7 @@ env:
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
   POS_CONTRACTS_BRANCH: anvil-pos
-  POS_CONTRACTS_COMMIT_SHA: "bc28cfd8"
+  POS_CONTRACTS_COMMIT_SHA: d96d5929 # 2025-08-01
 
   # pos-el-genesis-builder settings
   EL_GENESIS_BUILDER_IMAGE_NAME: 0xPolygon/pos-el-genesis-builder
@@ -79,7 +79,7 @@ jobs:
         id: push
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
-          context: docker
+          context: .
           file: docker/pos-contract-deployer.Dockerfile
           build-args: |
             POS_CONTRACTS_BRANCH=${{ env.POS_CONTRACTS_BRANCH }}
