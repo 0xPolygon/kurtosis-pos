@@ -129,6 +129,15 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Enable expensive metrics collection and reporting (default: false)
   expensive = false
 
+[grpc]
+  # gRPC server for heimdall↔bor communication. Bound to 0.0.0.0 inside the
+  # container so sibling containers (heimdall) can reach it. Bor's own
+  # production default is 127.0.0.1:3131; we override for this devnet topology.
+  # Token authentication is left empty — kurtosis runs over the internal
+  # docker network without TLS, and heimdall refuses to send a bearer token
+  # over plaintext to a non-loopback peer.
+  addr = "0.0.0.0:{{.grpc_port_number}}"
+
 [pprof]
   # Enable the pprof HTTP server (default: false)
   pprof = true
