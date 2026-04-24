@@ -112,19 +112,21 @@ stake_manager_proxy_address=$(jq -r '.root.StakeManagerProxy' "${CONTRACT_ADDRES
 cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
   "${governance_proxy_address}" "update(address,bytes)" "${stake_manager_proxy_address}" "${calldata}"
 
-# Lower StakeManager.dynasty to 1 so a validator unstake becomes claimable
-# one checkpoint after it is opened, not the mainnet-scaled default
-# (~886k blocks, i.e. days). This is the waiting period that gates
-# `StakeManager.unstakeClaim(validatorId)` — and transitively gates
-# `sPOLController.withdrawPOL(user)`, which aggregates per-validator nonces
-# for an sPOL seller. Without this override, a fast-cadence kurtosis devnet
-# still cannot observe the sPOL burn → checkpoint → withdrawPOL chain in
-# test-timeout bounds; with `dynasty=1` the unbond clears in roughly one
-# `avg_checkpoint_length` × bor block-time window (~16-25s at the current
-# cadence settings). Matches the existing WithdrawManager `exitPeriod=1`
-# override above — same test-devnet contract.
+# Lower StakeManager.dynasty + WITHDRAWAL_DELAY to 1 epoch so a validator
+# unstake becomes claimable one checkpoint after it is opened, not the
+# mainnet-scaled default (`dynasty = 886` epochs, ~50 days;
+# `WITHDRAWAL_DELAY = 2^13` epochs). Both fields gate the delay before
+# `StakeManager.unstakeClaim(validatorId)` is permitted — and transitively
+# gate `sPOLController.withdrawPOL(user)`, which aggregates per-validator
+# nonces for an sPOL seller. Without this override, a fast-cadence kurtosis
+# devnet still cannot observe the sPOL burn → checkpoint → withdrawPOL
+# chain in test-timeout bounds; with the delay at 1 epoch the unbond clears
+# in roughly one `avg_checkpoint_length` × bor block-time window (~16-25s
+# at the current cadence settings). `updateDynastyValue` is
+# `onlyGovernance` and sets BOTH fields in one call. Matches the existing
+# WithdrawManager `exitPeriod=1` override above — same test-devnet contract.
 echo "Updating the StakeManager dynasty to 1 (near-immediate stake unbond)..."
-dynasty_calldata=$(cast calldata "updateDynasty(uint256)" 1)
+dynasty_calldata=$(cast calldata "updateDynastyValue(uint256)" 1)
 cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
   "${governance_proxy_address}" "update(address,bytes)" "${stake_manager_proxy_address}" "${dynasty_calldata}"
 
