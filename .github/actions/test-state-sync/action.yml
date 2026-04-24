@@ -13,7 +13,7 @@ inputs:
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
-    default: 1831cd486ed80aa300943f23900491bb949c77a2
+    default: c505c9d8d76c74aa20040fbc2af3046b5ecc0c86
 
 runs:
   using: composite
@@ -47,7 +47,7 @@ runs:
     - name: Test state syncs
       working-directory: agglayer-e2e
       shell: bash
-      run: bats --filter 'bridge POL from L1 to L2 and confirm native tokens balance increased on L2' tests/pos/plasma-bridge.bats
+      run: bats --filter 'bridge POL from L1 to L2 via plasma bridge' tests/pos/bridge/plasma.bats
       env:
         L1_RPC_URL: ${{ env.L1_RPC_URL }}
         TIMEOUT_SECONDS: 600 # default: 180
