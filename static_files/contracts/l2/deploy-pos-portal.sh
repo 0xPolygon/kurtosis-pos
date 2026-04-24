@@ -13,6 +13,8 @@ for v in PRIVATE_KEY L1_RPC_URL L2_RPC_URL; do
   fi
 done
 
+cd /opt/pos-portal
+
 echo "Copying contract addresses file..."
 mkdir -p /opt/contracts
 cp /opt/data/addresses/contractAddresses.json /opt/pos-portal/contractAddresses.json

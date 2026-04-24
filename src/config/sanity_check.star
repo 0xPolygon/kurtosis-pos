@@ -29,7 +29,6 @@ POLYGON_POS_PARAMS = {
     ],
     "setup_images": [
         "contract_deployer",
-        "pos_portal_deployer",
         "el_genesis_builder",
         "validator_config_generator",
     ],
@@ -152,6 +151,12 @@ def sanity_check_polygon_args(plan, input_args):
     cl_chain_id = network_params.get("cl_chain_id")
     el_chain_id = network_params.get("el_chain_id")
     _validate_chain_ids(cl_chain_id, el_chain_id)
+    if el_chain_id != constants.EL_CHAIN_ID:
+        fail(
+            "Custom L2 chain ids are not supported by the contract deployer image. Expected el_chain_id={} but got {}. Rebuild the image with a different EL_CHAIN_ID build arg if you need another value.".format(
+                constants.EL_CHAIN_ID, el_chain_id
+            )
+        )
 
     participants = input_args.get("participants")
     _validate_participants_count(participants)

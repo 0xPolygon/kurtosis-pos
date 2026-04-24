@@ -6,31 +6,7 @@ set -euxo pipefail
 
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
 
-# Setting EL chain id if needed.
-if [[ -z "${EL_CHAIN_ID}" ]]; then
-  echo "Error: EL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
-if [[ -z "${DEFAULT_EL_CHAIN_ID}" ]]; then
-  echo "Error: DEFAULT_EL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
-echo "EL_CHAIN_ID: ${EL_CHAIN_ID}"
-echo "DEFAULT_EL_CHAIN_ID: ${DEFAULT_EL_CHAIN_ID}"
-
-if [[ "${EL_CHAIN_ID}" == "${DEFAULT_EL_CHAIN_ID}" ]]; then
-  echo "There is no need to set EL chain id set since EL_CHAIN_ID is already set to the default value."
-else
-  echo "Setting EL chain id since EL_CHAIN_ID is different than the default value..."
-  echo "Processing templates..."
-  npm run template:process -- --bor-chain-id "${EL_CHAIN_ID}"
-
-  echo "Generating interfaces..."
-  npm run generate:interfaces
-
-  echo "Re-compiling the Polygon PoS contracts..."
-  forge build
-fi
+cd /opt/pos-contracts
 
 echo "Copying contract addresses file..."
 cp /opt/data/addresses/contractAddresses.json /opt/pos-contracts/contractAddresses.json

@@ -1,13 +1,12 @@
-constants = import_module("../config/constants.star")
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 
-def deploy_l1_pos_portal(
+def deploy_l1(
     plan, polygon_pos_args, l1_rpc_url, private_key, contract_addresses_artifact
 ):
     setup_images = polygon_pos_args.get("setup_images")
-    image = setup_images.get("pos_portal_deployer")
+    image = setup_images.get("contract_deployer")
     config_artifact = plan.upload_files(
         name="pos-portal-l1-deployer-config",
         src=CONTRACTS_CONFIG_FILE_PATH,
@@ -31,13 +30,13 @@ def deploy_l1_pos_portal(
                 name="pos-portal-l1-addresses",
             ),
         ],
-        run="bash /opt/data/deploy-l1-pos-portal.sh",
+        run="bash /opt/data/l1/deploy-pos-portal.sh",
         wait="5m",
     )
     return result.files_artifacts[0]
 
 
-def deploy_l2_pos_portal_and_wire(
+def deploy_l2(
     plan,
     polygon_pos_args,
     l1_rpc_url,
@@ -46,7 +45,7 @@ def deploy_l2_pos_portal_and_wire(
     contract_addresses_artifact,
 ):
     setup_images = polygon_pos_args.get("setup_images")
-    image = setup_images.get("pos_portal_deployer")
+    image = setup_images.get("contract_deployer")
     config_artifact = plan.upload_files(
         name="pos-portal-l2-deployer-config",
         src=CONTRACTS_CONFIG_FILE_PATH,
@@ -71,7 +70,7 @@ def deploy_l2_pos_portal_and_wire(
                 name="matic-contract-addresses-with-pos-portal",
             ),
         ],
-        run="bash /opt/data/deploy-l2-pos-portal.sh",
+        run="bash /opt/data/l2/deploy-pos-portal.sh",
         wait="5m",
     )
     return result.files_artifacts[0]
