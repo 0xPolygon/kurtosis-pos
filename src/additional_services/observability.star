@@ -66,7 +66,7 @@ def launch_panoptichain(
                 template=read_file(PANOPTICHAIN_CONFIG_FILE_PATH),
                 data={
                     "l1_chain_id": l1_context.chain_id,
-                    "l2_chain_id": l2_context.el_chain_id,
+                    "l2_chain_id": constants.EL_CHAIN_ID,
                     "l1_rpcs": util.l1_rpcs(l1_context),
                     "l2_urls": util.l2_urls(l2_context),
                     "checkpoint_address": l1_root_chain_proxy_address,

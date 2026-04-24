@@ -129,7 +129,6 @@ def launch(
 
     # Return the L2 context.
     return struct(
-        el_chain_id=constants.EL_CHAIN_ID,
         all_participants=all_participants,
     )
 

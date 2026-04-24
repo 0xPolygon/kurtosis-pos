@@ -7,52 +7,22 @@ set -euxo pipefail
 EL_GENESIS_ALLOC_FILE="/opt/genesis-contracts/genesis.json"
 EL_GENESIS_FILE="/opt/data/genesis/genesis.json"
 
-# Checking environment variables.
-if [[ -z "${EL_CHAIN_ID}" ]]; then
-  echo "Error: EL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
-if [[ -z "${DEFAULT_EL_CHAIN_ID}" ]]; then
-  echo "Error: DEFAULT_EL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
+# Checking environment variables. Chain ids are baked into the image at build time
+# (via EL_CHAIN_ID / CL_CHAIN_ID ENVs in the Dockerfile) and injected back into this
+# script's environment by the container; custom values are not supported.
+for v in EL_CHAIN_ID CL_CHAIN_ID ADMIN_ADDRESS ADMIN_BALANCE_WEI; do
+  if [[ -z "${!v:-}" ]]; then
+    echo "Error: ${v} environment variable is not set"
+    exit 1
+  fi
+done
 echo "EL_CHAIN_ID: ${EL_CHAIN_ID}"
-echo "DEFAULT_EL_CHAIN_ID: ${DEFAULT_EL_CHAIN_ID}"
-
-if [[ -z "${CL_CHAIN_ID}" ]]; then
-  echo "Error: CL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
-if [[ -z "${DEFAULT_CL_CHAIN_ID}" ]]; then
-  echo "Error: DEFAULT_CL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
 echo "CL_CHAIN_ID: ${CL_CHAIN_ID}"
-echo "DEFAULT_CL_CHAIN_ID: ${DEFAULT_CL_CHAIN_ID}"
-
-if [[ -z "${ADMIN_ADDRESS}" ]]; then
-  echo "Error: ADMIN_ADDRESS environment variable is not set"
-  exit 1
-fi
-if [[ -z "${ADMIN_BALANCE_WEI}" ]]; then
-  echo "Error: ADMIN_BALANCE_WEI environment variable is not set"
-  exit 1
-fi
 echo "ADMIN_ADDRESS: ${ADMIN_ADDRESS}"
 echo "ADMIN_BALANCE_WEI: ${ADMIN_BALANCE_WEI}"
 
-# Regenerate the validator set if needed.
-if [[ "${EL_CHAIN_ID}" == "${DEFAULT_EL_CHAIN_ID}" && "${CL_CHAIN_ID}" == "${DEFAULT_CL_CHAIN_ID}" ]]; then
-  echo "There is no need to regenerate the validator set since EL_CHAIN_ID and CL_CHAIN_ID are already set to their default values."
-else
-  echo "Generating the validator set since EL_CHAIN_ID and/or CL_CHAIN_ID are different than the default values..."
-  node generate-borvalidatorset.js --bor-chain-id "${EL_CHAIN_ID}" --heimdall-chain-id "${CL_CHAIN_ID}"
-
-  echo "Re-compiling the genesis contracts..."
-  truffle compile
-fi
-
-# Generate the EL genesis alloc field.
+# Generate the EL genesis alloc field (validator set + genesis contracts are
+# pre-built in the image against the baked chain ids).
 echo "Generating the genesis file..."
 cp /opt/data/validator/validators.js validators.js
 node generate-genesis.js --bor-chain-id "${EL_CHAIN_ID}" --heimdall-chain-id "${CL_CHAIN_ID}"

@@ -74,12 +74,17 @@ IMAGES = {
 
 L1_CHAIN_ID = "3151908"  # 0x301824
 
-# Do NOT change EL_CHAIN_ID / CL_CHAIN_ID — they're baked into the pre-built
-# contract artifacts shipped in the `pos-contract-deployer` image at image-build
-# time (templates rendered with --bor-chain-id=4927). Changing the value here
-# would leave the package pointing at contracts compiled for a different chain
-# and break every deposit/withdraw. If you genuinely need a different L2 chain
-# id, rebuild the image with a matching `EL_CHAIN_ID` build arg and bump these.
+# Do NOT change EL_CHAIN_ID / CL_CHAIN_ID — both are baked into pre-built
+# artifacts at image-build time:
+#   - `pos-el-genesis-builder`: ChainIdMixin.sol (borChainId) + BorValidatorSet.sol
+#     (borChainId + heimdallChainId) are rendered from templates and compiled;
+#     the resulting bytecode is embedded into the L2 genesis alloc.
+#   - `pos-contract-deployer`: ChainIdMixin.sol + TransferWithSigUtils.sol
+#     (borChainId) are rendered and compiled into the L1 pos-contracts bytecode.
+# Changing these values here would leave the package pointing at contracts
+# compiled for a different chain and break every deposit/withdraw. To use
+# different chain ids, rebuild both images with matching build args and bump
+# the values below.
 EL_CHAIN_ID = "4927"
 CL_CHAIN_ID = "heimdall-" + EL_CHAIN_ID  # follows "heimdall-<el_chain_id>"
 EL_SPRINT_DURATION = 16
