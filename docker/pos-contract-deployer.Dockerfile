@@ -1,4 +1,3 @@
-# ---- builder: clone pos-contracts + pos-portal, install deps, compile -------
 FROM node:20-slim AS builder
 LABEL description="pos-contract-deployer builder"
 
@@ -51,7 +50,7 @@ COPY static_files/contracts/l1/scripts/deployPosPortalRoot.s.sol /opt/pos-portal
 COPY static_files/contracts/l2/scripts/deployPosPortalChild.s.sol /opt/pos-portal/scripts/deployment-scripts/deployPosPortalChild.s.sol
 RUN forge build
 
-# ---- runtime: forge/cast + compiled artifacts + deploy scripts --------------
+
 FROM debian:bookworm-slim
 LABEL description="Polygon PoS contracts deployment image (pos-contracts + pos-portal)"
 LABEL author="devtools@polygon.technology"
