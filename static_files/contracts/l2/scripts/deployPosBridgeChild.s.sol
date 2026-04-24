@@ -3,13 +3,13 @@ pragma solidity ^0.8.4;
 
 import {Script, stdJson, console} from "forge-std/Script.sol";
 
-// Deploys the L2 (child) side of pos-portal. Mirrors scripts/3_deploy_child_chain_contracts.js +
+// Deploys the L2 (child) side of the pos-bridge. Mirrors scripts/3_deploy_child_chain_contracts.js +
 // 5_initialize_child_chain_contracts.js from maticnetwork/pos-portal at pin 3402faa.
 //
-// Reads: .root.posPortal.* from contractAddresses.json (root-side dummy tokens,
-//        produced by deployPosPortalRoot.s.sol).
-// Writes: .child.posPortal.*
-contract DeployPosPortalChildScript is Script {
+// Reads: .root.posBridge.* from contractAddresses.json (root-side dummy tokens,
+//        produced by deployPosBridgeRoot.s.sol).
+// Writes: .child.posBridge.*
+contract DeployPosBridgeChildScript is Script {
     using stdJson for string;
 
     // Pre-deployed state-sync precompile on L2 bor. CCM must grant it STATE_SYNCER_ROLE
@@ -38,12 +38,12 @@ contract DeployPosPortalChildScript is Script {
         string memory json = vm.readFile(path);
 
         // Root-side dummies (used for mapToken pairs).
-        address rootErc20 = json.readAddress(".root.posPortal.DummyERC20");
-        address rootMintableErc20 = json.readAddress(".root.posPortal.DummyMintableERC20");
-        address rootErc721 = json.readAddress(".root.posPortal.DummyERC721");
-        address rootMintableErc721 = json.readAddress(".root.posPortal.DummyMintableERC721");
-        address rootErc1155 = json.readAddress(".root.posPortal.DummyERC1155");
-        address rootMintableErc1155 = json.readAddress(".root.posPortal.DummyMintableERC1155");
+        address rootErc20 = json.readAddress(".root.posBridge.DummyERC20");
+        address rootMintableErc20 = json.readAddress(".root.posBridge.DummyMintableERC20");
+        address rootErc721 = json.readAddress(".root.posBridge.DummyERC721");
+        address rootMintableErc721 = json.readAddress(".root.posBridge.DummyMintableERC721");
+        address rootErc1155 = json.readAddress(".root.posBridge.DummyERC1155");
+        address rootMintableErc1155 = json.readAddress(".root.posBridge.DummyMintableERC1155");
 
         Addrs memory a;
 
@@ -96,7 +96,7 @@ contract DeployPosPortalChildScript is Script {
         vm.stopBroadcast();
 
         _persist(a, path);
-        console.log("pos-portal child deploy complete:");
+        console.log("pos-bridge child deploy complete:");
         console.log("  ChildChainManagerProxy:", a.ccmProxy);
     }
 
@@ -116,7 +116,7 @@ contract DeployPosPortalChildScript is Script {
     }
 
     function _persist(Addrs memory a, string memory path) internal {
-        string memory k = "posPortalChild";
+        string memory k = "posBridgeChild";
         vm.serializeAddress(k, "ChildChainManager", a.ccmImpl);
         vm.serializeAddress(k, "ChildChainManagerProxy", a.ccmProxy);
         vm.serializeAddress(k, "DummyERC20", a.dummyErc20);
@@ -126,6 +126,6 @@ contract DeployPosPortalChildScript is Script {
         vm.serializeAddress(k, "DummyERC1155", a.dummyErc1155);
         vm.serializeAddress(k, "DummyMintableERC1155", a.dummyMintableErc1155);
         string memory serialized = vm.serializeAddress(k, "MaticWETH", a.maticWeth);
-        vm.writeJson(serialized, path, ".child.posPortal");
+        vm.writeJson(serialized, path, ".child.posBridge");
     }
 }

@@ -3,7 +3,7 @@ cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/config/constants.star")
 plasma_bridge_deployer = import_module("./src/contracts/plasma_bridge_deployer.star")
 matic_to_pol_migrator = import_module("./src/contracts/matic_to_pol_migrator.star")
-pos_portal_deployer = import_module("./src/contracts/pos_portal_deployer.star")
+pos_bridge_deployer = import_module("./src/contracts/pos_bridge_deployer.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis = import_module("./src/el/genesis.star")
 hex = import_module("./src/hex/hex.star")
@@ -94,8 +94,8 @@ def run(plan, args):
             l1_contract_addresses_artifact,
         )
 
-        # Deploy pos-portal contracts to L1.
-        l1_contract_addresses_artifact = pos_portal_deployer.deploy_l1(
+        # Deploy pos-bridge contracts to L1.
+        l1_contract_addresses_artifact = pos_bridge_deployer.deploy_l1(
             plan,
             polygon_pos_args,
             l1_context.rpc_url,
@@ -176,8 +176,8 @@ def run(plan, args):
         l1_contract_addresses_artifact,
     )
 
-    # Deploy pos-portal contracts to L2 and cross-chain wiring.
-    contract_addresses_artifact = pos_portal_deployer.deploy_l2(
+    # Deploy pos-bridge contracts to L2 and cross-chain wiring.
+    contract_addresses_artifact = pos_bridge_deployer.deploy_l2(
         plan,
         polygon_pos_args,
         l1_context.rpc_url,

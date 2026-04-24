@@ -46,8 +46,8 @@ RUN git clone --branch ${POS_PORTAL_BRANCH} https://github.com/maticnetwork/pos-
   && npm run generate:interfaces \
   # Grant our deploy scripts read-write on contractAddresses.json.
   && sed -i 's|fs_permissions = \[|fs_permissions = [{ access = "read-write", path = "./contractAddresses.json" }, |' foundry.toml
-COPY static_files/contracts/l1/scripts/deployPosPortalRoot.s.sol /opt/pos-portal/scripts/deployment-scripts/deployPosPortalRoot.s.sol
-COPY static_files/contracts/l2/scripts/deployPosPortalChild.s.sol /opt/pos-portal/scripts/deployment-scripts/deployPosPortalChild.s.sol
+COPY static_files/contracts/l1/scripts/deployPosBridgeRoot.s.sol /opt/pos-portal/scripts/deployment-scripts/deployPosBridgeRoot.s.sol
+COPY static_files/contracts/l2/scripts/deployPosBridgeChild.s.sol /opt/pos-portal/scripts/deployment-scripts/deployPosBridgeChild.s.sol
 RUN forge build
 
 

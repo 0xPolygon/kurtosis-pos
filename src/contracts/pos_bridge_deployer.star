@@ -7,13 +7,13 @@ def deploy_l1(
     setup_images = polygon_pos_args.get("setup_images")
     image = setup_images.get("contract_deployer")
     config_artifact = plan.upload_files(
-        name="pos-portal-l1-deployer-config",
+        name="pos-bridge-l1-deployer-config",
         src=CONTRACTS_CONFIG_FILE_PATH,
     )
 
     result = plan.run_sh(
-        name="pos-portal-l1-deployer",
-        description="Deploying pos-portal L1 (root) contracts",
+        name="pos-bridge-l1-deployer",
+        description="Deploying pos-bridge L1 (root) contracts",
         image=image,
         env_vars={
             "PRIVATE_KEY": private_key,
@@ -26,10 +26,10 @@ def deploy_l1(
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="pos-portal-l1-addresses",
+                name="pos-bridge-l1-addresses",
             ),
         ],
-        run="bash /opt/data/l1/deploy-pos-portal.sh",
+        run="bash /opt/data/l1/deploy-pos-bridge.sh",
         wait="5m",
     )
     return result.files_artifacts[0]
@@ -46,13 +46,13 @@ def deploy_l2(
     setup_images = polygon_pos_args.get("setup_images")
     image = setup_images.get("contract_deployer")
     config_artifact = plan.upload_files(
-        name="pos-portal-l2-deployer-config",
+        name="pos-bridge-l2-deployer-config",
         src=CONTRACTS_CONFIG_FILE_PATH,
     )
 
     result = plan.run_sh(
-        name="pos-portal-l2-deployer",
-        description="Deploying pos-portal L2 (child) contracts and cross-chain wiring",
+        name="pos-bridge-l2-deployer",
+        description="Deploying pos-bridge L2 (child) contracts and cross-chain wiring",
         image=image,
         env_vars={
             "PRIVATE_KEY": private_key,
@@ -66,10 +66,10 @@ def deploy_l2(
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="pos-portal-addresses",
+                name="pos-bridge-addresses",
             ),
         ],
-        run="bash /opt/data/l2/deploy-pos-portal.sh",
+        run="bash /opt/data/l2/deploy-pos-bridge.sh",
         wait="5m",
     )
     return result.files_artifacts[0]

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Deploy pos-portal L1 (root) contracts on top of an existing pos-contracts deployment.
+# Deploy pos-bridge L1 (root) contracts on top of an existing pos-contracts deployment.
 # Mirrors mainnet maticnetwork/pos-portal.
 
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
@@ -19,14 +19,14 @@ echo "Copying contract addresses file..."
 mkdir -p /opt/contracts
 cp /opt/data/addresses/contractAddresses.json /opt/pos-portal/contractAddresses.json
 
-echo "Deploying pos-portal L1 (root) contracts..."
+echo "Deploying pos-bridge L1 (root) contracts..."
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast --legacy \
-  scripts/deployment-scripts/deployPosPortalRoot.s.sol:DeployPosPortalRootScript
+  scripts/deployment-scripts/deployPosBridgeRoot.s.sol:DeployPosBridgeRootScript
 
 cp contractAddresses.json "${CONTRACT_ADDRESSES_FILE}"
 if [[ -s "${CONTRACT_ADDRESSES_FILE}" ]]; then
-  echo "pos-portal L1 deployed. Updated contractAddresses.json:"
+  echo "pos-bridge L1 deployed. Updated contractAddresses.json:"
   cat "${CONTRACT_ADDRESSES_FILE}"
 else
   echo "Error: ${CONTRACT_ADDRESSES_FILE} does not exist or is empty."

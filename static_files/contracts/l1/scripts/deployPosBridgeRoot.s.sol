@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import {Script, stdJson, console} from "forge-std/Script.sol";
 
-// Deploys the L1 (root) side of pos-portal and wires its intra-L1 state.
+// Deploys the L1 (root) side of the pos-bridge and wires its intra-L1 state.
 //
 // Mirrors scripts/2_deploy_root_chain_contracts.js + 4_initialize_root_chain_contracts.js
 // from maticnetwork/pos-portal at pin 3402faa, minus cross-chain mapTokens (those live in
@@ -11,8 +11,8 @@ import {Script, stdJson, console} from "forge-std/Script.sol";
 //
 // Reads: .root.RootChainProxy and .root.StateSender from contractAddresses.json
 //        (these come from the pos-contracts L1 deploy).
-// Writes: .root.posPortal.* and .root.posPortal.tokens.*
-contract DeployPosPortalRootScript is Script {
+// Writes: .root.posBridge.* and .root.posBridge.tokens.*
+contract DeployPosBridgeRootScript is Script {
     using stdJson for string;
 
     // Token type ids expected by RootChainManager.registerPredicate(bytes32,address).
@@ -79,7 +79,7 @@ contract DeployPosPortalRootScript is Script {
         vm.stopBroadcast();
 
         _persist(a, path);
-        console.log("pos-portal root deploy complete:");
+        console.log("pos-bridge root deploy complete:");
         console.log("  RootChainManagerProxy:", a.rcmProxy);
     }
 
@@ -187,7 +187,7 @@ contract DeployPosPortalRootScript is Script {
     }
 
     function _persist(Addrs memory a, string memory path) internal {
-        string memory k = "posPortal";
+        string memory k = "posBridge";
         vm.serializeAddress(k, "RootChainManager", a.rcmImpl);
         vm.serializeAddress(k, "RootChainManagerProxy", a.rcmProxy);
         vm.serializeAddress(k, "ERC20Predicate", a.erc20Impl);
@@ -211,6 +211,6 @@ contract DeployPosPortalRootScript is Script {
         vm.serializeAddress(k, "DummyMintableERC721", a.dummyMintableErc721);
         vm.serializeAddress(k, "DummyERC1155", a.dummyErc1155);
         string memory serialized = vm.serializeAddress(k, "DummyMintableERC1155", a.dummyMintableErc1155);
-        vm.writeJson(serialized, path, ".root.posPortal");
+        vm.writeJson(serialized, path, ".root.posBridge");
     }
 }
