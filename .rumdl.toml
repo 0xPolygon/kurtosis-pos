@@ -20,6 +20,9 @@ exclude = [
     # Specific files or patterns
     "CHANGELOG.md",
     "LICENSE.md",
+
+    # Claude skill/command files — not user-facing docs
+    ".claude",
 ]
 
 # Rule-specific configurations
