@@ -120,6 +120,8 @@ POLYGON_POS_PACKAGE_ARGS = {
         "cl_span_poll_interval": "5s",
         "cl_checkpoint_poll_interval": "5s",
         "cl_max_age_num_blocks": 100000,
+        "cl_avg_checkpoint_length": "8",
+        "cl_checkpoint_buffer_time": "10s",
         # EL network params.
         "el_chain_id": constants.EL_CHAIN_ID,
         "el_block_interval_seconds": 1,
