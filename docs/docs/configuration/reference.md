@@ -128,7 +128,7 @@ Default: a single validator.
 | kind                             | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`                          |
 | cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                          |
 | cl_image                         | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                                                   |
-| cl_queue_image                   | string | rabbitmq:4.2.5              | Image for the CL queue                                                                    |
+| cl_queue_image                   | string | rabbitmq:4.2.4              | Image for the CL queue                                                                    |
 | cl_log_level                     | string | info                        | Log level for the CL client                                                               |
 | cl_log_format                    | string | text                        | Log format for the CL client                                                              |
 | cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                     |
@@ -137,7 +137,7 @@ Default: a single validator.
 | cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                          |
 | cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                         |
 | el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                       |
-| el_image                         | string | 0xpolygon/bor:2.7.1         | Image for the EL client (bor: `0xpolygon/bor:2.7.1`, erigon: `0xpolygon/erigon:v3.5.0`)   |
+| el_image                         | string | 0xpolygon/bor:2.7.0         | Image for the EL client (bor: `0xpolygon/bor:2.7.0`, erigon: `0xpolygon/erigon:v3.5.0`)   |
 | el_log_level                     | string | info                        | Log level for the EL client                                                               |
 | el_log_format                    | string | text                        | Log format for the EL client                                                              |
 | el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                    |
@@ -147,9 +147,9 @@ Default: a single validator.
 
 ### `setup_images`
 
-| Field                      | Type   | Default                                                | Description                                 |
+|           Field            |  Type  |                        Default                         |                 Description                 |
 | -------------------------- | ------ | ------------------------------------------------------ | ------------------------------------------- |
-| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:f1c2f5d1       | Image used to deploy MATIC contracts to L1  |
+| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:d96d592        | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
 | validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.6.0 | Image used to generate validator configs    |
 
@@ -182,13 +182,13 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | napoli_fork_block                     | int    | 0                  | Block number for Napoli hard fork activation                       |
 | ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                    |
 | bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                       |
-| rio_fork_block                        | int    | 256                | Block number for Rio hard fork activation                          |
-| madhugiri_fork_block                  | int    | 256                | Block number for Madhugiri hard fork activation                    |
-| madhugiri_pro_fork_block              | int    | 256                | Block number for Madhugiri Pro hard fork activation                |
-| dandeli_fork_block                    | int    | 256                | Block number for Dandeli hard fork activation                      |
-| lisovo_fork_block                     | int    | 256                | Block number for Lisovo hard fork activation                       |
-| lisovo_pro_fork_block                 | int    | 256                | Block number for Lisovo Pro hard fork activation                   |
-| giugliano_fork_block                  | int    | 256                | Block number for Giugliano hard fork activation                    |
+| rio_fork_block                        | int    | 128                | Block number for Rio hard fork activation                          |
+| madhugiri_fork_block                  | int    | 128                | Block number for Madhugiri hard fork activation                    |
+| madhugiri_pro_fork_block              | int    | 128                | Block number for Madhugiri Pro hard fork activation                |
+| dandeli_fork_block                    | int    | 128                | Block number for Dandeli hard fork activation                      |
+| lisovo_fork_block                     | int    | 128                | Block number for Lisovo hard fork activation                       |
+| lisovo_pro_fork_block                 | int    | 128                | Block number for Lisovo Pro hard fork activation                   |
+| giugliano_fork_block                  | int    | 128                | Block number for Giugliano hard fork activation                    |
 
 ### `additional_services`
 
