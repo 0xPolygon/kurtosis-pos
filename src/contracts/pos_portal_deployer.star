@@ -1,4 +1,3 @@
-
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 

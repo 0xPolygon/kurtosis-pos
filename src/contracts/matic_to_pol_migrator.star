@@ -1,7 +1,9 @@
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 
-def migrate(plan, polygon_pos_args, l1_rpc_url, private_key, contract_addresses_artifact):
+def migrate(
+    plan, polygon_pos_args, l1_rpc_url, private_key, contract_addresses_artifact
+):
     setup_images = polygon_pos_args.get("setup_images")
     contract_deployer_image = setup_images.get("contract_deployer")
     contract_deployer_config_artifact = plan.upload_files(
