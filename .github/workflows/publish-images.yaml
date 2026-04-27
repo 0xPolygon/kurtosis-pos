@@ -2,7 +2,8 @@ name: publish-images
 
 # Workflow to build and publish docker images to GHCR.
 # Update the respective env vars below to deploy new versions:
-# - pos-contract-deployer: POS_CONTRACTS_BRANCH, POS_CONTRACTS_COMMIT_SHA
+# - pos-contract-deployer: POS_CONTRACT_DEPLOYER_VERSION (image tag),
+#   POS_CONTRACTS_{BRANCH,COMMIT_SHA}, POS_PORTAL_{BRANCH,COMMIT_SHA}
 # - pos-el-genesis-builder: GENESIS_CONTRACTS_BRANCH, GENESIS_CONTRACTS_COMMIT_SHA
 # - pos-validator-config-generator: HEIMDALL_V2_VERSION, POLYGON_CLI_VERSION
 on:
@@ -29,8 +30,11 @@ env:
 
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
+  POS_CONTRACT_DEPLOYER_VERSION: 0.0.2
   POS_CONTRACTS_BRANCH: anvil-pos
-  POS_CONTRACTS_COMMIT_SHA: "bc28cfd8"
+  POS_CONTRACTS_COMMIT_SHA: d96d5929 # 2025-08-01
+  POS_PORTAL_BRANCH: master
+  POS_PORTAL_COMMIT_SHA: 3402faa # 2025-10-24
 
   # pos-el-genesis-builder settings
   EL_GENESIS_BUILDER_IMAGE_NAME: 0xPolygon/pos-el-genesis-builder
@@ -65,25 +69,33 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Tag images with the specific pos-contracts commit SHA for version control.
-      # This ensures reproducible builds tied to a specific contracts version.
+      # Tag with the deployer's own semver, since the image now bundles multiple
+      # upstream repos (pos-contracts + pos-portal) — no single commit SHA fits.
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.POS_CONTRACTS_IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ env.POS_CONTRACTS_COMMIT_SHA }}
+            type=raw,value=${{ env.POS_CONTRACT_DEPLOYER_VERSION }}
+          labels: |
+            org.opencontainers.image.version=${{ env.POS_CONTRACT_DEPLOYER_VERSION }}
+            com.polygon.pos-contracts.branch=${{ env.POS_CONTRACTS_BRANCH }}
+            com.polygon.pos-contracts.commit=${{ env.POS_CONTRACTS_COMMIT_SHA }}
+            com.polygon.pos-portal.branch=${{ env.POS_PORTAL_BRANCH }}
+            com.polygon.pos-portal.commit=${{ env.POS_PORTAL_COMMIT_SHA }}
 
       - name: Build and push docker image
         id: push
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
-          context: docker
+          context: .
           file: docker/pos-contract-deployer.Dockerfile
           build-args: |
             POS_CONTRACTS_BRANCH=${{ env.POS_CONTRACTS_BRANCH }}
             POS_CONTRACTS_TAG_OR_COMMIT_SHA=${{ env.POS_CONTRACTS_COMMIT_SHA }}
+            POS_PORTAL_BRANCH=${{ env.POS_PORTAL_BRANCH }}
+            POS_PORTAL_TAG_OR_COMMIT_SHA=${{ env.POS_PORTAL_COMMIT_SHA }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

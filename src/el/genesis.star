@@ -7,7 +7,13 @@ EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 
 
-def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
+def generate(
+    plan,
+    polygon_pos_args,
+    validator_accounts,
+    validator_config_artifact,
+    admin_address,
+):
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
 
@@ -19,7 +25,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
                 template=read_file(EL_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
-                    "el_chain_id": network_params.get("el_chain_id"),
+                    "el_chain_id": constants.EL_CHAIN_ID,
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_gas_limit_hex": hex.int_to_hex(
                         network_params.get("el_gas_limit")
@@ -50,20 +56,31 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
         },
     )
 
+    # Compute a future EL genesis timestamp so all bor nodes have time to
+    # boot and peer before mining starts. Delay scales with node count,
+    # capped at 180s.
+    delay = _compute_delay(len(validator_accounts))
+    timestamp_result = plan.run_sh(
+        name="l2-el-genesis-timestamp",
+        description="Computing future EL genesis timestamp ({}s from now)".format(
+            delay
+        ),
+        run="printf '%s' $(( $(date +%s) + {} ))".format(delay),
+    )
+    timestamp = timestamp_result.output
+
     # Generate the alloc field of the EL genesis and return the final EL genesis.
     el_genesis_builder_script_artifact = plan.upload_files(
-        src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
         name="l2-el-genesis-builder-config",
+        src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
     )
     result = plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
         image=setup_images.get("el_genesis_builder"),
         env_vars={
-            "EL_CHAIN_ID": str(network_params.get("el_chain_id")),
-            "DEFAULT_EL_CHAIN_ID": constants.EL_CHAIN_ID,
-            "CL_CHAIN_ID": str(network_params.get("cl_chain_id")),
-            "DEFAULT_CL_CHAIN_ID": constants.CL_CHAIN_ID,
+            "EL_CHAIN_ID": str(constants.EL_CHAIN_ID),
+            "CL_CHAIN_ID": str(constants.CL_CHAIN_ID),
             # Note that we don't add the admin address to the alloc in starlark because
             # admin_address is a Kurtosis future string. We can't perform any string
             # operations on it like removing the "0x" prefix. We do it in the bash script.
@@ -71,6 +88,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
             ),
+            "EL_GENESIS_TIMESTAMP": timestamp,
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
@@ -96,3 +114,15 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
         )
     l2_el_genesis_artifact = result.files_artifacts[0]
     return l2_el_genesis_artifact
+
+
+# Returns how many seconds to push the genesis timestamp into the future so all
+# validators are ready to mine when bor wakes up. Numbers chosen by hand:
+#   - 0 for single-node devnet: nothing to peer with, no race.
+#   - 20s base: spread between two parallel container starts.
+#   - +5s per extra validator: docker daemon / disk / image-pull contention.
+#   - 180s cap: beyond that, image-pull bandwidth dominates and more delay does not help.
+def _compute_delay(n):
+    if n <= 1:
+        return 0
+    return min(180, 20 + 5 * (n - 2))

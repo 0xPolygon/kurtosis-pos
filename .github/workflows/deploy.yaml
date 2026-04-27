@@ -43,10 +43,6 @@ jobs:
 
       - uses: ./.github/actions/test-state-sync
 
-      - uses: ./.github/actions/run-e2e-tests
-        # Only run the full suite of e2e tests in nightly runs or when manually triggered, to avoid excessive runtime in regular PR runs.
-        if: ${{ contains(github.event_name, 'schedule') || contains(github.event_name, 'workflow_dispatch') }}
-
       - uses: ./.github/actions/cleanup
         if: always()
 
@@ -60,8 +56,8 @@ jobs:
       - id: set-matrix
         run: |
           if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            # Nightly mode: include all configs except cl-el-genesis and external-l1
-            file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
+            # Nightly mode: include all configs except cl-el-genesis, external-l1, and e2e-tests (handled by run-e2e-tests job)
+            file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1|e2e-tests")
           else
             # Regular mode: exclude nightly configs
             file_paths=$(ls -R ./.github/configs/{*,*/*}.yml | grep -Ev "nightly")
@@ -120,6 +116,32 @@ jobs:
           args_filename: ${{ matrix.file.name }}
           # Cache is only saved by main branch runs to avoid excessive storage use
           save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-mix' }}
+
+  run-e2e-tests:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Deploy devnet
+        run: |
+          set -o pipefail
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/e2e-tests.yml . 2>&1 | tee run.log
+
+      - uses: ./.github/actions/monitor
+
+      - uses: ./.github/actions/run-e2e-tests
+
+      - uses: ./.github/actions/cleanup
+        if: always()
+        with:
+          args_filename: e2e-tests
 
   run-with-external-l1:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -235,6 +257,7 @@ jobs:
     needs:
       - run-without-args
       - run-with-args
+      - run-e2e-tests
       - run-with-external-l1
       - run-with-cl-el-genesis
     steps:

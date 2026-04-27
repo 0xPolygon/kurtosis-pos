@@ -7,26 +7,11 @@ set -euxo pipefail
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
 VALIDATORS_CONFIG_FILE="/opt/contracts/validators.js"
 
-# Setting EL chain id if needed.
-if [[ -z "${EL_CHAIN_ID}" ]]; then
-  echo "Error: EL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
-if [[ -z "${DEFAULT_EL_CHAIN_ID}" ]]; then
-  echo "Error: DEFAULT_EL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
-echo "EL_CHAIN_ID: ${EL_CHAIN_ID}"
-echo "DEFAULT_EL_CHAIN_ID: ${DEFAULT_EL_CHAIN_ID}"
+cd /opt/pos-contracts
 
-echo "Processing templates..."
-npm run template:process -- --bor-chain-id "${EL_CHAIN_ID}"
-
-echo "Generating interfaces..."
-npm run generate:interfaces
-
-echo "Compiling the Polygon PoS contracts..."
-forge build
+# Contracts are compiled at image-build time against the image's baked chain ID.
+# Custom L2 chain IDs are not supported — rebuild the image with a different
+# EL_CHAIN_ID build arg if you need another value.
 
 # Deploy Polygon PoS contracts on L1.
 if [[ -z "${PRIVATE_KEY}" ]]; then
@@ -56,6 +41,13 @@ forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
 
 forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
   scripts/deployment-scripts/initializeState.s.sol:InitializeStateScript
+
+# Swap ERC20/ERC721 predicates for the BurnOnly variants (typed-tx support).
+# pos-contracts at d96d5929 deploys ERC20Predicate + ERC721Predicate, whose
+# startExitWithBurntTokens does not handle EIP-1559 receipts. Mainnet registered
+# the *BurnOnly variants, so do the same here to stay faithful to mainnet.
+forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
+  scripts/deployment-scripts/deployBurnOnlyPredicates.s.sol:DeployBurnOnlyPredicatesScript
 
 mkdir -p /opt/contracts
 cp contractAddresses.json /opt/contracts
@@ -138,4 +130,13 @@ if [[ -s "${VALIDATORS_CONFIG_FILE}" ]]; then
   cat "${VALIDATORS_CONFIG_FILE}"
 else
   echo "Error: ${VALIDATORS_CONFIG_FILE} does not exist or is empty."
+fi
+
+cp contractAddresses.json "${CONTRACT_ADDRESSES_FILE}"
+if [[ -s "${CONTRACT_ADDRESSES_FILE}" ]]; then
+  echo "Plasma bridge deployed. contractAddresses.json:"
+  cat "${CONTRACT_ADDRESSES_FILE}"
+else
+  echo "Error: ${CONTRACT_ADDRESSES_FILE} does not exist or is empty."
+  exit 1
 fi

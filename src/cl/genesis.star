@@ -75,11 +75,11 @@ def generate(
                 template=read_file(HEIMDALL_V2_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
-                    "cl_chain_id": network_params.get("cl_chain_id"),
+                    "cl_chain_id": constants.CL_CHAIN_ID,
                     "cl_max_age_num_blocks": network_params.get(
                         "cl_max_age_num_blocks"
                     ),
-                    "el_chain_id": network_params.get("el_chain_id"),
+                    "el_chain_id": constants.EL_CHAIN_ID,
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,
@@ -100,8 +100,8 @@ def generate(
     # of the file artifact, Kurtosis will render an empty file... This is a hack to format the file
     # with jq and get a working artifact.
     cl_genesis_builder_script_artifact = plan.upload_files(
-        src=CL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
         name="l2-cl-genesis-builder-config",
+        src=CL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
     )
     result = plan.run_sh(
         name="l2-cl-genesis-generator",
