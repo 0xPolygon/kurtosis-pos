@@ -35,15 +35,6 @@ Then run the L1-to-L2 bridge test to validate that Heimdall and Bor can process 
 bats --filter-tags pos,bridge --recursive tests/
 ```
 
-:::tip
-If you have deployed the test runner in your environment, you can run the tests without cloning the repository:
-
-```bash
-kurtosis service exec pos test-runner "bats --filter-tags pos,bridge --recursive tests/"
-```
-
-:::
-
 After the tests complete, you should see output similar to:
 
 ```bash
@@ -68,15 +59,6 @@ Once the deposits have landed on L2, run the L2-to-L1 withdraw tests to exercise
 ```bash
 bats --filter-tags pos,withdraw --recursive tests/
 ```
-
-:::tip
-With the test runner deployed, you can again skip cloning:
-
-```bash
-kurtosis service exec pos test-runner "bats --filter-tags pos,withdraw --recursive tests/"
-```
-
-:::
 
 :::warning
 Withdraw tests take several minutes per case — each needs a fresh L1 checkpoint to cover the burn block before the exit proof can be built. Plasma withdraws also wait an additional `HALF_EXIT_PERIOD` after queuing.
