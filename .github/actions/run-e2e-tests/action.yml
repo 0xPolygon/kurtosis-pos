@@ -5,7 +5,7 @@ inputs:
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
-    default: c505c9d8d76c74aa20040fbc2af3046b5ecc0c86
+    default: a3d931d58d5ce08a0b205181853f1e3aafb897a4
   polygon_cli_version:
     description: The release version of polygon-cli
     required: false
