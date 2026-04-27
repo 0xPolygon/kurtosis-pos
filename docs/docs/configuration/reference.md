@@ -175,7 +175,6 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | el_sprint_duration                    | int    | 16                 | Duration of an EL sprint (blocks)                                   |
 | el_span_duration                      | int    | 128                | Duration of an EL span (blocks).                                    |
 | el_gas_limit                          | int    | 65_000_000         | EL gas limit                                                        |
-| el_genesis_startup_delay              | int    | 60                 | Seconds to set EL genesis in the future so nodes peer before mining |
 | jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                        |
 | delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                         |
 | indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                        |

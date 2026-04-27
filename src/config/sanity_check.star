@@ -49,7 +49,6 @@ POLYGON_POS_PARAMS = {
         "el_sprint_duration",
         "el_span_duration",
         "el_gas_limit",
-        "el_genesis_startup_delay",
         # hardforks
         "jaipur_fork_block",
         "delhi_fork_block",
