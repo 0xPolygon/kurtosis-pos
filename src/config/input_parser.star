@@ -125,6 +125,9 @@ POLYGON_POS_PACKAGE_ARGS = {
         "el_sprint_duration": constants.EL_SPRINT_DURATION,
         "el_span_duration": constants.EL_SPAN_DURATION,
         "el_gas_limit": 65000000,
+        # Delay (in seconds) between genesis generation and the EL genesis timestamp.
+        # All bor nodes boot and peer before mining starts.
+        "el_genesis_startup_delay": 60,
         # Polygon PoS hard fork configurations
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),

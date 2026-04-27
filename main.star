@@ -82,6 +82,18 @@ def run(plan, args):
             validator_accounts,
         )
 
+        # Compute a future EL genesis timestamp so all bor nodes have time to
+        # boot and peer before mining starts.
+        el_genesis_startup_delay = l2_network_params.get("el_genesis_startup_delay", 60)
+        el_genesis_timestamp_result = plan.run_sh(
+            name="l2-el-genesis-timestamp",
+            description="Computing future EL genesis timestamp ({}s from now)".format(
+                el_genesis_startup_delay
+            ),
+            run="printf '%s' $(( $(date +%s) + {} ))".format(el_genesis_startup_delay),
+        )
+        el_genesis_timestamp = el_genesis_timestamp_result.output
+
         l2_cl_genesis_artifact = cl_genesis.generate(
             plan,
             polygon_pos_args,
@@ -93,6 +105,7 @@ def run(plan, args):
             polygon_pos_args,
             validator_config_artifact,
             admin_address,
+            el_genesis_timestamp,
         )
     else:
         plan.print("Using L2 EL/CL genesis provided")

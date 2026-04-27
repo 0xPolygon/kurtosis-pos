@@ -80,8 +80,15 @@ jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
   "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
-# Add the current timestamp to the EL genesis.
-timestamp=$(printf "0x%x" $(date +%s))
+# Add the genesis timestamp to the EL genesis.
+# Use the provided future timestamp if available, otherwise fall back to current time.
+if [[ -n "${EL_GENESIS_TIMESTAMP:-}" ]]; then
+  timestamp=$(printf "0x%x" "${EL_GENESIS_TIMESTAMP}")
+  echo "Using provided EL genesis timestamp: ${EL_GENESIS_TIMESTAMP} (${timestamp})"
+else
+  timestamp=$(printf "0x%x" $(date +%s))
+  echo "Using current time as genesis timestamp: ${timestamp}"
+fi
 jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 

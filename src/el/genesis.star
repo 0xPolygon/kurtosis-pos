@@ -7,7 +7,13 @@ EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 
 
-def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
+def generate(
+    plan,
+    polygon_pos_args,
+    validator_config_artifact,
+    admin_address,
+    el_genesis_timestamp="",
+):
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
 
@@ -69,6 +75,7 @@ def generate(plan, polygon_pos_args, validator_config_artifact, admin_address):
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
             ),
+            "EL_GENESIS_TIMESTAMP": el_genesis_timestamp,
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
