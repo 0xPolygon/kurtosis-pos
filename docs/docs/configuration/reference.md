@@ -159,37 +159,37 @@ Default: a single validator.
 You can check the admin private key and mnemonic default values at `src/config/input_parser.star`.
 :::
 
-| Field                                 | Type   | Default            | Description                                                        |
-| ------------------------------------- | ------ | ------------------ | ------------------------------------------------------------------ |
-| admin_private_key                     | string | 0xd403...60ea      | Private key used to deploy Polygon PoS contracts on both L1 and L2 |
-| preregistered_validator_keys_mnemonic | string | sibling lend brave | Mnemonic for validator keystores                                   |
-| validator_stake_amount_eth            | int    | 10000              | Amount of ether to stake for each validator                        |
-| validator_top_up_fee_amount_eth       | int    | 2000               | Top up fee amount in ether for each validator                      |
-| cl_chain_id                           | string | heimdall-4927      | CL network ID                                                      |
-| cl_environment                        | string | -                  | CL environment: `mainnet`, `mumbai`, or `local` (optional)         |
-| cl_span_poll_interval                 | string | 5s                 | Span poll interval on the CL chain                                 |
-| cl_checkpoint_poll_interval           | string | 5s                 | Checkpoint poll interval on the CL chain                           |
-| cl_max_age_num_blocks                 | int    | 100000             | Genesis evidence setting, useful to set smaller pruning intervals  |
-| el_chain_id                           | string | "4927"             | EL network ID                                                      |
-| el_block_interval_seconds             | int    | 1                  | Seconds per block on the EL chain                                  |
-| el_sprint_duration                    | int    | 16                 | Duration of an EL sprint (blocks)                                  |
-| el_span_duration                      | int    | 128                | Duration of an EL span (blocks).                                   |
-| el_gas_limit                          | int    | 65_000_000         | EL gas limit                                                       |
-| el_genesis_startup_delay              | int    | 60                 | Seconds to set the EL genesis timestamp in the future, giving all bor nodes time to boot and peer before mining starts |
-| jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                       |
-| delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                        |
-| indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                       |
-| agra_fork_block                       | int    | 0                  | Block number for Agra hard fork activation                         |
-| napoli_fork_block                     | int    | 0                  | Block number for Napoli hard fork activation                       |
-| ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                    |
-| bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                       |
-| rio_fork_block                        | int    | 256                | Block number for Rio hard fork activation                          |
-| madhugiri_fork_block                  | int    | 256                | Block number for Madhugiri hard fork activation                    |
-| madhugiri_pro_fork_block              | int    | 256                | Block number for Madhugiri Pro hard fork activation                |
-| dandeli_fork_block                    | int    | 256                | Block number for Dandeli hard fork activation                      |
-| lisovo_fork_block                     | int    | 256                | Block number for Lisovo hard fork activation                       |
-| lisovo_pro_fork_block                 | int    | 256                | Block number for Lisovo Pro hard fork activation                   |
-| giugliano_fork_block                  | int    | 256                | Block number for Giugliano hard fork activation                    |
+| Field                                 | Type   | Default            | Description                                                         |
+| ------------------------------------- | ------ | ------------------ | ------------------------------------------------------------------- |
+| admin_private_key                     | string | 0xd403...60ea      | Private key used to deploy Polygon PoS contracts on both L1 and L2  |
+| preregistered_validator_keys_mnemonic | string | sibling lend brave | Mnemonic for validator keystores                                    |
+| validator_stake_amount_eth            | int    | 10000              | Amount of ether to stake for each validator                         |
+| validator_top_up_fee_amount_eth       | int    | 2000               | Top up fee amount in ether for each validator                       |
+| cl_chain_id                           | string | heimdall-4927      | CL network ID                                                       |
+| cl_environment                        | string | -                  | CL environment: `mainnet`, `mumbai`, or `local` (optional)          |
+| cl_span_poll_interval                 | string | 5s                 | Span poll interval on the CL chain                                  |
+| cl_checkpoint_poll_interval           | string | 5s                 | Checkpoint poll interval on the CL chain                            |
+| cl_max_age_num_blocks                 | int    | 100000             | Genesis evidence setting, useful to set smaller pruning intervals   |
+| el_chain_id                           | string | "4927"             | EL network ID                                                       |
+| el_block_interval_seconds             | int    | 1                  | Seconds per block on the EL chain                                   |
+| el_sprint_duration                    | int    | 16                 | Duration of an EL sprint (blocks)                                   |
+| el_span_duration                      | int    | 128                | Duration of an EL span (blocks).                                    |
+| el_gas_limit                          | int    | 65_000_000         | EL gas limit                                                        |
+| el_genesis_startup_delay              | int    | 60                 | Seconds to set EL genesis in the future so nodes peer before mining |
+| jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                        |
+| delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                         |
+| indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                        |
+| agra_fork_block                       | int    | 0                  | Block number for Agra hard fork activation                          |
+| napoli_fork_block                     | int    | 0                  | Block number for Napoli hard fork activation                        |
+| ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                     |
+| bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                        |
+| rio_fork_block                        | int    | 256                | Block number for Rio hard fork activation                           |
+| madhugiri_fork_block                  | int    | 256                | Block number for Madhugiri hard fork activation                     |
+| madhugiri_pro_fork_block              | int    | 256                | Block number for Madhugiri Pro hard fork activation                 |
+| dandeli_fork_block                    | int    | 256                | Block number for Dandeli hard fork activation                       |
+| lisovo_fork_block                     | int    | 256                | Block number for Lisovo hard fork activation                        |
+| lisovo_pro_fork_block                 | int    | 256                | Block number for Lisovo Pro hard fork activation                    |
+| giugliano_fork_block                  | int    | 256                | Block number for Giugliano hard fork activation                     |
 
 ### `additional_services`
 
