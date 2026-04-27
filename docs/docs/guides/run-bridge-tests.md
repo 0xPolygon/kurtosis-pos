@@ -16,11 +16,11 @@ This guide assumes you have a running devnet, if that's not the case, you can he
 
 ## Clone the Test Suite
 
-First, clone the [agglayer/e2e](https://github.com/agglayer/e2e) repository. PoS-related tests are located in `tests/pos`.
+First, clone the [0xPolygon/pos-e2e](https://github.com/0xPolygon/pos-e2e) repository. PoS-related tests are located in `tests/pos`.
 
 ```bash
-git clone https://github.com/agglayer/e2e.git
-cd e2e
+git clone https://github.com/0xPolygon/pos-e2e.git
+cd pos-e2e
 ```
 
 ## Run Bats Tests

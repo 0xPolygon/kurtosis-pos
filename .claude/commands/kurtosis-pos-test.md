@@ -31,12 +31,12 @@ kurtosis-test .
 
 ## E2e tests (bats)
 
-E2e tests live in the external `agglayer/e2e` repo. They require a running devnet. The CI action clones it to `agglayer-e2e/` using a pinned commit (see `.github/actions/test-state-sync/action.yml`).
+E2e tests live in the external `0xPolygon/pos-e2e` repo. They require a running devnet. The CI action clones it to `pos-e2e/` using a pinned commit (see `.github/actions/test-state-sync/action.yml`).
 
 ```bash
 # Clone the e2e repo locally (match the pinned commit from the action)
-git clone https://github.com/agglayer/e2e agglayer-e2e
-cd agglayer-e2e
+git clone https://github.com/0xPolygon/pos-e2e pos-e2e
+cd pos-e2e
 ```
 
 ### Plasma bridge tests
@@ -90,12 +90,12 @@ bats tests/pos/validator.bats
 
 ## State-sync test
 
-A dedicated GitHub Actions action tests state sync end-to-end (`.github/actions/test-state-sync/action.yml`). It clones `agglayer/e2e`, runs the bridge POL test, and confirms the native token balance increased on L2.
+A dedicated GitHub Actions action tests state sync end-to-end (`.github/actions/test-state-sync/action.yml`). It clones `0xPolygon/pos-e2e`, runs the bridge POL test, and confirms the native token balance increased on L2.
 
 ```bash
 # Run manually against a local enclave
 L1_RPC=$(kurtosis port print pos el-1-geth-lighthouse rpc)
-cd agglayer-e2e
+cd pos-e2e
 bats --filter "bridge POL from L1 to L2" tests/pos/plasma-bridge.bats
 ```
 
