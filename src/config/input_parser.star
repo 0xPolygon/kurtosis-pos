@@ -182,9 +182,7 @@ def input_parser(plan, input_args):
 
 
 def _parse_anvil_args(plan, anvil_args):
-    # Create a mutable copy of anvil_args.
-    if anvil_args:
-        anvil_args = dict(anvil_args)
+    anvil_args = dict(anvil_args) if anvil_args else {}
 
     # Set default params if not provided.
     for k, v in ANVIL_ARGS.items():
@@ -223,9 +221,7 @@ def _parse_ethereum_args(plan, ethereum_args):
 
 
 def _parse_polygon_pos_args(plan, polygon_pos_args):
-    # Create a mutable copy of polygon_pos_args.
-    if polygon_pos_args:
-        polygon_pos_args = dict(polygon_pos_args)
+    polygon_pos_args = dict(polygon_pos_args) if polygon_pos_args else {}
 
     # Parse the polygon pos input args and set defaults if needed.
     result = {}
@@ -338,7 +334,8 @@ def _parse_participants(participants, log_level, log_format):
             p.setdefault(k, v)
 
         # Fill in any missing fields with default values for bor participants.
-        if el_type == constants.EL_TYPE.bor:
+        # Re-read el_type from p so the defaulted value (set just above) is also honoured.
+        if p.get("el_type") == constants.EL_TYPE.bor:
             for k, v in POLYGON_POS_EL_BOR_PARTICIPANT.items():
                 p.setdefault(k, v)
 

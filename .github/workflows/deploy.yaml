@@ -25,7 +25,7 @@ env:
 jobs:
   run-without-args:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
 
@@ -56,8 +56,8 @@ jobs:
       - id: set-matrix
         run: |
           if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            # Nightly mode: include all configs except cl-el-genesis and external-l1
-            file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1")
+            # Nightly mode: include all configs except cl-el-genesis, external-l1, and e2e-tests (handled by run-e2e-tests job)
+            file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1|e2e-tests")
           else
             # Regular mode: exclude nightly configs
             file_paths=$(ls -R ./.github/configs/{*,*/*}.yml | grep -Ev "nightly")
@@ -116,6 +116,32 @@ jobs:
           args_filename: ${{ matrix.file.name }}
           # Cache is only saved by main branch runs to avoid excessive storage use
           save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-mix' }}
+
+  run-e2e-tests:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Deploy devnet
+        run: |
+          set -o pipefail
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/e2e-tests.yml . 2>&1 | tee run.log
+
+      - uses: ./.github/actions/monitor
+
+      - uses: ./.github/actions/run-e2e-tests
+
+      - uses: ./.github/actions/cleanup
+        if: always()
+        with:
+          args_filename: e2e-tests
 
   run-with-external-l1:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -231,10 +257,11 @@ jobs:
     needs:
       - run-without-args
       - run-with-args
+      - run-e2e-tests
       - run-with-external-l1
       - run-with-cl-el-genesis
     steps:
-      - uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+      - uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
         with:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           method: chat.postMessage

@@ -24,7 +24,7 @@ def launch(
     cl_ws_rpc_url,
     el_account,
     el_static_nodes,
-    container_proc_manager_artifact,
+    container_proc_manager_artifact,  # accepted for API parity with bor but not used — see note below
     ethstats_server_params,
 ):
     erigon_node_config_artifact = plan.render_templates(
@@ -75,11 +75,13 @@ def launch(
             ERIGON_APP_DATA_FOLDER_PATH, ERIGON_CONFIG_FOLDER_PATH
         ),
         # Start erigon.
-        # Note: this command attempts to start Erigon and retries if it fails.
-        # The retry mechanism addresses a race condition where Erigon initially fails to
-        # resolve hostnames of other nodes, as services are created sequentially;
-        # after a 5-second delay, all services should be up, allowing Erigon to start
-        # successfully. This is also why the port checks are disabled.
+        # Note: container-proc-manager.sh is intentionally not used here, unlike bor.
+        # Erigon suffers from a race condition where it fails to resolve peer hostnames
+        # when services are created sequentially; the while-loop retry below works around
+        # this by restarting erigon until all peers are reachable (typically within 5s).
+        # Wrapping the retry loop inside container-proc-manager.sh is left as future work;
+        # as a result, SIGTERM forwarding and SIGTRAP-based stop are not available for
+        # erigon nodes. Port checks are also disabled for the same reason.
         "while ! erigon --config {}/config.toml; do echo -e '\n❌ Erigon failed to start. Retrying in five seconds...\n'; sleep 5; done".format(
             ERIGON_CONFIG_FOLDER_PATH
         ),
@@ -123,7 +125,7 @@ def launch(
                 "/opt/data/keys": el_keys_artifact,
             },
             entrypoint=["sh", "-c"],
-            cmd=["&&".join(erigon_cmds)],
+            cmd=[" && ".join(erigon_cmds)],
             user=User(uid=0, gid=0),  # Run the container as root user.
             max_cpu=shared.MAX_CPU,
             max_memory=shared.MAX_MEM,

@@ -1,0 +1,56 @@
+name: run-e2e-tests
+description: Run end-to-end pos tests
+
+inputs:
+  agglayer_e2e_tag:
+    description: The git tag, branch, or commit hash of agglayer/e2e
+    required: false
+    default: f1ca97e120df6d7425b757a3d25e5cd8e7c5ce2a
+  polygon_cli_version:
+    description: The release version of polygon-cli
+    required: false
+    default: v0.1.109
+
+runs:
+  using: composite
+  steps:
+    - name: Clone agglayer/e2e
+      uses: actions/checkout@v6
+      with:
+        repository: agglayer/e2e
+        path: agglayer-e2e
+        ref: ${{ inputs.agglayer_e2e_tag }}
+
+    - name: Install bats
+      uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
+      with:
+        support-path: ${{ github.workspace }}/lib/bats-support
+        assert-path: ${{ github.workspace }}/lib/bats-assert
+        detik-path: ${{ github.workspace }}/lib/bats-detik
+        file-path: ${{ github.workspace }}/lib/bats-file
+
+    - name: Install polygon-cli
+      shell: bash
+      run: |
+        pushd $(mktemp -d) || exit 1
+        curl -s -L "https://github.com/0xPolygon/polygon-cli/releases/download/${{ inputs.polygon_cli_version }}/polycli_${{ inputs.polygon_cli_version }}_linux_amd64.tar.gz" > polycli.tar.gz
+        tar xf polycli.tar.gz
+        sudo mv polycli_* /usr/local/bin/polycli
+        polycli version
+        popd
+
+    - name: Run bridge tests
+      working-directory: agglayer-e2e
+      shell: bash
+      run: |
+        bats --filter-tags bridge tests/pos/plasma-bridge.bats
+        bats --filter-tags withdraw tests/pos/plasma-bridge.bats
+      env:
+        TIMEOUT_SECONDS: 600 # default: 180
+
+    - name: Run validator tests
+      working-directory: agglayer-e2e
+      shell: bash
+      run: bats tests/pos/validator.bats
+      env:
+        TIMEOUT_SECONDS: 600 # default: 180
