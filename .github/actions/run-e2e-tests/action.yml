@@ -5,7 +5,7 @@ inputs:
   agglayer_e2e_tag:
     description: The git tag, branch, or commit hash of agglayer/e2e
     required: false
-    default: f1ca97e120df6d7425b757a3d25e5cd8e7c5ce2a
+    default: a3d931d58d5ce08a0b205181853f1e3aafb897a4
   polygon_cli_version:
     description: The release version of polygon-cli
     required: false
@@ -43,8 +43,8 @@ runs:
       working-directory: agglayer-e2e
       shell: bash
       run: |
-        bats --filter-tags bridge tests/pos/plasma-bridge.bats
-        bats --filter-tags withdraw tests/pos/plasma-bridge.bats
+        bats --filter-tags bridge tests/pos/bridge/plasma.bats tests/pos/bridge/pos.bats
+        bats --filter-tags withdraw tests/pos/bridge/plasma.bats tests/pos/bridge/pos.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 

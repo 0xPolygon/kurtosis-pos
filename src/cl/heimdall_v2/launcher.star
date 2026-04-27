@@ -50,7 +50,7 @@ def launch(
                     "{}/client.toml".format(HEIMDALL_TEMPLATES_FOLDER_PATH),
                 ),
                 data={
-                    "cl_chain_id": network_params.get("cl_chain_id"),
+                    "cl_chain_id": constants.CL_CHAIN_ID,
                     "rpc_port_number": shared.RPC_PORT_NUMBER,
                 },
             ),
