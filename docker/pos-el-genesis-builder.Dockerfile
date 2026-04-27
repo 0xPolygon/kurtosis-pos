@@ -2,10 +2,12 @@ FROM debian:bullseye-slim AS soldity-builder
 LABEL description="Solidity builder"
 LABEL author="devtools@polygon.technology"
 
+ENV SOLIDITY_VERSION="0.5.17"
+
 WORKDIR /opt/solidity
 RUN apt-get update \
   && apt-get install --yes cmake cvc4 gcc g++ git libboost-all-dev z3 \
-  && git clone --branch v0.5.17 --depth 1 https://github.com/ethereum/solidity.git . \
+  && git clone --branch v${SOLIDITY_VERSION} --depth 1 https://github.com/ethereum/solidity.git . \
   && mkdir build \
   && cd build \
   && cmake .. \
@@ -29,8 +31,14 @@ ARG GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="96a19dd"
 # a previous version, `96a19dd`, released on 2025/01/08.
 
 ENV TRUFFLE_VERSION="5.11.5"
-ENV DEFAULT_EL_CHAIN_ID="4927"
-ENV DEFAULT_CL_CHAIN_ID="heimdall-4927"
+# Chain ids are baked into the image at build time: the matic-contracts
+# ChainIdMixin template is rendered with EL_CHAIN_ID and the BorValidatorSet
+# template with both EL_CHAIN_ID and CL_CHAIN_ID, then truffle compiles the
+# resulting sources. The compiled bytecode ends up in the L2 genesis alloc.
+# Custom chain ids at runtime are NOT supported — to change them, rebuild
+# this image with different EL_CHAIN_ID / CL_CHAIN_ID build args.
+ENV EL_CHAIN_ID="4927"
+ENV CL_CHAIN_ID="heimdall-4927"
 
 COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
 
@@ -48,8 +56,8 @@ RUN apt-get update \
   && npm install \
   && cd matic-contracts \
   && npm install \
-  && npm run template:process -- --bor-chain-id ${DEFAULT_EL_CHAIN_ID} \
+  && npm run template:process -- --bor-chain-id ${EL_CHAIN_ID} \
   && truffle compile \
   && cd .. \
-  && node generate-borvalidatorset.js --bor-chain-id ${DEFAULT_EL_CHAIN_ID} --heimdall-chain-id ${DEFAULT_CL_CHAIN_ID} \
+  && node generate-borvalidatorset.js --bor-chain-id ${EL_CHAIN_ID} --heimdall-chain-id ${CL_CHAIN_ID} \
   && truffle compile

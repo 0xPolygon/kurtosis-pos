@@ -75,11 +75,11 @@ def generate(
                 template=read_file(HEIMDALL_V2_GENESIS_TEMPLATE_FILE_PATH),
                 data={
                     # chain params
-                    "cl_chain_id": network_params.get("cl_chain_id"),
+                    "cl_chain_id": constants.CL_CHAIN_ID,
                     "cl_max_age_num_blocks": network_params.get(
                         "cl_max_age_num_blocks"
                     ),
-                    "el_chain_id": network_params.get("el_chain_id"),
+                    "el_chain_id": constants.EL_CHAIN_ID,
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,

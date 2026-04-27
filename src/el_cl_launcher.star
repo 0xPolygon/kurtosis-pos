@@ -129,7 +129,6 @@ def launch(
 
     # Return the L2 context.
     return struct(
-        el_chain_id=network_params.get("el_chain_id"),
         all_participants=all_participants,
     )
 
@@ -224,7 +223,7 @@ def _generate_cl_validator_config(
         description="Generating L2 CL validator keys and node configuration",
         image=setup_images.get("validator_config_generator"),
         env_vars={
-            "CL_CHAIN_ID": network_params.get("cl_chain_id"),
+            "CL_CHAIN_ID": constants.CL_CHAIN_ID,
             "CL_CLIENT_CONFIG_PATH": constants.CL_CLIENT_CONFIG_PATH,
             "CL_VALIDATORS_CONFIGS": cl_validator_configs_str,
         },
