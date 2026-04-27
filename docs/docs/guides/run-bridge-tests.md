@@ -7,7 +7,7 @@ sidebar_position: 2
 This guide will show you how to run end-to-end (e2e) bridge tests against a Kurtosis devnet.
 
 :::note
-The devnet deploys the **Plasma bridge** only (DepositManager, WithdrawManager, predicates). The newer **PoS bridge** (RootChainManager/FxPortal) is not deployed. All bridge tests cover the Plasma bridge flow.
+The devnet deploys both bridges: the **Plasma bridge** (DepositManager, WithdrawManager, predicates) and the **PoS bridge** (RootChainManager, ChildChainManager, pos-portal predicates). The bridge test suites cover each independently.
 :::
 
 :::info
@@ -47,14 +47,57 @@ kurtosis service exec pos test-runner "bats --filter-tags pos,bridge --recursive
 After the tests complete, you should see output similar to:
 
 ```bash
-pos/plasma-bridge.bats
- ✓ bridge POL from L1 to L2 via Plasma bridge and confirm native tokens balance increased on L2
- ✓ bridge MATIC from L1 to L2 via Plasma bridge and confirm native tokens balance increased on L2
- ✓ bridge ETH from L1 to L2 via Plasma bridge and confirm MaticWeth balance increased on L2
- ✓ bridge ERC20 tokens from L1 to L2 via Plasma bridge and confirm ERC20 balance increased on L2
- ✓ bridge ERC721 token from L1 to L2 via Plasma bridge and confirm ERC721 balance increased on L2
+tests/pos/bridge/plasma.bats
+ ✓ bridge POL from L1 to L2 via plasma bridge
+ ✓ bridge MATIC from L1 to L2 via plasma bridge
+ ✓ bridge ETH from L1 to L2 via plasma bridge
+ ✓ bridge ERC20 from L1 to L2 via plasma bridge
+ ✓ bridge ERC721 from L1 to L2 via plasma bridge
 
-5 tests, 0 failures
+tests/pos/bridge/pos.bats
+ ✓ bridge ETH from L1 to L2 via pos bridge
+ ✓ bridge ERC20 from L1 to L2 via pos bridge
+ ✓ bridge ERC721 from L1 to L2 via pos bridge
+ ✓ bridge ERC1155 from L1 to L2 via pos bridge
+
+9 tests, 0 failures
+```
+
+Once the deposits have landed on L2, run the L2-to-L1 withdraw tests to exercise the exit flow (burn on L2, wait for a checkpoint on L1, build an exit proof, claim).
+
+```bash
+bats --filter-tags pos,withdraw --recursive tests/
+```
+
+:::tip
+With the test runner deployed, you can again skip cloning:
+
+```bash
+kurtosis service exec pos test-runner "bats --filter-tags pos,withdraw --recursive tests/"
+```
+
+:::
+
+:::warning
+Withdraw tests take several minutes per case — each needs a fresh L1 checkpoint to cover the burn block before the exit proof can be built. Plasma withdraws also wait an additional `HALF_EXIT_PERIOD` after queuing.
+:::
+
+After the tests complete, you should see output similar to:
+
+```bash
+tests/pos/bridge/plasma.bats
+ ✓ withdraw native tokens from L2 to L1 via plasma bridge
+ ✓ withdraw MaticWeth from L2 to L1 via plasma bridge
+ ✓ withdraw ERC20 from L2 to L1 via plasma bridge
+ ✓ withdraw ERC721 from L2 to L1 via plasma bridge
+
+tests/pos/bridge/pos.bats
+ ✓ withdraw ETH from L2 to L1 via pos bridge
+ ✓ withdraw ERC20 from L2 to L1 via pos bridge
+ ✓ withdraw ERC721 from L2 to L1 via pos bridge
+ ✓ withdraw ERC1155 from L2 to L1 via pos bridge
+
+8 tests, 0 failures
 ```
 
 If any tests fail, check the logs in your Kurtosis enclave for more details.
