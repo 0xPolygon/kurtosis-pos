@@ -10,9 +10,9 @@ EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 def generate(
     plan,
     polygon_pos_args,
+    validator_accounts,
     validator_config_artifact,
     admin_address,
-    el_genesis_timestamp="",
 ):
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
@@ -54,6 +54,19 @@ def generate(
         },
     )
 
+    # Compute a future EL genesis timestamp so all bor nodes have time to
+    # boot and peer before mining starts. Delay scales with node count,
+    # capped at 180s.
+    delay = _compute_delay(len(validator_accounts))
+    timestamp_result = plan.run_sh(
+        name="l2-el-genesis-timestamp",
+        description="Computing future EL genesis timestamp ({}s from now)".format(
+            delay
+        ),
+        run="printf '%s' $(( $(date +%s) + {} ))".format(delay),
+    )
+    timestamp = timestamp_result.output
+
     # Generate the alloc field of the EL genesis and return the final EL genesis.
     el_genesis_builder_script_artifact = plan.upload_files(
         name="l2-el-genesis-builder-config",
@@ -75,7 +88,7 @@ def generate(
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
             ),
-            "EL_GENESIS_TIMESTAMP": el_genesis_timestamp,
+            "EL_GENESIS_TIMESTAMP": timestamp,
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
@@ -101,3 +114,15 @@ def generate(
         )
     l2_el_genesis_artifact = result.files_artifacts[0]
     return l2_el_genesis_artifact
+
+
+# Returns how many seconds to push the genesis timestamp into the future so all
+# validators are ready to mine when bor wakes up. Numbers chosen by hand:
+#   - 0 for single-node devnet: nothing to peer with, no race.
+#   - 20s base: spread between two parallel container starts.
+#   - +5s per extra validator: docker daemon / disk / image-pull contention.
+#   - 180s cap: beyond that, image-pull bandwidth dominates and more delay does not help.
+def _compute_delay(n):
+    if n <= 1:
+        return 0
+    return min(180, 20 + 5 * (n - 2))
