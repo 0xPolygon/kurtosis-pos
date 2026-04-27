@@ -198,16 +198,16 @@ def run(plan, args):
         contract_addresses_artifact,
     )
 
-        # Deploy additional services.
-        additional_services_launcher.launch(
-            plan,
-            polygon_pos_args,
-            l1_context,
-            l2_context,
-            l2_network_params,
-            l2_el_genesis_artifact,
-            contract_addresses_artifact,
-        )
+    # Deploy additional services.
+    additional_services_launcher.launch(
+        plan,
+        polygon_pos_args,
+        l1_context,
+        l2_context,
+        l2_network_params,
+        l2_el_genesis_artifact,
+        contract_addresses_artifact,
+    )
 
 
 def get_validator_accounts(participants):
