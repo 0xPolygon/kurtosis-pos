@@ -50,8 +50,8 @@ jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
   "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
-# Add the current timestamp to the EL genesis.
-timestamp=$(printf "0x%x" $(date +%s))
+# Add the genesis timestamp to the EL genesis.
+timestamp=$(printf "0x%x" "${EL_GENESIS_TIMESTAMP}")
 jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
