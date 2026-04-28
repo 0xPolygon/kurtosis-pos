@@ -11,6 +11,7 @@ def deploy_lst_contracts(
     l2_rpc_url,
     private_key,
     admin_address,
+    validator_accounts,
     pos_contract_addresses_artifact,
 ):
     """Deploy sPOL/LST contracts to L1 and L2.
@@ -52,6 +53,7 @@ def deploy_lst_contracts(
             "REWARD_FEE": str(reward_fee),
             "FEE_RECEIVER": fee_receiver,
             "MAX_DIVERGENCE": str(max_divergence),
+            "VALIDATOR_COUNT": str(len(validator_accounts)),
         },
         files={
             "/opt/data": contract_deployer_config_artifact,

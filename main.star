@@ -200,6 +200,7 @@ def run(plan, args):
             l2_rpc_url,
             admin_private_key,
             admin_address,
+            validator_accounts,
             contract_addresses_artifact,
         )
 
