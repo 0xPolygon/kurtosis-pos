@@ -117,14 +117,8 @@ POLYGON_POS_PACKAGE_ARGS = {
         "cl_span_poll_interval": "5s",
         "cl_checkpoint_poll_interval": "5s",
         "cl_max_age_num_blocks": 100000,
-        # Mainnet-conservative checkpoint cadence — bridge withdraw tests race
-        # with rapid checkpointing (a new checkpoint landing on L1 between
-        # polycli's heimdall lookup and the exit submission shifts
-        # currentHeaderBlock and reverts with WITHDRAW_BLOCK_NOT_A_PART_OF_SUBMITTED_HEADER).
-        # Test profiles (e.g. sPOL e2e) can override these in their params file
-        # to compress to ~15s round-trips.
-        "cl_avg_checkpoint_length": "128",
-        "cl_checkpoint_buffer_time": "120s",
+        "cl_avg_checkpoint_length": "8",
+        "cl_checkpoint_buffer_time": "10s",
         "el_block_interval_seconds": 1,
         "el_sprint_duration": constants.EL_SPRINT_DURATION,
         "el_span_duration": constants.EL_SPAN_DURATION,
