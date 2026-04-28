@@ -22,7 +22,7 @@ def deploy_lst_contracts(
     )
 
     setup_validators_artifact = plan.render_templates(
-        name="lst-setup-validators-script",
+        name="lst-validator-setup-script",
         config={
             "setupInitialValidators.s.sol": struct(
                 template=read_file(SETUP_VALIDATORS_TEMPLATE_PATH),
@@ -34,7 +34,7 @@ def deploy_lst_contracts(
     )
 
     result = plan.run_sh(
-        name="lst-contracts-deployer",
+        name="lst-deployer",
         description="Deploying sPOL/LST contracts to L1 and L2",
         image=setup_images.get("contract_deployer"),
         env_vars={

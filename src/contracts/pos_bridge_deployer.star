@@ -66,7 +66,7 @@ def deploy_l2(
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="pos-bridge-addresses",
+                name="pos-bridge-l2-addresses",
             ),
         ],
         run="bash /opt/data/l2/deploy-pos-bridge.sh",

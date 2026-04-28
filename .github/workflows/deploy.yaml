@@ -224,11 +224,11 @@ jobs:
           kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | jq > l2-el-genesis.json
           jq . l2-el-genesis.json
 
-      - name: Retrieve pos bridge contract addresses
+      - name: Retrieve PoS contract addresses
         working-directory: .github/configs/nightly/cl-el-genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} pos-bridge-addresses contractAddresses.json | jq > pos-bridge-addresses.json
-          jq . pos-bridge-addresses.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} pos-contract-addresses contractAddresses.json | jq > pos-contract-addresses.json
+          jq . pos-contract-addresses.json
 
       - name: Stop L2 participants
         run: |
