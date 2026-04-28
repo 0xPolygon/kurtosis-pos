@@ -2,9 +2,9 @@
 set -euxo pipefail
 
 # Deploy sPOL/LST contracts to L1 and L2 using the kurtosis PoS devnet addresses.
-# Runs inside the spol-contract-deployer image, which ships with the spol-contracts
-# source, kurtosis mocks, pre-installed soldeer deps, and a warm forge cache at
-# /opt/spol-contracts.
+# Runs inside the pos-contract-deployer image, which bundles the spol-contracts
+# source, kurtosis mocks, soldeer deps, and a warm forge cache at
+# /opt/spol-contracts (alongside pos-contracts and pos-portal).
 
 cd /opt/spol-contracts
 

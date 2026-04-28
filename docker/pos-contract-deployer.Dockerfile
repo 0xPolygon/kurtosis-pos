@@ -1,12 +1,15 @@
 FROM node:20-slim AS builder
 LABEL description="pos-contract-deployer builder"
 
-# pos-contracts (primary, high churn).
+# pos-contracts - 2025-08-01
 ARG POS_CONTRACTS_BRANCH="anvil-pos"
 ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="d96d5929"
-# pos-portal (low churn, ~1 contract commit/year).
+# pos-portal - 2025-10-24
 ARG POS_PORTAL_BRANCH="master"
 ARG POS_PORTAL_TAG_OR_COMMIT_SHA="3402faa"
+# spol-contracts - 2026-04-16
+ARG SPOL_CONTRACTS_BRANCH="main"
+ARG SPOL_CONTRACTS_TAG_OR_COMMIT_SHA="3c4bdf6c"
 
 ENV FOUNDRY_VERSION="stable"
 # Baked at image-build time. Custom chain IDs are NOT supported — redeploy with a
@@ -50,9 +53,18 @@ COPY static_files/contracts/l1/scripts/deployPosBridgeRoot.s.sol /opt/pos-portal
 COPY static_files/contracts/l2/scripts/deployPosBridgeChild.s.sol /opt/pos-portal/scripts/deployment-scripts/deployPosBridgeChild.s.sol
 RUN forge build
 
+# spol-contracts
+WORKDIR /opt/spol-contracts
+RUN git clone --branch ${SPOL_CONTRACTS_BRANCH} https://github.com/0xPolygon/spol-contracts . \
+  && git checkout ${SPOL_CONTRACTS_TAG_OR_COMMIT_SHA} \
+  && rm -rf .git
+COPY docker/spol-mocks/ script/mock/
+RUN forge soldeer install \
+  && forge build
+
 
 FROM debian:bookworm-slim
-LABEL description="Polygon PoS contracts deployment image (pos-contracts + pos-portal)"
+LABEL description="Polygon PoS contracts deployment image (pos-contracts + pos-portal + spol-contracts)"
 LABEL author="devtools@polygon.technology"
 
 RUN apt-get update \
@@ -86,6 +98,22 @@ COPY --from=builder /opt/pos-portal/foundry.toml ./foundry.toml
 COPY --from=builder /opt/pos-portal/lib/forge-std ./lib/forge-std
 COPY --from=builder /opt/pos-portal/scripts/deployment-scripts ./scripts/deployment-scripts
 COPY --from=builder /opt/pos-portal/out ./out
+
+# spol-contracts runtime surface. forge re-resolves remappings at script time,
+# so src/, script/, dependencies/ all need to stay. Total: ~21MB. Skip test/,
+# broadcast/, audits/ (~3.5MB combined) by not copying them. Keeping cache/
+# saves ~3s per deploy at the cost of cosmetic "AST source not found" warnings
+# for the test files we deliberately excluded.
+WORKDIR /opt/spol-contracts
+COPY --from=builder /opt/spol-contracts/foundry.toml ./foundry.toml
+COPY --from=builder /opt/spol-contracts/foundry.lock ./foundry.lock
+COPY --from=builder /opt/spol-contracts/soldeer.lock ./soldeer.lock
+COPY --from=builder /opt/spol-contracts/remappings.txt ./remappings.txt
+COPY --from=builder /opt/spol-contracts/src ./src
+COPY --from=builder /opt/spol-contracts/script ./script
+COPY --from=builder /opt/spol-contracts/dependencies ./dependencies
+COPY --from=builder /opt/spol-contracts/out ./out
+COPY --from=builder /opt/spol-contracts/cache ./cache
 
 # No default workdir — every wrapper script `cd`s into the right repo itself.
 WORKDIR /
