@@ -3,9 +3,7 @@ constants = import_module("../config/constants.star")
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 SETUP_VALIDATORS_TEMPLATE_PATH = "../../static_files/contracts/l1/scripts/setupInitialValidators.s.sol"
 
-# sPOLController parameters baked at deploy time. Defaults match upstream sPOL
-# launch settings; not exposed as user config because devnet usage doesn't
-# benefit from tuning these (the e2e tests don't depend on the values either).
+# sPOLController parameters baked at deploy time.
 REWARD_FEE = 50  # basis-points-of-ten — 100 = 10%
 FEE_RECEIVER = ""  # empty string falls back to the kurtosis admin account
 MAX_DIVERGENCE = 10  # basis-points — 10 = 1%
@@ -34,7 +32,6 @@ def deploy_lst_contracts(
     Downstream consumers read the resulting `lst-contract-addresses` kurtosis
     artifact by name, so this function does not return it.
     """
-    network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
 
     contract_deployer_config_artifact = plan.upload_files(
@@ -63,7 +60,7 @@ def deploy_lst_contracts(
             "L1_RPC_URL": l1_rpc_url,
             "L2_RPC_URL": l2_rpc_url,
             "L1_CHAIN_ID": str(constants.L1_CHAIN_ID),
-            "L2_CHAIN_ID": str(network_params.get("el_chain_id")),
+            "L2_CHAIN_ID": str(constants.EL_CHAIN_ID),
             "ADMIN_ADDRESS": admin_address,
             "REWARD_FEE": str(REWARD_FEE),
             "FEE_RECEIVER": FEE_RECEIVER,
