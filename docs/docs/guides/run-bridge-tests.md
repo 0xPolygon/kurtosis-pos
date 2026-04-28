@@ -16,7 +16,7 @@ This guide assumes you have a running devnet, if that's not the case, you can he
 
 ## Clone the Test Suite
 
-First, clone the [0xPolygon/pos-e2e](https://github.com/0xPolygon/pos-e2e) repository. PoS-related tests are located in `tests/pos`.
+First, clone the [0xPolygon/pos-e2e](https://github.com/0xPolygon/pos-e2e) repository. Bridge tests are located in `tests/bridge`.
 
 ```bash
 git clone https://github.com/0xPolygon/pos-e2e.git
@@ -38,14 +38,14 @@ bats --filter-tags pos,bridge --recursive tests/
 After the tests complete, you should see output similar to:
 
 ```bash
-tests/pos/bridge/plasma.bats
+tests/bridge/plasma.bats
  ✓ bridge POL from L1 to L2 via plasma bridge
  ✓ bridge MATIC from L1 to L2 via plasma bridge
  ✓ bridge ETH from L1 to L2 via plasma bridge
  ✓ bridge ERC20 from L1 to L2 via plasma bridge
  ✓ bridge ERC721 from L1 to L2 via plasma bridge
 
-tests/pos/bridge/pos.bats
+tests/bridge/pos.bats
  ✓ bridge ETH from L1 to L2 via pos bridge
  ✓ bridge ERC20 from L1 to L2 via pos bridge
  ✓ bridge ERC721 from L1 to L2 via pos bridge
@@ -67,13 +67,13 @@ Withdraw tests take several minutes per case — each needs a fresh L1 checkpoin
 After the tests complete, you should see output similar to:
 
 ```bash
-tests/pos/bridge/plasma.bats
+tests/bridge/plasma.bats
  ✓ withdraw native tokens from L2 to L1 via plasma bridge
  ✓ withdraw MaticWeth from L2 to L1 via plasma bridge
  ✓ withdraw ERC20 from L2 to L1 via plasma bridge
  ✓ withdraw ERC721 from L2 to L1 via plasma bridge
 
-tests/pos/bridge/pos.bats
+tests/bridge/pos.bats
  ✓ withdraw ETH from L2 to L1 via pos bridge
  ✓ withdraw ERC20 from L2 to L1 via pos bridge
  ✓ withdraw ERC721 from L2 to L1 via pos bridge

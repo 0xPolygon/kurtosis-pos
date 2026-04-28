@@ -47,14 +47,14 @@ runs:
       working-directory: pos-e2e
       shell: bash
       run: |
-        bats --filter-tags bridge tests/pos/bridge/plasma.bats tests/pos/bridge/pos.bats
-        bats --filter-tags withdraw tests/pos/bridge/plasma.bats tests/pos/bridge/pos.bats
+        bats --filter-tags bridge tests/bridge/plasma.bats tests/bridge/pos.bats
+        bats --filter-tags withdraw tests/bridge/plasma.bats tests/bridge/pos.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 
     - name: Run validator tests
       working-directory: pos-e2e
       shell: bash
-      run: bats tests/pos/validator.bats
+      run: bats tests/heimdall/stake/validator.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180

@@ -51,7 +51,7 @@ runs:
     - name: Test state syncs
       working-directory: pos-e2e
       shell: bash
-      run: bats --filter 'bridge POL from L1 to L2 via plasma bridge' tests/pos/bridge/plasma.bats
+      run: bats --filter 'bridge POL from L1 to L2 via plasma bridge' tests/bridge/plasma.bats
       env:
         L1_RPC_URL: ${{ env.L1_RPC_URL }}
         TIMEOUT_SECONDS: 600 # default: 180
