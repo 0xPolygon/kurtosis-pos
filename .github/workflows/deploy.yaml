@@ -42,6 +42,8 @@ jobs:
       - uses: ./.github/actions/monitor
 
       - uses: ./.github/actions/test-state-sync
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
@@ -109,6 +111,7 @@ jobs:
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
         with:
           l1_rpc: ${{ contains(matrix.file.name, 'anvil') && 'anvil' || 'el-1-geth-lighthouse' }}
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
@@ -137,6 +140,8 @@ jobs:
       - uses: ./.github/actions/monitor
 
       - uses: ./.github/actions/run-e2e-tests
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
@@ -179,6 +184,8 @@ jobs:
           skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test-state-sync
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
@@ -245,6 +252,8 @@ jobs:
           skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test-state-sync
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
