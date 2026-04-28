@@ -144,3 +144,15 @@ EL_HARD_FORK_BLOCKS = {
     "lisovoPro": 576,
     "giugliano": 640,
 }
+
+# Heimdall-v2-side hardforks (no bor genesis impact). Activation heights are
+# hardcoded in the heimdall-v2 binary per chain (mainnet/mumbai/amoy/default
+# — see helper/config.go); the values below MUST match the binary's "default"
+# (local devnet) entries. Diverging from the binary will not change runtime
+# behaviour but will cause pos-e2e tests that wait on these blocks to drift.
+#
+# phuket: introduced in heimdall-v2 v0.7.0 (private). Default 256 mirrors the
+# rio precedent (devnet activation must be >= 256 per consensus minimum).
+CL_HARD_FORK_BLOCKS = {
+    "phuket": 256,
+}

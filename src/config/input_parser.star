@@ -137,6 +137,9 @@ POLYGON_POS_PACKAGE_ARGS = {
         "lisovo_fork_block": constants.EL_HARD_FORK_BLOCKS.get("lisovo"),
         "lisovo_pro_fork_block": constants.EL_HARD_FORK_BLOCKS.get("lisovoPro"),
         "giugliano_fork_block": constants.EL_HARD_FORK_BLOCKS.get("giugliano"),
+        # Heimdall-v2-side fork blocks (no bor genesis impact; mirrors the
+        # heimdall-v2 binary's hardcoded heights for the local devnet).
+        "phuket_fork_block": constants.CL_HARD_FORK_BLOCKS.get("phuket"),
     },
     "additional_services": [],
 }
