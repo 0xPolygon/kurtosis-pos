@@ -3,11 +3,6 @@ constants = import_module("../config/constants.star")
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 SETUP_VALIDATORS_TEMPLATE_PATH = "../../static_files/contracts/l1/scripts/setupInitialValidators.s.sol"
 
-# sPOLController parameters baked at deploy time.
-REWARD_FEE = 50  # basis-points-of-ten — 100 = 10%
-FEE_RECEIVER = ""  # empty string falls back to the kurtosis admin account
-MAX_DIVERGENCE = 10  # basis-points — 10 = 1%
-
 
 def deploy_lst_contracts(
     plan,
@@ -49,9 +44,9 @@ def deploy_lst_contracts(
             "L1_CHAIN_ID": str(constants.L1_CHAIN_ID),
             "L2_CHAIN_ID": str(constants.EL_CHAIN_ID),
             "ADMIN_ADDRESS": admin_address,
-            "REWARD_FEE": str(REWARD_FEE),
-            "FEE_RECEIVER": FEE_RECEIVER,
-            "MAX_DIVERGENCE": str(MAX_DIVERGENCE),
+            "REWARD_FEE": "50",  # basis-points-of-ten — 100 = 10%
+            "FEE_RECEIVER": "",  # empty string falls back to ADMIN_ADDRESS
+            "MAX_DIVERGENCE": "10",  # basis-points — 10 = 1%
         },
         files={
             "/opt/data": contract_deployer_config_artifact,
