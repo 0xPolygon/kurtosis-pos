@@ -45,7 +45,7 @@ def launch(
                     == constants.LOG_FORMAT.json,
                     "extradata": "erigon-{}".format(id),
                     # network params.
-                    "el_chain_id": network_params.get("el_chain_id"),
+                    "el_chain_id": constants.EL_CHAIN_ID,
                     "el_gas_limit": network_params.get("el_gas_limit"),
                     "static_nodes": ",".join(el_static_nodes),
                     "ethstats_server_secret": ethstats_server_params.get("ws_secret"),

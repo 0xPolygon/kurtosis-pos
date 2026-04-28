@@ -7,26 +7,11 @@ set -euxo pipefail
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
 VALIDATORS_CONFIG_FILE="/opt/contracts/validators.js"
 
-# Setting EL chain id if needed.
-if [[ -z "${EL_CHAIN_ID}" ]]; then
-  echo "Error: EL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
-if [[ -z "${DEFAULT_EL_CHAIN_ID}" ]]; then
-  echo "Error: DEFAULT_EL_CHAIN_ID environment variable is not set"
-  exit 1
-fi
-echo "EL_CHAIN_ID: ${EL_CHAIN_ID}"
-echo "DEFAULT_EL_CHAIN_ID: ${DEFAULT_EL_CHAIN_ID}"
+cd /opt/pos-contracts
 
-echo "Processing templates..."
-npm run template:process -- --bor-chain-id "${EL_CHAIN_ID}"
-
-echo "Generating interfaces..."
-npm run generate:interfaces
-
-echo "Compiling the Polygon PoS contracts..."
-forge build
+# Contracts are compiled at image-build time against the image's baked chain ID.
+# Custom L2 chain IDs are not supported — rebuild the image with a different
+# EL_CHAIN_ID build arg if you need another value.
 
 # Deploy Polygon PoS contracts on L1.
 if [[ -z "${PRIVATE_KEY}" ]]; then
@@ -147,83 +132,11 @@ else
   echo "Error: ${VALIDATORS_CONFIG_FILE} does not exist or is empty."
 fi
 
-# Deploy POL token and PolygonMigration, then wire them into the system.
-# Validators staked MATIC above (before initializePOL); initializePOL converts that MATIC to POL.
-echo "Deploying POL token and PolygonMigration..."
-forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
-  scripts/deployment-scripts/deployPolAndMigration.s.sol:DeployPolAndMigrationScript
-
-# Parse deployed addresses from the broadcast JSON.
-l1_chain_id=$(cast chain-id --rpc-url "${L1_RPC_URL}")
-broadcast_file="/opt/pos-contracts/broadcast/deployPolAndMigration.s.sol/${l1_chain_id}/run-latest.json"
-pol_token=$(jq -r '.transactions[] | select(.contractName == "ERC20Permit") | .contractAddress' "${broadcast_file}" | head -1)
-migration=$(jq -r '.transactions[] | select(.contractName == "PolygonMigration") | .contractAddress' "${broadcast_file}" | head -1)
-echo "POL token: ${pol_token}"
-echo "PolygonMigration: ${migration}"
-
-if [[ -z "${pol_token}" || "${pol_token}" == "null" ]]; then
-  echo "Error: failed to parse POL token address from broadcast file."
-  exit 1
-fi
-if [[ -z "${migration}" || "${migration}" == "null" ]]; then
-  echo "Error: failed to parse PolygonMigration address from broadcast file."
-  exit 1
-fi
-
-# Merge the new addresses into contractAddresses.json.
-jq --arg pol "${pol_token}" --arg migration "${migration}" \
-  '.root.tokens.PolToken = $pol | .root.tokens.PolygonMigration = $migration' \
-  contractAddresses.json > contractAddresses.json.tmp
-mv contractAddresses.json.tmp contractAddresses.json
-
-# POL migration — sequence mirrors mainnet's UpgradeStake_DepositManager_Mainnet batch
-# (pos-contracts scripts/deployers/pol-upgrade/...). Steps 2/8 (impl upgrades) are
-# skipped because d96d5929 already ships the POL-aware StakeManager and DepositManager.
-matic_token=$(jq -r '.root.tokens.MaticToken' "${CONTRACT_ADDRESSES_FILE}")
-registry_proxy_address=$(jq -r '.root.Registry' "${CONTRACT_ADDRESSES_FILE}")
-deposit_manager_proxy_address=$(jq -r '.root.DepositManagerProxy' "${CONTRACT_ADDRESSES_FILE}")
-native_gas_token="0x0000000000000000000000000000000000001010"
-
-# Mainnet step 3: StakeManager.initializePOL — converts StakeManager's MATIC stakes to POL.
-echo "Calling StakeManager.initializePOL..."
-calldata=$(cast calldata "initializePOL(address,address)" "${pol_token}" "${migration}")
-cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
-  "${governance_proxy_address}" "update(address,bytes)" "${stake_manager_proxy_address}" "${calldata}"
-
-# Mainnet steps 4/5/6: register pol, matic, polygonMigration in the contract map.
-echo "Registering pol, matic, polygonMigration in Registry..."
-for pair in "pol:${pol_token}" "matic:${matic_token}" "polygonMigration:${migration}"; do
-  key="${pair%%:*}"
-  addr="${pair##*:}"
-  key_hash=$(cast keccak "${key}")
-  calldata=$(cast calldata "updateContractMap(bytes32,address)" "${key_hash}" "${addr}")
-  cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
-    "${governance_proxy_address}" "update(address,bytes)" "${registry_proxy_address}" "${calldata}"
-  echo "Registered ${key} -> ${addr}"
-done
-
-# Mainnet step 7: map POL to the PoS native gas token (0x...1010).
-# Sets rootToChildToken[POL] = native and — as a side effect — childToRootToken[native] = POL.
-# The reverse overwrite is intentional on mainnet; the ERC20Predicate reads the L1 rootToken
-# from the L2 Withdraw event topic, not from childToRootToken, so MATIC withdraws still work.
-echo "Mapping POL -> native gas token..."
-calldata=$(cast calldata "mapToken(address,address,bool)" "${pol_token}" "${native_gas_token}" false)
-cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
-  "${governance_proxy_address}" "update(address,bytes)" "${registry_proxy_address}" "${calldata}"
-
-# Mainnet step 9: drain DepositManager MATIC into POL. No-op on a fresh devnet
-# (DepositManager holds 0 MATIC until users bridge), kept for mainnet parity.
-echo "Calling DepositManager.migrateMatic..."
-calldata=$(cast calldata "migrateMatic()")
-cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
-  "${governance_proxy_address}" "update(address,bytes)" "${deposit_manager_proxy_address}" "${calldata}"
-
-# Sync the updated contractAddresses.json to /opt/contracts for the kurtosis artifact.
-echo "Syncing updated contract addresses to /opt/contracts/..."
-cp contractAddresses.json /opt/contracts/contractAddresses.json
-
+cp contractAddresses.json "${CONTRACT_ADDRESSES_FILE}"
 if [[ -s "${CONTRACT_ADDRESSES_FILE}" ]]; then
-  echo "Final contract addresses:"
+  echo "Plasma bridge deployed. contractAddresses.json:"
   cat "${CONTRACT_ADDRESSES_FILE}"
-  echo
+else
+  echo "Error: ${CONTRACT_ADDRESSES_FILE} does not exist or is empty."
+  exit 1
 fi

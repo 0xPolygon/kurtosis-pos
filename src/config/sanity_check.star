@@ -37,14 +37,10 @@ POLYGON_POS_PARAMS = {
         "preregistered_validator_keys_mnemonic",
         "validator_stake_amount_eth",
         "validator_top_up_fee_amount_eth",
-        # consensus layer
-        "cl_chain_id",
         "cl_environment",
         "cl_span_poll_interval",
         "cl_checkpoint_poll_interval",
         "cl_max_age_num_blocks",
-        # execution layer
-        "el_chain_id",
         "el_block_interval_seconds",
         "el_sprint_duration",
         "el_span_duration",
@@ -148,9 +144,6 @@ def sanity_check_polygon_args(plan, input_args):
 
     # Validate values.
     network_params = input_args.get("network_params")
-    cl_chain_id = network_params.get("cl_chain_id")
-    el_chain_id = network_params.get("el_chain_id")
-    _validate_chain_ids(cl_chain_id, el_chain_id)
 
     participants = input_args.get("participants")
     _validate_participants_count(participants)
@@ -289,20 +282,6 @@ def _validate_list_of_dict(input_args, category):
                             key, category, allowed_keys
                         )
                     )
-
-
-# Heimdall-v2 expects that the cl chain id follows the standard "heimdall-<el_chain_id>".
-def _validate_chain_ids(cl_chain_id, el_chain_id):
-    if not cl_chain_id and not el_chain_id:
-        return
-
-    expected_cl_chain_id = "heimdall-" + str(el_chain_id)
-    if cl_chain_id != expected_cl_chain_id:
-        fail(
-            'CL chain id must follow the standard "heimdall-<el_chain_id>". Expected "{}" but got: "{}".'.format(
-                expected_cl_chain_id, cl_chain_id
-            )
-        )
 
 
 def _validate_participants_have_validator(participants):

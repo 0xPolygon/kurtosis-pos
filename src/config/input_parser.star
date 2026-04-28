@@ -113,14 +113,10 @@ POLYGON_POS_PACKAGE_ARGS = {
         "preregistered_validator_keys_mnemonic": "sibling lend brave explain wait orbit mom alcohol disorder message grace sun",
         "validator_stake_amount_eth": 10000,  # in ether
         "validator_top_up_fee_amount_eth": 2000,  # in ether
-        # CL network params.
-        "cl_chain_id": constants.CL_CHAIN_ID,
         # "cl_environment": constants.CL_ENVIRONMENT.local,
         "cl_span_poll_interval": "5s",
         "cl_checkpoint_poll_interval": "5s",
         "cl_max_age_num_blocks": 100000,
-        # EL network params.
-        "el_chain_id": constants.EL_CHAIN_ID,
         "el_block_interval_seconds": 1,
         "el_sprint_duration": constants.EL_SPRINT_DURATION,
         "el_span_duration": constants.EL_SPAN_DURATION,
