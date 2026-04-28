@@ -66,13 +66,19 @@ for pair in \
   IFS=':' read -r label root_token child_token tt <<< "${pair}"
   # Idempotency: cl-el-genesis re-deploy hits these contracts a second time. mapToken
   # reverts with ALREADY_MAPPED if rootToken already has a child mapping, so skip when
-  # rootToChildToken(root) is non-zero (re-deploys hit the same child due to nonce
-  # determinism, so an existing mapping is the correct one).
+  # the existing mapping already points to the expected child (re-deploys land at the
+  # same address via CREATE-nonce determinism). If it points elsewhere, the deploy
+  # order has drifted and L1 routes to stale addresses — fail loud rather than skip.
   current_child=$(cast call --rpc-url "${L1_RPC_URL}" \
     "${rcm_proxy}" "rootToChildToken(address)(address)" "${root_token}")
   if [[ "${current_child}" != "0x0000000000000000000000000000000000000000" ]]; then
-    echo "Skipping ${label} (${root_token}) — already mapped to ${current_child}"
-    continue
+    if [[ "${current_child,,}" == "${child_token,,}" ]]; then
+      echo "Skipping ${label} (${root_token}) — already mapped to ${current_child}"
+      continue
+    fi
+    echo "ERROR: ${label} (${root_token}) is mapped to ${current_child} on L1 but the" \
+      "current deploy produced ${child_token}. L1 routes to a stale child contract." >&2
+    exit 1
   fi
   echo "Mapping ${label} (${root_token} <-> ${child_token}) on RootChainManager..."
   cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy \
