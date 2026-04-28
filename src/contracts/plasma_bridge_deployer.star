@@ -1,6 +1,6 @@
 constants = import_module("../config/constants.star")
 
-CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts/pos"
+CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 
 def deploy_l1(plan, polygon_pos_args, l1_rpc_url, private_key, validator_accounts):
