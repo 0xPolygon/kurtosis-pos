@@ -65,7 +65,6 @@ runs:
         rm -rf ./dump/read-*
         rm -rf ./dump/run-generate-genesis*
         rm -rf ./dump/validator-key-generation-cl-validator-keystore*
-        rm -rf ./dump/test-runner*
         rm -rf ./dump/l2-cl-validator-node-ids-reader*
 
         # Filter out unnecessary files
