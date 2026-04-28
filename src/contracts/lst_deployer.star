@@ -33,7 +33,7 @@ def deploy_lst_contracts(
         },
     )
 
-    plan.run_sh(
+    result = plan.run_sh(
         name="lst-contracts-deployer",
         description="Deploying sPOL/LST contracts to L1 and L2",
         image=setup_images.get("contract_deployer"),
@@ -55,10 +55,11 @@ def deploy_lst_contracts(
         },
         store=[
             StoreSpec(
-                src="/opt/lst/lstContractAddresses.json",
-                name="lst-contract-addresses",
+                src="/opt/contracts/contractAddresses.json",
+                name="pos-contract-addresses",
             ),
         ],
         run="bash /opt/data/l1/deploy-lst-contracts.sh",
         wait="5m",
     )
+    return result.files_artifacts[0]

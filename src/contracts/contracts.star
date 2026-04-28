@@ -33,7 +33,7 @@ def deploy_l2_contracts(
     pos_bridge_addresses = pos_bridge_deployer.deploy_l2(
         plan, polygon_pos_args, l1_rpc_url, l2_rpc_url, private_key, plasma_bridge_addresses,
     )
-    lst_deployer.deploy_lst_contracts(
+    pos_contract_addresses = lst_deployer.deploy_lst_contracts(
         plan,
         polygon_pos_args,
         l1_rpc_url,
@@ -43,4 +43,4 @@ def deploy_l2_contracts(
         validator_accounts,
         pos_bridge_addresses,
     )
-    return pos_bridge_addresses
+    return pos_contract_addresses

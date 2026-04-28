@@ -101,11 +101,19 @@ forge script script/Deploy.s.sol:Deploy \
   --sig 'run(string)' 'ethereum-polygon' \
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy --non-interactive
 
-# Write output artifact
-mkdir -p /opt/lst
-cp script/deployment.json /opt/lst/lstContractAddresses.json
-echo "LST contracts deployed:"
-cat /opt/lst/lstContractAddresses.json
+# Merge LST addresses into the accumulated contractAddresses.json so a single
+# artifact carries plasma + matic-to-pol + pos-bridge + spol. Upstream's
+# script/deployment.json has sPOL_L1 / sPOL_L2 top-level keys; nest them under
+# .root.spol / .child.spol to match the existing root/child layout.
+mkdir -p /opt/contracts
+jq -s '.[0] as $pos | .[1] as $spol
+  | $pos
+  | .root.spol = $spol.sPOL_L1
+  | .child.spol = $spol.sPOL_L2' \
+  /opt/data/pos-addresses/contractAddresses.json script/deployment.json \
+  > /opt/contracts/contractAddresses.json
+echo "LST contracts deployed. Updated contractAddresses.json:"
+cat /opt/contracts/contractAddresses.json
 
 # Setup initial validators.
 # Uses the rendered kurtosis-specific script (validator count baked at devnet
