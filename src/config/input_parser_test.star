@@ -56,5 +56,3 @@ def test_parse_polygon_pos_args_without_log_params(plan):
     expect.eq(participant0["el_log_format"], "text")
     expect.eq(participant0["cl_log_level"], "info")
     expect.eq(participant0["cl_log_format"], "text")
-
-

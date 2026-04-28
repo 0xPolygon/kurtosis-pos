@@ -71,7 +71,10 @@ def run(plan, args):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
 
-        l1_contract_addresses_artifact, validator_config_artifact = contracts.deploy_l1_contracts(
+        (
+            l1_contract_addresses_artifact,
+            validator_config_artifact,
+        ) = contracts.deploy_l1_contracts(
             plan,
             polygon_pos_args,
             l1_context.rpc_url,

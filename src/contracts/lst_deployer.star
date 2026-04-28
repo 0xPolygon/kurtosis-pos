@@ -1,7 +1,9 @@
 constants = import_module("../config/constants.star")
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
-SETUP_VALIDATORS_TEMPLATE_PATH = "../../static_files/contracts/l1/scripts/setupInitialValidators.s.sol"
+SETUP_VALIDATORS_TEMPLATE_PATH = (
+    "../../static_files/contracts/l1/scripts/setupInitialValidators.s.sol"
+)
 
 
 def deploy_lst_contracts(
