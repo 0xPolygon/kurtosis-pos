@@ -19,19 +19,6 @@ def deploy_lst_contracts(
     validator_accounts,
     pos_contract_addresses_artifact,
 ):
-    """Deploy sPOL/LST contracts to L1 and L2.
-
-    Runs inside the pos-contract-deployer image, which bundles the spol-contracts
-    source, soldeer deps, and a warm forge cache under /opt/spol-contracts
-    (alongside pos-contracts and pos-portal). The kurtosis-specific validator
-    setup script is rendered at deploy time so VALIDATOR_COUNT matches the
-    actual number of validators registered on this devnet. Reads
-    PolygonMigration and RootChainManager from the accumulated PoS
-    contractAddresses.json (no mocks needed — main deploys both for real).
-
-    Downstream consumers read the resulting `lst-contract-addresses` kurtosis
-    artifact by name, so this function does not return it.
-    """
     setup_images = polygon_pos_args.get("setup_images")
 
     contract_deployer_config_artifact = plan.upload_files(
