@@ -53,12 +53,13 @@ COPY static_files/contracts/l1/scripts/deployPosBridgeRoot.s.sol /opt/pos-portal
 COPY static_files/contracts/l2/scripts/deployPosBridgeChild.s.sol /opt/pos-portal/scripts/deployment-scripts/deployPosBridgeChild.s.sol
 RUN forge build
 
-# spol-contracts
+# spol-contracts. The kurtosis-specific validator setup script is uploaded at
+# deploy time as a kurtosis artifact (rendered from a template so VALIDATOR_COUNT
+# matches the actual devnet) — not baked into the image.
 WORKDIR /opt/spol-contracts
 RUN git clone --branch ${SPOL_CONTRACTS_BRANCH} https://github.com/0xPolygon/spol-contracts . \
   && git checkout ${SPOL_CONTRACTS_TAG_OR_COMMIT_SHA} \
   && rm -rf .git
-COPY docker/spol-kurtosis/ script/kurtosis/
 RUN forge soldeer install \
   && forge build
 

@@ -1,6 +1,7 @@
 constants = import_module("../config/constants.star")
 
-LST_CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts/lst"
+CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
+SETUP_VALIDATORS_TEMPLATE_PATH = "../../static_files/contracts/l1/scripts/setupInitialValidatorsKurtosis.s.sol"
 
 
 def deploy_lst_contracts(
@@ -17,11 +18,12 @@ def deploy_lst_contracts(
     """Deploy sPOL/LST contracts to L1 and L2.
 
     Runs inside the pos-contract-deployer image, which bundles the spol-contracts
-    source, the kurtosis-specific validator setup script, soldeer deps, and a
-    warm forge cache under /opt/spol-contracts (alongside pos-contracts and
-    pos-portal). Reads PolygonMigration and RootChainManager from the
-    accumulated PoS contractAddresses.json (no longer needs kurtosis-specific
-    mocks now that main deploys both as real contracts).
+    source, soldeer deps, and a warm forge cache under /opt/spol-contracts
+    (alongside pos-contracts and pos-portal). The kurtosis-specific validator
+    setup script is rendered at deploy time so VALIDATOR_COUNT matches the
+    actual number of validators registered on this devnet. Reads
+    PolygonMigration and RootChainManager from the accumulated PoS
+    contractAddresses.json (no mocks needed — main deploys both for real).
 
     Downstream consumers read the resulting `lst-contract-addresses` kurtosis
     artifact by name, so this function does not return it.
@@ -35,8 +37,20 @@ def deploy_lst_contracts(
     max_divergence = lst_deployer_params.get("max_divergence", 10)
 
     contract_deployer_config_artifact = plan.upload_files(
-        src=LST_CONTRACTS_CONFIG_FILE_PATH,
+        src=CONTRACTS_CONFIG_FILE_PATH,
         name="lst-deployer-config",
+    )
+
+    setup_validators_artifact = plan.render_templates(
+        name="lst-setup-validators-script",
+        config={
+            "setupInitialValidators.s.sol": struct(
+                template=read_file(SETUP_VALIDATORS_TEMPLATE_PATH),
+                data={
+                    "validator_count": len(validator_accounts),
+                },
+            ),
+        },
     )
 
     plan.run_sh(
@@ -53,11 +67,11 @@ def deploy_lst_contracts(
             "REWARD_FEE": str(reward_fee),
             "FEE_RECEIVER": fee_receiver,
             "MAX_DIVERGENCE": str(max_divergence),
-            "VALIDATOR_COUNT": str(len(validator_accounts)),
         },
         files={
             "/opt/data": contract_deployer_config_artifact,
             "/opt/data/pos-addresses": pos_contract_addresses_artifact,
+            "/opt/data/setup-validators": setup_validators_artifact,
         },
         store=[
             StoreSpec(
@@ -65,6 +79,6 @@ def deploy_lst_contracts(
                 name="lst-contract-addresses",
             ),
         ],
-        run="bash /opt/data/deploy-lst-contracts.sh",
+        run="bash /opt/data/l1/deploy-lst-contracts.sh",
         wait="5m",
     )

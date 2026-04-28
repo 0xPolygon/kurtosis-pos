@@ -3,8 +3,17 @@ set -euxo pipefail
 
 # Deploy sPOL/LST contracts to L1 and L2 using the kurtosis PoS devnet addresses.
 # Runs inside the pos-contract-deployer image, which bundles the spol-contracts
-# source, kurtosis-specific scripts, soldeer deps, and a warm forge cache at
-# /opt/spol-contracts (alongside pos-contracts and pos-portal).
+# source, soldeer deps, and a warm forge cache at /opt/spol-contracts
+# (alongside pos-contracts and pos-portal). The kurtosis validator setup script
+# is rendered at deploy time and uploaded as the `setup-validators` artifact.
+
+# Drop the rendered setupInitialValidators script into the spol-contracts tree
+# so its `import "../../src/sPOLController.sol"` resolves. Lives under
+# script/kurtosis/ to disambiguate from upstream's mainnet-id'd
+# script/SetupInitialValidators.s.sol.
+mkdir -p /opt/spol-contracts/script/kurtosis
+cp /opt/data/setup-validators/setupInitialValidators.s.sol \
+   /opt/spol-contracts/script/kurtosis/
 
 cd /opt/spol-contracts
 
@@ -96,7 +105,8 @@ echo "LST contracts deployed:"
 cat /opt/lst/lstContractAddresses.json
 
 # Setup initial validators.
-# Uses the kurtosis-specific script which assumes validator ID 1 (the single
-# validator registered in the kurtosis devnet) rather than mainnet IDs 188/92.
-forge script script/kurtosis/SetupInitialValidatorsKurtosis.s.sol:SetupInitialValidatorsKurtosis \
+# Uses the rendered kurtosis-specific script (validator count baked at devnet
+# launch time, ids 1..N matching the on-chain stake order) rather than the
+# mainnet/testnet ids (188, 92) hardcoded in upstream's SetupInitialValidators.
+forge script script/kurtosis/setupInitialValidators.s.sol:SetupInitialValidators \
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy
