@@ -176,27 +176,38 @@ def run(plan, args):
         l1_context.rpc_url,
         participant_start_index,
     )
-    l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
+    # When adding participants to an already-running enclave, the L2 bridge
+    # contracts have already been deployed on the existing chain — their
+    # addresses arrive via `dev.matic_contract_addresses_filepath`. Skip the
+    # re-deploy: `l2_context.all_participants[0]` resolves to the freshly-
+    # launched (unsynced) participant, so forge script would fail to read
+    # existing contract state, and even if it could, re-deploying the bridge
+    # at fresh addresses would invalidate the running L2 chain's bridge
+    # state.
+    if len(existing_participants) == 0:
+        l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
 
-    # Deploy plasma bridge contracts to L2 and cross-chain wiring.
-    contract_addresses_artifact = plasma_bridge_deployer.deploy_l2(
-        plan,
-        polygon_pos_args,
-        l1_context.rpc_url,
-        l2_rpc_url,
-        admin_private_key,
-        l1_contract_addresses_artifact,
-    )
+        # Deploy plasma bridge contracts to L2 and cross-chain wiring.
+        contract_addresses_artifact = plasma_bridge_deployer.deploy_l2(
+            plan,
+            polygon_pos_args,
+            l1_context.rpc_url,
+            l2_rpc_url,
+            admin_private_key,
+            l1_contract_addresses_artifact,
+        )
 
-    # Deploy pos-bridge contracts to L2 and cross-chain wiring.
-    contract_addresses_artifact = pos_bridge_deployer.deploy_l2(
-        plan,
-        polygon_pos_args,
-        l1_context.rpc_url,
-        l2_rpc_url,
-        admin_private_key,
-        contract_addresses_artifact,
-    )
+        # Deploy pos-bridge contracts to L2 and cross-chain wiring.
+        contract_addresses_artifact = pos_bridge_deployer.deploy_l2(
+            plan,
+            polygon_pos_args,
+            l1_context.rpc_url,
+            l2_rpc_url,
+            admin_private_key,
+            contract_addresses_artifact,
+        )
+    else:
+        contract_addresses_artifact = l1_contract_addresses_artifact
 
     # Deploy additional services.
     additional_services_launcher.launch(
