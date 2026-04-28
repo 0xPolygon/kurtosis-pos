@@ -5,16 +5,16 @@ lst_deployer = import_module("./lst_deployer.star")
 
 
 def deploy_l1_contracts(plan, polygon_pos_args, l1_rpc_url, private_key, validator_accounts):
-    l1_addresses, validator_config = plasma_bridge_deployer.deploy_l1(
+    plasma_bridge_addresses, validator_config = plasma_bridge_deployer.deploy_l1(
         plan, polygon_pos_args, l1_rpc_url, private_key, validator_accounts,
     )
-    l1_addresses = matic_to_pol_migrator.migrate(
-        plan, polygon_pos_args, l1_rpc_url, private_key, l1_addresses,
+    pol_migration_addresses = matic_to_pol_migrator.migrate(
+        plan, polygon_pos_args, l1_rpc_url, private_key, plasma_bridge_addresses,
     )
-    l1_addresses = pos_bridge_deployer.deploy_l1(
-        plan, polygon_pos_args, l1_rpc_url, private_key, l1_addresses,
+    pos_bridge_l1_addresses = pos_bridge_deployer.deploy_l1(
+        plan, polygon_pos_args, l1_rpc_url, private_key, pol_migration_addresses,
     )
-    return l1_addresses, validator_config
+    return pos_bridge_l1_addresses, validator_config
 
 
 def deploy_l2_contracts(
@@ -27,11 +27,11 @@ def deploy_l2_contracts(
     validator_accounts,
     l1_addresses,
 ):
-    addresses = plasma_bridge_deployer.deploy_l2(
+    plasma_bridge_addresses = plasma_bridge_deployer.deploy_l2(
         plan, polygon_pos_args, l1_rpc_url, l2_rpc_url, private_key, l1_addresses,
     )
-    addresses = pos_bridge_deployer.deploy_l2(
-        plan, polygon_pos_args, l1_rpc_url, l2_rpc_url, private_key, addresses,
+    pos_bridge_addresses = pos_bridge_deployer.deploy_l2(
+        plan, polygon_pos_args, l1_rpc_url, l2_rpc_url, private_key, plasma_bridge_addresses,
     )
     lst_deployer.deploy_lst_contracts(
         plan,
@@ -41,6 +41,6 @@ def deploy_l2_contracts(
         private_key,
         admin_address,
         validator_accounts,
-        addresses,
+        pos_bridge_addresses,
     )
-    return addresses
+    return pos_bridge_addresses
