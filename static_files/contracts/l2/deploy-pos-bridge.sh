@@ -64,6 +64,16 @@ for pair in \
     "MintableERC1155:$(jq -r '.root.posBridge.DummyMintableERC1155' contractAddresses.json):$(jq -r '.child.posBridge.DummyMintableERC1155' contractAddresses.json):${mintable_erc1155_type}" \
     "Ether:${ether_root}:$(jq -r '.child.posBridge.MaticWETH' contractAddresses.json):${ether_type}"; do
   IFS=':' read -r label root_token child_token tt <<< "${pair}"
+  # Idempotency: cl-el-genesis re-deploy hits these contracts a second time. mapToken
+  # reverts with ALREADY_MAPPED if rootToken already has a child mapping, so skip when
+  # rootToChildToken(root) is non-zero (re-deploys hit the same child due to nonce
+  # determinism, so an existing mapping is the correct one).
+  current_child=$(cast call --rpc-url "${L1_RPC_URL}" \
+    "${rcm_proxy}" "rootToChildToken(address)(address)" "${root_token}")
+  if [[ "${current_child}" != "0x0000000000000000000000000000000000000000" ]]; then
+    echo "Skipping ${label} (${root_token}) — already mapped to ${current_child}"
+    continue
+  fi
   echo "Mapping ${label} (${root_token} <-> ${child_token}) on RootChainManager..."
   cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy \
     "${rcm_proxy}" "mapToken(address,address,bytes32)" "${root_token}" "${child_token}" "${tt}"
