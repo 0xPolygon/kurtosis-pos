@@ -117,10 +117,10 @@ def generate(
 # Returns how many seconds to push the genesis timestamp into the future so all
 # validators are ready to mine when bor wakes up. Numbers chosen by hand:
 #   - 0 for single-node devnet: nothing to peer with, no race.
-#   - 20s base: spread between two parallel container starts.
-#   - +5s per extra validator: docker daemon / disk / image-pull contention.
+#   - 30s base: spread between two parallel container starts.
+#   - +10s per extra validator: docker daemon / disk / image-pull contention.
 #   - 180s cap: beyond that, image-pull bandwidth dominates and more delay does not help.
 def _compute_delay(n):
     if n <= 1:
         return 0
-    return min(180, 20 + 5 * (n - 2))
+    return min(180, 30 + 10 * (n - 2))
