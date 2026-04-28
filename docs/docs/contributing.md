@@ -27,15 +27,15 @@ kurtosis lint --format .
 
 ### Testing
 
-:::info
-You will need to have the test runner deployed in your environment to run e2e tests with this command.
-:::
-
-Run bridge tests:
+E2e tests live in [`0xPolygon/pos-e2e`](https://github.com/0xPolygon/pos-e2e). Clone it and run bats against your devnet:
 
 ```bash
-kurtosis service exec pos test-runner "bats --filter-tags pos,bridge,matic,pol --recursive tests/"
+git clone https://github.com/0xPolygon/pos-e2e.git
+cd pos-e2e
+bats --filter-tags pos,bridge --recursive tests/
 ```
+
+See [Run Bridge Tests](./guides/run-bridge-tests.md) for the full bridge + withdraw flow.
 
 ### Documentation
 

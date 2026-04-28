@@ -59,7 +59,7 @@ IMAGES = {
     "l2_el_erigon_image": "0xpolygon/erigon:v3.5.0",
     "l2_cl_queue_image": "rabbitmq:4.2.5",
     # utilities
-    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:bc28cfd8",
+    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.2",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.6.0",
     "spol_contract_deployer_image": "ghcr.io/0xpolygon/spol-contract-deployer:3c4bdf6c",
@@ -74,10 +74,20 @@ IMAGES = {
 }
 
 L1_CHAIN_ID = "3151908"  # 0x301824
+
+# Do NOT change EL_CHAIN_ID / CL_CHAIN_ID — both are baked into pre-built
+# artifacts at image-build time:
+#   - `pos-el-genesis-builder`: ChainIdMixin.sol (borChainId) + BorValidatorSet.sol
+#     (borChainId + heimdallChainId) are rendered from templates and compiled;
+#     the resulting bytecode is embedded into the L2 genesis alloc.
+#   - `pos-contract-deployer`: ChainIdMixin.sol + TransferWithSigUtils.sol
+#     (borChainId) are rendered and compiled into the L1 pos-contracts bytecode.
+# Changing these values here would leave the package pointing at contracts
+# compiled for a different chain and break every deposit/withdraw. To use
+# different chain ids, rebuild both images with matching build args and bump
+# the values below.
 EL_CHAIN_ID = "4927"
-CL_CHAIN_ID = (
-    "heimdall-" + EL_CHAIN_ID
-)  # Follows the standard "heimdall-<el_chain_id>".
+CL_CHAIN_ID = "heimdall-" + EL_CHAIN_ID  # follows "heimdall-<el_chain_id>"
 EL_SPRINT_DURATION = 16
 EL_SPAN_DURATION = EL_SPRINT_DURATION * 8
 

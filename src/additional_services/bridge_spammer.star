@@ -55,17 +55,17 @@ def launch(
 
     # Start the bridge spammer service on L1.
     bridge_spammer_config_artifact = plan.upload_files(
+        name="bridge-spammer-script",
         src="../../static_files/additional_services/bridge-spammer/{}".format(
             BRIDGE_SPAMMER_SCRIPT_NAME
         ),
-        name="bridge-spammer-script",
     )
     plan.add_service(
         name="l1-bridge-spammer",
         config=ServiceConfig(
             image=constants.IMAGES.get("toolbox_image"),
             files={
-                "/opt": Directory(artifact_names=[bridge_spammer_config_artifact]),
+                "/opt": bridge_spammer_config_artifact,
             },
             env_vars={
                 "PRIVATE_KEY": wallet.private_key,

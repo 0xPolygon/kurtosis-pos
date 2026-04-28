@@ -2,10 +2,13 @@ name: run-e2e-tests
 description: Run end-to-end pos tests
 
 inputs:
-  agglayer_e2e_tag:
-    description: The git tag, branch, or commit hash of agglayer/e2e
+  pos_e2e_tag:
+    description: The git tag, branch, or commit hash of 0xPolygon/pos-e2e
     required: false
-    default: 1831cd486ed80aa300943f23900491bb949c77a2
+    default: 2e15387670fc1f8945fcd36ced8f36cd51128f69
+  pos_e2e_token:
+    description: GitHub token with read access to 0xPolygon/pos-e2e
+    required: true
   polygon_cli_version:
     description: The release version of polygon-cli
     required: false
@@ -14,12 +17,13 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Clone agglayer/e2e
+    - name: Clone 0xPolygon/pos-e2e
       uses: actions/checkout@v6
       with:
-        repository: agglayer/e2e
-        path: agglayer-e2e
-        ref: ${{ inputs.agglayer_e2e_tag }}
+        repository: 0xPolygon/pos-e2e
+        path: pos-e2e
+        ref: ${{ inputs.pos_e2e_tag }}
+        token: ${{ inputs.pos_e2e_token }}
 
     - name: Install bats
       uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
@@ -40,17 +44,17 @@ runs:
         popd
 
     - name: Run bridge tests
-      working-directory: agglayer-e2e
+      working-directory: pos-e2e
       shell: bash
       run: |
-        bats --filter-tags bridge tests/pos/plasma-bridge.bats
-        bats --filter-tags withdraw tests/pos/plasma-bridge.bats
+        bats --filter-tags bridge tests/bridge/plasma.bats tests/bridge/pos.bats
+        bats --filter-tags withdraw tests/bridge/plasma.bats tests/bridge/pos.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 
     - name: Run validator tests
-      working-directory: agglayer-e2e
+      working-directory: pos-e2e
       shell: bash
-      run: bats tests/pos/validator.bats
+      run: bats tests/heimdall/stake/validator.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180

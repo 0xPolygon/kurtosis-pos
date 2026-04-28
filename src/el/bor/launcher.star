@@ -129,7 +129,7 @@ def launch(
                 "/usr/local/share": container_proc_manager_artifact,
             },
             entrypoint=["sh", "-c"],
-            cmd=["&&".join(bor_cmds)],
+            cmd=[" && ".join(bor_cmds)],
             max_cpu=shared.MAX_CPU,
             max_memory=shared.MAX_MEM,
         ),

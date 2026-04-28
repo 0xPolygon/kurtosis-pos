@@ -10,20 +10,24 @@ inputs:
     description: The RPC URL for the L1 node
     required: false
     default: el-1-geth-lighthouse
-  agglayer_e2e_tag:
-    description: The git tag, branch, or commit hash of agglayer/e2e
+  pos_e2e_tag:
+    description: The git tag, branch, or commit hash of 0xPolygon/pos-e2e
     required: false
-    default: 1831cd486ed80aa300943f23900491bb949c77a2
+    default: c439c414716b9df098503d5a1e385f0829860f6c
+  pos_e2e_token:
+    description: GitHub token with read access to 0xPolygon/pos-e2e
+    required: true
 
 runs:
   using: composite
   steps:
-    - name: Clone agglayer/e2e
+    - name: Clone 0xPolygon/pos-e2e
       uses: actions/checkout@v6
       with:
-        repository: agglayer/e2e
-        path: agglayer-e2e
-        ref: ${{ inputs.agglayer_e2e_tag }}
+        repository: 0xPolygon/pos-e2e
+        path: pos-e2e
+        ref: ${{ inputs.pos_e2e_tag }}
+        token: ${{ inputs.pos_e2e_token }}
 
     - name: Install bats
       uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
@@ -45,9 +49,9 @@ runs:
         echo "l1_rpc_url=$l1_rpc_url"
 
     - name: Test state syncs
-      working-directory: agglayer-e2e
+      working-directory: pos-e2e
       shell: bash
-      run: bats --filter 'bridge POL from L1 to L2 and confirm native tokens balance increased on L2' tests/pos/plasma-bridge.bats
+      run: bats --filter 'bridge POL from L1 to L2 via plasma bridge' tests/bridge/plasma.bats
       env:
         L1_RPC_URL: ${{ env.L1_RPC_URL }}
         TIMEOUT_SECONDS: 600 # default: 180
