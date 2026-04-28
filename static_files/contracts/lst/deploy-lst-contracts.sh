@@ -3,34 +3,30 @@ set -euxo pipefail
 
 # Deploy sPOL/LST contracts to L1 and L2 using the kurtosis PoS devnet addresses.
 # Runs inside the pos-contract-deployer image, which bundles the spol-contracts
-# source, kurtosis mocks, soldeer deps, and a warm forge cache at
+# source, kurtosis-specific scripts, soldeer deps, and a warm forge cache at
 # /opt/spol-contracts (alongside pos-contracts and pos-portal).
 
 cd /opt/spol-contracts
 
-# Read addresses from kurtosis PoS artifact
+# Read addresses from the accumulated PoS artifact. By the time this step runs,
+# main.star has executed: plasma-bridge L1 → matic-to-pol migration → pos-bridge
+# L1 → plasma-bridge L2 → pos-bridge L2, so PolygonMigration and the
+# RootChainManager proxy are real on-chain contracts (no mocks needed).
 STAKE_MANAGER=$(jq -r '.root.StakeManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
 MATIC_TOKEN_L1=$(jq -r '.root.tokens.MaticToken' /opt/data/pos-addresses/contractAddresses.json)
 POL_TOKEN_L1=$(jq -r '.root.tokens.PolToken' /opt/data/pos-addresses/contractAddresses.json)
+POLYGON_MIGRATION=$(jq -r '.root.tokens.PolygonMigration' /opt/data/pos-addresses/contractAddresses.json)
 WITHDRAW_MANAGER=$(jq -r '.root.WithdrawManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
 ERC20_PREDICATE=$(jq -r '.root.predicates.ERC20Predicate' /opt/data/pos-addresses/contractAddresses.json)
 DEPOSIT_MANAGER=$(jq -r '.root.DepositManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
 STATE_SENDER_L1=$(jq -r '.root.StateSender' /opt/data/pos-addresses/contractAddresses.json)
 CHECKPOINT_MANAGER=$(jq -r '.root.RootChainProxy' /opt/data/pos-addresses/contractAddresses.json)
+ROOT_CHAIN_MANAGER=$(jq -r '.root.posBridge.RootChainManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
 CHILD_CHAIN_MANAGER=$(jq -r '.child.ChildChain' /opt/data/pos-addresses/contractAddresses.json)
 STATE_SYNCER_L2="0x0000000000000000000000000000000000001001"
 POL_TOKEN_L2="0x0000000000000000000000000000000000001010"
 FEE_RECEIVER_VALUE="${FEE_RECEIVER:-$ADMIN_ADDRESS}"
-
-# Deploy mock PolygonMigration + RootChainManager on L1 — the real contracts
-# don't exist in a fresh devnet. The sPOL deploy needs their addresses for
-# wiring so we run DeployMocks first and read the result out of mockAddresses.json.
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
-forge script script/mock/DeployMocks.s.sol:DeployMocksScript \
-  --rpc-url "${L1_RPC_URL}" --broadcast --legacy
-
-POLYGON_MIGRATION=$(jq -r '.polygonMigration' script/mockAddresses.json)
-ROOT_CHAIN_MANAGER=$(jq -r '.rootChainManager' script/mockAddresses.json)
 
 # Build the kurtosis-devnet scenario and write it under the "ethereum-polygon"
 # top-level key. loadConfigFromJson reads addresses from whatever top-level key
@@ -102,5 +98,5 @@ cat /opt/lst/lstContractAddresses.json
 # Setup initial validators.
 # Uses the kurtosis-specific script which assumes validator ID 1 (the single
 # validator registered in the kurtosis devnet) rather than mainnet IDs 188/92.
-forge script script/mock/SetupInitialValidatorsKurtosis.s.sol:SetupInitialValidatorsKurtosis \
+forge script script/kurtosis/SetupInitialValidatorsKurtosis.s.sol:SetupInitialValidatorsKurtosis \
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy

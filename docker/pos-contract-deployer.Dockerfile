@@ -58,7 +58,7 @@ WORKDIR /opt/spol-contracts
 RUN git clone --branch ${SPOL_CONTRACTS_BRANCH} https://github.com/0xPolygon/spol-contracts . \
   && git checkout ${SPOL_CONTRACTS_TAG_OR_COMMIT_SHA} \
   && rm -rf .git
-COPY docker/spol-mocks/ script/mock/
+COPY docker/spol-kurtosis/ script/kurtosis/
 RUN forge soldeer install \
   && forge build
 

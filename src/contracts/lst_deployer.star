@@ -16,10 +16,11 @@ def deploy_lst_contracts(
     """Deploy sPOL/LST contracts to L1 and L2.
 
     Runs inside the pos-contract-deployer image, which bundles the spol-contracts
-    source, kurtosis-specific mocks, soldeer deps, and a warm forge cache under
-    /opt/spol-contracts (alongside pos-contracts and pos-portal). Deploys the
-    mocks on L1, then the full sPOL contract suite using addresses from the
-    base PoS deployment.
+    source, the kurtosis-specific validator setup script, soldeer deps, and a
+    warm forge cache under /opt/spol-contracts (alongside pos-contracts and
+    pos-portal). Reads PolygonMigration and RootChainManager from the
+    accumulated PoS contractAddresses.json (no longer needs kurtosis-specific
+    mocks now that main deploys both as real contracts).
 
     Downstream consumers read the resulting `lst-contract-addresses` kurtosis
     artifact by name, so this function does not return it.
