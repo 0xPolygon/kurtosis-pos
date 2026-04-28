@@ -25,7 +25,7 @@ dev:
 | ----------------------------- | ------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | l1_backend                    | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight                                         |
 | should_deploy_l1              | bool   | true             | Whether to deploy the L1 chain                                                                                           |
-| should_deploy_matic_contracts | bool   | true             | Whether to deploy the contract suite (plasma bridge, MATIC→POL migration, pos bridge, sPOL/LST) — gates the entire flow  |
+| should_deploy_matic_contracts | bool   | true             | Whether to deploy the contract suite (plasma bridge, MATIC→POL migration, pos bridge, sPOL/LST)                          |
 
 ## L1 Configuration
 

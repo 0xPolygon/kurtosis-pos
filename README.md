@@ -5,7 +5,7 @@ This project provides a modular, reproducible environment for developing, testin
 Specifically, this package will:
 
 1. Spin up a local L1 blockchain, fully customizable with multi-client support, leveraging the [Ethereum Kurtosis package](https://github.com/ethpandaops/ethereum-package).
-2. Deploy the Polygon PoS contract suite to L1 and L2: plasma bridge, MATIC→POL migration, [pos bridge](https://github.com/maticnetwork/pos-portal), and the [sPOL / LST](https://github.com/0xPolygon/spol-contracts) liquid-staking contracts. Stakes for each validator.
+2. Deploy the Polygon PoS contract suite to L1 and L2: [plasma bridge](https://github.com/0xPolygon/pos-contracts), [MATIC→POL migration](https://github.com/0xPolygon/pol-token), [pos bridge](https://github.com/maticnetwork/pos-portal), and the [sPOL / LST](https://github.com/0xPolygon/spol-contracts) liquid-staking contracts. Stakes for each validator.
 3. Generate L2 consensus and execution layer genesis information.
 4. Configure and launch a network of Polygon PoS nodes.
 

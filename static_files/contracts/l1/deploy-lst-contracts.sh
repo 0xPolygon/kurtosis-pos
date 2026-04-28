@@ -21,17 +21,17 @@ cd /opt/spol-contracts
 # main.star has executed: plasma-bridge L1 → matic-to-pol migration → pos-bridge
 # L1 → plasma-bridge L2 → pos-bridge L2, so PolygonMigration and the
 # RootChainManager proxy are real on-chain contracts (no mocks needed).
-STAKE_MANAGER=$(jq -r '.root.StakeManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-MATIC_TOKEN_L1=$(jq -r '.root.tokens.MaticToken' /opt/data/pos-addresses/contractAddresses.json)
-POL_TOKEN_L1=$(jq -r '.root.tokens.PolToken' /opt/data/pos-addresses/contractAddresses.json)
-POLYGON_MIGRATION=$(jq -r '.root.tokens.PolygonMigration' /opt/data/pos-addresses/contractAddresses.json)
-WITHDRAW_MANAGER=$(jq -r '.root.WithdrawManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-ERC20_PREDICATE=$(jq -r '.root.predicates.ERC20Predicate' /opt/data/pos-addresses/contractAddresses.json)
-DEPOSIT_MANAGER=$(jq -r '.root.DepositManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-STATE_SENDER_L1=$(jq -r '.root.StateSender' /opt/data/pos-addresses/contractAddresses.json)
-CHECKPOINT_MANAGER=$(jq -r '.root.RootChainProxy' /opt/data/pos-addresses/contractAddresses.json)
-ROOT_CHAIN_MANAGER=$(jq -r '.root.posBridge.RootChainManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-CHILD_CHAIN_MANAGER=$(jq -r '.child.ChildChain' /opt/data/pos-addresses/contractAddresses.json)
+STAKE_MANAGER=$(jq -re '.root.StakeManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
+MATIC_TOKEN_L1=$(jq -re '.root.tokens.MaticToken' /opt/data/pos-addresses/contractAddresses.json)
+POL_TOKEN_L1=$(jq -re '.root.tokens.PolToken' /opt/data/pos-addresses/contractAddresses.json)
+POLYGON_MIGRATION=$(jq -re '.root.tokens.PolygonMigration' /opt/data/pos-addresses/contractAddresses.json)
+WITHDRAW_MANAGER=$(jq -re '.root.WithdrawManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
+ERC20_PREDICATE=$(jq -re '.root.predicates.ERC20Predicate' /opt/data/pos-addresses/contractAddresses.json)
+DEPOSIT_MANAGER=$(jq -re '.root.DepositManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
+STATE_SENDER_L1=$(jq -re '.root.StateSender' /opt/data/pos-addresses/contractAddresses.json)
+CHECKPOINT_MANAGER=$(jq -re '.root.RootChainProxy' /opt/data/pos-addresses/contractAddresses.json)
+ROOT_CHAIN_MANAGER=$(jq -re '.root.posBridge.RootChainManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
+CHILD_CHAIN_MANAGER=$(jq -re '.child.ChildChain' /opt/data/pos-addresses/contractAddresses.json)
 STATE_SYNCER_L2="0x0000000000000000000000000000000000001001"
 POL_TOKEN_L2="0x0000000000000000000000000000000000001010"
 FEE_RECEIVER_VALUE="${FEE_RECEIVER:-$ADMIN_ADDRESS}"

@@ -190,22 +190,17 @@ def run(plan, args):
 
     # Deploy sPOL/LST contracts. The resulting addresses are exposed via the
     # kurtosis artifact named "lst-contract-addresses"; downstream consumers
-    # read that artifact by name rather than through a return value. Gated on
-    # should_deploy_matic_contracts because LST reads PolygonMigration and
-    # RootChainManagerProxy from the freshly-deployed contractAddresses.json
-    # — when the user supplies their own pre-baked addresses file we can't
-    # guarantee those keys exist with the expected shape.
-    if dev_args.get("should_deploy_matic_contracts"):
-        lst_deployer.deploy_lst_contracts(
-            plan,
-            polygon_pos_args,
-            l1_context.rpc_url,
-            l2_rpc_url,
-            admin_private_key,
-            admin_address,
-            validator_accounts,
-            contract_addresses_artifact,
-        )
+    # read that artifact by name rather than through a return value.
+    lst_deployer.deploy_lst_contracts(
+        plan,
+        polygon_pos_args,
+        l1_context.rpc_url,
+        l2_rpc_url,
+        admin_private_key,
+        admin_address,
+        validator_accounts,
+        contract_addresses_artifact,
+    )
 
     # Deploy additional services.
     additional_services_launcher.launch(
