@@ -34,6 +34,7 @@ def deploy_l1_contracts(
 def deploy_l2_contracts(
     plan,
     polygon_pos_args,
+    dev_args,
     l1_rpc_url,
     l2_rpc_url,
     private_key,
@@ -57,7 +58,17 @@ def deploy_l2_contracts(
         private_key,
         plasma_bridge_addresses,
     )
-    pos_contract_addresses = lst_deployer.deploy_lst_contracts(
+
+    # LST is the only L2 deploy that uses CREATE2 on L1 (via vm.createSelectFork),
+    # so re-running it against an L1 that already has sPOL deployed at the same
+    # salt-derived addresses fails with CreateCollision. Skip it whenever we're
+    # reusing pre-deployed contracts (should_deploy_matic_contracts=false), in
+    # which case sPOL was deployed by the prior run that produced the supplied
+    # addresses file.
+    if not dev_args.get("should_deploy_matic_contracts"):
+        return pos_bridge_addresses
+
+    return lst_deployer.deploy_lst_contracts(
         plan,
         polygon_pos_args,
         l1_rpc_url,
@@ -67,4 +78,3 @@ def deploy_l2_contracts(
         validator_accounts,
         pos_bridge_addresses,
     )
-    return pos_contract_addresses

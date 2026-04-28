@@ -149,6 +149,7 @@ def run(plan, args):
     contract_addresses_artifact = contracts.deploy_l2_contracts(
         plan,
         polygon_pos_args,
+        dev_args,
         l1_context.rpc_url,
         l2_rpc_url,
         admin_private_key,
