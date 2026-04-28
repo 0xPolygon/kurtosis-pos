@@ -1,13 +1,19 @@
 constants = import_module("../config/constants.star")
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
-SETUP_VALIDATORS_TEMPLATE_PATH = "../../static_files/contracts/l1/scripts/setupInitialValidatorsKurtosis.s.sol"
+SETUP_VALIDATORS_TEMPLATE_PATH = "../../static_files/contracts/l1/scripts/setupInitialValidators.s.sol"
+
+# sPOLController parameters baked at deploy time. Defaults match upstream sPOL
+# launch settings; not exposed as user config because devnet usage doesn't
+# benefit from tuning these (the e2e tests don't depend on the values either).
+REWARD_FEE = 50  # basis-points-of-ten — 100 = 10%
+FEE_RECEIVER = ""  # empty string falls back to the kurtosis admin account
+MAX_DIVERGENCE = 10  # basis-points — 10 = 1%
 
 
 def deploy_lst_contracts(
     plan,
     polygon_pos_args,
-    dev_args,
     l1_rpc_url,
     l2_rpc_url,
     private_key,
@@ -30,11 +36,6 @@ def deploy_lst_contracts(
     """
     network_params = polygon_pos_args.get("network_params")
     setup_images = polygon_pos_args.get("setup_images")
-    lst_deployer_params = dev_args.get("lst_deployer_params", {})
-
-    reward_fee = lst_deployer_params.get("reward_fee", 50)
-    fee_receiver = lst_deployer_params.get("fee_receiver", "")
-    max_divergence = lst_deployer_params.get("max_divergence", 10)
 
     contract_deployer_config_artifact = plan.upload_files(
         src=CONTRACTS_CONFIG_FILE_PATH,
@@ -64,9 +65,9 @@ def deploy_lst_contracts(
             "L1_CHAIN_ID": str(constants.L1_CHAIN_ID),
             "L2_CHAIN_ID": str(network_params.get("el_chain_id")),
             "ADMIN_ADDRESS": admin_address,
-            "REWARD_FEE": str(reward_fee),
-            "FEE_RECEIVER": fee_receiver,
-            "MAX_DIVERGENCE": str(max_divergence),
+            "REWARD_FEE": str(REWARD_FEE),
+            "FEE_RECEIVER": FEE_RECEIVER,
+            "MAX_DIVERGENCE": str(MAX_DIVERGENCE),
         },
         files={
             "/opt/data": contract_deployer_config_artifact,

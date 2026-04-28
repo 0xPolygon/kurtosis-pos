@@ -17,10 +17,14 @@ import {sPOLController} from "../../src/sPOLController.sol";
 /// Uses dynamic ids rather than the mainnet/testnet ids (188, 92) hardcoded
 /// in upstream's SetupInitialValidators script.
 ///
-/// We intentionally do NOT call buySPOL here because the delegationDepositPOL
-/// flow in the kurtosis PoS contracts is incompatible with the sPOL staking
-/// path (the kurtosis devnet uses an older variant of the staking contracts).
-/// The e2e integration test exercises buySPOL directly against live on-chain state.
+/// We intentionally do NOT call buySPOL here. Internally
+/// sPOLController._buySharesFromValidator calls
+/// validatorContract.restakeAndStakePOL(_amount), but the pos-contracts
+/// ValidatorShare bundled with the kurtosis devnet has restakePOL() and
+/// buyVoucherPOL(...) as separate functions — not the fused restakeAndStakePOL
+/// that sPOL was built against. Calling buySPOL would revert with an unknown
+/// selector. The e2e integration tests exercise buySPOL against environments
+/// that ship the matching ValidatorShare.
 contract SetupInitialValidators is Script {
     uint256 constant VALIDATOR_COUNT = {{.validator_count}};
 

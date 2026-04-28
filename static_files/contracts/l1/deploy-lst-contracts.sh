@@ -92,8 +92,11 @@ jq -n \
   }' > script/input.json
 
 # Deploy sPOL contracts L1 then L2 via the existing run(string) entrypoint.
-# --non-interactive suppresses the multi-chain broadcast confirmation prompt
-# that forge shows when vm.createSelectFork() is used in the script.
+# Forge runs against L1_RPC_URL as primary; the script reaches L2 internally
+# via vm.createSelectFork(L2_RPC_URL) on a per-tx basis. L2_RPC_URL and
+# L2_CHAIN_ID are read from the input.json scenario above, not from the forge
+# CLI here. --non-interactive suppresses the multi-chain broadcast confirmation
+# prompt that forge shows when vm.createSelectFork() is used in the script.
 forge script script/Deploy.s.sol:Deploy \
   --sig 'run(string)' 'ethereum-polygon' \
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy --non-interactive
