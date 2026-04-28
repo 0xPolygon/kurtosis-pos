@@ -111,7 +111,6 @@ Some of our images are built for `amd64` only. That's why you see a warning like
 ```bash
 WARNING: Container images with different architecture than expected(arm64):
 > europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12 - amd64
-> ghcr.io/agglayer/e2e:9fd2d09 - amd64
 ```
 
 **Solution:** Pull the image by specifying the `amd64` platform.

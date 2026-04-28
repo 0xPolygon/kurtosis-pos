@@ -42,6 +42,8 @@ jobs:
       - uses: ./.github/actions/monitor
 
       - uses: ./.github/actions/test-state-sync
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
@@ -109,6 +111,7 @@ jobs:
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
         with:
           l1_rpc: ${{ contains(matrix.file.name, 'anvil') && 'anvil' || 'el-1-geth-lighthouse' }}
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
@@ -137,6 +140,8 @@ jobs:
       - uses: ./.github/actions/monitor
 
       - uses: ./.github/actions/run-e2e-tests
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
@@ -179,6 +184,8 @@ jobs:
           skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test-state-sync
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
@@ -217,11 +224,11 @@ jobs:
           kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | jq > l2-el-genesis.json
           jq . l2-el-genesis.json
 
-      - name: Retrieve MATIC contract addresses
+      - name: Retrieve pos bridge contract addresses
         working-directory: .github/configs/nightly/cl-el-genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} matic-contract-addresses contractAddresses.json | jq > matic-contract-addresses.json
-          jq . matic-contract-addresses.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} pos-bridge-addresses contractAddresses.json | jq > pos-bridge-addresses.json
+          jq . pos-bridge-addresses.json
 
       - name: Stop L2 participants
         run: |
@@ -245,6 +252,8 @@ jobs:
           skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test-state-sync
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - uses: ./.github/actions/cleanup
         if: always()
