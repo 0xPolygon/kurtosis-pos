@@ -13,7 +13,7 @@ inputs:
   pos_e2e_tag:
     description: The git tag, branch, or commit hash of 0xPolygon/pos-e2e
     required: false
-    default: c439c414716b9df098503d5a1e385f0829860f6c
+    default: chore/rename-kurtosis-pos-artifact
   pos_e2e_token:
     description: GitHub token with read access to 0xPolygon/pos-e2e
     required: true
