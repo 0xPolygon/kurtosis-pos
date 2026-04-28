@@ -83,9 +83,6 @@ def generate(
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,
-                    # checkpoint cadence — mainnet defaults are conservative (128 blocks /
-                    # 120s buffer). Test profiles override via params file to compress
-                    # checkpoint round-trips to tens of seconds.
                     "cl_avg_checkpoint_length": network_params.get(
                         "cl_avg_checkpoint_length"
                     ),
