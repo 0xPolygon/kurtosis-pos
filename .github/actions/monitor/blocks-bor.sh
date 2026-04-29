@@ -31,8 +31,11 @@ monitor_rpc() {
   for step in $(seq 1 "${num_steps}"); do
     log_info "Check ${step}/${num_steps} for ${rpc_name}"
 
-    LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}")
-    FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}")
+    # Tolerate transient RPC errors (e.g. "finalized block not found" before the
+    # chain has reached the finality threshold) — treat as 0 so the loop retries
+    # instead of being killed by set -e.
+    LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}" 2>/dev/null || echo 0)
+    FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}" 2>/dev/null || echo 0)
     log_info "Got block height: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
     if [[ "${LATEST_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
       break
@@ -40,7 +43,7 @@ monitor_rpc() {
 
     # Send a transaction to stimulate progress
     local gas_price
-    gas_price=$(cast gas-price --rpc-url "$rpc_url")
+    gas_price=$(cast gas-price --rpc-url "$rpc_url" 2>/dev/null || echo 0)
     gas_price=$(bc -l <<< "$gas_price * $gas_price_factor" | sed 's/\..*//')
 
     log_info "Sending a test transaction"
@@ -124,15 +127,17 @@ done
 
 # Wait for all background jobs and collect exit codes
 failed=0
-for pid in "${pids[@]}"; do
-  if ! wait "${pid}"; then
+declare -a failed_rpcs=()
+for i in "${!pids[@]}"; do
+  if ! wait "${pids[$i]}"; then
     failed=1
+    failed_rpcs+=("${rpc_array[$i]%%--*}")
   fi
 done
 
 # Check if any RPC failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more RPCs failed to reach target block height" "target=${target}"
+  log_error "RPCs failed to reach target block height" "target=${target}" "rpcs=${failed_rpcs[*]}"
   exit 1
 fi
 
