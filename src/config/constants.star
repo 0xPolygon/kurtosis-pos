@@ -150,12 +150,6 @@ EL_HARD_FORK_BLOCKS = {
 # — see helper/config.go); the values below MUST match the binary's "default"
 # (local devnet) entries. Diverging from the binary will not change runtime
 # behaviour but will cause pos-e2e tests that wait on these blocks to drift.
-#
-# phuket: introduced in heimdall-v2 v0.7.0 (private). Set to 704 — one
-# 64-block step past giugliano (640) — to simulate the production rollout
-# pattern where CL upgrades land after the full EL fork cascade has
-# stabilised. Tests can then exercise pre-phuket EL behaviour, the EL fork
-# transitions, and post-phuket CL behaviour in a single devnet run.
 CL_HARD_FORK_BLOCKS = {
     "phuket": 704,
 }

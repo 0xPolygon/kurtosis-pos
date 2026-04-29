@@ -5,11 +5,11 @@ polygon_pos_package:
     # Running the psps-wit-improvements branch build which contains the WIT
     # protocol peer lock fix (bor#2120).
     - kind: validator
-      count: 6
+      count: 3
       el_bor_produce_witness: true
       cl_type: heimdall-v2
       el_type: bor
-      el_image: 0xpolygon/bor:2.7.1
+      el_image: 0xpolygon/bor:2.7.2
 
     # RPC nodes — same fixed build to validate the fix end-to-end.
     - kind: rpc
@@ -17,14 +17,14 @@ polygon_pos_package:
       el_bor_sync_with_witness: true
       cl_type: heimdall-v2
       el_type: bor
-      el_image: 0xpolygon/bor:2.7.1
+      el_image: 0xpolygon/bor:2.7.2
 
-    - kind: rpc
-      count: 1
-      el_bor_sync_with_witness: false
-      cl_type: heimdall-v2
-      el_type: bor
-      el_image: 0xpolygon/bor:2.7.1
+    # - kind: rpc
+    #   count: 1
+    #   el_bor_sync_with_witness: false
+    #   cl_type: heimdall-v2
+    #   el_type: bor
+    #   el_image: 0xpolygon/bor:2.7.2
 
     - kind: rpc
       count: 1
@@ -38,7 +38,7 @@ polygon_pos_package:
       count: 1
       cl_type: heimdall-v2
       el_type: bor
-      el_image: 0xpolygon/bor:2.7.1
+      el_image: 0xpolygon/bor:2.7.2
   additional_services:
     - bridge_spammer
     - observability
