@@ -98,7 +98,7 @@ kurtosis files inspect pos l2-el-genesis genesis.json | jq
 In the same way, you might want to check the MATIC contract addresses on L1 and L2.
 
 ```bash
-kurtosis files inspect pos matic-contract-addresses contractAddresses.json | jq
+kurtosis files inspect pos pos-bridge-addresses contractAddresses.json | jq
 ```
 
 ## Clean Up the Environment

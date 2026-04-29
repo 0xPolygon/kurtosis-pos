@@ -1,6 +1,6 @@
 ---
 name: kurtosis-pos-test
-description: Test a Polygon PoS devnet. Covers unit tests (kurtosis-test), e2e bats tests (plasma-bridge and validator flows), bridge operations, and chaos testing (spammers, SIGTRAP, service restarts).
+description: Test a Polygon PoS devnet. Covers unit tests (kurtosis-test), e2e bats tests (plasma bridge, pos bridge, and validator flows), bridge operations, and chaos testing (spammers, SIGTRAP, service restarts).
 allowed-tools: Bash, Read, Glob, Grep
 compatibility: Requires a running kurtosis-pos enclave for e2e and chaos tests.
 ---
@@ -31,30 +31,38 @@ kurtosis-test .
 
 ## E2e tests (bats)
 
-E2e tests live in the external `agglayer/e2e` repo. They require a running devnet. The CI action clones it to `agglayer-e2e/` using a pinned commit (see `.github/actions/test-state-sync/action.yml`).
+E2e tests live in the external `0xPolygon/pos-e2e` repo. They require a running devnet. The CI action clones it to `pos-e2e/` using a pinned commit (see `.github/actions/test-state-sync/action.yml`).
 
 ```bash
 # Clone the e2e repo locally (match the pinned commit from the action)
-git clone https://github.com/agglayer/e2e agglayer-e2e
-cd agglayer-e2e
+git clone https://github.com/0xPolygon/pos-e2e pos-e2e
+cd pos-e2e
 ```
 
 ### Plasma bridge tests
 
-Each test in `plasma-bridge.bats` is independently safe — it snapshots balances before acting and asserts relative changes. Running all at once consumes funds and takes too long.
-
-**Exception**: test 9 (withdraw ERC721) requires an ERC721 token on L2. Run test 8 first, or pre-seed.
+Covers POL, MATIC, ETH, ERC20, ERC721 across deposit (L1→L2) and withdraw (L2→L1). Tests are tagged `bridge` and `withdraw` — filter by tag to run all of one direction.
 
 ```bash
-bats --filter "bridge POL from L1 to L2"           tests/pos/plasma-bridge.bats
-bats --filter "bridge MATIC from L1 to L2"         tests/pos/plasma-bridge.bats
-bats --filter "withdraw native tokens from L2"     tests/pos/plasma-bridge.bats
-bats --filter "bridge ETH from L1 to L2"           tests/pos/plasma-bridge.bats
-bats --filter "withdraw MaticWeth from L2"         tests/pos/plasma-bridge.bats
-bats --filter "bridge ERC20 tokens from L1 to L2"  tests/pos/plasma-bridge.bats
-bats --filter "withdraw ERC20 tokens from L2"      tests/pos/plasma-bridge.bats
-bats --filter "bridge ERC721 token from L1 to L2"  tests/pos/plasma-bridge.bats  # run before ERC721 withdraw
-bats --filter "withdraw ERC721 token from L2"      tests/pos/plasma-bridge.bats  # requires ERC721 on L2
+# Deposits: lock on L1, child token minted on L2 via state sync
+bats --filter-tags bridge tests/bridge/plasma.bats
+
+# Exits: burn on L2, wait for checkpoint, build exit proof, claim on L1.
+# Each withdraw needs its corresponding deposit to have run first so the L2 side has a balance to burn.
+bats --filter-tags withdraw tests/bridge/plasma.bats
+```
+
+### PoS bridge tests
+
+Covers ETH, ERC20, ERC721, ERC1155 across deposit and withdraw via pos-portal contracts (no POL/MATIC/native — those are plasma-only). Same `bridge` / `withdraw` tag scheme.
+
+```bash
+# Deposits via RootChainManager.depositFor / depositEtherFor
+bats --filter-tags bridge tests/bridge/pos.bats
+
+# Exits via RootChainManager.exit (one-shot, no exit period unlike plasma).
+# Each withdraw needs its corresponding deposit to have run first.
+bats --filter-tags withdraw tests/bridge/pos.bats
 ```
 
 ### Validator tests (strictly ordered — test 8 is DESTRUCTIVE)
@@ -74,29 +82,29 @@ bats --filter "withdraw ERC721 token from L2"      tests/pos/plasma-bridge.bats 
 
 ```bash
 # Run individual safe tests
-bats --filter "add new validator"          tests/pos/validator.bats
-bats --filter "update validator stake"     tests/pos/validator.bats
-bats --filter "withdraw validator rewards" tests/pos/validator.bats
+bats --filter "add new validator"          tests/heimdall/stake/validator.bats
+bats --filter "update validator stake"     tests/heimdall/stake/validator.bats
+bats --filter "withdraw validator rewards" tests/heimdall/stake/validator.bats
 
 # Delegation pair — must run in order
-bats --filter "delegate to a validator"     tests/pos/validator.bats
-bats --filter "undelegate from a validator" tests/pos/validator.bats
+bats --filter "delegate to a validator"     tests/heimdall/stake/validator.bats
+bats --filter "undelegate from a validator" tests/heimdall/stake/validator.bats
 
 # Full run — only in file order (1→8); test 8 is always last
-bats tests/pos/validator.bats
+bats tests/heimdall/stake/validator.bats
 ```
 
 ---
 
 ## State-sync test
 
-A dedicated GitHub Actions action tests state sync end-to-end (`.github/actions/test-state-sync/action.yml`). It clones `agglayer/e2e`, runs the bridge POL test, and confirms the native token balance increased on L2.
+A dedicated GitHub Actions action tests state sync end-to-end (`.github/actions/test-state-sync/action.yml`). It clones `0xPolygon/pos-e2e`, runs the bridge POL test, and confirms the native token balance increased on L2.
 
 ```bash
 # Run manually against a local enclave
 L1_RPC=$(kurtosis port print pos el-1-geth-lighthouse rpc)
-cd agglayer-e2e
-bats --filter "bridge POL from L1 to L2" tests/pos/plasma-bridge.bats
+cd pos-e2e
+bats --filter "bridge POL from L1 to L2 via plasma bridge" tests/bridge/plasma.bats
 ```
 
 ---
