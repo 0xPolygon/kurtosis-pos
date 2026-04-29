@@ -12,7 +12,7 @@ inputs:
   polygon_cli_version:
     description: The release version of polygon-cli
     required: false
-    default: v0.1.109
+    default: v0.1.111
 
 runs:
   using: composite
