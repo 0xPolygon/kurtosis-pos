@@ -212,23 +212,50 @@ jobs:
 
       - uses: ./.github/actions/monitor
 
+      # Extract artifacts into tmp/cl-el-genesis (gitignored, non-hidden) rather
+      # than .github/configs/nightly/cl-el-genesis. Kurtosis 1.18+ strips leading
+      # dots from top-level dirs when packing the package archive (mholt/archives
+      # regression in kurtosis #2947), so `read_file(".github/...")` from main.star
+      # cannot locate files under hidden dirs locally. CI's pinned 1.15.2 isn't
+      # affected, but routing artifacts via a non-hidden dir keeps local and CI
+      # behaviour identical.
       - name: Retrieve L2 CL genesis file
-        working-directory: .github/configs/nightly/cl-el-genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json | jq > l2-cl-genesis.json
-          jq . l2-cl-genesis.json
+          mkdir -p tmp/cl-el-genesis
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-cl-genesis genesis.json | jq > tmp/cl-el-genesis/l2-cl-genesis.json
+          jq . tmp/cl-el-genesis/l2-cl-genesis.json
 
       - name: Retrieve L2 EL genesis file
-        working-directory: .github/configs/nightly/cl-el-genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | jq > l2-el-genesis.json
-          jq . l2-el-genesis.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} l2-el-genesis genesis.json | jq > tmp/cl-el-genesis/l2-el-genesis.json
+          jq . tmp/cl-el-genesis/l2-el-genesis.json
 
       - name: Retrieve PoS contract addresses
-        working-directory: .github/configs/nightly/cl-el-genesis
         run: |
-          kurtosis files inspect ${{ env.ENCLAVE_NAME }} pos-contract-addresses contractAddresses.json | jq > pos-contract-addresses.json
-          jq . pos-contract-addresses.json
+          kurtosis files inspect ${{ env.ENCLAVE_NAME }} pos-contract-addresses contractAddresses.json | jq > tmp/cl-el-genesis/pos-contract-addresses.json
+          jq . tmp/cl-el-genesis/pos-contract-addresses.json
+
+      # The redeploy reuses the L1 from the first deploy, so the L1 StateSender
+      # already counts the 7 mapToken events emitted during pos-bridge wiring.
+      # On L2, bor's chaindata is wiped — without intervention bor restarts at
+      # `lastStateId=0` and rejects the next state-sync event from heimdall as
+      # non-contiguous (heimdall reports id=N, bor expects last+1=1). Pre-fill
+      # the StateReceiver precompile's slot 0 (where `uint256 public lastStateId`
+      # lives) in the saved EL genesis so bor boots already in lockstep with L1.
+      - name: Pre-fill StateReceiver lastStateId in saved EL genesis
+        run: |
+          state_sender=$(jq -r '.root.StateSender' tmp/cl-el-genesis/pos-contract-addresses.json)
+          l1_rpc="http://$(kurtosis port print ${{ env.ENCLAVE_NAME }} el-1-geth-lighthouse rpc)"
+          counter=$(cast call --rpc-url "${l1_rpc}" "${state_sender}" "counter()(uint256)")
+          counter_hex=$(printf "0x%064x" "${counter}")
+          slot_zero="0x0000000000000000000000000000000000000000000000000000000000000000"
+          state_receiver_key=$(jq -r '.alloc | keys[] | select(test("^0+1001$"; "i"))' tmp/cl-el-genesis/l2-el-genesis.json)
+          echo "L1 StateSender.counter=${counter} → setting lastStateId at alloc[${state_receiver_key}] slot 0"
+          jq --arg key "${state_receiver_key}" --arg slot "${slot_zero}" --arg val "${counter_hex}" \
+            '.alloc[$key].storage = ((.alloc[$key].storage // {}) + {($slot): $val})' \
+            tmp/cl-el-genesis/l2-el-genesis.json > tmp/cl-el-genesis/l2-el-genesis.json.new
+          mv tmp/cl-el-genesis/l2-el-genesis.json.new tmp/cl-el-genesis/l2-el-genesis.json
+          jq ".alloc.\"${state_receiver_key}\".storage" tmp/cl-el-genesis/l2-el-genesis.json
 
       - name: Stop L2 participants
         run: |
