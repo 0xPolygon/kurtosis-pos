@@ -53,6 +53,7 @@ def deploy_l2_contracts(
     pos_bridge_addresses = pos_bridge_deployer.deploy_l2(
         plan,
         polygon_pos_args,
+        dev_args,
         l1_rpc_url,
         l2_rpc_url,
         private_key,
