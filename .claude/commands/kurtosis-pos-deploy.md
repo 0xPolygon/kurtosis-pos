@@ -52,7 +52,7 @@ dev:
   # Required when should_deploy_matic_contracts: false
   l2_el_genesis_filepath: .github/configs/nightly/cl-el-genesis/l2-el-genesis.json
   l2_cl_genesis_filepath: .github/configs/nightly/cl-el-genesis/l2-cl-genesis.json
-  matic_contract_addresses_filepath: .github/configs/nightly/cl-el-genesis/pos-bridge-addresses.json
+  matic_contract_addresses_filepath: .github/configs/nightly/cl-el-genesis/pos-contract-addresses.json
 
 polygon_pos_package:
   log_level: info                 # error | warn | info | debug | trace

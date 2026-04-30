@@ -83,6 +83,12 @@ def generate(
                     "el_sprint_duration": network_params.get("el_sprint_duration"),
                     "el_span_duration": el_span_duration,
                     "el_first_span_end_block": el_span_duration - 1,
+                    "cl_avg_checkpoint_length": network_params.get(
+                        "cl_avg_checkpoint_length"
+                    ),
+                    "cl_checkpoint_buffer_time": network_params.get(
+                        "cl_checkpoint_buffer_time"
+                    ),
                     # contract addresses
                     "matic_token_address": l1_matic_token_address,
                     "stake_manager_address": l1_stake_manager_proxy_address,

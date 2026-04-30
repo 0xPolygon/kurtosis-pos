@@ -21,3 +21,7 @@ def new_validator(
 
 def to_ethereum_pkg_prefunded_account(address, balance):
     return {address: {"balance": "{}ETH".format(balance)}}
+
+
+def to_ethereum_pkg_preallocated_contract(address, code):
+    return {address: {"balance": "0ETH", "code": code}}

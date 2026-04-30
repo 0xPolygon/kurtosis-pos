@@ -31,7 +31,7 @@ kurtosis files ls pos
 # Inspect a file inside an artifact directly (no download needed)
 kurtosis files inspect pos l2-el-genesis genesis.json | jq
 kurtosis files inspect pos l2-cl-genesis genesis.json | jq
-kurtosis files inspect pos pos-bridge-addresses contractAddresses.json | jq
+kurtosis files inspect pos pos-contract-addresses contractAddresses.json | jq
 
 # Download a full artifact to disk
 kurtosis files download pos <artifact-name> ./output/
@@ -172,7 +172,7 @@ Both root and child contract addresses live in the same `contractAddresses.json`
 **L1 root + child contracts** (`contractAddresses.json`):
 
 ```bash
-kurtosis files download pos pos-bridge-addresses ./output/
+kurtosis files download pos pos-contract-addresses ./output/
 
 # Examples
 jq '.root.StateSender'             ./output/contractAddresses.json  # l1_state_sender

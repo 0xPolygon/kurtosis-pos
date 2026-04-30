@@ -42,7 +42,7 @@ First, we will save the L2 CL and EL genesis files for later.
 mkdir -p ./tmp
 kurtosis files inspect pos l2-cl-genesis genesis.json | jq > ./tmp/l2-cl-genesis.json
 kurtosis files inspect pos l2-el-genesis genesis.json | jq > ./tmp/l2-el-genesis.json
-kurtosis files inspect pos pos-bridge-addresses contractAddresses.json | jq > ./tmp/pos-bridge-addresses.json
+kurtosis files inspect pos pos-contract-addresses contractAddresses.json | jq > ./tmp/pos-contract-addresses.json
 ```
 
 ## Specify Dev Parameters
@@ -59,7 +59,7 @@ dev:
   should_deploy_matic_contracts: false
   l2_cl_genesis_filepath: ./tmp/l2-cl-genesis.json
   l2_el_genesis_filepath: ./tmp/l2-el-genesis.json
-  matic_contract_addresses_filepath: ./tmp/pos-bridge-addresses.json
+  matic_contract_addresses_filepath: ./tmp/pos-contract-addresses.json
 ```
 
 ## Update L2 Participant Configuration
@@ -84,7 +84,7 @@ dev:
   should_deploy_matic_contracts: false
   l2_cl_genesis_filepath: ./tmp/l2-cl-genesis.json
   l2_el_genesis_filepath: ./tmp/l2-el-genesis.json
-  matic_contract_addresses_filepath: ./tmp/pos-bridge-addresses.json
+  matic_contract_addresses_filepath: ./tmp/pos-contract-addresses.json
 ```
 
 ## Stop the Validators
