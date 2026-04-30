@@ -7,7 +7,7 @@ set -euxo pipefail
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
 VALIDATORS_CONFIG_FILE="/opt/contracts/validators.js"
 
-cd /opt/pos-contracts
+cd /opt/pos-contracts-anvil-pos
 
 # Contracts are compiled at image-build time against the image's baked chain ID.
 # Custom L2 chain IDs are not supported — rebuild the image with a different

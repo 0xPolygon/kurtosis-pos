@@ -1,6 +1,7 @@
 plasma_bridge_deployer = import_module("./plasma_bridge_deployer.star")
 matic_to_pol_migrator = import_module("./matic_to_pol_migrator.star")
 pos_bridge_deployer = import_module("./pos_bridge_deployer.star")
+upgrade_validator_share = import_module("./upgrade_validator_share.star")
 lst_deployer = import_module("./lst_deployer.star")
 
 
@@ -28,7 +29,17 @@ def deploy_l1_contracts(
         private_key,
         pol_migration_addresses,
     )
-    return pos_bridge_l1_addresses, validator_config
+    # Mirror mainnet's ValidatorShare upgrade (Feb 2026) so sPOL's
+    # `restakeAndStakePOL(uint256)` resolves to a real implementation. Reads
+    # /opt/data/addresses, writes the new impl to .root.ValidatorShareImpl.
+    upgraded_addresses = upgrade_validator_share.upgrade(
+        plan,
+        polygon_pos_args,
+        l1_rpc_url,
+        private_key,
+        pos_bridge_l1_addresses,
+    )
+    return upgraded_addresses, validator_config
 
 
 def deploy_l2_contracts(

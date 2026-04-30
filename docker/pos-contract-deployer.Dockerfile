@@ -1,9 +1,21 @@
 FROM node:20-slim AS builder
 LABEL description="pos-contract-deployer builder"
 
-# pos-contracts - 2025-08-01
-ARG POS_CONTRACTS_BRANCH="anvil-pos"
-ARG POS_CONTRACTS_TAG_OR_COMMIT_SHA="d96d5929"
+# pos-contracts (anvil-pos) - 2025-08-01
+# Used for the Plasma bridge, RootChain, MaticToken, MATIC→POL migration, and
+# the rest of the deployable PoS surface. Pinned to a SHA that is stable for
+# the bridge contracts and that matches the cl-el-genesis baked into kurtosis.
+ARG POS_CONTRACTS_ANVIL_POS_BRANCH="anvil-pos"
+ARG POS_CONTRACTS_ANVIL_POS_TAG_OR_COMMIT_SHA="d96d5929"
+# pos-contracts (main) - 2026-03-12
+# Used to compile only the upgraded ValidatorShare implementation. Mainnet runs
+# this version (registered via Registry.contractMap['validatorShare']); without
+# the bump, sPOL's `restakeAndStakePOL(uint256)` call into ValidatorShare
+# reverts because anvil-pos hasn't merged that feature yet (it landed on main
+# in commit 24a81a5fe9 / 2025-10-27). We deploy the new impl alongside and
+# flip the Registry entry — same upgrade path mainnet took.
+ARG POS_CONTRACTS_MAIN_BRANCH="main"
+ARG POS_CONTRACTS_MAIN_TAG_OR_COMMIT_SHA="935dee17"
 # pos-portal - 2025-10-24
 ARG POS_PORTAL_BRANCH="master"
 ARG POS_PORTAL_TAG_OR_COMMIT_SHA="3402faa"
@@ -25,19 +37,36 @@ RUN apt-get update \
   && cp /root/.foundry/bin/* /usr/local/bin \
   && rm /tmp/foundry-install.sh
 
-# pos-contracts.
-WORKDIR /opt/pos-contracts
-RUN git clone --branch ${POS_CONTRACTS_BRANCH} https://github.com/0xPolygon/pos-contracts . \
-  && git checkout ${POS_CONTRACTS_TAG_OR_COMMIT_SHA} \
+# pos-contracts (anvil-pos).
+WORKDIR /opt/pos-contracts-anvil-pos
+RUN git clone --branch ${POS_CONTRACTS_ANVIL_POS_BRANCH} https://github.com/0xPolygon/pos-contracts . \
+  && git checkout ${POS_CONTRACTS_ANVIL_POS_TAG_OR_COMMIT_SHA} \
   && git submodule update --init --recursive --depth 1 \
   && find . -name .git -exec rm -rf {} + 2>/dev/null || true \
   && sed -i '/^\[etherscan\]/,/^$/d' foundry.toml \
   && npm install \
   && npm run template:process -- --bor-chain-id ${EL_CHAIN_ID} \
   && npm run generate:interfaces
-COPY static_files/contracts/l1/scripts/deployPolAndMigration.s.sol /opt/pos-contracts/scripts/deployment-scripts/deployPolAndMigration.s.sol
-COPY static_files/contracts/l1/scripts/deployBurnOnlyPredicates.s.sol /opt/pos-contracts/scripts/deployment-scripts/deployBurnOnlyPredicates.s.sol
+COPY static_files/contracts/l1/scripts/deployPolAndMigration.s.sol /opt/pos-contracts-anvil-pos/scripts/deployment-scripts/deployPolAndMigration.s.sol
+COPY static_files/contracts/l1/scripts/deployBurnOnlyPredicates.s.sol /opt/pos-contracts-anvil-pos/scripts/deployment-scripts/deployBurnOnlyPredicates.s.sol
 RUN forge build
+
+# pos-contracts (main) — only used for the ValidatorShare upgrade. We do a
+# fresh clone instead of overlaying the file on top of anvil-pos because the
+# new ValidatorShare pulls in deps that anvil-pos doesn't carry (IERC20Permit,
+# updated IValidatorShare interface, etc.). Storage layout is forward-compatible
+# with the old ValidatorShare — every existing slot keeps its meaning, EIP-712
+# storage is appended at the end.
+WORKDIR /opt/pos-contracts-main
+RUN git clone --branch ${POS_CONTRACTS_MAIN_BRANCH} https://github.com/0xPolygon/pos-contracts . \
+  && git checkout ${POS_CONTRACTS_MAIN_TAG_OR_COMMIT_SHA} \
+  && git submodule update --init --recursive --depth 1 \
+  && find . -name .git -exec rm -rf {} + 2>/dev/null || true \
+  && sed -i '/^\[etherscan\]/,/^$/d' foundry.toml \
+  && npm install \
+  && npm run template:process -- --bor-chain-id ${EL_CHAIN_ID} \
+  && npm run generate:interfaces \
+  && forge build
 
 # pos-portal.
 WORKDIR /opt/pos-portal
@@ -75,22 +104,30 @@ RUN apt-get update \
 COPY --from=builder /usr/local/bin/forge /usr/local/bin/forge
 COPY --from=builder /usr/local/bin/cast /usr/local/bin/cast
 
-# pos-contracts runtime surface: artifacts + contracts + scripts + the one
-# node_modules dir whose paths are actually referenced by contracts/. Keeping
-# src='contracts' so forge doesn't invalidate its build cache; contracts/ needs
-# openzeppelin-solidity (8.4M) to parse — everything else in node_modules is
-# dropped.
-WORKDIR /opt/pos-contracts
-COPY --from=builder /opt/pos-contracts/foundry.toml ./foundry.toml
-COPY --from=builder /opt/pos-contracts/lib ./lib
-COPY --from=builder /opt/pos-contracts/contracts ./contracts
-COPY --from=builder /opt/pos-contracts/scripts ./scripts
-COPY --from=builder /opt/pos-contracts/out ./out
-COPY --from=builder /opt/pos-contracts/node_modules/openzeppelin-solidity ./node_modules/openzeppelin-solidity
-COPY --from=builder /opt/pos-contracts/node_modules/solidity-rlp ./node_modules/solidity-rlp
+# pos-contracts (anvil-pos) runtime surface: artifacts + contracts + scripts +
+# the one node_modules dir whose paths are actually referenced by contracts/.
+# Keeping src='contracts' so forge doesn't invalidate its build cache;
+# contracts/ needs openzeppelin-solidity (8.4M) to parse — everything else in
+# node_modules is dropped.
+WORKDIR /opt/pos-contracts-anvil-pos
+COPY --from=builder /opt/pos-contracts-anvil-pos/foundry.toml ./foundry.toml
+COPY --from=builder /opt/pos-contracts-anvil-pos/lib ./lib
+COPY --from=builder /opt/pos-contracts-anvil-pos/contracts ./contracts
+COPY --from=builder /opt/pos-contracts-anvil-pos/scripts ./scripts
+COPY --from=builder /opt/pos-contracts-anvil-pos/out ./out
+COPY --from=builder /opt/pos-contracts-anvil-pos/node_modules/openzeppelin-solidity ./node_modules/openzeppelin-solidity
+COPY --from=builder /opt/pos-contracts-anvil-pos/node_modules/solidity-rlp ./node_modules/solidity-rlp
 # Drop the mainnet upgrade migrations — they import extra deps we don't need,
 # and we never invoke them from the devnet deploy wrappers.
 RUN rm -rf scripts/deployers
+
+# pos-contracts (main) runtime surface: only the ValidatorShare artifact and
+# its dependencies are actually used (deployed via `forge create` against the
+# pre-built `out/ValidatorShare.sol/ValidatorShare.json`). Everything else is
+# stripped — we don't run `forge build` here, only `forge create`.
+WORKDIR /opt/pos-contracts-main
+COPY --from=builder /opt/pos-contracts-main/foundry.toml ./foundry.toml
+COPY --from=builder /opt/pos-contracts-main/out ./out
 
 # pos-portal runtime surface: same idea, but the deploy scripts only use
 # deployCode against pre-built artifacts, so contracts/ isn't needed.
