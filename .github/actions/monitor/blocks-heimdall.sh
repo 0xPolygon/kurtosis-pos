@@ -29,7 +29,10 @@ monitor_cl() {
   for step in $(seq 1 "${num_steps}"); do
     log_info "Check ${step}/${num_steps} for ${cl_name}"
 
-    LATEST_BLOCK=$(curl -s "${rpc_url}/status" | jq --raw-output '.result.sync_info.latest_block_height')
+    # Tolerate transient curl/jq failures — treat as 0 so the loop retries
+    # instead of being killed by set -e (and pipefail).
+    LATEST_BLOCK=$(curl -s "${rpc_url}/status" 2>/dev/null | jq --raw-output '.result.sync_info.latest_block_height // 0' 2>/dev/null || echo 0)
+    [[ -z "${LATEST_BLOCK}" || "${LATEST_BLOCK}" == "null" ]] && LATEST_BLOCK=0
     log_info "Got block height: ${LATEST_BLOCK}"
 
     if [[ "${LATEST_BLOCK}" -ge "${target}" ]]; then
@@ -97,15 +100,17 @@ done
 
 # Wait for all background jobs and collect exit codes
 failed=0
-for pid in "${pids[@]}"; do
-  if ! wait "${pid}"; then
+declare -a failed_cls=()
+for i in "${!pids[@]}"; do
+  if ! wait "${pids[$i]}"; then
     failed=1
+    failed_cls+=("${cl_array[$i]%%--*}")
   fi
 done
 
 # Check if any CL node failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "One or more CL nodes failed to reach target block height" "target=${target}"
+  log_error "CL nodes failed to reach target block height" "target=${target}" "cls=${failed_cls[*]}"
   exit 1
 fi
 
