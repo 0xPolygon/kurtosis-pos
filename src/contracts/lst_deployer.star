@@ -1,9 +1,10 @@
 constants = import_module("../config/constants.star")
 
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
-SETUP_VALIDATORS_TEMPLATE_PATH = (
-    "../../static_files/contracts/l1/scripts/setupInitialValidators.s.sol"
-)
+
+# 100 sPOL bootstrap deposit, locked at 0xdead. Mirrors mainnet's
+# spol-contracts/script/SetupInitialValidators.s.sol bootstrap.
+INITIAL_DEPOSIT_WEI = "100000000000000000000"
 
 
 def deploy_lst_contracts(
@@ -23,18 +24,6 @@ def deploy_lst_contracts(
         name="lst-deployer-config",
     )
 
-    setup_validators_artifact = plan.render_templates(
-        name="lst-validator-setup-script",
-        config={
-            "setupInitialValidators.s.sol": struct(
-                template=read_file(SETUP_VALIDATORS_TEMPLATE_PATH),
-                data={
-                    "validator_count": len(validator_accounts),
-                },
-            ),
-        },
-    )
-
     result = plan.run_sh(
         name="lst-deployer",
         description="Deploying sPOL/LST contracts to L1 and L2",
@@ -49,11 +38,13 @@ def deploy_lst_contracts(
             "REWARD_FEE": "50",  # basis-points-of-ten — 100 = 10%
             "FEE_RECEIVER": "",  # empty string falls back to ADMIN_ADDRESS
             "MAX_DIVERGENCE": "10",  # basis-points — 10 = 1%
+            # Validator setup (formerly in setupInitialValidators.s.sol).
+            "VALIDATOR_COUNT": str(len(validator_accounts)),
+            "INITIAL_DEPOSIT_WEI": INITIAL_DEPOSIT_WEI,
         },
         files={
             "/opt/data": contract_deployer_config_artifact,
             "/opt/data/pos-addresses": pos_contract_addresses_artifact,
-            "/opt/data/setup-validators": setup_validators_artifact,
         },
         store=[
             StoreSpec(

@@ -4,16 +4,7 @@ set -euxo pipefail
 # Deploy sPOL/LST contracts to L1 and L2 using the kurtosis PoS devnet addresses.
 # Runs inside the pos-contract-deployer image, which bundles the spol-contracts
 # source, soldeer deps, and a warm forge cache at /opt/spol-contracts
-# (alongside pos-contracts and pos-portal). The kurtosis validator setup script
-# is rendered at deploy time and uploaded as the `setup-validators` artifact.
-
-# Drop the rendered setupInitialValidators script into the spol-contracts tree
-# so its `import "../../src/sPOLController.sol"` resolves. Lives under
-# script/kurtosis/ to disambiguate from upstream's mainnet-id'd
-# script/SetupInitialValidators.s.sol.
-mkdir -p /opt/spol-contracts/script/kurtosis
-cp /opt/data/setup-validators/setupInitialValidators.s.sol \
-   /opt/spol-contracts/script/kurtosis/
+# (alongside pos-contracts and pos-portal).
 
 cd /opt/spol-contracts
 
@@ -115,9 +106,70 @@ jq -s '.[0] as $pos | .[1] as $spol
 echo "LST contracts deployed. Updated contractAddresses.json:"
 cat /opt/contracts/contractAddresses.json
 
-# Setup initial validators.
-# Uses the rendered kurtosis-specific script (validator count baked at devnet
-# launch time, ids 1..N matching the on-chain stake order) rather than the
-# mainnet/testnet ids (188, 92) hardcoded in upstream's SetupInitialValidators.
-forge script script/kurtosis/setupInitialValidators.s.sol:SetupInitialValidators \
-  --rpc-url "${L1_RPC_URL}" --broadcast --legacy
+# Setup initial validators. Mirrors mainnet's canonical
+# spol-contracts/script/SetupInitialValidators.s.sol but ranges over kurtosis'
+# sequential validator ids (1..VALIDATOR_COUNT) rather than the mainnet/testnet
+# ids (188, 92) it hardcodes. Inlined here in bash to keep all kurtosis-specific
+# orchestration in one place — the upstream forge scripts in script/ are only
+# used when a forge multi-step deploy genuinely needs Solidity (e.g. CREATE2 +
+# vm.createSelectFork in Deploy.s.sol).
+for v in VALIDATOR_COUNT INITIAL_DEPOSIT_WEI ADMIN_ADDRESS; do
+  if [[ -z "${!v:-}" ]]; then
+    echo "Error: ${v} is not set"
+    exit 1
+  fi
+done
+
+CONTROLLER=$(jq -re '.sPOL_L1.sPOLControllerProxy' script/deployment.json)
+SPOL_TOKEN=$(jq -re '.sPOL_L1.sPOLProxy' script/deployment.json)
+DEAD="0x000000000000000000000000000000000000dEaD"
+
+# 1. Add every kurtosis-registered validator (ids are 1..N, sequential).
+for ((i = 1; i <= VALIDATOR_COUNT; i++)); do
+  cast send "${CONTROLLER}" "addValidator(uint16)" "$i" \
+    --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+  echo "Validator added: $i"
+done
+
+# 2. Distribute deposit shares equally. Remainder from integer division goes to
+# validator 1 so the shares always sum to 100.
+base_share=$((100 / VALIDATOR_COUNT))
+remainder=$((100 - base_share * VALIDATOR_COUNT))
+val_ids="1"
+shares="$((base_share + remainder))"
+for ((i = 2; i <= VALIDATOR_COUNT; i++)); do
+  val_ids="${val_ids},${i}"
+  shares="${shares},${base_share}"
+done
+cast send "${CONTROLLER}" "updateValidatorTargetShare(uint16[],uint8[])" \
+  "[${val_ids}]" "[${shares}]" \
+  --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+echo "Deposit shares set across ${VALIDATOR_COUNT} validators (base=${base_share}%, validator-1=$((base_share + remainder))%)"
+
+# 3. Bootstrap deposit so the controller has non-zero state when the e2e tests
+# start. Mirrors mainnet's bootstrap (sPOL-contracts/script/SetupInitialValidators.s.sol).
+POL_TOKEN=$(cast call "${CONTROLLER}" "polToken()(address)" --rpc-url "${L1_RPC_URL}")
+cast send "${POL_TOKEN}" "approve(address,uint256)" "${CONTROLLER}" "${INITIAL_DEPOSIT_WEI}" \
+  --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+cast send "${CONTROLLER}" "buySPOL(uint256)" "${INITIAL_DEPOSIT_WEI}" \
+  --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+spol_minted=$(cast call "${SPOL_TOKEN}" "balanceOf(address)(uint256)" "${ADMIN_ADDRESS}" --rpc-url "${L1_RPC_URL}" | awk '{print $1}')
+echo "sPOL minted to deployer: ${spol_minted}"
+
+# 4. Lock the bootstrap sPOL at 0xdead — it is not meant to be redeemed.
+cast send "${SPOL_TOKEN}" "transfer(address,uint256)" "${DEAD}" "${spol_minted}" \
+  --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+echo "sPOL locked at 0xdead: ${spol_minted}"
+
+# Verify state.
+dead_balance=$(cast call "${SPOL_TOKEN}" "balanceOf(address)(uint256)" "${DEAD}" --rpc-url "${L1_RPC_URL}" | awk '{print $1}')
+deployer_balance=$(cast call "${SPOL_TOKEN}" "balanceOf(address)(uint256)" "${ADMIN_ADDRESS}" --rpc-url "${L1_RPC_URL}" | awk '{print $1}')
+if [[ "${dead_balance}" == "0" ]]; then
+  echo "Error: bootstrap sPOL not at dead address"
+  exit 1
+fi
+if [[ "${deployer_balance}" != "0" ]]; then
+  echo "Error: deployer should hold 0 sPOL after lock, got ${deployer_balance}"
+  exit 1
+fi
+echo "Kurtosis devnet validator setup complete!"
