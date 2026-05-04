@@ -76,15 +76,18 @@ jobs:
       - name: Verify restored devnet produces blocks on every L2 EL node
         run: |
           target_block=500
-          # Discover every L2 EL port from the compose file. Compose generation
-          # maps each l2-el-N to host port 9545 + (N - 1).
-          mapfile -t ports < <(yq -r '.services | to_entries[] | select(.key | test("-l2-el-[0-9]+-")) | .value.ports[0]' ./tmp/docker-compose.yaml | cut -d: -f1 | sort -n)
-          echo "Polling ${#ports[@]} L2 EL endpoints: ${ports[*]}"
+          # Discover every L2 EL service + its host-mapped port. Service names
+          # encode role (validator/rpc/archive) and client (bor/erigon).
+          mapfile -t entries < <(yq -r '.services | to_entries[] | select(.key | test("-l2-el-[0-9]+-")) | "\(.value.ports[0] | split(":") | .[0]) \(.key)"' ./tmp/docker-compose.yaml | sort -n)
+          echo "Polling ${#entries[@]} L2 EL endpoints:"
+          for e in "${entries[@]}"; do echo "  $e"; done
           while true; do
             all_ready=true
-            for port in "${ports[@]}"; do
+            for e in "${entries[@]}"; do
+              port="${e%% *}"
+              name="${e#* }"
               block=$(cast bn --rpc-url "localhost:${port}" 2>/dev/null || echo 0)
-              echo "  port ${port}: ${block}/${target_block}"
+              echo "  ${name} (:${port}): ${block}/${target_block}"
               if [[ "${block}" -lt "${target_block}" ]]; then
                 all_ready=false
               fi
