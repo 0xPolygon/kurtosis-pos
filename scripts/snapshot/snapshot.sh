@@ -57,6 +57,19 @@ wait_for_rpcs_to_reach_block() {
 }
 
 ##############################################################################
+# UTILITY FUNCTIONS
+##############################################################################
+
+# List enclave containers, excluding kurtosis internals and ephemeral jobs.
+# Usage: get_enclave_containers <enclave_name> [--all]
+get_enclave_containers() {
+    local enclave_name="$1"
+    local extra_args="${2:-}"
+    docker ps $extra_args --filter "network=kt-$enclave_name" --format "{{.Names}}" \
+        | grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|matic-to-pol-migration|validator-share-upgrade|el-genesis-timestamp|read|run|reader|deriver|deployer|generator|monitor"
+}
+
+##############################################################################
 # DOCKER VOLUMES BACKUP
 ##############################################################################
 
@@ -73,8 +86,7 @@ backup_docker_volumes() {
     trap "rm -f '$temp_mounts'" EXIT
 
     # Get all containers (including stopped ones) for this enclave
-    mapfile -t CONTAINERS < <(docker ps --all --filter "network=kt-$enclave_name" --format "{{.Names}}" \
-        | grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|read|run|reader|deriver|deployer|generator|monitor")
+    mapfile -t CONTAINERS < <(get_enclave_containers "$enclave_name" --all)
 
     # Extract volume mounts from all containers
     for container in "${CONTAINERS[@]}"; do
@@ -113,6 +125,12 @@ backup_docker_volumes() {
     done < "$temp_mounts"
     rm -f "$temp_mounts"
 
+    # Pull alpine image once before parallel execution to avoid rate limits.
+    # Skip if already present locally (e.g. air-gapped or no registry access).
+    if ! docker image inspect alpine >/dev/null 2>&1; then
+        docker pull alpine
+    fi
+
     # Backup volumes using sanitized names
     for v in "${!volume_mapping[@]}"; do
         (
@@ -143,8 +161,7 @@ generate_docker_compose() {
     local docker_compose_file="$2"
 
     # Store container names in an array
-    mapfile -t CONTAINERS < <(docker ps --all --filter "network=kt-$enclave_name" --format "{{.Names}}" \
-        | grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|read|run|reader|deriver|deployer|generator|monitor")
+    mapfile -t CONTAINERS < <(get_enclave_containers "$enclave_name" --all)
 
     # Generate docker-compose using docker-autocompose.
     # Use array expansion to pass each element as a separate argument
@@ -170,8 +187,7 @@ configure_networks() {
         '.services[].networks = [$new_network]' "$docker_compose_file"
 
     # Remove unnecessary fields from all services
-    # TODO: Check if we can remove hostnames?
-    yq --in-place --yaml-output 'del(.version, .services[].ports, .services[].labels, .services[].logging, .services[].stdin_open, .services[].ipc)' "$docker_compose_file"
+    yq --in-place --yaml-output 'del(.version, .services[].ports, .services[].labels, .services[].logging, .services[].stdin_open, .services[].ipc, .services[].hostname)' "$docker_compose_file"
 }
 
 sanitize_service_names() {
@@ -292,13 +308,17 @@ add_network_aliases() {
 configure_service_dependencies() {
     local docker_compose_file="$1"
 
-    # L2: CL depends on RabbitMQ with matching index
+    # L2: CL depends on RabbitMQ with matching index (only if a paired rabbitmq exists — validators have one, rpc/archive nodes don't)
     yq --in-place --yaml-output \
         --arg enclave_name "$enclave_name" '
+        (.services | keys) as $all_services |
         .services |= with_entries(
             if (.key | test("^" + $enclave_name + "-l2-cl-[0-9]+-")) and (.key | test("rabbitmq") | not) then
                 (.key | capture("^" + $enclave_name + "-l2-cl-(?<idx>[0-9]+)-")) as $match |
-                .value.depends_on = {($enclave_name + "-l2-cl-" + $match.idx + "-rabbitmq"): {"condition": "service_healthy"}}
+                ($enclave_name + "-l2-cl-" + $match.idx + "-rabbitmq") as $rmq |
+                if ($all_services | index($rmq)) then
+                    .value.depends_on = {($rmq): {"condition": "service_healthy"}}
+                else . end
             else . end
         )
     ' "$docker_compose_file"
@@ -347,6 +367,22 @@ add_health_checks() {
                     "timeout": "10s",
                     "retries": 10,
                     "start_period": "20s"
+                }
+            else . end
+        )
+    ' "$docker_compose_file"
+
+    # Bor / Erigon (L2 EL) health check — uses wget since neither image ships curl.
+    yq --in-place --yaml-output \
+        --arg enclave_name "$enclave_name" '
+        .services |= with_entries(
+            if .key | test("^" + $enclave_name + "-l2-el-[0-9]+-") then
+                .value.healthcheck = {
+                    "test": ["CMD-SHELL", "wget --quiet --timeout=5 --post-data=\"{\\\"method\\\":\\\"eth_blockNumber\\\",\\\"params\\\":[],\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\"}\" --header=\"Content-Type: application/json\" --output-document=- http://localhost:8545 | grep -q result"],
+                    "interval": "5s",
+                    "timeout": "10s",
+                    "retries": 12,
+                    "start_period": "30s"
                 }
             else . end
         )
@@ -427,6 +463,42 @@ log_info "Using enclave name: $enclave_name"
 target_block=256 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"
 wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
+
+# Stop containers in dependency order to avoid app/store divergence:
+# 1. L2 CL (heimdall) first — stops block production at consensus layer
+# 2. L2 EL (bor/erigon) second — bor flushes its head-pointer atomically with no new blocks arriving
+# 3. Everything else last (rabbitmq, L1, vc, init/migration jobs)
+# Within each tier, stop in parallel; wait for the tier to fully drain before moving on.
+stop_tier() {
+    local tier_name="$1"
+    shift
+    local containers=("$@")
+    [[ ${#containers[@]} -eq 0 ]] && return
+    log_info "Stopping ${tier_name} (${#containers[@]} containers)"
+    for c in "${containers[@]}"; do
+        docker stop --timeout=120 "$c" &
+    done
+    wait
+    log_info "${tier_name} stopped"
+}
+
+mapfile -t all_containers < <(get_enclave_containers "$enclave_name")
+
+cl_containers=()
+el_containers=()
+other_containers=()
+for c in "${all_containers[@]}"; do
+    case "$c" in
+        *l2-cl-*heimdall*) cl_containers+=("$c") ;;
+        *l2-el-*) el_containers+=("$c") ;;
+        *) other_containers+=("$c") ;;
+    esac
+done
+
+stop_tier "L2 CL (heimdall)" "${cl_containers[@]}"
+stop_tier "L2 EL (bor/erigon)" "${el_containers[@]}"
+stop_tier "remaining containers" "${other_containers[@]}"
+log_info "All containers stopped"
 
 log_info "Stopping the kurtosis enclave"
 kurtosis enclave stop "$enclave_name"
