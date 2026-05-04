@@ -41,6 +41,8 @@ POLYGON_POS_PARAMS = {
         "cl_span_poll_interval",
         "cl_checkpoint_poll_interval",
         "cl_max_age_num_blocks",
+        "cl_avg_checkpoint_length",
+        "cl_checkpoint_buffer_time",
         "el_block_interval_seconds",
         "el_sprint_duration",
         "el_span_duration",

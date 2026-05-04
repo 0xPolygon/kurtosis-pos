@@ -5,14 +5,14 @@ inputs:
   pos_e2e_tag:
     description: The git tag, branch, or commit hash of 0xPolygon/pos-e2e
     required: false
-    default: 2e15387670fc1f8945fcd36ced8f36cd51128f69
+    default: 036860c4ff5d39c52f147a28c4045d9b4f0dc1ff
   pos_e2e_token:
     description: GitHub token with read access to 0xPolygon/pos-e2e
     required: true
   polygon_cli_version:
     description: The release version of polygon-cli
     required: false
-    default: v0.1.109
+    default: v0.1.111
 
 runs:
   using: composite

@@ -45,6 +45,21 @@ jq --arg a "${eip2935_address}" --arg c "${eip2935_code}" \
   '.alloc[$a] = {"balance": "0x0", "code": $c}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
+# Add the canonical EIP-2470 / arachnid CREATE2 deployer to the alloc field.
+# Forge's `new X{salt: y}` compiles to a CALL into this address; Bor genesis
+# does not pre-deploy it, so without this entry CREATE2 broadcasts silently
+# no-op (the script still computes predicted addresses in simulation, but no
+# code ever lands on chain). The standard EIP-2470 bootstrap — fund the
+# one-shot signer and broadcast the pre-signed legacy tx — cannot rescue
+# this at runtime because the genesis sets `eip155Block: 0`, which rejects
+# legacy txs without chain-id replay protection. Pre-allocating the runtime
+# bytecode at genesis matches what Anvil does by default.
+create2_address="4e59b44847b379578588920ca78fbf26c0b4956c"
+create2_code="0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3"
+jq --arg a "${create2_address}" --arg c "${create2_code}" \
+  '.alloc[$a] = {"balance": "0x0", "code": $c}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
+mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
+
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
 jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
   "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" > tmp.json

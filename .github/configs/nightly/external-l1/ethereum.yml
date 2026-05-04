@@ -11,6 +11,13 @@ participants:
 
 network_params:
   network_id: "3151908"
-  prefunded_accounts: '{"0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9": {"balance": "1000000000ETH"}}'
+  # prefunded_accounts must include the canonical EIP-2470 CREATE2 deployer at
+  # 0x4e59b44... — sPOL's Deploy.s.sol uses `new X{salt: y}` syntax which solc
+  # compiles to a CALL into that address, and the LST step would fail with
+  # "missing CREATE2 deployer" without it. Mirrors the prealloc done by
+  # src/l1/ethereum_package.star for the should_deploy_l1=true path; we have
+  # to repeat the entry here because this scenario launches ethereum-package
+  # directly, bypassing kurtosis-pos's L1 launcher helper.
+  prefunded_accounts: '{"0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9": {"balance": "1000000000ETH"}, "0x4e59b44847b379578588920cA78FbF26c0B4956C": {"balance": "0ETH", "code": "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3"}}'
   seconds_per_slot: 1
   preset: minimal

@@ -87,7 +87,7 @@ def deploy_l2(
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="plasma-bridge-addresses",
+                name="plasma-bridge-l2-addresses",
             ),
         ],
         run="bash /opt/data/l2/deploy-plasma-bridge.sh",
