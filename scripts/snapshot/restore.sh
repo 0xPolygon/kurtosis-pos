@@ -58,15 +58,6 @@ if [[ -z "$snapshot_folder" ]]; then
 fi
 log_info "Using snapshot folder: $snapshot_folder"
 
-# cometBFT's addrbook.json captured at snapshot time contains stale peer IPs from the
-# original kurtosis-managed network. After restore, the new docker-compose network assigns
-# different IPs, and dialing the stale entries fails. cometBFT bootstraps fine from
-# persistent_peers (resolved via Docker DNS aliases) when the addrbook is absent — so
-# strip it before restore.
-log_info "Stripping stale heimdall addrbook entries from snapshot"
-find "$snapshot_folder/volumes" -name "addrbook.json" -path "*heimdall*" -delete
-log_info "addrbook entries stripped"
-
 log_info "Restoring docker volumes"
 volume_folder_path="$snapshot_folder/volumes"
 restore_docker_volumes "$volume_folder_path"

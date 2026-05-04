@@ -131,7 +131,11 @@ backup_docker_volumes() {
         docker pull alpine
     fi
 
-    # Backup volumes using sanitized names
+    # Backup volumes using sanitized names.
+    # cometBFT's addrbook.json is excluded: it captures peer IPs from the original kurtosis
+    # network (172.16.0.x), but after restore the new docker-compose network assigns different
+    # IPs (172.18.0.x). Dialing the stale entries fails. cometBFT bootstraps fine from
+    # persistent_peers (resolved via Docker DNS aliases) when addrbook is absent.
     for v in "${!volume_mapping[@]}"; do
         (
             sanitized_v="${volume_mapping[$v]}"
@@ -140,7 +144,7 @@ backup_docker_volumes() {
             docker run --rm \
                 -v "$v":/data:ro \
                 -v "$volume_folder_path":/backup \
-                alpine tar czf /backup/$(basename "$backup_file") -C /data .
+                alpine tar czf /backup/$(basename "$backup_file") --exclude='./addrbook.json' -C /data .
         ) &
     done
     wait
