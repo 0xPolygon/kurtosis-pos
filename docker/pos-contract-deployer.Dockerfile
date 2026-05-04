@@ -104,6 +104,14 @@ RUN apt-get update \
 COPY --from=builder /usr/local/bin/forge /usr/local/bin/forge
 COPY --from=builder /usr/local/bin/cast /usr/local/bin/cast
 
+# Carry the SVM cache from the builder so forge resolves solc against on-disk
+# binaries (0.5.17 + 0.8.x for pos-contracts, etc.) instead of trying to fetch
+# binaries.soliditylang.org at deploy time. Combined with `offline = true`
+# appended to each foundry.toml below, this guarantees no network egress for
+# compiler resolution — the kurtosis enclave often has no route to the public
+# internet.
+COPY --from=builder /root/.svm /root/.svm
+
 # pos-contracts (anvil-pos) runtime surface: artifacts + contracts + scripts +
 # the one node_modules dir whose paths are actually referenced by contracts/.
 # Keeping src='contracts' so forge doesn't invalidate its build cache;
@@ -111,6 +119,7 @@ COPY --from=builder /usr/local/bin/cast /usr/local/bin/cast
 # node_modules is dropped.
 WORKDIR /opt/pos-contracts-anvil-pos
 COPY --from=builder /opt/pos-contracts-anvil-pos/foundry.toml ./foundry.toml
+RUN sed -i '/^\[profile\.default\]/a offline = true' foundry.toml
 COPY --from=builder /opt/pos-contracts-anvil-pos/lib ./lib
 COPY --from=builder /opt/pos-contracts-anvil-pos/contracts ./contracts
 COPY --from=builder /opt/pos-contracts-anvil-pos/scripts ./scripts
@@ -127,12 +136,14 @@ RUN rm -rf scripts/deployers
 # stripped — we don't run `forge build` here, only `forge create`.
 WORKDIR /opt/pos-contracts-main
 COPY --from=builder /opt/pos-contracts-main/foundry.toml ./foundry.toml
+RUN sed -i '/^\[profile\.default\]/a offline = true' foundry.toml
 COPY --from=builder /opt/pos-contracts-main/out ./out
 
 # pos-portal runtime surface: same idea, but the deploy scripts only use
 # deployCode against pre-built artifacts, so contracts/ isn't needed.
 WORKDIR /opt/pos-portal
 COPY --from=builder /opt/pos-portal/foundry.toml ./foundry.toml
+RUN sed -i '/^\[profile\.default\]/a offline = true' foundry.toml
 COPY --from=builder /opt/pos-portal/lib/forge-std ./lib/forge-std
 COPY --from=builder /opt/pos-portal/scripts/deployment-scripts ./scripts/deployment-scripts
 COPY --from=builder /opt/pos-portal/out ./out
@@ -144,6 +155,7 @@ COPY --from=builder /opt/pos-portal/out ./out
 # for the test files we deliberately excluded.
 WORKDIR /opt/spol-contracts
 COPY --from=builder /opt/spol-contracts/foundry.toml ./foundry.toml
+RUN sed -i '/^\[profile\.default\]/a offline = true' foundry.toml
 COPY --from=builder /opt/spol-contracts/foundry.lock ./foundry.lock
 COPY --from=builder /opt/spol-contracts/soldeer.lock ./soldeer.lock
 COPY --from=builder /opt/spol-contracts/remappings.txt ./remappings.txt
