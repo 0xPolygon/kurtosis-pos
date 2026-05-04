@@ -48,7 +48,7 @@ env:
 
   # pos-validator-config-generator settings
   VALIDATOR_CONFIG_IMAGE_NAME: 0xPolygon/pos-validator-config-generator
-  HEIMDALL_V2_VERSION: 0.6.0
+  HEIMDALL_V2_VERSION: 0.7.1
   POLYGON_CLI_VERSION: v0.1.111
 
 jobs:
