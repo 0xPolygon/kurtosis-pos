@@ -199,7 +199,7 @@ jobs:
 
           echo "slack_lines=$slack_lines" >> "$GITHUB_OUTPUT"
 
-      - uses: slackapi/slack-github-action@03ea5433c137af7c0495bc0cad1af10403fc800c # v3.0.2
+      - uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         if: always()
         with:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
