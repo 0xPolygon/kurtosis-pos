@@ -1,6 +1,8 @@
 name: publish-snapshots
 
-# Workflow to build and publish snapshots to GHCR.
+# Build snapshot images for each devnet variant, validate end-to-end (extract +
+# restore + chain advances), then push to GHCR. Triggered on tag pushes (`v*`)
+# or via manual dispatch with a custom tag for testing.
 on:
   push:
     tags: ['v*']
@@ -21,6 +23,7 @@ env:
 jobs:
   publish-snapshot:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     permissions:
       contents: read
@@ -28,6 +31,7 @@ jobs:
       id-token: write
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           - image_name: 0xpolygon/pos-devnet-small
@@ -35,7 +39,13 @@ jobs:
             extra_flags: --args-file .github/configs/large.yml.norun
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+        with:
+          docker_username: ${{ secrets.DOCKER_USERNAME }}
+          docker_token: ${{ secrets.DOCKER_TOKEN }}
+
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
@@ -47,6 +57,34 @@ jobs:
 
       - name: Create snapshot
         run: ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
+
+      - name: Verify snapshot image exists
+        run: docker image inspect pos-devnet
+
+      # Validate the snapshot end-to-end before publishing so a broken snapshot
+      # never ships. Tear down the live enclave, extract the image, restore, and
+      # confirm the restored devnet produces blocks.
+      - name: Remove the kurtosis enclave
+        run: kurtosis enclave rm --force ${{ env.ENCLAVE_NAME }}
+
+      - name: Extract snapshot data
+        run: ./scripts/snapshot/extract.sh pos-devnet
+
+      - name: Restore devnet from snapshot
+        run: ./scripts/snapshot/restore.sh
+
+      - name: Verify restored devnet produces blocks
+        run: |
+          target_block=200
+          while true; do
+            block=$(cast bn --rpc-url localhost:9545)
+            echo "L2 block: $block/$target_block"
+            if [[ "$block" -ge "$target_block" ]]; then
+              echo "Restored devnet is producing blocks!"
+              break
+            fi
+            sleep 5
+          done
 
       - name: Get tag
         run: echo "TAG=${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}" >> $GITHUB_ENV
