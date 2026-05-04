@@ -1,15 +1,27 @@
 name: snapshot
 
+# Build snapshot images for each devnet variant and validate them
+# end-to-end: extract + restore + chain advances on every L2 EL node +
+# ETH bridge round-trip across L1↔L2.
+#
+# Daily cron acts as a smoke test of the snapshot pipeline.
+# On a `v*` tag push, the same job additionally publishes validated
+# images to GHCR — a broken snapshot can never ship.
 on:
   schedule:
-    - cron: 0 6 * * * # Run this workflow every day at 6 AM Paris time (UTC).
+    - cron: 0 6 * * * # 6 AM UTC every day.
+  push:
+    tags: ['v*']
   workflow_dispatch:
-
-# Permissions required to pull images from GAR
-permissions:
-  contents: read
-  actions: write
-  id-token: write
+    inputs:
+      tag:
+        description: Tag override (used as the GHCR tag when publishing)
+        required: false
+        default: vx.y.z-test
+      publish:
+        description: Push the built image to GHCR (defaults to true on tag push, false otherwise)
+        required: false
+        default: "false"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,6 +34,21 @@ jobs:
   snapshot:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
+    permissions:
+      contents: read
+      actions: write
+      packages: write
+      id-token: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image_name: 0xpolygon/pos-devnet-small
+          - image_name: 0xpolygon/pos-devnet-large
+            extra_flags: --args-file .github/configs/large.yml.norun
+
     steps:
       - uses: actions/checkout@v6
 
@@ -30,8 +57,14 @@ jobs:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Deploy devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file .github/configs/large.yml.norun .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} ${{ matrix.extra_flags }} .
 
       - name: Create snapshot
         run: ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
@@ -71,3 +104,29 @@ jobs:
             fi
             sleep 5
           done
+
+      - name: Run ETH bridge + withdraw tests against the restored devnet
+        uses: ./.github/actions/test-restored-devnet
+        with:
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
+
+      # Publish only on tag push, or on manual dispatch with publish=true.
+      - name: Should publish?
+        id: publish
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.publish }}" == "true" ]]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Push snapshot image to GHCR
+        if: steps.publish.outputs.publish == 'true'
+        run: |
+          full_image="ghcr.io/${{ matrix.image_name }}:${{ steps.publish.outputs.tag }}"
+          docker tag pos-devnet "$full_image"
+          docker push "$full_image"
