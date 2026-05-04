@@ -26,7 +26,7 @@ rm -rf ./tmp
 Extract the snapshot data.
 
 ```bash
-./scripts/snapshot/extract.sh ghcr.io/0xpolygon/pos-devnet-large:v1.2.14
+./scripts/snapshot/extract.sh ghcr.io/0xpolygon/pos-devnet-large:v1.3.1
 ```
 
 Snapshot data will be extracted to `./tmp` by default. You can change the output directory by passing it as a second argument.
@@ -82,7 +82,7 @@ Note that bor was not correctly flushing data to disk during shutdown in the pas
 kurtosis run \
     --enclave pos \
     --args-file .github/configs/large.yml.norun \
-    github.com/0xPolygon/kurtosis-pos@v1.2.13
+    github.com/0xPolygon/kurtosis-pos@v1.3.1
 ```
 
 ### Snapshot the enclave
