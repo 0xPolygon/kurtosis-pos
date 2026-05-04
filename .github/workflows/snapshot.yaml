@@ -48,7 +48,7 @@ jobs:
       - name: Restore devnet from snapshot
         run: ./scripts/snapshot/restore.sh
 
-      - name: Verify restored devnet produces blocks on every L2 EL node
+      - name: Verify devnet produces blocks and all nodes are in sync
         run: |
           target_block=500
           mapfile -t entries < <(yq -r '.services | to_entries[] | select(.key | test("-l2-el-[0-9]+-")) | "\(.value.ports[0] | split(":") | .[0]) \(.key)"' ./tmp/docker-compose.yaml | sort -n)
