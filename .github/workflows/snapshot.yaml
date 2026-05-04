@@ -48,14 +48,22 @@ jobs:
       - name: Restore devnet from snapshot
         run: ./scripts/snapshot/restore.sh
 
-      - name: Verify restored devnet produces blocks
+      - name: Verify restored devnet produces blocks on every L2 EL node
         run: |
           target_block=500
+          mapfile -t ports < <(yq -r '.services | to_entries[] | select(.key | test("-l2-el-[0-9]+-")) | .value.ports[0]' ./tmp/docker-compose.yaml | cut -d: -f1 | sort -n)
+          echo "Polling ${#ports[@]} L2 EL endpoints: ${ports[*]}"
           while true; do
-            block=$(cast bn --rpc-url localhost:9545)
-            echo "L2 block: $block/$target_block"
-            if [[ "$block" -ge "$target_block" ]]; then
-              echo "Restored devnet is producing blocks!"
+            all_ready=true
+            for port in "${ports[@]}"; do
+              block=$(cast bn --rpc-url "localhost:${port}" 2>/dev/null || echo 0)
+              echo "  port ${port}: ${block}/${target_block}"
+              if [[ "${block}" -lt "${target_block}" ]]; then
+                all_ready=false
+              fi
+            done
+            if ${all_ready}; then
+              echo "All L2 EL nodes reached block ${target_block}"
               break
             fi
             sleep 5

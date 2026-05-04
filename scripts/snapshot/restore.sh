@@ -11,6 +11,10 @@ source "${SCRIPT_DIR}/log.sh"
 # DOCKER VOLUMES RESTORE
 ############################################################################
 
+# Alpine image pinned by digest — same as snapshot.sh — so the restore tooling
+# is reproducible and not affected by an upstream `alpine:latest` rebase.
+ALPINE_IMAGE="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11"
+
 restore_docker_volumes() {
     local volume_folder_path="$1"
 
@@ -24,7 +28,7 @@ restore_docker_volumes() {
             docker run --rm \
                 -v "$volume_name":/data \
                 -v "$volume_folder_path":/backup \
-                alpine tar xzf /backup/$(basename "$v") -C /data
+                "$ALPINE_IMAGE" tar xzf /backup/$(basename "$v") -C /data
         ) &
     done
 
@@ -38,7 +42,7 @@ restore_docker_volumes() {
             docker run --rm \
                 -v "$volume_name":/data \
                 -v "$(realpath "$d")":/backup \
-                alpine sh -c "cd /backup && tar cf - . | tar xf - -C /data"
+                "$ALPINE_IMAGE" sh -c "cd /backup && tar cf - . | tar xf - -C /data"
         ) &
     done
 

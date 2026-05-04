@@ -125,10 +125,11 @@ backup_docker_volumes() {
     done < "$temp_mounts"
     rm -f "$temp_mounts"
 
-    # Pull alpine image once before parallel execution to avoid rate limits.
-    # Skip if already present locally (e.g. air-gapped or no registry access).
-    if ! docker image inspect alpine >/dev/null 2>&1; then
-        docker pull alpine
+    # Alpine image pinned by digest so backup output is reproducible across runs.
+    # Pull once before the parallel loop to avoid registry rate-limits.
+    local alpine_image="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11"
+    if ! docker image inspect "$alpine_image" >/dev/null 2>&1; then
+        docker pull "$alpine_image"
     fi
 
     # Backup volumes using sanitized names.
@@ -144,7 +145,7 @@ backup_docker_volumes() {
             docker run --rm \
                 -v "$v":/data:ro \
                 -v "$volume_folder_path":/backup \
-                alpine tar czf /backup/$(basename "$backup_file") --exclude='./addrbook.json' -C /data .
+                "$alpine_image" tar czf /backup/$(basename "$backup_file") --exclude='./addrbook.json' -C /data .
         ) &
     done
     wait
@@ -153,7 +154,7 @@ backup_docker_volumes() {
     # Fix ownership so they can be cleaned up without sudo.
     docker run --rm \
         -v "$volume_folder_path":/backup \
-        alpine chown -R "$(id -u):$(id -g)" /backup
+        "$alpine_image" chown -R "$(id -u):$(id -g)" /backup
 }
 
 ##############################################################################
@@ -530,6 +531,26 @@ target_block=256 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"
 wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 
+# Extract kurtosis file artifacts that post-restore e2e tests need.
+# `kurtosis files inspect` only works on a live enclave, so we have to grab
+# them now and ship them inside the snapshot image alongside the volumes and
+# compose. Two artifacts are needed:
+#   - pos-contract-addresses/contractAddresses.json: every L1/L2 bridge,
+#     predicate, and dummy-token address (used by every bridge/withdraw test).
+#   - l2-el-genesis/genesis.json: contains config.bor.stateReceiverContract
+#     (L2_STATE_RECEIVER_ADDRESS, used by state-sync helpers).
+contract_addresses_tmp=$(mktemp)
+l2_genesis_tmp=$(mktemp)
+trap "rm -f '$contract_addresses_tmp' '$l2_genesis_tmp'" EXIT
+log_info "Extracting kurtosis file artifacts"
+# kurtosis files inspect prepends a "File contents:" banner. Strip everything
+# before the first '{' and re-format with jq so the output is canonical JSON.
+kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json \
+    | sed -n '/^{/,$p' | jq . > "$contract_addresses_tmp"
+kurtosis files inspect "$enclave_name" l2-el-genesis genesis.json \
+    | sed -n '/^{/,$p' | jq . > "$l2_genesis_tmp"
+log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract_addresses_tmp") bytes, l2-genesis.json: $(wc -c < "$l2_genesis_tmp") bytes)"
+
 # Stop containers in dependency order to avoid app/store divergence:
 # 1. L2 CL (heimdall) first — stops block production at consensus layer
 # 2. L2 EL (bor/erigon) second — bor flushes its head-pointer atomically with no new blocks arriving
@@ -579,6 +600,10 @@ volume_folder_path="$tmp_dir/volumes"
 backup_docker_volumes "$enclave_name" "$volume_folder_path"
 log_info "Backups completed"
 
+# Move the previously-extracted file artifacts into the snapshot tree.
+mv "$contract_addresses_tmp" "$tmp_dir/contractAddresses.json"
+mv "$l2_genesis_tmp" "$tmp_dir/l2-genesis.json"
+
 log_info "Generating docker-compose"
 docker_compose_file_path="$tmp_dir/docker-compose.yaml"
 generate_docker_compose "$enclave_name" "$docker_compose_file_path"
@@ -593,6 +618,8 @@ cat > "Dockerfile" <<'EOF'
 FROM scratch
 COPY volumes/*.tar.gz /volumes/
 COPY docker-compose.yaml /docker-compose.yaml
+COPY contractAddresses.json /contractAddresses.json
+COPY l2-genesis.json /l2-genesis.json
 EOF
 # Build the docker image
 image_name="pos-devnet"
