@@ -308,16 +308,28 @@ add_network_aliases() {
 configure_service_dependencies() {
     local docker_compose_file="$1"
 
-    # L2: CL depends on RabbitMQ with matching index (only if a paired rabbitmq exists — validators have one, rpc/archive nodes don't)
+    # L2: CL (validator) depends on its paired RabbitMQ.
+    # L2: CL (rpc/archive) depends on a validator CL — forces RPCs to start AFTER validators
+    # are healthy, so Docker's embedded DNS has registered every l2-cl-* alias by the time
+    # cometBFT on the RPC tries to resolve persistent_peers. Without this, RPC nodes hit
+    # "server misbehaving" DNS errors at startup, never retry, and stay peerless forever.
     yq --in-place --yaml-output \
         --arg enclave_name "$enclave_name" '
         (.services | keys) as $all_services |
+        # Find a reference validator CL (the one paired with rabbitmq-1 if available, else any with a rabbitmq)
+        ([$all_services[] | select(test("^" + $enclave_name + "-l2-cl-[0-9]+-") and (test("rabbitmq") | not))
+          | . as $cl
+          | (capture("^" + $enclave_name + "-l2-cl-(?<idx>[0-9]+)-")) as $m
+          | select($all_services | index($enclave_name + "-l2-cl-" + $m.idx + "-rabbitmq"))
+         ] | .[0]) as $ref_validator_cl |
         .services |= with_entries(
             if (.key | test("^" + $enclave_name + "-l2-cl-[0-9]+-")) and (.key | test("rabbitmq") | not) then
                 (.key | capture("^" + $enclave_name + "-l2-cl-(?<idx>[0-9]+)-")) as $match |
                 ($enclave_name + "-l2-cl-" + $match.idx + "-rabbitmq") as $rmq |
                 if ($all_services | index($rmq)) then
                     .value.depends_on = {($rmq): {"condition": "service_healthy"}}
+                elif $ref_validator_cl != null and .key != $ref_validator_cl then
+                    .value.depends_on = {($ref_validator_cl): {"condition": "service_healthy"}}
                 else . end
             else . end
         )
@@ -372,13 +384,30 @@ add_health_checks() {
         )
     ' "$docker_compose_file"
 
-    # Bor / Erigon (L2 EL) health check — uses wget since neither image ships curl.
+    # Bor (L2 EL) health check — bor image ships wget but not curl or bash.
     yq --in-place --yaml-output \
         --arg enclave_name "$enclave_name" '
         .services |= with_entries(
-            if .key | test("^" + $enclave_name + "-l2-el-[0-9]+-") then
+            if (.key | test("^" + $enclave_name + "-l2-el-[0-9]+-")) and (.key | test("bor")) then
                 .value.healthcheck = {
                     "test": ["CMD-SHELL", "wget --quiet --timeout=5 --post-data=\"{\\\"method\\\":\\\"eth_blockNumber\\\",\\\"params\\\":[],\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\"}\" --header=\"Content-Type: application/json\" --output-document=- http://localhost:8545 | grep -q result"],
+                    "interval": "5s",
+                    "timeout": "10s",
+                    "retries": 12,
+                    "start_period": "30s"
+                }
+            else . end
+        )
+    ' "$docker_compose_file"
+
+    # Erigon (L2 EL) health check — erigon image has bash but no wget/curl, so probe via /dev/tcp.
+    # This only verifies the JSON-RPC port is listening, not that it returns valid responses.
+    yq --in-place --yaml-output \
+        --arg enclave_name "$enclave_name" '
+        .services |= with_entries(
+            if (.key | test("^" + $enclave_name + "-l2-el-[0-9]+-")) and (.key | test("erigon")) then
+                .value.healthcheck = {
+                    "test": ["CMD-SHELL", "bash -c \"exec 3<>/dev/tcp/localhost/8545 && exec 3>&-\""],
                     "interval": "5s",
                     "timeout": "10s",
                     "retries": 12,
@@ -437,6 +466,37 @@ configure_ports() {
     ' "$docker_compose_file"
 }
 
+# Heimdall RPC/archive containers run init steps (heimdalld init, cp genesis/keys) before heimdalld start.
+# These steps fail on a second boot because /tmp/init-data/config/genesis.json already exists.
+# After restore, all init outputs already live in /etc/heimdall, so we guard the init prefix on
+# whether the restored state file exists. First boot (no state) → init+start; restored boot → start only.
+make_heimdall_commands_idempotent() {
+    local docker_compose_file="$1"
+    yq --in-place --yaml-output '
+        .services |= with_entries(
+            if (.value.command | type == "array")
+               and (.value.command | length == 1)
+               and (.value.command[0] | type == "string")
+               and (.value.command[0] | test("heimdalld init"))
+            then
+                (.value.command[0] | capture("(?<start>/usr/local/share/container-proc-manager.sh heimdalld start.*$)").start) as $start_cmd |
+                .value.command = [
+                    "[ -f /etc/heimdall/data/priv_validator_state.json ] && " + $start_cmd
+                    + " || ( " + .value.command[0] + " )"
+                ]
+            else . end
+        )
+    ' "$docker_compose_file"
+}
+
+# Add restart: on-failure to all services so transient startup races (Docker DNS not yet
+# warmed, dependency container still booting) recover automatically instead of leaving
+# a dead container that needs manual intervention.
+add_restart_policy() {
+    local docker_compose_file="$1"
+    yq --in-place --yaml-output '.services[] |= (.restart = "on-failure")' "$docker_compose_file"
+}
+
 sanitize_docker_compose() {
     local docker_compose_file="$1"
     configure_networks "$docker_compose_file"
@@ -446,6 +506,8 @@ sanitize_docker_compose() {
     configure_service_dependencies "$docker_compose_file"
     add_health_checks "$docker_compose_file"
     configure_ports "$docker_compose_file"
+    make_heimdall_commands_idempotent "$docker_compose_file"
+    add_restart_policy "$docker_compose_file"
 }
 
 ##############################################################################
