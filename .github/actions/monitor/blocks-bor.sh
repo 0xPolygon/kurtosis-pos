@@ -2,9 +2,16 @@
 set -euo pipefail
 
 # Monitor Bor block progress in a Polygon PoS devnet.
-# Usage: ./blocks-bor.sh <enclave_name> [first|all]
-# Example: ./blocks-bor.sh pos first  # Check only the first RPC
-# Example: ./blocks-bor.sh pos all    # Check all RPCs (default)
+# Usage: ./blocks-bor.sh <enclave_name> [first|all] [delta]
+# Example: ./blocks-bor.sh pos first       # Check only the first RPC
+# Example: ./blocks-bor.sh pos all         # Check all RPCs (default)
+# Example: ./blocks-bor.sh restored all 40 # Require +40 blocks past the baseline
+#
+# The target is computed per-RPC as `baseline + delta`, where `baseline` is the
+# latest/finalized block at startup. On a fresh deploy baseline=0 so the target
+# matches the historical absolute behaviour. On a restored devnet the baseline
+# is whatever was in the snapshot, and the script proves the chain is still
+# advancing.
 
 # Source helpers
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,7 +22,7 @@ source "${SCRIPT_DIR}/resolve-url.sh"
 monitor_rpc() {
   local rpc_name="$1"
   local rpc_url="$2"
-  local target="$3"
+  local delta="$3"
 
   log_info "Checking RPC: ${rpc_name}"
   log_info "Using rpc url: ${rpc_url}"
@@ -24,6 +31,14 @@ monitor_rpc() {
   local gas_price_factor=1
   local LATEST_BLOCK=0
   local FINALIZED_BLOCK=0
+
+  # Capture per-RPC baselines so the target is "current + delta".
+  local latest_baseline finalized_baseline latest_target finalized_target
+  latest_baseline=$(cast bn --rpc-url "${rpc_url}" 2>/dev/null || echo 0)
+  finalized_baseline=$(cast bn finalized --rpc-url "${rpc_url}" 2>/dev/null || echo 0)
+  latest_target=$((latest_baseline + delta))
+  finalized_target=$((finalized_baseline + delta))
+  log_info "Baseline for ${rpc_name}: latest=${latest_baseline}, finalized=${finalized_baseline}; targets: latest=${latest_target}, finalized=${finalized_target}"
 
   for step in $(seq 1 "${num_steps}"); do
     log_info "Check ${step}/${num_steps} for ${rpc_name}"
@@ -34,7 +49,7 @@ monitor_rpc() {
     LATEST_BLOCK=$(cast bn --rpc-url "${rpc_url}" 2>/dev/null || echo 0)
     FINALIZED_BLOCK=$(cast bn finalized --rpc-url "${rpc_url}" 2>/dev/null || echo 0)
     log_info "Got block height: latest=${LATEST_BLOCK}, finalized=${FINALIZED_BLOCK}"
-    if [[ "${LATEST_BLOCK}" -ge "${target}" && "${FINALIZED_BLOCK}" -ge "${target}" ]]; then
+    if [[ "${LATEST_BLOCK}" -ge "${latest_target}" && "${FINALIZED_BLOCK}" -ge "${finalized_target}" ]]; then
       break
     fi
 
@@ -66,12 +81,12 @@ monitor_rpc() {
   done
 
   # Check if target was reached for this RPC
-  if [[ "${LATEST_BLOCK}" -lt "${target}" || "${FINALIZED_BLOCK}" -lt "${target}" ]]; then
-    log_error "Target block height has not been reached for ${rpc_name}" "target=${target}"
+  if [[ "${LATEST_BLOCK}" -lt "${latest_target}" || "${FINALIZED_BLOCK}" -lt "${finalized_target}" ]]; then
+    log_error "Target block height has not been reached for ${rpc_name}" "latest_target=${latest_target}" "finalized_target=${finalized_target}" "latest=${LATEST_BLOCK}" "finalized=${FINALIZED_BLOCK}"
     return 1
   fi
 
-  log_info "Target block height reached for all block types (latest and finalized) for ${rpc_name}" "target=${target}"
+  log_info "Target block height reached for all block types (latest and finalized) for ${rpc_name}" "latest_target=${latest_target}" "finalized_target=${finalized_target}"
   return 0
 }
 
@@ -92,6 +107,15 @@ if [[ "${check_mode}" != "first" && "${check_mode}" != "all" ]]; then
 fi
 log_info "Using check mode: ${check_mode}"
 
+# Number of additional blocks past the baseline that must land for the check
+# to pass. A sprint is 16 blocks so 40 is ~2.5 sprints — enough to see progress.
+delta=${3:-"40"}
+if ! [[ "${delta}" =~ ^[0-9]+$ ]] || [[ "${delta}" -le 0 ]]; then
+  log_error "Delta must be a positive integer"
+  exit 1
+fi
+log_info "Using delta: ${delta}"
+
 # Get RPC names + URLs (`name|url` per line).
 rpc_entries=$(enumerate_l2_el_services "${enclave_name}" "${check_mode}")
 if [[ -z "${rpc_entries}" ]]; then
@@ -101,9 +125,6 @@ fi
 log_info "Found RPC(s):"
 echo "${rpc_entries}" | while read -r e; do log_info "  ${e}"; done
 
-target="40" # a sprint is 16 blocks so 40 is ~2.5 sprints, which should be enough to see progress
-log_info "Using target: ${target}"
-
 # Monitor block progress for each RPC in parallel
 declare -a pids=()
 declare -a rpc_names=()
@@ -111,7 +132,7 @@ declare -a rpc_names=()
 while IFS='|' read -r rpc_name rpc_url; do
   [[ -z "${rpc_name}" ]] && continue
   rpc_names+=("${rpc_name}")
-  monitor_rpc "${rpc_name}" "${rpc_url}" "${target}" &
+  monitor_rpc "${rpc_name}" "${rpc_url}" "${delta}" &
   pids+=($!)
 done <<< "${rpc_entries}"
 
@@ -127,9 +148,9 @@ done
 
 # Check if any RPC failed
 if [[ "${failed}" -eq 1 ]]; then
-  log_error "RPCs failed to reach target block height" "target=${target}" "rpcs=${failed_rpcs[*]}"
+  log_error "RPCs failed to reach target block height" "delta=${delta}" "rpcs=${failed_rpcs[*]}"
   exit 1
 fi
 
-log_info "All RPCs have reached target block height" "target=${target}"
+log_info "All RPCs have reached target block height" "delta=${delta}"
 exit 0
