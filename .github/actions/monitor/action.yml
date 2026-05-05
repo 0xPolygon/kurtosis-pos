@@ -6,6 +6,13 @@ inputs:
     description: The name of the Kurtosis enclave
     required: false
     default: pos
+  compose_file:
+    description: |
+      Path to a docker-compose.yaml from a restored devnet. When set, scripts
+      resolve URLs from the compose file instead of calling kurtosis. Leave
+      empty for fresh kurtosis-deployed enclaves.
+    required: false
+    default: ''
   skip_milestones:
     description: Skip milestone monitoring
     required: false
@@ -23,33 +30,44 @@ runs:
   using: composite
   steps:
     - name: Inspect enclave
+      if: inputs.compose_file == ''
       shell: bash
       run: kurtosis enclave inspect ${{ inputs.enclave_name }}
 
     - name: Monitor Bor block progress
       working-directory: .github/actions/monitor
       shell: bash
+      env:
+        COMPOSE_FILE: ${{ inputs.compose_file }}
       run: ./blocks-bor.sh ${{ inputs.enclave_name }}
 
     - name: Monitor Heimdall block progress
       working-directory: .github/actions/monitor
       shell: bash
+      env:
+        COMPOSE_FILE: ${{ inputs.compose_file }}
       run: ./blocks-heimdall.sh ${{ inputs.enclave_name }}
 
     - name: Monitor span progress
       if: inputs.skip_spans != 'true'
       working-directory: .github/actions/monitor
       shell: bash
+      env:
+        COMPOSE_FILE: ${{ inputs.compose_file }}
       run: ./spans.sh ${{ inputs.enclave_name }}
 
     - name: Monitor milestone progress
       if: inputs.skip_milestones != 'true'
       working-directory: .github/actions/monitor
       shell: bash
+      env:
+        COMPOSE_FILE: ${{ inputs.compose_file }}
       run: ./milestones.sh ${{ inputs.enclave_name }}
 
     - name: Monitor checkpoint progress
       if: inputs.skip_checkpoints != 'true'
       working-directory: .github/actions/monitor
       shell: bash
+      env:
+        COMPOSE_FILE: ${{ inputs.compose_file }}
       run: ./checkpoints.sh ${{ inputs.enclave_name }}

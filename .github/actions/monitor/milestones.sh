@@ -1,48 +1,43 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script monitors milestones progress in a Polygon PoS devnet.
-# Usage: ./milestones.sh <enclave_name>
-# Example: ./milestones.sh pos
+# Monitor milestone progress in a Polygon PoS devnet.
+# Usage: ./milestones.sh <enclave_name> [delta]
+#   delta — how far the count must advance past its current value
+#           (default 1). On a fresh deploy current=0, so target=1
+#           proves heimdall produced a milestone. On a restored
+#           devnet current is whatever was in the snapshot, so
+#           target=current+1 proves a fresh milestone landed
+#           post-restore.
 
-# Source logging library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/log.sh"
+source "${SCRIPT_DIR}/resolve-url.sh"
 
 log_info "Monitoring milestones progress"
 
-# Validate input parameters
 enclave_name=${1:-"pos"}
-if [[ -z "${enclave_name}" ]]; then
-  log_error "Enclave name must be provided"
-  exit 1
-fi
+delta=${2:-"1"}
 log_info "Using enclave name: ${enclave_name}"
 
-cl_name="l2-cl-1-heimdall-v2-bor-validator"
-log_info "Using CL node: ${cl_name}"
-
-api_url=$(kurtosis port print "${enclave_name}" "${cl_name}" http)
+api_url=$(resolve_l2_cl_api_url "${enclave_name}")
 log_info "Using API url: ${api_url}"
 
-target="10"
-log_info "Using target: ${target}"
+baseline=$(curl -sf "${api_url}/milestones/count" 2>/dev/null | jq -r '.count // 0')
+target=$((baseline + delta))
+log_info "Baseline count=${baseline}, target=${target}"
 
-# Monitor milestone progress
 num_steps=100
-gas_price_factor=1
 for step in $(seq 1 "${num_steps}"); do
   log_info "Check ${step}/${num_steps}"
-
-  MILESTONES_COUNT=$(curl "${api_url}/milestones/count" | jq --raw-output '.count')
-  log_info "Got milestones count: ${MILESTONES_COUNT}"
-  if [[ "${MILESTONES_COUNT}" -ge "${target}" ]]; then
+  count=$(curl -sf "${api_url}/milestones/count" 2>/dev/null | jq -r '.count // 0')
+  log_info "Got milestones count: ${count}"
+  if [[ "${count}" -ge "${target}" ]]; then
     log_info "Target milestones reached" "target=${target}"
     exit 0
   fi
   sleep 5
 done
 
-# If the code reaches here, the target was not met within the allowed steps
 log_error "Target milestones have not been reached" "target=${target}"
 exit 1

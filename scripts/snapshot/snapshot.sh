@@ -448,13 +448,21 @@ configure_ports() {
         )
     ' "$docker_compose_file"
 
-    # L2 CL (consensus layer) - REST API on port 1317 + (index - 1)
+    # L2 CL (consensus layer) - both the REST API (port 1317) and the cometBFT
+    # RPC (port 26657) are mapped to the host. REST is what bridge tests and
+    # checkpoint/milestone monitors hit; cometBFT RPC is what the heimdall
+    # block-height monitor hits (it parses .result.sync_info.latest_block_height
+    # from /status, only available on cometBFT RPC). Each port range is offset
+    # by (idx - 1).
     yq --in-place --yaml-output \
         --arg enclave_name "$enclave_name" '
         .services |= with_entries(
             if (.key | test("^" + $enclave_name + "-l2-cl-[0-9]+-")) and (.key | test("rabbitmq") | not) then
                 (.key | capture("^" + $enclave_name + "-l2-cl-(?<idx>[0-9]+)-")) as $match |
-                .value.ports = [(($match.idx | tonumber) + 1317 - 1 | tostring) + ":1317"]
+                .value.ports = [
+                    (($match.idx | tonumber) + 1317 - 1 | tostring) + ":1317",
+                    (($match.idx | tonumber) + 26657 - 1 | tostring) + ":26657"
+                ]
             else . end
         )
     ' "$docker_compose_file"

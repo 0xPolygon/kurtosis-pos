@@ -1,26 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script monitors Heimdall block progress in a Polygon PoS devnet.
+# Monitor Heimdall block progress in a Polygon PoS devnet.
 # Usage: ./blocks-heimdall.sh <enclave_name> [first|all]
 # Example: ./blocks-heimdall.sh pos first  # Check only the first CL node
 # Example: ./blocks-heimdall.sh pos all    # Check all CL nodes (default)
 
-# Source logging library
+# Source helpers
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/log.sh"
+source "${SCRIPT_DIR}/resolve-url.sh"
 
 # Function to monitor a single CL node
 monitor_cl() {
-  local cl_entry="$1"
-  local enclave_name="$2"
+  local cl_name="$1"
+  local rpc_url="$2"
   local target="$3"
-  local cl_name="${cl_entry%%--*}"
 
   log_info "Checking CL node: ${cl_name}"
-
-  local rpc_url
-  rpc_url=$(kurtosis port print "${enclave_name}" "${cl_name}" rpc)
   log_info "Using rpc url: ${rpc_url}"
 
   local num_steps=100
@@ -68,35 +65,28 @@ if [[ "${check_mode}" != "first" && "${check_mode}" != "all" ]]; then
 fi
 log_info "Using check mode: ${check_mode}"
 
-# Get CL node names (exclude rabbitmq services)
-if [[ "${check_mode}" == "first" ]]; then
-  cl_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-cl/ && !/rabbitmq/ && /RUNNING/ {print $2 "--" $1}' | head -n 1)
-else
-  cl_names=$(kurtosis enclave inspect "${enclave_name}" | awk '/l2-cl/ && !/rabbitmq/ && /RUNNING/ {print $2 "--" $1}')
-fi
-if [[ -z "${cl_names}" ]]; then
+# Get CL node names + URLs (`name|url` per line, exclude rabbitmq).
+cl_entries=$(enumerate_l2_cl_services "${enclave_name}" "${check_mode}")
+if [[ -z "${cl_entries}" ]]; then
   log_error "No running l2-cl services found in enclave ${enclave_name}"
   exit 1
 fi
-log_info "Found CL node(s): ${cl_names}"
+log_info "Found CL node(s):"
+echo "${cl_entries}" | while read -r e; do log_info "  ${e}"; done
 
 target="40"
 log_info "Using target: ${target}"
 
 # Monitor block progress for each CL node in parallel
 declare -a pids=()
-declare -a cl_array=()
+declare -a cl_names=()
 
-# Convert cl_names to array
-while IFS= read -r cl_entry; do
-  cl_array+=("${cl_entry}")
-done <<< "${cl_names}"
-
-# Launch monitoring jobs in parallel
-for cl_entry in "${cl_array[@]}"; do
-  monitor_cl "${cl_entry}" "${enclave_name}" "${target}" &
+while IFS='|' read -r cl_name rpc_url; do
+  [[ -z "${cl_name}" ]] && continue
+  cl_names+=("${cl_name}")
+  monitor_cl "${cl_name}" "${rpc_url}" "${target}" &
   pids+=($!)
-done
+done <<< "${cl_entries}"
 
 # Wait for all background jobs and collect exit codes
 failed=0
@@ -104,7 +94,7 @@ declare -a failed_cls=()
 for i in "${!pids[@]}"; do
   if ! wait "${pids[$i]}"; then
     failed=1
-    failed_cls+=("${cl_array[$i]%%--*}")
+    failed_cls+=("${cl_names[$i]}")
   fi
 done
 
