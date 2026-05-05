@@ -170,7 +170,7 @@ runs:
       shell: bash
       run: |
         registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
-        python3 .github/actions/setup/add-registry-prefix.py --registry-prefix $registry_prefix
+        python3 .github/actions/kurtosis/setup/add-registry-prefix.py --registry-prefix $registry_prefix
 
     - name: Pull images from GAR
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
@@ -197,7 +197,7 @@ runs:
             docker pull "$prefixed_image"
             docker tag "$prefixed_image" "$image"
           fi
-        done < .github/actions/setup/images.txt
+        done < .github/actions/kurtosis/setup/images.txt
 
     # Debug
     - name: List images
