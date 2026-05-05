@@ -1,76 +1,94 @@
 name: monitor
 description: |
-  Monitor blockchain progress (blocks, milestones, checkpoints, spans).
-  Works against both kurtosis-deployed enclaves (default) and restored
-  docker-compose devnets — set compose_file to switch to docker mode.
+  Monitor blockchain progress (blocks, milestones, checkpoints, spans) by
+  running the devnet-monitor Go binary against either a kurtosis enclave or
+  a restored docker-compose devnet.
 
 inputs:
   enclave_name:
-    description: The name of the Kurtosis enclave
+    description: The name of the Kurtosis enclave. Ignored when compose_file is set.
     required: false
     default: pos
   compose_file:
     description: |
-      Path to a docker-compose.yaml from a restored devnet. When set, scripts
-      resolve URLs from the compose file instead of calling kurtosis. Leave
-      empty for fresh kurtosis-deployed enclaves.
+      Path to a docker-compose.yaml from a restored devnet. When set, the
+      monitor resolves URLs from the compose file instead of querying kurtosis.
     required: false
     default: ''
   skip_milestones:
-    description: Skip milestone monitoring
+    description: Skip milestone monitoring.
     required: false
     default: 'false'
   skip_checkpoints:
-    description: Skip checkpoint monitoring
+    description: Skip checkpoint monitoring.
     required: false
     default: 'false'
   skip_spans:
-    description: Skip span monitoring
+    description: Skip span monitoring.
     required: false
     default: 'false'
 
 runs:
   using: composite
   steps:
+    - name: Set up Go
+      uses: actions/setup-go@v6
+      with:
+        go-version-file: tools/devnet-monitor/go.mod
+        cache-dependency-path: tools/devnet-monitor/go.sum
+
+    - name: Build devnet-monitor
+      shell: bash
+      working-directory: tools/devnet-monitor
+      run: go build -o devnet-monitor .
+
+    - name: Resolve target flag
+      id: target
+      shell: bash
+      run: |
+        if [[ -n "${{ inputs.compose_file }}" ]]; then
+          echo "flag=--compose-file ${{ inputs.compose_file }}" >> "$GITHUB_OUTPUT"
+        elif [[ -n "${{ inputs.enclave_name }}" ]]; then
+          echo "flag=--enclave ${{ inputs.enclave_name }}" >> "$GITHUB_OUTPUT"
+        else
+          echo "either enclave_name or compose_file must be set"
+          exit 1
+        fi
+
     - name: Inspect enclave
-      if: inputs.compose_file == ''
+      if: inputs.compose_file == '' && inputs.enclave_name != ''
       shell: bash
       run: kurtosis enclave inspect ${{ inputs.enclave_name }}
 
     - name: Monitor Bor block progress
-      working-directory: .github/actions/monitor
       shell: bash
       env:
-        COMPOSE_FILE: ${{ inputs.compose_file }}
-      run: ./blocks-bor.sh ${{ inputs.enclave_name }}
+        LOG_LEVEL: DEBUG
+      run: tools/devnet-monitor/devnet-monitor bor ${{ steps.target.outputs.flag }}
 
     - name: Monitor Heimdall block progress
-      working-directory: .github/actions/monitor
       shell: bash
       env:
-        COMPOSE_FILE: ${{ inputs.compose_file }}
-      run: ./blocks-heimdall.sh ${{ inputs.enclave_name }}
+        LOG_LEVEL: DEBUG
+      run: tools/devnet-monitor/devnet-monitor heimdall ${{ steps.target.outputs.flag }}
 
     - name: Monitor span progress
       if: inputs.skip_spans != 'true'
-      working-directory: .github/actions/monitor
       shell: bash
       env:
-        COMPOSE_FILE: ${{ inputs.compose_file }}
-      run: ./spans.sh ${{ inputs.enclave_name }}
+        LOG_LEVEL: DEBUG
+      run: tools/devnet-monitor/devnet-monitor spans ${{ steps.target.outputs.flag }}
 
     - name: Monitor milestone progress
       if: inputs.skip_milestones != 'true'
-      working-directory: .github/actions/monitor
       shell: bash
       env:
-        COMPOSE_FILE: ${{ inputs.compose_file }}
-      run: ./milestones.sh ${{ inputs.enclave_name }}
+        LOG_LEVEL: DEBUG
+      run: tools/devnet-monitor/devnet-monitor milestones ${{ steps.target.outputs.flag }}
 
     - name: Monitor checkpoint progress
       if: inputs.skip_checkpoints != 'true'
-      working-directory: .github/actions/monitor
       shell: bash
       env:
-        COMPOSE_FILE: ${{ inputs.compose_file }}
-      run: ./checkpoints.sh ${{ inputs.enclave_name }}
+        LOG_LEVEL: DEBUG
+      run: tools/devnet-monitor/devnet-monitor checkpoints ${{ steps.target.outputs.flag }}

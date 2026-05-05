@@ -51,13 +51,8 @@ runs:
           # Restored docker-compose devnet: resolve from the compose file.
           # Service keys are prefixed with the enclave name; match the suffix.
           # Pick the port whose container side is 8545 (RPC for both geth and anvil).
-          port=$(yq -r --arg suffix "-${{ inputs.l1_rpc }}" '
-              .services | to_entries[]
-              | select(.key | endswith($suffix))
-              | .value.ports[]
-              | select(endswith(":8545"))
-              | split(":")[0]
-            ' "${{ inputs.compose_file }}" | head -n 1)
+          suffix="-${{ inputs.l1_rpc }}"
+          port=$(yq -r ".services | to_entries[] | select(.key | endswith(\"${suffix}\")) | .value.ports[] | select(endswith(\":8545\")) | split(\":\")[0]" "${{ inputs.compose_file }}" | head -n 1)
           if [[ -z "$port" ]]; then
             echo "Could not resolve L1 RPC port from ${{ inputs.compose_file }} for service suffix '-${{ inputs.l1_rpc }}'"
             exit 1

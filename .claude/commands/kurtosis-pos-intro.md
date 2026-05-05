@@ -65,9 +65,10 @@ static_files/                    # Templates, genesis configs, CL validator keys
 docker/                          # Dockerfiles for the three setup images
 scripts/snapshot/                # Snapshot / restore devnets
 docs/                            # Docusaurus documentation site
+tools/devnet-monitor/            # Go health-check binary (blocks, checkpoints, milestones, spans)
 .github/
   configs/                       # Ready-made YAML args files for CI and manual runs
-  actions/monitor/               # Health-check scripts (blocks, checkpoints, milestones, spans)
+  actions/monitor/               # Composite action that builds + runs devnet-monitor
   workflows/                     # CI: checks, deploy, stability, snapshot, publish-images
 ```
 
@@ -106,11 +107,11 @@ kurtosis-test .
 # 5. Deploy and verify devnet health
 kurtosis run --enclave pos .
 kurtosis enclave inspect pos
-.github/actions/monitor/blocks-bor.sh pos first       # EL blocks progressing
-.github/actions/monitor/blocks-heimdall.sh pos        # CL blocks progressing
-.github/actions/monitor/spans.sh pos                  # span production
-.github/actions/monitor/milestones.sh pos             # milestone production
-.github/actions/monitor/checkpoints.sh pos            # checkpoint committed
+tools/devnet-monitor/devnet-monitor bor --enclave pos         # EL blocks progressing
+tools/devnet-monitor/devnet-monitor heimdall --enclave pos    # CL blocks progressing
+tools/devnet-monitor/devnet-monitor spans --enclave pos       # span production
+tools/devnet-monitor/devnet-monitor milestones --enclave pos  # milestone production
+tools/devnet-monitor/devnet-monitor checkpoints --enclave pos # checkpoint committed
 
 # 6. Tear down
 kurtosis enclave rm --force pos

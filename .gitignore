@@ -1,3 +1,6 @@
 tmp/
 test
 params.yml
+
+# Built binaries from tools/
+tools/devnet-monitor/devnet-monitor

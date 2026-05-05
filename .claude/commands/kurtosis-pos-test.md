@@ -176,7 +176,7 @@ kurtosis service stop pos l2-el-0-bor-heimdall-v2-validator
 kurtosis service start pos l2-el-0-bor-heimdall-v2-validator
 
 # Verify recovery by watching block production
-.github/actions/monitor/blocks-bor.sh pos all
+tools/devnet-monitor/devnet-monitor bor --enclave pos
 ```
 
 ### Hot-swap image (test a different build)
