@@ -539,6 +539,47 @@ target_block=256 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"
 wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 
+# Wait for heimdall's view of L1 checkpoint acks to catch up with L1's
+# actual `currentHeaderBlock`. There's a race window where L1 has emitted
+# `NewHeaderBlock(N)` but heimdall's bridge listener hasn't yet polled the
+# emitting block, so heimdall's `ack_count` lags L1 by one. Snapshotting
+# in that window leaves the restored chain unable to ever observe ack #N
+# (the listener resumes from past the emission block and never replays
+# old events), permanently breaking checkpoint progression.
+wait_for_checkpoint_quiescence() {
+    local enclave_name="$1"
+
+    local cl_api_url root_chain_proxy l1_rpc_url
+    cl_api_url=$(kurtosis port print "$enclave_name" l2-cl-1-heimdall-v2-bor-validator http)
+    l1_rpc_url=$(kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
+    root_chain_proxy=$(kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json \
+        | sed -n '/^{/,$p' | jq -r '.root.RootChainProxy')
+
+    local num_steps=60
+    for step in $(seq 1 "$num_steps"); do
+        # `currentHeaderBlock()` returns the next-slot id (multiples of
+        # ChildChainBlockInterval=10000); divide to get the count of acks on L1.
+        local l1_header_block l1_acks heimdall_acks
+        l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2>/dev/null | head -n 1 | awk '{print $1}')
+        l1_acks=$((l1_header_block / 10000))
+        heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2>/dev/null | jq -r '.ack_count // 0')
+
+        log_info "Checkpoint quiescence check ${step}/${num_steps}: L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}"
+        # The L1 contract counter advances *before* heimdall sees the ack;
+        # quiescent means heimdall has caught up to the L1 truth.
+        if [[ "${heimdall_acks}" -ge 1 && "${heimdall_acks}" -ge "${l1_acks}" ]]; then
+            log_info "Checkpoint flow is quiescent (L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks})"
+            return 0
+        fi
+        sleep 10
+    done
+    log_error "Checkpoint flow did not reach quiescence within $num_steps steps"
+    return 1
+}
+
+log_info "Waiting for heimdall's checkpoint ack_count to catch up with L1"
+wait_for_checkpoint_quiescence "$enclave_name"
+
 # Extract kurtosis file artifacts that post-restore e2e tests need.
 # `kurtosis files inspect` only works on a live enclave, so we have to grab
 # them now and ship them inside the snapshot image alongside the volumes and
