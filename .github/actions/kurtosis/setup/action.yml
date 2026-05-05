@@ -1,4 +1,4 @@
-name: kurtosis-setup
+name: setup
 description: Set up Docker authentication and Kurtosis environment
 
 inputs:

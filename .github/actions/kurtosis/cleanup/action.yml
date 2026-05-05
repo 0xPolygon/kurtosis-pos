@@ -1,4 +1,4 @@
-name: kurtosis-cleanup
+name: cleanup
 description: Collect logs and artifacts, clean up enclave, and save cache
 
 inputs:
