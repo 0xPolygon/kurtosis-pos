@@ -91,6 +91,38 @@ jobs:
             sleep 5
           done
 
+      # Withdraw tests need a fresh checkpoint on L1 to assemble the exit
+      # payload. Block production alone isn't enough — heimdall→L1
+      # checkpoint submission has its own restore-time hazards (rabbitmq
+      # task staleness, proposer rotation). Wait for ack_count and
+      # milestone count to advance past their post-restore baseline before
+      # running the bridge tests so we fail fast and clearly here, not
+      # 10 minutes into a withdraw test that has no chance.
+      - name: Verify heimdall produces milestones and checkpoints
+        run: |
+          api="http://localhost:$(yq -r '.services | to_entries[] | select(.key | test("-l2-cl-1-heimdall-v2-bor-validator$")) | .value.ports[0]' ./tmp/docker-compose.yaml | cut -d: -f1)"
+          baseline_milestones=$(curl -sf "$api/milestones/count" | jq -r '.count // 0')
+          baseline_checkpoints=$(curl -sf "$api/checkpoints/count" | jq -r '.ack_count // 0')
+          target_milestones=$((baseline_milestones + 1))
+          target_checkpoints=$((baseline_checkpoints + 1))
+          echo "Baseline:    milestones=${baseline_milestones} checkpoints=${baseline_checkpoints}"
+          echo "Target:      milestones=${target_milestones} checkpoints=${target_checkpoints}"
+          # Checkpoint cadence is ~2 minutes; 15 min covers cold-start + a
+          # rotation if the first proposer slot misses.
+          deadline=$(( $(date +%s) + 900 ))
+          while [[ $(date +%s) -lt $deadline ]]; do
+            m=$(curl -sf "$api/milestones/count" | jq -r '.count // 0')
+            c=$(curl -sf "$api/checkpoints/count" | jq -r '.ack_count // 0')
+            echo "  milestones=${m}/${target_milestones} checkpoints=${c}/${target_checkpoints}"
+            if [[ "$m" -ge "$target_milestones" && "$c" -ge "$target_checkpoints" ]]; then
+              echo "Heimdall is producing milestones and checkpoints"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "::error::milestones or checkpoints did not advance within timeout"
+          exit 1
+
       - name: Run ETH bridge + withdraw tests against the restored devnet
         uses: ./.github/actions/test-docker-devnet
         with:
