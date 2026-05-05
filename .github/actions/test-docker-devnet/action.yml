@@ -1,13 +1,5 @@
 name: test-docker-devnet
-description: |
-  Run the ETH bridge + withdraw bats subset against a restored kurtosis-pos
-  devnet. Used by the snapshot and publish-snapshots workflows after the
-  block-height verification step. Reads RPC URLs from the host-mapped ports
-  in the restored docker-compose, and contract addresses from the artifacts
-  baked into the snapshot image (./tmp/contractAddresses.json,
-  ./tmp/l2-genesis.json). Pre-exports every env var pos_setup would
-  otherwise resolve via `kurtosis port print` / `kurtosis files inspect`,
-  since kurtosis is gone post-restore.
+description: Run ETH bridge and withdraw tests against a restored docker devnet
 
 inputs:
   pos_e2e_tag:
@@ -59,56 +51,60 @@ runs:
         polycli version
         popd
 
-    - name: Run ETH bridge + withdraw tests
-      working-directory: pos-e2e
+    # Resolve every env var pos_setup would normally fetch via `kurtosis port print`
+    # / `kurtosis files inspect` (kurtosis is gone after restore). Write to
+    # $GITHUB_ENV so subsequent steps see them. Disable kurtosis-based discovery in
+    # pos_setup by pre-setting ENCLAVE_NAME.
+    - name: Resolve test environment from snapshot artifacts
       shell: bash
-      env:
-        TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
-        # Disable kurtosis-based discovery in pos_setup — kurtosis is gone after restore.
-        ENCLAVE_NAME: restored
       run: |
         set -e
         compose="${{ github.workspace }}/${{ inputs.snapshot_folder }}/docker-compose.yaml"
-        addrs="${{ github.workspace }}/${{ inputs.snapshot_folder }}/contractAddresses.json"
-        genesis="${{ github.workspace }}/${{ inputs.snapshot_folder }}/l2-genesis.json"
+        contract_addresses="${{ github.workspace }}/${{ inputs.snapshot_folder }}/contractAddresses.json"
+        l2_genesis="${{ github.workspace }}/${{ inputs.snapshot_folder }}/l2-genesis.json"
+
         # Resolve host-mapped ports from the restored compose file.
-        l1_port=$(yq -r '.services | to_entries[] | select(.key | test("-el-1-geth-lighthouse$")) | .value.ports[0]' "$compose" | cut -d: -f1)
-        l2_port=$(yq -r '.services | to_entries[] | select(.key | test("-l2-el-1-bor-heimdall-v2-validator$")) | .value.ports[0]' "$compose" | cut -d: -f1)
-        l2_cl_port=$(yq -r '.services | to_entries[] | select(.key | test("-l2-cl-1-heimdall-v2-bor-validator$")) | .value.ports[0]' "$compose" | cut -d: -f1)
-        export L1_RPC_URL="http://localhost:${l1_port}"
-        export L2_RPC_URL="http://localhost:${l2_port}"
-        export L2_CL_API_URL="http://localhost:${l2_cl_port}"
-        # Pull every contract address pos_setup would normally fetch from
-        # the kurtosis 'pos-contract-addresses' artifact.
-        export L1_GOVERNANCE_PROXY_ADDRESS=$(jq -r '.root.GovernanceProxy' "$addrs")
-        export L1_ROOT_CHAIN_PROXY_ADDRESS=$(jq -r '.root.RootChainProxy' "$addrs")
-        export L1_DEPOSIT_MANAGER_PROXY_ADDRESS=$(jq -r '.root.DepositManagerProxy' "$addrs")
-        export L1_WITHDRAW_MANAGER_PROXY_ADDRESS=$(jq -r '.root.WithdrawManagerProxy' "$addrs")
-        export L1_ERC20_PREDICATE_ADDRESS=$(jq -r '.root.predicates.ERC20Predicate' "$addrs")
-        export L1_ERC721_PREDICATE_ADDRESS=$(jq -r '.root.predicates.ERC721Predicate' "$addrs")
-        export L1_STAKE_MANAGER_PROXY_ADDRESS=$(jq -r '.root.StakeManagerProxy' "$addrs")
-        export L1_STAKING_INFO_ADDRESS=$(jq -r '.root.StakingInfo' "$addrs")
-        export L1_MATIC_TOKEN_ADDRESS=$(jq -r '.root.tokens.MaticToken' "$addrs")
-        export L1_POL_TOKEN_ADDRESS=$(jq -r '.root.tokens.PolToken' "$addrs")
-        export L1_ERC20_TOKEN_ADDRESS=$(jq -r '.root.tokens.TestToken' "$addrs")
-        export L1_ERC721_TOKEN_ADDRESS=$(jq -r '.root.tokens.RootERC721' "$addrs")
-        export L2_ERC20_TOKEN_ADDRESS=$(jq -r '.child.tokens.TestToken' "$addrs")
-        export L2_ERC721_TOKEN_ADDRESS=$(jq -r '.child.tokens.RootERC721' "$addrs")
-        export L1_WETH_TOKEN_ADDRESS=$(jq -r '.root.tokens.MaticWeth' "$addrs")
-        export L2_WETH_TOKEN_ADDRESS=$(jq -r '.child.tokens.MaticWeth' "$addrs")
-        export L1_ROOT_CHAIN_MANAGER_PROXY=$(jq -r '.root.posBridge.RootChainManagerProxy' "$addrs")
-        export L1_ERC20_BRIDGE_PREDICATE_PROXY=$(jq -r '.root.posBridge.ERC20PredicateProxy' "$addrs")
-        export L1_ERC721_BRIDGE_PREDICATE_PROXY=$(jq -r '.root.posBridge.ERC721PredicateProxy' "$addrs")
-        export L1_ERC1155_BRIDGE_PREDICATE_PROXY=$(jq -r '.root.posBridge.ERC1155PredicateProxy' "$addrs")
-        export L1_ETHER_BRIDGE_PREDICATE_PROXY=$(jq -r '.root.posBridge.EtherPredicateProxy' "$addrs")
-        export L1_DUMMY_ERC20=$(jq -r '.root.posBridge.DummyERC20' "$addrs")
-        export L2_DUMMY_ERC20=$(jq -r '.child.posBridge.DummyERC20' "$addrs")
-        export L1_DUMMY_ERC721=$(jq -r '.root.posBridge.DummyERC721' "$addrs")
-        export L2_DUMMY_ERC721=$(jq -r '.child.posBridge.DummyERC721' "$addrs")
-        export L1_DUMMY_ERC1155=$(jq -r '.root.posBridge.DummyERC1155' "$addrs")
-        export L2_DUMMY_ERC1155=$(jq -r '.child.posBridge.DummyERC1155' "$addrs")
-        export L2_MATIC_WETH=$(jq -r '.child.posBridge.MaticWETH' "$addrs")
-        # State receiver lives in the L2 bor genesis config.
-        export L2_STATE_RECEIVER_ADDRESS=$(jq -r '.config.bor.stateReceiverContract' "$genesis")
-        # Run only the ETH variant of bridge + withdraw.
-        bats --filter-tags transaction-eth tests/bridge/pos.bats
+        l1_rpc_port=$(yq -r '.services | to_entries[] | select(.key | test("-el-1-geth-lighthouse$")) | .value.ports[0]' "$compose" | cut -d: -f1)
+        l2_rpc_port=$(yq -r '.services | to_entries[] | select(.key | test("-l2-el-1-bor-heimdall-v2-validator$")) | .value.ports[0]' "$compose" | cut -d: -f1)
+        l2_cl_api_port=$(yq -r '.services | to_entries[] | select(.key | test("-l2-cl-1-heimdall-v2-bor-validator$")) | .value.ports[0]' "$compose" | cut -d: -f1)
+        {
+          echo "ENCLAVE_NAME=restored"
+          echo "TIMEOUT_SECONDS=${{ inputs.timeout_seconds }}"
+          echo "L1_RPC_URL=http://localhost:${l1_rpc_port}"
+          echo "L2_RPC_URL=http://localhost:${l2_rpc_port}"
+          echo "L2_CL_API_URL=http://localhost:${l2_cl_api_port}"
+          echo "L1_GOVERNANCE_PROXY_ADDRESS=$(jq -r '.root.GovernanceProxy' "$contract_addresses")"
+          echo "L1_ROOT_CHAIN_PROXY_ADDRESS=$(jq -r '.root.RootChainProxy' "$contract_addresses")"
+          echo "L1_DEPOSIT_MANAGER_PROXY_ADDRESS=$(jq -r '.root.DepositManagerProxy' "$contract_addresses")"
+          echo "L1_WITHDRAW_MANAGER_PROXY_ADDRESS=$(jq -r '.root.WithdrawManagerProxy' "$contract_addresses")"
+          echo "L1_ERC20_PREDICATE_ADDRESS=$(jq -r '.root.predicates.ERC20Predicate' "$contract_addresses")"
+          echo "L1_ERC721_PREDICATE_ADDRESS=$(jq -r '.root.predicates.ERC721Predicate' "$contract_addresses")"
+          echo "L1_STAKE_MANAGER_PROXY_ADDRESS=$(jq -r '.root.StakeManagerProxy' "$contract_addresses")"
+          echo "L1_STAKING_INFO_ADDRESS=$(jq -r '.root.StakingInfo' "$contract_addresses")"
+          echo "L1_MATIC_TOKEN_ADDRESS=$(jq -r '.root.tokens.MaticToken' "$contract_addresses")"
+          echo "L1_POL_TOKEN_ADDRESS=$(jq -r '.root.tokens.PolToken' "$contract_addresses")"
+          echo "L1_ERC20_TOKEN_ADDRESS=$(jq -r '.root.tokens.TestToken' "$contract_addresses")"
+          echo "L1_ERC721_TOKEN_ADDRESS=$(jq -r '.root.tokens.RootERC721' "$contract_addresses")"
+          echo "L2_ERC20_TOKEN_ADDRESS=$(jq -r '.child.tokens.TestToken' "$contract_addresses")"
+          echo "L2_ERC721_TOKEN_ADDRESS=$(jq -r '.child.tokens.RootERC721' "$contract_addresses")"
+          echo "L1_WETH_TOKEN_ADDRESS=$(jq -r '.root.tokens.MaticWeth' "$contract_addresses")"
+          echo "L2_WETH_TOKEN_ADDRESS=$(jq -r '.child.tokens.MaticWeth' "$contract_addresses")"
+          echo "L1_ROOT_CHAIN_MANAGER_PROXY=$(jq -r '.root.posBridge.RootChainManagerProxy' "$contract_addresses")"
+          echo "L1_ERC20_BRIDGE_PREDICATE_PROXY=$(jq -r '.root.posBridge.ERC20PredicateProxy' "$contract_addresses")"
+          echo "L1_ERC721_BRIDGE_PREDICATE_PROXY=$(jq -r '.root.posBridge.ERC721PredicateProxy' "$contract_addresses")"
+          echo "L1_ERC1155_BRIDGE_PREDICATE_PROXY=$(jq -r '.root.posBridge.ERC1155PredicateProxy' "$contract_addresses")"
+          echo "L1_ETHER_BRIDGE_PREDICATE_PROXY=$(jq -r '.root.posBridge.EtherPredicateProxy' "$contract_addresses")"
+          echo "L1_DUMMY_ERC20=$(jq -r '.root.posBridge.DummyERC20' "$contract_addresses")"
+          echo "L2_DUMMY_ERC20=$(jq -r '.child.posBridge.DummyERC20' "$contract_addresses")"
+          echo "L1_DUMMY_ERC721=$(jq -r '.root.posBridge.DummyERC721' "$contract_addresses")"
+          echo "L2_DUMMY_ERC721=$(jq -r '.child.posBridge.DummyERC721' "$contract_addresses")"
+          echo "L1_DUMMY_ERC1155=$(jq -r '.root.posBridge.DummyERC1155' "$contract_addresses")"
+          echo "L2_DUMMY_ERC1155=$(jq -r '.child.posBridge.DummyERC1155' "$contract_addresses")"
+          echo "L2_MATIC_WETH=$(jq -r '.child.posBridge.MaticWETH' "$contract_addresses")"
+          echo "L2_STATE_RECEIVER_ADDRESS=$(jq -r '.config.bor.stateReceiverContract' "$l2_genesis")"
+        } >> "$GITHUB_ENV"
+
+    - name: Run ETH bridge and withdraw tests
+      working-directory: pos-e2e
+      shell: bash
+      run: bats --filter-tags transaction-eth tests/bridge/pos.bats
