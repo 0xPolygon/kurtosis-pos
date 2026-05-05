@@ -53,8 +53,10 @@ runs:
 
     # Resolve every env var pos_setup would normally fetch via `kurtosis port print`
     # / `kurtosis files inspect` (kurtosis is gone after restore). Write to
-    # $GITHUB_ENV so subsequent steps see them. Disable kurtosis-based discovery in
-    # pos_setup by pre-setting ENCLAVE_NAME.
+    # $GITHUB_ENV so subsequent steps see them. Each `kurtosis ...` call in
+    # pos_setup is gated by `${VAR:-$(kurtosis ...)}` defaults, so pre-setting
+    # the var skips the kurtosis call. ENCLAVE_NAME is only a log label here —
+    # `restored` makes it obvious in CI output that we're testing post-restore.
     - name: Resolve test environment from snapshot artifacts
       shell: bash
       run: |
