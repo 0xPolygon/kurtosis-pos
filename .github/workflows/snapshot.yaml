@@ -106,7 +106,7 @@ jobs:
           done
 
       - name: Run ETH bridge + withdraw tests against the restored devnet
-        uses: ./.github/actions/test-restored-devnet
+        uses: ./.github/actions/test-docker-devnet
         with:
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 

@@ -1,4 +1,4 @@
-name: test-restored-devnet
+name: test-docker-devnet
 description: |
   Run the ETH bridge + withdraw bats subset against a restored kurtosis-pos
   devnet. Used by the snapshot and publish-snapshots workflows after the
