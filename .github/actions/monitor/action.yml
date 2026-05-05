@@ -1,5 +1,8 @@
 name: monitor
-description: Monitor blockchain progress (blocks, milestones, checkpoints, spans, validators)
+description: |
+  Monitor blockchain progress (blocks, milestones, checkpoints, spans).
+  Works against both kurtosis-deployed enclaves (default) and restored
+  docker-compose devnets — set compose_file to switch to docker mode.
 
 inputs:
   enclave_name:
