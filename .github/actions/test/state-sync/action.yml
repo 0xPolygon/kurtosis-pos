@@ -1,4 +1,4 @@
-name: test-state-sync
+name: state-sync
 description: Test state sync functionality
 
 inputs:
