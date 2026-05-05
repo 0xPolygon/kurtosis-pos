@@ -67,18 +67,18 @@ jobs:
       - name: Restore devnet from snapshot
         run: ./scripts/snapshot/restore.sh
 
-      - name: Monitor restored devnet
-        uses: ./.github/actions/monitor
+      - uses: ./.github/actions/monitor
         with:
           enclave_name: restored
           compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
 
-      - name: Run ETH bridge + withdraw tests against the restored devnet
-        uses: ./.github/actions/test-docker-devnet
+      - uses: ./.github/actions/test-state-sync
         with:
+          enclave_name: restored
+          compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - name: Push snapshot image to GHCR
+      - name: Push snapshot image
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         run: |
           image="ghcr.io/0xpolygon/pos-devnet-${{ matrix.devnet_type }}:${{ github.ref_name }}"
