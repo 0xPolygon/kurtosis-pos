@@ -183,7 +183,7 @@ def main():
     else:
         # Try to find constants.star relative to script location
         script_dir = Path(__file__).parent
-        repo_root = script_dir.parent.parent.parent
+        repo_root = script_dir.parent.parent.parent.parent
         constants_path = repo_root / "src" / "config" / "constants.star"
 
     if not constants_path.exists():
