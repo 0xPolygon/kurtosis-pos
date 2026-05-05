@@ -75,6 +75,7 @@ jobs:
       - uses: ./.github/actions/test/state-sync
         with:
           enclave_name: restored
+          compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
       - name: Push snapshot image
