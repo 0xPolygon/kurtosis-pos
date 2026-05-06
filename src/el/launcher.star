@@ -130,7 +130,11 @@ def _get_launcher(participant):
 def generate_name(participant, id):
     cl_type = participant.get("cl_type")
     el_type = participant.get("el_type")
+    # Reflect archive mode in the service name (e.g. `l2-el-1-bor-...-rpc-archive`)
+    # so it's discoverable from `kurtosis enclave inspect` without reading config.
     suffix = participant.get("kind")
+    if participant.get("el_bor_archive_mode"):
+        suffix = "{}-archive".format(suffix)
     return "l2-el-{}-{}-{}-{}".format(
         id,
         el_type,
