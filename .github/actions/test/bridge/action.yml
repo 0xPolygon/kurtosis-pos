@@ -16,7 +16,7 @@ inputs:
   pos_e2e_tag:
     description: The git tag, branch, or commit hash of 0xPolygon/pos-e2e
     required: false
-    default: ed5da22452f40cd2679f648f32d8e084f82faad8
+    default: 636c55e76f9e63c7a4daf870bdd0fe7f9e406250
   pos_e2e_token:
     description: GitHub token with read access to 0xPolygon/pos-e2e
     required: true
