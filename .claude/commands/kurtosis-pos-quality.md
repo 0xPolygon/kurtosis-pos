@@ -2,7 +2,7 @@
 name: kurtosis-pos-quality
 description: Quality and CI for kurtosis-pos. Covers CI workflows (checks, deploy, stability, snapshot, publish-images), Starlark formatting, typos, markdown linting, documentation sync, and Docker image publishing.
 allowed-tools: Bash, Read, Glob, Grep
-compatibility: Requires kurtosis CLI 1.18.2+, cargo (typos-cli, rumdl), and gh CLI for workflow dispatch.
+compatibility: Requires kurtosis CLI 1.15.2+, cargo (typos-cli, rumdl), and gh CLI for workflow dispatch.
 ---
 
 ## Related skills
@@ -16,7 +16,7 @@ compatibility: Requires kurtosis CLI 1.18.2+, cargo (typos-cli, rumdl), and gh C
 
 | Workflow              | Trigger                     | What it does                                                                                                                                                   |
 | --------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `checks.yaml`         | PR / push to main           | Lint (kurtosis + rumdl), typos, unit tests. Pins `KURTOSIS_VERSION: 1.18.2`.                                                                                   |
+| `checks.yaml`         | PR / push to main           | Lint (kurtosis + rumdl), typos, unit tests. Pins `KURTOSIS_VERSION: 1.15.2`.                                                                                   |
 | `deploy.yaml`         | PR / push / daily           | Deploys configs in `.github/configs/` (excludes `.norun`). On schedule/`workflow_dispatch` only, also runs `nightly/` configs. PR merges skip nightly configs. |
 | `stability.yaml`      | Daily / `workflow_dispatch` | 30 parallel deploys per config; measures failure rate                                                                                                          |
 | `snapshot.yaml`       | `workflow_dispatch`         | Deploys a devnet, takes a snapshot, publishes it as a Docker image                                                                                             |

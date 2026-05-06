@@ -6,7 +6,7 @@ inputs:
   kurtosis_version:
     description: The version of Kurtosis to install
     required: false
-    default: 1.18.2
+    default: 1.15.2
   foundry_version:
     description: The version of Foundry to install
     required: false
