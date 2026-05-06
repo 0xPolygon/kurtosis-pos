@@ -20,6 +20,10 @@ inputs:
   pos_e2e_token:
     description: GitHub token with read access to 0xPolygon/pos-e2e
     required: true
+  polygon_cli_version:
+    description: The release version of polygon-cli
+    required: false
+    default: v0.1.111
   compose_file:
     description: |
       Path to a restored docker-compose.yaml. When set, resolve the L1 RPC URL
@@ -46,6 +50,16 @@ runs:
         assert-path: ${{ github.workspace }}/lib/bats-assert
         detik-path: ${{ github.workspace }}/lib/bats-detik
         file-path: ${{ github.workspace }}/lib/bats-file
+
+    - name: Install polygon-cli
+      shell: bash
+      run: |
+        pushd $(mktemp -d) || exit 1
+        curl -s -L "https://github.com/0xPolygon/polygon-cli/releases/download/${{ inputs.polygon_cli_version }}/polycli_${{ inputs.polygon_cli_version }}_linux_amd64.tar.gz" > polycli.tar.gz
+        tar xf polycli.tar.gz
+        sudo mv polycli_* /usr/local/bin/polycli
+        polycli version
+        popd
 
     - name: Determine L1 RPC URL
       shell: bash
