@@ -216,9 +216,9 @@ jobs:
       # than .github/configs/nightly/cl-el-genesis. Kurtosis 1.18+ strips leading
       # dots from top-level dirs when packing the package archive (mholt/archives
       # regression in kurtosis #2947), so `read_file(".github/...")` from main.star
-      # cannot locate files under hidden dirs locally. CI's pinned 1.15.2 isn't
-      # affected, but routing artifacts via a non-hidden dir keeps local and CI
-      # behaviour identical.
+      # cannot locate files under hidden dirs. Both local and CI are now on
+      # 1.18.x, so routing artifacts via a non-hidden dir is what makes the
+      # second deploy work in either environment.
       - name: Retrieve L2 CL genesis file
         run: |
           mkdir -p tmp/cl-el-genesis
