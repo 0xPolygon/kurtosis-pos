@@ -13,7 +13,7 @@ import (
 
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/discover"
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/log"
-	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probe"
+	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probeapi"
 )
 
 // Persistent flags shared across all subcommands.
@@ -59,7 +59,7 @@ func resolve() (discover.Devnet, error) {
 
 // runOne is the shared "run a single probe and exit appropriately" path used
 // by every probe-specific subcommand.
-func runOne(p probe.Probe, opts probe.Options) error {
+func runOne(p probeapi.Probe, opts probeapi.Options) error {
 	dn, err := resolve()
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func runOne(p probe.Probe, opts probe.Options) error {
 		"timeout", opts.Timeout,
 	)
 	res := p.Run(context.Background(), dn, opts, lg)
-	probe.LogResult(lg, res)
+	probeapi.LogResult(lg, res)
 	if res.Failed > 0 {
 		os.Exit(1)
 	}

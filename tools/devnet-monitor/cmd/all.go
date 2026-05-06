@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probe"
+	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probeapi"
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probes"
 )
 
@@ -22,7 +22,7 @@ func allCmd() *cobra.Command {
 				return err
 			}
 			rootLogger := slog.Default()
-			opts := probe.Options{
+			opts := probeapi.Options{
 				MinBlocks:      flagMinBlocks,
 				MinSpans:       flagMinSpans,
 				MinMilestones:  flagMinMilestones,
@@ -34,7 +34,7 @@ func allCmd() *cobra.Command {
 				"timeout", opts.Timeout,
 			)
 
-			ps := []probe.Probe{
+			ps := []probeapi.Probe{
 				probes.Bor{},
 				probes.Heimdall{},
 				probes.Spans{},
@@ -45,15 +45,15 @@ func allCmd() *cobra.Command {
 			var (
 				wg      sync.WaitGroup
 				mu      sync.Mutex
-				results = make(map[string]probe.Result)
+				results = make(map[string]probeapi.Result)
 			)
 			for _, p := range ps {
 				wg.Add(1)
-				go func(p probe.Probe) {
+				go func(p probeapi.Probe) {
 					defer wg.Done()
 					lg := rootLogger.With("probe", p.Name())
 					r := p.Run(context.Background(), dn, opts, lg)
-					probe.LogResult(lg, r)
+					probeapi.LogResult(lg, r)
 					mu.Lock()
 					results[p.Name()] = r
 					mu.Unlock()

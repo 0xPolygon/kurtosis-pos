@@ -14,15 +14,19 @@ type Service struct {
 }
 
 // Devnet is the set of services we care about on a running PoS devnet.
+//
+// Both L2ELServices and L2CLServices return services sorted by Name. The
+// bor probe relies on that order to pick a deterministic stimulus-tx sender
+// (the first validator); other callers can assume the same ordering.
 type Devnet interface {
 	// Target returns a label like "enclave:pos" or "compose:/tmp/foo.yaml".
 	Target() string
 
-	// L2ELServices returns every Bor RPC.
+	// L2ELServices returns every Bor RPC, sorted by Name.
 	L2ELServices() ([]Service, error)
 
-	// L2CLServices returns every Heimdall CometBFT RPC (port 26657 in container).
-	// Excludes the rabbitmq sidecar.
+	// L2CLServices returns every Heimdall CometBFT RPC (port 26657 in container),
+	// sorted by Name. Excludes the rabbitmq sidecar.
 	L2CLServices() ([]Service, error)
 
 	// L2CLAPI returns the REST API URL of the first Heimdall validator

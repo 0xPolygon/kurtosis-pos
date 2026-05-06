@@ -10,10 +10,8 @@ import (
 
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/chain"
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/discover"
-	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probe"
+	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probeapi"
 )
-
-const pollInterval = 10 * time.Second
 
 // Bor monitors block progress on every Bor RPC. Sends a stimulus tx every
 // poll cycle from the first validator to keep an idle chain advancing.
@@ -21,9 +19,9 @@ type Bor struct{}
 
 func (Bor) Name() string { return "bor" }
 
-func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probe.Options, lg *slog.Logger) probe.Result {
+func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, lg *slog.Logger) probeapi.Result {
 	start := time.Now()
-	res := probe.Result{Probe: "bor", Target: dn.Target(), MinKey: "min_blocks", MinValue: opts.MinBlocks}
+	res := probeapi.Result{Probe: "bor", MinKey: "min_blocks", MinValue: opts.MinBlocks}
 
 	rpcs, err := dn.L2ELServices()
 	if err != nil {

@@ -1,6 +1,6 @@
-// Package probe defines the Probe interface and the Result type that all
-// probes share.
-package probe
+// Package probeapi defines the Probe interface and the Result type that
+// every concrete probe (in package probes) implements and returns.
+package probeapi
 
 import (
 	"context"
@@ -27,7 +27,6 @@ type Options struct {
 // applies" (no probe currently uses this case).
 type Result struct {
 	Probe       string        `json:"probe"`
-	Target      string        `json:"target"`
 	Checked     int           `json:"checked"`
 	OK          int           `json:"ok"`
 	Failed      int           `json:"failed"`

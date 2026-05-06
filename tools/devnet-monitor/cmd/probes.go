@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probe"
+	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probeapi"
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probes"
 )
 
@@ -12,7 +12,7 @@ func borCmd() *cobra.Command {
 		Use:   "bor",
 		Short: "Monitor Bor (EL) block progress; sends a stimulus tx every poll",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return runOne(probes.Bor{}, probe.Options{MinBlocks: flagMinBlocks, Timeout: flagTimeout})
+			return runOne(probes.Bor{}, probeapi.Options{MinBlocks: flagMinBlocks, Timeout: flagTimeout})
 		},
 	}
 	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 50, "blocks the chain must advance past baseline")
@@ -24,7 +24,7 @@ func heimdallCmd() *cobra.Command {
 		Use:   "heimdall",
 		Short: "Monitor Heimdall (CL) block progress (observe-only)",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return runOne(probes.Heimdall{}, probe.Options{MinBlocks: flagMinBlocks, Timeout: flagTimeout})
+			return runOne(probes.Heimdall{}, probeapi.Options{MinBlocks: flagMinBlocks, Timeout: flagTimeout})
 		},
 	}
 	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 50, "blocks the chain must advance past baseline")
@@ -36,7 +36,7 @@ func spansCmd() *cobra.Command {
 		Use:   "spans",
 		Short: "Monitor bor span rotation",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return runOne(probes.Spans{}, probe.Options{MinSpans: flagMinSpans, Timeout: flagTimeout})
+			return runOne(probes.Spans{}, probeapi.Options{MinSpans: flagMinSpans, Timeout: flagTimeout})
 		},
 	}
 	c.Flags().IntVar(&flagMinSpans, "min-spans", 1, "spans the chain must advance past baseline")
@@ -48,7 +48,7 @@ func milestonesCmd() *cobra.Command {
 		Use:   "milestones",
 		Short: "Monitor heimdall milestone production",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return runOne(probes.Milestones{}, probe.Options{MinMilestones: flagMinMilestones, Timeout: flagTimeout})
+			return runOne(probes.Milestones{}, probeapi.Options{MinMilestones: flagMinMilestones, Timeout: flagTimeout})
 		},
 	}
 	c.Flags().IntVar(&flagMinMilestones, "min-milestones", 5, "milestones the chain must advance past baseline")
@@ -60,7 +60,7 @@ func checkpointsCmd() *cobra.Command {
 		Use:   "checkpoints",
 		Short: "Monitor checkpoint commitment to L1",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return runOne(probes.Checkpoints{}, probe.Options{MinCheckpoints: flagMinCheckpoints, Timeout: flagTimeout})
+			return runOne(probes.Checkpoints{}, probeapi.Options{MinCheckpoints: flagMinCheckpoints, Timeout: flagTimeout})
 		},
 	}
 	c.Flags().IntVar(&flagMinCheckpoints, "min-checkpoints", 3, "checkpoints the chain must advance past baseline")

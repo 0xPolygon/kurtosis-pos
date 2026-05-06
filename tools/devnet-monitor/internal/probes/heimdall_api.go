@@ -7,8 +7,12 @@ import (
 
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/chain"
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/discover"
-	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probe"
+	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probeapi"
 )
+
+// pollInterval is the cadence every probe uses to recheck the chain. Shared
+// across bor / heimdall / spans / milestones / checkpoints.
+const pollInterval = 10 * time.Second
 
 // pollHeimdallCounter is the shared poll loop for spans / milestones / checkpoints.
 // Each one reads a single counter from a Heimdall REST endpoint and waits for
@@ -21,9 +25,9 @@ func pollHeimdallCounter(
 	probeName, minKey string,
 	delta int,
 	read func(context.Context, *chain.Heimdall) (uint64, error),
-) probe.Result {
+) probeapi.Result {
 	start := time.Now()
-	res := probe.Result{Probe: probeName, Target: dn.Target(), MinKey: minKey, MinValue: delta}
+	res := probeapi.Result{Probe: probeName, MinKey: minKey, MinValue: delta}
 
 	api, err := dn.L2CLAPI()
 	if err != nil {

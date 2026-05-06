@@ -8,7 +8,7 @@ import (
 
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/chain"
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/discover"
-	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probe"
+	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probeapi"
 )
 
 // Heimdall monitors block progress on every Heimdall CometBFT RPC. Observe-only.
@@ -16,9 +16,9 @@ type Heimdall struct{}
 
 func (Heimdall) Name() string { return "heimdall" }
 
-func (Heimdall) Run(ctx context.Context, dn discover.Devnet, opts probe.Options, lg *slog.Logger) probe.Result {
+func (Heimdall) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, lg *slog.Logger) probeapi.Result {
 	start := time.Now()
-	res := probe.Result{Probe: "heimdall", Target: dn.Target(), MinKey: "min_blocks", MinValue: opts.MinBlocks}
+	res := probeapi.Result{Probe: "heimdall", MinKey: "min_blocks", MinValue: opts.MinBlocks}
 
 	cls, err := dn.L2CLServices()
 	if err != nil {
