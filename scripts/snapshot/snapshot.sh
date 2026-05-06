@@ -510,6 +510,39 @@ add_restart_policy() {
   yq --in-place --yaml-output '.services[] |= (.restart = "on-failure")' "$docker_compose_file"
 }
 
+# Strip the Polygon-private GAR cache prefix from image references.
+#
+# In CI, .github/actions/kurtosis/setup/add-registry-prefix.py rewrites public
+# Docker Hub images in constants.star to point at our private GAR "virtual"
+# cache (europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/virtual/...)
+# to dodge Docker Hub rate-limiting. docker-autocompose then captures those
+# rewritten names from the running enclave, so the compose embedded in the
+# published snapshot ends up referencing a registry only Polygon engineers
+# can pull from. Strip the prefix here so external consumers of the public
+# snapshot get plain Docker Hub coordinates.
+#
+# Only the GAR `virtual/` prefix is stripped — `public/` GAR images and any
+# other registry refs are passed through untouched. ghcr.io images that were
+# rewritten upstream lose their original ghcr.io/ prefix in the process and
+# would resolve to Docker Hub here; this is fine today because the long-lived
+# services captured in the snapshot (bor, heimdall, client-go, lighthouse,
+# rabbitmq) all originate on Docker Hub. Revisit if a ghcr.io image becomes
+# part of the running set.
+strip_private_registry_prefix() {
+  local docker_compose_file="$1"
+  local gar_prefix="europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/virtual/"
+  yq --in-place --yaml-output \
+    --arg prefix "$gar_prefix" '
+        .services[] |= (
+            if (.image | startswith($prefix)) then
+                .image |= sub("^" + $prefix; "")
+            else
+                .
+            end
+        )
+    ' "$docker_compose_file"
+}
+
 sanitize_docker_compose() {
   local docker_compose_file="$1"
   configure_networks "$docker_compose_file"
@@ -521,6 +554,7 @@ sanitize_docker_compose() {
   configure_ports "$docker_compose_file"
   make_heimdall_commands_idempotent "$docker_compose_file"
   add_restart_policy "$docker_compose_file"
+  strip_private_registry_prefix "$docker_compose_file"
 }
 
 ##############################################################################
