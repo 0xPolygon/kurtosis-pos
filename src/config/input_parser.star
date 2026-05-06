@@ -91,12 +91,14 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_produce_witness": False,
     "el_bor_sync_with_witness": False,
     "el_bor_stateless_parallel_import": False,
+    "el_bor_archive_mode": False,
 }
 
 POLYGON_POS_PACKAGE_ARGS = {
     "log_level": constants.LOG_LEVEL.info,
     "log_format": constants.LOG_FORMAT.text,
-    "participants": [POLYGON_POS_PARTICIPANT],
+    # The first participant is a validator and an archive node.
+    "participants": [POLYGON_POS_PARTICIPANT | {"el_bor_archive_mode": True}],
     "setup_images": {
         "contract_deployer": constants.IMAGES.get("pos_contract_deployer_image"),
         "el_genesis_builder": constants.IMAGES.get("pos_el_genesis_builder_image"),
@@ -122,7 +124,10 @@ POLYGON_POS_PACKAGE_ARGS = {
         "el_block_interval_seconds": 1,
         "el_sprint_duration": constants.EL_SPRINT_DURATION,
         "el_span_duration": constants.EL_SPAN_DURATION,
-        "el_gas_limit": 65000000,
+        # Mirrors the amoy BP (200M). Mainnet BP is 120M. Sources:
+        #   amoy BP:    pos-ops/roles/deploy-amoy-config/amoy/pos-amoy-london-bp-nvme-01/bor/config.toml#L83
+        #   mainnet BP: pos-ops/roles/deploy-mainnet-config/mainnet/anonymous-91/bor/config.toml#L65
+        "el_gas_limit": 200000000,
         # Polygon PoS hard fork configurations
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),

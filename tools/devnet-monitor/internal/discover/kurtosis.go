@@ -66,9 +66,10 @@ func (k *kurtosisDevnet) L2CLAPI() (Service, error) {
 	if len(all) == 0 {
 		return Service{}, fmt.Errorf("no l2-cl validator service found in enclave")
 	}
-	// Pick the first validator in sorted order.
+	// Pick the first validator in sorted order. Match regardless of trailing
+	// `-archive` suffix added by `el_bor_archive_mode: true` (the new default).
 	for _, s := range all {
-		if strings.HasSuffix(s.Name, "-validator") {
+		if strings.Contains(s.Name, "-validator") {
 			return s, nil
 		}
 	}

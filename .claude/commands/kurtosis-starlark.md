@@ -59,7 +59,7 @@ if el_type == "bor": ...
 
 # DO — constants.star
 EL_TYPE = struct(bor="bor", erigon="erigon")
-PARTICIPANT_KIND = struct(validator="validator", rpc="rpc", archive="archive")
+PARTICIPANT_KIND = struct(validator="validator", rpc="rpc")
 
 # consumer
 if el_type == constants.EL_TYPE.bor: ...
@@ -535,10 +535,10 @@ log_level = "{{.log_level}}"
 rpc_port  = {{.rpc_port_number}}
 ```
 
-### `tmpl-conditionals` — Use `{{if eq .kind "archive"}}` for conditional config sections
+### `tmpl-conditionals` — Use `{{if .flag}}` / `{{if eq .field "value"}}` for conditional config sections
 
 ```toml
-gcmode = {{ if eq .kind "archive" }}"archive"{{ else }}"full"{{ end }}
+gcmode = {{ if .archive_mode }}"archive"{{ else }}"full"{{ end }}
 {{- if and (eq .kind "validator") (not .sync_with_witness) }}
 [miner]
   mine = true
