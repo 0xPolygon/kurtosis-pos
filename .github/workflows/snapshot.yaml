@@ -72,7 +72,7 @@ jobs:
           enclave_name: restored
           compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
 
-      - uses: ./.github/actions/test/state-sync
+      - uses: ./.github/actions/test/bridge
         with:
           enclave_name: restored
           compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
