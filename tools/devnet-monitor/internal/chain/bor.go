@@ -1,5 +1,6 @@
-// Package chain wraps go-ethereum's RPC client for the calls we need:
-// block heights, gas price, and a single self-deploy stimulus tx.
+// Package chain wraps go-ethereum's RPC client and Heimdall's REST/CometBFT
+// APIs for the calls we need: block heights, gas price, span/milestone/checkpoint
+// counters, and a single self-deploy stimulus tx.
 package chain
 
 import (
@@ -14,32 +15,32 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-// EL is a Bor (geth-fork) RPC client.
-type EL struct {
+// Bor is a Bor (geth-fork) RPC client.
+type Bor struct {
 	rpc *rpc.Client
 	eth *ethclient.Client
 }
 
-// DialEL opens an RPC connection to a Bor node.
-func DialEL(ctx context.Context, url string) (*EL, error) {
+// DialBor opens an RPC connection to a Bor node.
+func DialBor(ctx context.Context, url string) (*Bor, error) {
 	c, err := rpc.DialContext(ctx, url)
 	if err != nil {
 		return nil, fmt.Errorf("dial %s: %w", url, err)
 	}
-	return &EL{rpc: c, eth: ethclient.NewClient(c)}, nil
+	return &Bor{rpc: c, eth: ethclient.NewClient(c)}, nil
 }
 
-func (el *EL) Close() { el.rpc.Close() }
+func (b *Bor) Close() { b.rpc.Close() }
 
 // LatestBlock returns the head block number.
-func (el *EL) LatestBlock(ctx context.Context) (uint64, error) {
-	return el.eth.BlockNumber(ctx)
+func (b *Bor) LatestBlock(ctx context.Context) (uint64, error) {
+	return b.eth.BlockNumber(ctx)
 }
 
 // FinalizedBlock returns the finalized block number. Returns 0 (no error)
 // before the chain reaches its first finality threshold.
-func (el *EL) FinalizedBlock(ctx context.Context) (uint64, error) {
-	header, err := el.eth.HeaderByNumber(ctx, big.NewInt(int64(rpc.FinalizedBlockNumber)))
+func (b *Bor) FinalizedBlock(ctx context.Context) (uint64, error) {
+	header, err := b.eth.HeaderByNumber(ctx, big.NewInt(int64(rpc.FinalizedBlockNumber)))
 	if err != nil {
 		// Bor returns "finalized block not found" before the chain reaches
 		// finality. Treat as 0 so the caller's poll loop stays alive.
@@ -49,8 +50,8 @@ func (el *EL) FinalizedBlock(ctx context.Context) (uint64, error) {
 }
 
 // GasPrice returns the suggested gas price.
-func (el *EL) GasPrice(ctx context.Context) (*big.Int, error) {
-	return el.eth.SuggestGasPrice(ctx)
+func (b *Bor) GasPrice(ctx context.Context) (*big.Int, error) {
+	return b.eth.SuggestGasPrice(ctx)
 }
 
 // SendStimulusTx broadcasts a self-deployed contract that runs an infinite
@@ -61,22 +62,22 @@ func (el *EL) GasPrice(ctx context.Context) (*big.Int, error) {
 //
 // gasPriceFactor scales the suggested gas price; the caller increases it on
 // failure to push past temporary congestion.
-func (el *EL) SendStimulusTx(ctx context.Context, gasPriceFactor float64) error {
+func (b *Bor) SendStimulusTx(ctx context.Context, gasPriceFactor float64) error {
 	priv, err := crypto.HexToECDSA("d40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea")
 	if err != nil {
 		return fmt.Errorf("parse devnet key: %w", err)
 	}
 	from := crypto.PubkeyToAddress(*priv.Public().(*ecdsa.PublicKey))
 
-	chainID, err := el.eth.ChainID(ctx)
+	chainID, err := b.eth.ChainID(ctx)
 	if err != nil {
 		return fmt.Errorf("get chain id: %w", err)
 	}
-	nonce, err := el.eth.PendingNonceAt(ctx, from)
+	nonce, err := b.eth.PendingNonceAt(ctx, from)
 	if err != nil {
 		return fmt.Errorf("get nonce: %w", err)
 	}
-	suggested, err := el.eth.SuggestGasPrice(ctx)
+	suggested, err := b.eth.SuggestGasPrice(ctx)
 	if err != nil {
 		return fmt.Errorf("suggest gas price: %w", err)
 	}
@@ -97,7 +98,7 @@ func (el *EL) SendStimulusTx(ctx context.Context, gasPriceFactor float64) error 
 	if err != nil {
 		return fmt.Errorf("sign tx: %w", err)
 	}
-	if err := el.eth.SendTransaction(ctx, signed); err != nil {
+	if err := b.eth.SendTransaction(ctx, signed); err != nil {
 		return fmt.Errorf("send tx: %w", err)
 	}
 	return nil

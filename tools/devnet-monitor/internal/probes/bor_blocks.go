@@ -15,7 +15,7 @@ import (
 
 const pollInterval = 10 * time.Second
 
-// Bor monitors EL block progress on every Bor RPC. Sends a stimulus tx every
+// Bor monitors block progress on every Bor RPC. Sends a stimulus tx every
 // poll cycle from the first validator to keep an idle chain advancing.
 type Bor struct{}
 
@@ -61,7 +61,7 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probe.Options, lg *
 		wg.Add(1)
 		go func(svc discover.Service) {
 			defer wg.Done()
-			if !monitorEL(ctx, svc, svc.Name == sender, opts.MinBlocks, lg) {
+			if !monitorBor(ctx, svc, svc.Name == sender, opts.MinBlocks, lg) {
 				mu.Lock()
 				failed = append(failed, svc.Name)
 				mu.Unlock()
@@ -78,17 +78,17 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probe.Options, lg *
 	return res
 }
 
-// monitorEL runs the per-RPC poll loop. Returns true on success.
-func monitorEL(ctx context.Context, svc discover.Service, stimulate bool, minBlocks int, lg *slog.Logger) bool {
-	cl, err := chain.DialEL(ctx, svc.URL)
+// monitorBor runs the per-RPC poll loop. Returns true on success.
+func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBlocks int, lg *slog.Logger) bool {
+	bor, err := chain.DialBor(ctx, svc.URL)
 	if err != nil {
 		lg.Error("Dial failed", "node", svc.Name, "err", err)
 		return false
 	}
-	defer cl.Close()
+	defer bor.Close()
 
-	latestBaseline, _ := cl.LatestBlock(ctx)
-	finalizedBaseline, _ := cl.FinalizedBlock(ctx)
+	latestBaseline, _ := bor.LatestBlock(ctx)
+	finalizedBaseline, _ := bor.FinalizedBlock(ctx)
 	latestRequired := latestBaseline + uint64(minBlocks)
 	finalizedRequired := finalizedBaseline + uint64(minBlocks)
 	lg.Debug("Capture baseline",
@@ -106,8 +106,8 @@ func monitorEL(ctx context.Context, svc discover.Service, stimulate bool, minBlo
 	// Drive the first iteration immediately rather than waiting for the
 	// first tick.
 	for {
-		latest, _ := cl.LatestBlock(ctx)
-		finalized, _ := cl.FinalizedBlock(ctx)
+		latest, _ := bor.LatestBlock(ctx)
+		finalized, _ := bor.FinalizedBlock(ctx)
 		if latest != lastLatest || finalized != lastFinalized {
 			lg.Debug("Poll status",
 				"node", svc.Name,
@@ -121,7 +121,7 @@ func monitorEL(ctx context.Context, svc discover.Service, stimulate bool, minBlo
 		}
 
 		if stimulate {
-			if err := cl.SendStimulusTx(ctx, gasPriceFactor); err != nil {
+			if err := bor.SendStimulusTx(ctx, gasPriceFactor); err != nil {
 				lg.Error("Stimulus tx failed", "node", svc.Name, "err", err, "gas_factor", gasPriceFactor)
 				gasPriceFactor *= 1.5
 			} else {

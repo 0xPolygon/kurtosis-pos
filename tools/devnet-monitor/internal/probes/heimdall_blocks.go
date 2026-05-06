@@ -11,7 +11,7 @@ import (
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probe"
 )
 
-// Heimdall monitors CL block progress on every Heimdall CometBFT RPC. Observe-only.
+// Heimdall monitors block progress on every Heimdall CometBFT RPC. Observe-only.
 type Heimdall struct{}
 
 func (Heimdall) Name() string { return "heimdall" }
@@ -42,7 +42,7 @@ func (Heimdall) Run(ctx context.Context, dn discover.Devnet, opts probe.Options,
 		wg.Add(1)
 		go func(svc discover.Service) {
 			defer wg.Done()
-			if !monitorCL(ctx, svc, opts.MinBlocks, lg) {
+			if !monitorHeimdall(ctx, svc, opts.MinBlocks, lg) {
 				mu.Lock()
 				failed = append(failed, svc.Name)
 				mu.Unlock()
@@ -59,10 +59,10 @@ func (Heimdall) Run(ctx context.Context, dn discover.Devnet, opts probe.Options,
 	return res
 }
 
-func monitorCL(ctx context.Context, svc discover.Service, minBlocks int, lg *slog.Logger) bool {
-	cl := chain.DialCL(svc.URL)
+func monitorHeimdall(ctx context.Context, svc discover.Service, minBlocks int, lg *slog.Logger) bool {
+	h := chain.DialHeimdall(svc.URL)
 
-	baseline, _ := cl.Height(ctx)
+	baseline, _ := h.Height(ctx)
 	required := baseline + uint64(minBlocks)
 	lg.Debug("Capture baseline", "node", svc.Name, "latest", baseline)
 
@@ -71,7 +71,7 @@ func monitorCL(ctx context.Context, svc discover.Service, minBlocks int, lg *slo
 	defer tick.Stop()
 
 	for {
-		latest, _ := cl.Height(ctx)
+		latest, _ := h.Height(ctx)
 		if latest != last {
 			lg.Debug("Poll status", "node", svc.Name, "latest", latest)
 			last = latest
