@@ -1,5 +1,4 @@
 tmp/
-test/
 params.yml
 
 # Built binaries from tools/
