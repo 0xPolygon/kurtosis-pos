@@ -91,12 +91,30 @@ func (h *Heimdall) getJSON(ctx context.Context, path string, out any) error {
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("%s -> %d: %s", path, resp.StatusCode, string(body))
 	}
-	return json.Unmarshal(body, out)
+	if len(body) == 0 {
+		return fmt.Errorf("%s -> %d: empty body", path, resp.StatusCode)
+	}
+	if err := json.Unmarshal(body, out); err != nil {
+		// Truncate body in the error so we don't dump megabytes of HTML.
+		preview := string(body)
+		if len(preview) > 200 {
+			preview = preview[:200] + "..."
+		}
+		return fmt.Errorf("%s -> %d: parse JSON: %w (body: %q)", path, resp.StatusCode, err, preview)
+	}
+	return nil
 }
 
+// parseUint converts a JSON-decoded numeric string to uint64.
+//
+// Empty input is treated as a hard error rather than 0 — every caller maps a
+// real chain counter (height, span id, ack_count) where the missing-field
+// case means "the response wasn't the shape we expected", not "the counter
+// is zero". Returning 0 silently for those cases caused a class of CI flakes
+// where probe failure logs reported value=0 even though the chain was fine.
 func parseUint(s string) (uint64, error) {
 	if s == "" {
-		return 0, nil
+		return 0, fmt.Errorf("parse uint: empty string (response missing expected field?)")
 	}
 	n, err := strconv.ParseUint(s, 10, 64)
 	if err != nil {

@@ -59,31 +59,50 @@ func (Heimdall) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Optio
 	return res
 }
 
+// monitorHeimdall runs the per-CL poll loop. Returns true on success.
+//
+// Transient read errors don't fail the probe — we log and keep polling. Only
+// the timeout (set on ctx by the caller) ends the loop. The failure log
+// reports the last good observation rather than a post-cancel zero.
 func monitorHeimdall(ctx context.Context, svc discover.Service, minBlocks int, lg *slog.Logger) bool {
 	h := chain.DialHeimdall(svc.URL)
 
-	baseline, _ := h.Height(ctx)
+	baseline, err := h.Height(ctx)
+	if err != nil {
+		lg.Error("Read baseline failed", "node", svc.Name, "err", err)
+		return false
+	}
 	required := baseline + uint64(minBlocks)
 	lg.Debug("Capture baseline", "node", svc.Name, "latest", baseline)
 
-	var last uint64 = ^uint64(0)
+	var (
+		lastLogged uint64 = ^uint64(0)
+		lastValid         = baseline
+	)
 	tick := time.NewTicker(pollInterval)
 	defer tick.Stop()
 
 	for {
-		latest, _ := h.Height(ctx)
-		if latest != last {
-			lg.Debug("Poll status", "node", svc.Name, "latest", latest)
-			last = latest
-		}
-		if latest >= required {
-			return true
+		latest, err := h.Height(ctx)
+		if err != nil {
+			if !isCtxErr(err) {
+				lg.Warn("Poll read failed", "node", svc.Name, "err", err)
+			}
+		} else {
+			lastValid = latest
+			if latest != lastLogged {
+				lg.Debug("Poll status", "node", svc.Name, "latest", latest)
+				lastLogged = latest
+			}
+			if latest >= required {
+				return true
+			}
 		}
 		select {
 		case <-ctx.Done():
 			lg.Error("Did not reach required height",
 				"node", svc.Name,
-				"latest", latest,
+				"latest", lastValid,
 				"required", required,
 			)
 			return false
