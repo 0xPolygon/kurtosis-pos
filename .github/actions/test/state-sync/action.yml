@@ -73,3 +73,9 @@ runs:
       env:
         L1_RPC_URL: ${{ env.L1_RPC_URL }}
         TIMEOUT_SECONDS: 600 # default: 180
+        # When running against a restored compose devnet, point pos-e2e's
+        # discovery helpers at the absolute paths produced by snapshot/extract.sh
+        # — bats runs from pos-e2e/ so its default `./tmp/...` is empty.
+        DOCKER_COMPOSE_FILE_PATH: ${{ inputs.compose_file }}
+        CONTRACT_ADDRESSES_PATH: ${{ inputs.compose_file != '' && format('{0}/tmp/contractAddresses.json', github.workspace) || '' }}
+        L2_GENESIS_PATH: ${{ inputs.compose_file != '' && format('{0}/tmp/l2-genesis.json', github.workspace) || '' }}
