@@ -60,35 +60,29 @@ runs:
       shell: bash
       run: kurtosis enclave inspect ${{ inputs.enclave_name }}
 
-    - name: Monitor Bor block progress
+    - name: Set log level
       shell: bash
-      env:
-        LOG_LEVEL: DEBUG
+      run: echo "LOG_LEVEL=DEBUG" >> "$GITHUB_ENV"
+
+    - name: Monitor bor block progress
+      shell: bash
       run: tools/devnet-monitor/devnet-monitor bor ${{ steps.target.outputs.flag }}
 
-    - name: Monitor Heimdall block progress
+    - name: Monitor heimdall block progress
       shell: bash
-      env:
-        LOG_LEVEL: DEBUG
       run: tools/devnet-monitor/devnet-monitor heimdall ${{ steps.target.outputs.flag }}
 
     - name: Monitor span progress
       if: inputs.skip_spans != 'true'
       shell: bash
-      env:
-        LOG_LEVEL: DEBUG
       run: tools/devnet-monitor/devnet-monitor spans ${{ steps.target.outputs.flag }}
 
     - name: Monitor milestone progress
       if: inputs.skip_milestones != 'true'
       shell: bash
-      env:
-        LOG_LEVEL: DEBUG
       run: tools/devnet-monitor/devnet-monitor milestones ${{ steps.target.outputs.flag }}
 
     - name: Monitor checkpoint progress
       if: inputs.skip_checkpoints != 'true'
       shell: bash
-      env:
-        LOG_LEVEL: DEBUG
       run: tools/devnet-monitor/devnet-monitor checkpoints ${{ steps.target.outputs.flag }}
