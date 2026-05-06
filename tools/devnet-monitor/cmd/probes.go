@@ -15,7 +15,7 @@ func borCmd() *cobra.Command {
 			return runOne(probes.Bor{}, probe.Options{MinBlocks: flagMinBlocks, Timeout: flagTimeout})
 		},
 	}
-	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 40, "blocks the chain must advance past baseline")
+	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 50, "blocks the chain must advance past baseline")
 	return c
 }
 
@@ -27,7 +27,7 @@ func heimdallCmd() *cobra.Command {
 			return runOne(probes.Heimdall{}, probe.Options{MinBlocks: flagMinBlocks, Timeout: flagTimeout})
 		},
 	}
-	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 40, "blocks the chain must advance past baseline")
+	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 50, "blocks the chain must advance past baseline")
 	return c
 }
 

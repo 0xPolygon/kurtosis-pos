@@ -74,7 +74,7 @@ func allCmd() *cobra.Command {
 			return nil
 		},
 	}
-	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 40, "for bor & heimdall")
+	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 50, "for bor & heimdall")
 	c.Flags().IntVar(&flagMinSpans, "min-spans", 1, "for spans")
 	c.Flags().IntVar(&flagMinMilestones, "min-milestones", 5, "for milestones")
 	c.Flags().IntVar(&flagMinCheckpoints, "min-checkpoints", 3, "for checkpoints")
