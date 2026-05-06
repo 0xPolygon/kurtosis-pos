@@ -107,8 +107,9 @@ def generate_name(participant, id):
     cl_type = participant.get("cl_type")
     el_type = participant.get("el_type")
     suffix = participant.get("kind")
-    # Reflect archive mode in the service name (e.g. `l2-cl-1-heimdall-v2-bor-rpc-archive`)
-    # so it's discoverable from `kurtosis enclave inspect` without reading config.
+    # Mirror the EL `-archive` suffix here so paired EL/CL services share the
+    # same name suffix and can be matched together. (Heimdall itself has its
+    # own pruning knobs — cl_min_retain_blocks etc. — independent of this.)
     if participant.get("el_bor_archive_mode"):
         suffix = "{}-archive".format(suffix)
     return "l2-cl-{}-{}-{}-{}".format(id, cl_type, el_type, suffix)
