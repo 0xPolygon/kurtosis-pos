@@ -20,8 +20,8 @@ typos .                                                            # check typos
 rumdl .                                                            # lint markdown
 kurtosis-test .                                                    # unit tests
 kurtosis run --enclave pos .                                       # deploy
-.github/actions/monitor/blocks-bor.sh pos first                   # verify EL blocks
-.github/actions/monitor/checkpoints.sh pos                        # verify checkpoints
+tools/devnet-monitor/devnet-monitor bor --enclave pos              # verify EL blocks
+tools/devnet-monitor/devnet-monitor checkpoints --enclave pos      # verify checkpoints
 ```
 
 ## Service naming (0-indexed)

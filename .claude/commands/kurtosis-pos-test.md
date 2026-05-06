@@ -31,7 +31,7 @@ kurtosis-test .
 
 ## E2e tests (bats)
 
-E2e tests live in the external `0xPolygon/pos-e2e` repo. They require a running devnet. The CI action clones it to `pos-e2e/` using a pinned commit (see `.github/actions/test-state-sync/action.yml`).
+E2e tests live in the external `0xPolygon/pos-e2e` repo. They require a running devnet. The CI action clones it to `pos-e2e/` using a pinned commit (see `.github/actions/test/bridge/action.yml`).
 
 ```bash
 # Clone the e2e repo locally (match the pinned commit from the action)
@@ -96,15 +96,18 @@ bats tests/heimdall/stake/validator.bats
 
 ---
 
-## State-sync test
+## Bridge test
 
-A dedicated GitHub Actions action tests state sync end-to-end (`.github/actions/test-state-sync/action.yml`). It clones `0xPolygon/pos-e2e`, runs the bridge POL test, and confirms the native token balance increased on L2.
+A dedicated GitHub Actions action tests the plasma bridge end-to-end (`.github/actions/test/bridge/action.yml`). It clones `0xPolygon/pos-e2e`, runs the POL deposit (L1→L2, exercises state sync) followed by the native withdraw (L2→L1, exercises checkpointing), and confirms balances move on each side.
 
 ```bash
 # Run manually against a local enclave
 L1_RPC=$(kurtosis port print pos el-1-geth-lighthouse rpc)
 cd pos-e2e
-bats --filter "bridge POL from L1 to L2 via plasma bridge" tests/bridge/plasma.bats
+
+# Deposit must run before withdraw — withdraw burns the L2 balance the deposit minted
+bats --filter "bridge POL from L1 to L2 via plasma bridge"             tests/bridge/plasma.bats
+bats --filter "withdraw native tokens from L2 to L1 via plasma bridge" tests/bridge/plasma.bats
 ```
 
 ---
@@ -176,7 +179,7 @@ kurtosis service stop pos l2-el-0-bor-heimdall-v2-validator
 kurtosis service start pos l2-el-0-bor-heimdall-v2-validator
 
 # Verify recovery by watching block production
-.github/actions/monitor/blocks-bor.sh pos all
+tools/devnet-monitor/devnet-monitor bor --enclave pos
 ```
 
 ### Hot-swap image (test a different build)

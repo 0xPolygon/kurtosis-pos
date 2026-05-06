@@ -7,7 +7,7 @@ to enable pulling images from a private registry (e.g., GCP) instead of Docker H
 avoiding rate limiting issues in CI.
 
 Usage:
-    python3 .github/actions/setup/add-registry-prefix.py --registry-prefix "your-registry"
+    python3 .github/actions/kurtosis/setup/add-registry-prefix.py --registry-prefix "your-registry"
 """
 
 import argparse
@@ -183,7 +183,7 @@ def main():
     else:
         # Try to find constants.star relative to script location
         script_dir = Path(__file__).parent
-        repo_root = script_dir.parent.parent.parent
+        repo_root = script_dir.parent.parent.parent.parent
         constants_path = repo_root / "src" / "config" / "constants.star"
 
     if not constants_path.exists():

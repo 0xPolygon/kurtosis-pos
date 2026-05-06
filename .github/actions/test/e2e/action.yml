@@ -1,11 +1,11 @@
-name: run-e2e-tests
+name: e2e
 description: Run end-to-end pos tests
 
 inputs:
   pos_e2e_tag:
     description: The git tag, branch, or commit hash of 0xPolygon/pos-e2e
     required: false
-    default: 036860c4ff5d39c52f147a28c4045d9b4f0dc1ff
+    default: 636c55e76f9e63c7a4daf870bdd0fe7f9e406250
   pos_e2e_token:
     description: GitHub token with read access to 0xPolygon/pos-e2e
     required: true

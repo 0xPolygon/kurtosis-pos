@@ -100,25 +100,27 @@ polycli loadtest --rpc-url "$RPC_URL" --private-key "$PK" --verbosity 700 --requ
 
 ## Health monitors
 
-Run these after deploy to confirm the devnet is healthy. Each script polls until the condition is met or times out.
+Run these after deploy to confirm the devnet is healthy. Each subcommand polls until the condition is met or times out. Build the binary once with `cd tools/devnet-monitor && go build -o devnet-monitor .` (or run via `go run ./tools/devnet-monitor`).
 
 ```bash
-# Poll all Bor EL RPCs until block 40 (sends txs to stimulate progress)
-#   first = only check the first validator; all = check every EL participant
-.github/actions/monitor/blocks-bor.sh pos first
-.github/actions/monitor/blocks-bor.sh pos all
+# Poll all Bor EL RPCs until +40 blocks past startup baseline (sends txs to stimulate progress)
+tools/devnet-monitor/devnet-monitor bor --enclave pos
+tools/devnet-monitor/devnet-monitor bor --enclave my-enclave --min-blocks 80 --timeout 10m
 
 # Poll Heimdall for CL block progress
-.github/actions/monitor/blocks-heimdall.sh pos
+tools/devnet-monitor/devnet-monitor heimdall --enclave pos
 
 # Poll until ≥1 span produced
-.github/actions/monitor/spans.sh pos
+tools/devnet-monitor/devnet-monitor spans --enclave pos
 
 # Poll until ≥1 milestone produced
-.github/actions/monitor/milestones.sh pos
+tools/devnet-monitor/devnet-monitor milestones --enclave pos
 
 # Poll until ≥1 checkpoint committed to L1
-.github/actions/monitor/checkpoints.sh pos
+tools/devnet-monitor/devnet-monitor checkpoints --enclave pos
+
+# Run every probe in parallel
+tools/devnet-monitor/devnet-monitor all --enclave pos
 ```
 
 ---

@@ -144,6 +144,9 @@ def launch(
         "{}/data".format(shared.CONFIG_FOLDER_PATH): Directory(
             persistent_key="{}-config-data".format(cl_node_name)
         ),
+        "{}/bridge".format(shared.CONFIG_FOLDER_PATH): Directory(
+            persistent_key="{}-bridge-data".format(cl_node_name)
+        ),
         # config
         "{}/config".format(shared.CONFIG_FOLDER_PATH): heimdall_node_config_artifacts,
         "/opt/data/genesis": cl_genesis_artifact,

@@ -59,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/kurtosis/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
@@ -103,7 +103,7 @@ jobs:
             result-${{ matrix.config }}-${{ matrix.index }}.txt
             run.log
 
-      - uses: ./.github/actions/cleanup
+      - uses: ./.github/actions/kurtosis/cleanup
         if: always()
         with:
           args_filename: ${{ matrix.config }}-${{ matrix.index }}
