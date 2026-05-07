@@ -62,10 +62,8 @@ func pollHeimdallCounter(
 	lg.Debug("Capture baseline", "value", baseline)
 
 	var (
-		lastLogged   uint64 = ^uint64(0)
-		lastValid           = baseline // last successful read; zero if none
-		haveValid           = true
-		lastReadErr  error
+		lastLogged uint64 = ^uint64(0)
+		lastValid         = baseline // last successful read; seeded from baseline above
 	)
 
 	tick := time.NewTicker(pollInterval)
@@ -80,10 +78,8 @@ func pollHeimdallCounter(
 			if !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
 				lg.Warn("Poll read failed", "err", err)
 			}
-			lastReadErr = err
 		} else {
 			lastValid = v
-			haveValid = true
 			if v != lastLogged {
 				lg.Debug("Poll status", "value", v)
 				lastLogged = v
@@ -99,14 +95,10 @@ func pollHeimdallCounter(
 		select {
 		case <-ctx.Done():
 			// Use the last successful read in the failure log, not a
-			// post-cancel zero from the read above.
-			fields := []any{"required", required}
-			if haveValid {
-				fields = append(fields, "value", lastValid)
-			} else {
-				fields = append(fields, "value", "n/a", "last_err", lastReadErr)
-			}
-			lg.Error("Did not reach required value", fields...)
+			// post-cancel zero from the read above. lastValid is always
+			// valid here — readWithRetry above guarantees a successful
+			// baseline before we enter the loop.
+			lg.Error("Did not reach required value", "required", required, "value", lastValid)
 			res.Checked = 1
 			res.Failed = 1
 			res.FailedNodes = []string{api.Name}
