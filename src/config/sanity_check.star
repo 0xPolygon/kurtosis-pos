@@ -383,6 +383,16 @@ def _validate_participant(p):
             '"el_bor_private_tx_bp_endpoints" is set but "el_bor_enable_private_tx_relay" is False — endpoints would be ignored.'
         )
 
+    # Relayer and BP are distinct roles — a relayer's job is to forward private
+    # txs to BPs, not be one. Combining the two would also make the launcher's
+    # validator-readiness wait deadlock on its own service.
+    if p.get("kind") == constants.PARTICIPANT_KIND.validator and p.get(
+        "el_bor_enable_private_tx_relay"
+    ):
+        fail(
+            '"el_bor_enable_private_tx_relay" is only valid on rpc-kind participants; the relayer is a separate role from the block producer.'
+        )
+
 
 def _validate_validator_config_generator_image(plan, image, heimdall_v2_image):
     validator_config_generator_tag = image.split(":")[1]

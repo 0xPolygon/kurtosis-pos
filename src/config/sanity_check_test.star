@@ -117,6 +117,21 @@ def test_sanity_check_with_private_tx_endpoints_without_relay(plan):
     )
 
 
+def test_sanity_check_with_private_tx_relay_on_validator(plan):
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
+        "kind": constants.PARTICIPANT_KIND.validator,
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_enable_private_tx_relay": True,
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        '"el_bor_enable_private_tx_relay" is only valid on rpc-kind participants',
+    )
+
+
 def test_sanity_check_with_private_tx_relay_topology(plan):
     bp = input_parser.POLYGON_POS_PARTICIPANT | {
         "el_type": constants.EL_TYPE.bor,

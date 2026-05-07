@@ -104,7 +104,7 @@ def launch(
     # Pass 1: launch all CLs and remember the slot ↔ participant mapping.
     # Participants with index < participant_start_index are already running
     # from a prior `kurtosis run` (enclave extension) and are skipped here.
-    # Each slot is {participant, participant_index, is_validator, is_private_relay, cl_context}.
+    # Each slot is {participant, participant_index, is_private_relay, cl_context}.
     slots = []
     participant_index = 0
     # validator_index indexes into cl_validator_config_artifacts.keys, which
@@ -145,7 +145,6 @@ def launch(
                     struct(
                         participant=participant,
                         participant_index=participant_index,
-                        is_validator=is_validator,
                         is_private_relay=is_private_relay,
                         cl_context=cl_context,
                     )
@@ -160,14 +159,31 @@ def launch(
     all_cl_api_urls = [s.cl_context.api_url for s in slots]
     all_cl_ws_rpc_urls = [s.cl_context.ws_rpc_url for s in slots]
 
-    # Names of validator EL services launched so far. Used to gate relayer
-    # startup on validator RPC readiness — bor's relay multiClient dials each
-    # bp-rpc-endpoint at boot via eth_blockNumber and silently disables the
-    # ones that don't respond (eth/relay/multiclient.go:60). If a relayer
-    # boots before its BPs are ready, the relay service ends up with zero
-    # working endpoints. See "[tx-relay] Failed to dial all rpc endpoints" in
-    # bor logs for the symptom.
-    launched_validator_el_names = []
+    # (participant_index, el_service_name) for every validator we know about
+    # — both pre-existing (already running) and new (launched in this pass).
+    # Used to gate relayer EL startup on BP RPC readiness: bor's relay
+    # multiClient dials each bp-rpc-endpoint at boot via eth_blockNumber and
+    # silently disables the ones that don't respond (eth/relay/multiclient.go:60).
+    # Without this wait, a relayer launched before its BPs end up with zero
+    # working endpoints — the symptom is "[tx-relay] Failed to dial all rpc
+    # endpoints" in the bor logs.
+    #
+    # Names are predicted from `_generate_el_node_name` rather than read off
+    # `el_context` so pre-existing validators (which we don't relaunch) are
+    # also covered. Wait is a no-op for pre-existing validators (already
+    # RPC-ready). Skipped entirely when the relayer set an explicit
+    # `el_bor_private_tx_bp_endpoints` override — those URLs may not even be
+    # in this cluster and the user owns the ordering.
+    known_validator_el_names = []
+    p_index = 0
+    for p in participants:
+        is_v = p.get("kind") == constants.PARTICIPANT_KIND.validator
+        for _ in range(p.get("count")):
+            if is_v:
+                known_validator_el_names.append(
+                    (p_index, _generate_el_node_name(p, p_index + 1))
+                )
+            p_index += 1
 
     all_participants = []
     for slot_index, slot in enumerate(slots):
@@ -193,8 +209,22 @@ def launch(
             cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url]
 
         # Block on validator EL readiness before bringing up a relayer EL.
-        if slot.is_private_relay and len(launched_validator_el_names) > 0:
-            for v_name in launched_validator_el_names:
+        has_bp_override = (
+            len(participant.get("el_bor_private_tx_bp_endpoints") or []) > 0
+        )
+        if slot.is_private_relay and not has_bp_override:
+            validators_before = [
+                name
+                for (pi, name) in known_validator_el_names
+                if pi < slot.participant_index
+            ]
+            if len(validators_before) == 0:
+                fail(
+                    "Participant at index {} has el_bor_enable_private_tx_relay=True but no validator participant appears earlier in the list (existing or new). Either reorder so a validator precedes the relayer, or provide an explicit el_bor_private_tx_bp_endpoints override.".format(
+                        slot.participant_index + 1
+                    )
+                )
+            for v_name in validators_before:
                 el_launcher.wait_for_node_startup(plan, v_name)
 
         el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[slot.participant_index]
@@ -212,9 +242,6 @@ def launch(
             container_proc_manager_artifact,
             ethstats_server_params,
         )
-
-        if slot.is_validator:
-            launched_validator_el_names.append(el_context.service_name)
 
         all_participants.append(
             participant_module.new_participant(
