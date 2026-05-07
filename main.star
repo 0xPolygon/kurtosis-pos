@@ -162,21 +162,22 @@ def run(plan, args):
     # launched (unsynced) participant, so forge script would fail to read
     # existing contract state, and even if it could, re-deploying the bridge
     # at fresh addresses would invalidate the running L2 chain's bridge
-    # state.
-    if len(existing_participants) == 0:
+    # state. Reuse the supplied addresses artifact for downstream services.
+    if len(existing_participants) > 0:
+        contract_addresses_artifact = l1_contract_addresses_artifact
+    else:
         l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
-
-    contract_addresses_artifact = contracts.deploy_l2_contracts(
-        plan,
-        polygon_pos_args,
-        dev_args,
-        l1_context.rpc_url,
-        l2_rpc_url,
-        admin_private_key,
-        admin_address,
-        validator_accounts,
-        l1_contract_addresses_artifact,
-    )
+        contract_addresses_artifact = contracts.deploy_l2_contracts(
+            plan,
+            polygon_pos_args,
+            dev_args,
+            l1_context.rpc_url,
+            l2_rpc_url,
+            admin_private_key,
+            admin_address,
+            validator_accounts,
+            l1_contract_addresses_artifact,
+        )
 
     # Deploy additional services.
     additional_services_launcher.launch(
