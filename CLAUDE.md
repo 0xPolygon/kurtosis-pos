@@ -20,8 +20,8 @@ typos .                                                            # check typos
 rumdl .                                                            # lint markdown
 kurtosis-test .                                                    # unit tests
 kurtosis run --enclave pos .                                       # deploy
-.github/actions/monitor/blocks-bor.sh pos first                   # verify EL blocks
-.github/actions/monitor/checkpoints.sh pos                        # verify checkpoints
+tools/devnet-monitor/devnet-monitor bor --enclave pos              # verify EL blocks
+tools/devnet-monitor/devnet-monitor checkpoints --enclave pos      # verify checkpoints
 ```
 
 ## Service naming (0-indexed)
@@ -35,6 +35,8 @@ kurtosis run --enclave pos .                                       # deploy
 | L1 EL (geth)          | `el-1-geth-lighthouse`                  |
 | L1 CL (lighthouse)    | `cl-1-lighthouse-geth`                  |
 | Observability         | `prometheus`, `grafana`, `panoptichain` |
+
+Nodes with `el_bor_archive_mode: true` get a `-archive` suffix (e.g. `l2-el-1-bor-heimdall-v2-validator-archive`). The default single-node config enables it on the validator.
 
 ## Quick reference
 

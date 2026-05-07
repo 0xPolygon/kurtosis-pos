@@ -24,6 +24,22 @@ export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 forge script -vvvv --rpc-url "${L2_RPC_URL}" --broadcast --legacy \
   scripts/deployment-scripts/deployPosBridgeChild.s.sol:DeployPosBridgeChildScript
 
+# The L1 wiring below issues `RootChainManager.mapToken` × 7, each of which calls
+# `StateSender.syncState` and bumps the L1 state-sync counter. On the cl-el-genesis
+# redeploy path we reuse the L1 from the prior run (counter already > 0) and wipe
+# Bor's volumes (lastStateId resets to 0). Re-running this wiring would either
+# emit fresh state-sync events that race the bats deposit, or — when the
+# idempotency guard skips them — leave a counter mismatch bor cannot bridge.
+# Driven by `pos_bridge_deployer.deploy_l2`, which sets SKIP_L1_WIRING=1 whenever
+# `should_deploy_matic_contracts` is false (i.e. the L1 contracts already exist).
+if [[ "${SKIP_L1_WIRING:-0}" == "1" ]]; then
+  echo "SKIP_L1_WIRING=1 — preserving L1 wiring from the prior deploy."
+  cp contractAddresses.json "${CONTRACT_ADDRESSES_FILE}"
+  echo "pos-bridge L2 deploy complete (L1 wiring skipped). Final contractAddresses.json:"
+  cat "${CONTRACT_ADDRESSES_FILE}"
+  exit 0
+fi
+
 # Cross-chain wiring on L1: L2-side addresses are now known, so RootChainManager can be
 # pointed at the ChildChainManager and tokens can be mapped. Kept in bash rather than a
 # third forge script to avoid re-reading artifacts for a handful of cast sends.

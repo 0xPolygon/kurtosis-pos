@@ -31,6 +31,8 @@ log_info "Downloading snapshot files from image"
 container_id=$(docker create "$image_name" /bin/true)
 docker cp "$container_id:/volumes/." "$volume_folder_path/"
 docker cp "$container_id:/docker-compose.yaml" "$output_dir/docker-compose.yaml"
+docker cp "$container_id:/contractAddresses.json" "$output_dir/contractAddresses.json"
+docker cp "$container_id:/l2-genesis.json" "$output_dir/l2-genesis.json"
 log_info "Files downloaded to $output_dir"
 
 docker rm "$container_id" > /dev/null

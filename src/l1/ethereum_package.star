@@ -9,6 +9,16 @@ ETHEREUM_PACKAGE = (
     "github.com/ethpandaops/ethereum-package/main.star@6.1.0"  # 2026-04-02
 )
 
+# Canonical EIP-2470 / arachnid CREATE2 deployer. Pre-allocated on L1 for the
+# same reason it's pre-allocated on L2 Bor (see static_files/el/genesis/builder.sh):
+# Solidity's `new X{salt: y}` compiles to a CALL into this address, and forge
+# scripts that use CREATE2 — sPOL's Deploy.s.sol does — fail with "missing
+# CREATE2 deployer" if it's not present at this exact address. The standard
+# EIP-2470 runtime bootstrap (legacy pre-signed tx) is rejected here too because
+# ethereum-package geth sets eip155Block: 0.
+CREATE2_DEPLOYER_ADDRESS = "0x4e59b44847b379578588920cA78FbF26c0B4956C"
+CREATE2_DEPLOYER_CODE = "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3"
+
 
 def run(plan, ethereum_args, preregistered_validator_keys_mnemonic, admin_address):
     # Sanity check the mnemonic used.
@@ -104,6 +114,10 @@ def _merge_l1_prefunded_accounts(admin_address, l1_network_params):
             a.eth_tendermint.address, constants.VALIDATORS_BALANCE_ETH
         )
 
+    create2_deployer = account_util.to_ethereum_pkg_preallocated_contract(
+        CREATE2_DEPLOYER_ADDRESS, CREATE2_DEPLOYER_CODE
+    )
+
     user_prefunded_accounts = {}
     user_prefunded_accounts_str = l1_network_params.get("prefunded_accounts")
     if user_prefunded_accounts_str != "":
@@ -112,5 +126,6 @@ def _merge_l1_prefunded_accounts(admin_address, l1_network_params):
     return (
         admin_prefunded_account
         | validators_prefunded_accounts
+        | create2_deployer
         | user_prefunded_accounts
     )

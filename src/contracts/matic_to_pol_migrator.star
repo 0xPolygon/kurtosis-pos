@@ -26,7 +26,7 @@ def migrate(
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="plasma-bridge-l1-addresses-with-pol",
+                name="pol-migration-addresses",
             ),
         ],
         run="bash /opt/data/l1/migrate-matic-to-pol-token.sh",

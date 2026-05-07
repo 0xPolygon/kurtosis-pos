@@ -10,7 +10,7 @@ This guide will explain how to use the dev parameters to save some time when re-
 Kurtosis added a new feature in the [v1.7.2](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.7.2) release called [kurtosis service update](https://docs.kurtosis.com/service-update) which serves the same purpose.
 
 ```bash
-kurtosis service update --image 0xpolygon/bor:2.0.1 pos l2-el-1-bor-heimdall-v2-validator
+kurtosis service update --image 0xpolygon/bor:2.0.1 pos l2-el-1-bor-heimdall-v2-validator-archive
 ```
 
 Note that this feature is even more powerful — it can update not only the container image, but also file artifacts mounted into the container, the command used to run the service, environment variables, the entrypoint, ports, and more.
@@ -42,7 +42,7 @@ First, we will save the L2 CL and EL genesis files for later.
 mkdir -p ./tmp
 kurtosis files inspect pos l2-cl-genesis genesis.json | jq > ./tmp/l2-cl-genesis.json
 kurtosis files inspect pos l2-el-genesis genesis.json | jq > ./tmp/l2-el-genesis.json
-kurtosis files inspect pos pos-bridge-addresses contractAddresses.json | jq > ./tmp/pos-bridge-addresses.json
+kurtosis files inspect pos pos-contract-addresses contractAddresses.json | jq > ./tmp/pos-contract-addresses.json
 ```
 
 ## Specify Dev Parameters
@@ -59,7 +59,7 @@ dev:
   should_deploy_matic_contracts: false
   l2_cl_genesis_filepath: ./tmp/l2-cl-genesis.json
   l2_el_genesis_filepath: ./tmp/l2-el-genesis.json
-  matic_contract_addresses_filepath: ./tmp/pos-bridge-addresses.json
+  matic_contract_addresses_filepath: ./tmp/pos-contract-addresses.json
 ```
 
 ## Update L2 Participant Configuration
@@ -84,7 +84,7 @@ dev:
   should_deploy_matic_contracts: false
   l2_cl_genesis_filepath: ./tmp/l2-cl-genesis.json
   l2_el_genesis_filepath: ./tmp/l2-el-genesis.json
-  matic_contract_addresses_filepath: ./tmp/pos-bridge-addresses.json
+  matic_contract_addresses_filepath: ./tmp/pos-contract-addresses.json
 ```
 
 ## Stop the Validators
@@ -92,9 +92,9 @@ dev:
 Stop the validators to avoid any issues when deploying the L2 contracts.
 
 ```bash
-kurtosis service stop pos l2-cl-1-heimdall-v2-bor-validator
+kurtosis service stop pos l2-cl-1-heimdall-v2-bor-validator-archive
 kurtosis service stop pos l2-cl-1-rabbitmq
-kurtosis service stop pos l2-el-1-bor-heimdall-v2-validator
+kurtosis service stop pos l2-el-1-bor-heimdall-v2-validator-archive
 ```
 
 ## Clean up L2 Persistent Volumes

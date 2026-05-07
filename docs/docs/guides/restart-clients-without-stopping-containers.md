@@ -15,7 +15,7 @@ This guide assumes you have a running devnet, if that's not the case, you can he
 First, get a shell inside the first heimdall container.
 
 ```bash
-kurtosis service shell pos l2-cl-1-heimdall-v2-bor-validator
+kurtosis service shell pos l2-cl-1-heimdall-v2-bor-validator-archive
 ```
 
 Second, find the PID of the script called `container-proc-manager.sh`.
@@ -71,7 +71,7 @@ Same procedure but with the bor client.
 Get a shell inside the first bor container.
 
 ```bash
-kurtosis service shell pos l2-el-1-bor-heimdall-v2-validator
+kurtosis service shell pos l2-el-1-bor-heimdall-v2-validator-archive
 ```
 
 Second, find the PID of the script called `container-proc-manager.sh`.

@@ -150,8 +150,8 @@ deploy → health check → probe scenario → observe → document finding → 
 kurtosis run --enclave $ENCLAVE --args-file .github/configs/heimdall-v2-bor.yml .
 
 # 2. Health check — verify devnet is ready before probing
-.github/actions/monitor/blocks-bor.sh $ENCLAVE first
-.github/actions/monitor/checkpoints.sh $ENCLAVE
+tools/devnet-monitor/devnet-monitor bor --enclave $ENCLAVE
+tools/devnet-monitor/devnet-monitor checkpoints --enclave $ENCLAVE
 
 # 3. Probe — run chosen scenario (see categories below)
 
@@ -535,7 +535,7 @@ for i in $(seq 1 3); do
   (
     ENCLAVE="pos-agent-$i"
     kurtosis run --enclave $ENCLAVE --args-file .github/configs/heimdall-v2-bor.yml .
-    .github/actions/monitor/blocks-bor.sh $ENCLAVE first
+    tools/devnet-monitor/devnet-monitor bor --enclave $ENCLAVE
     # ... probe, observe, document ...
     kurtosis enclave rm --force $ENCLAVE
   ) &

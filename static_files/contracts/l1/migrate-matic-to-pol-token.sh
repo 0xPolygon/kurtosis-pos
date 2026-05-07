@@ -14,7 +14,7 @@ for v in PRIVATE_KEY L1_RPC_URL; do
   fi
 done
 
-cd /opt/pos-contracts
+cd /opt/pos-contracts-anvil-pos
 
 echo "Copying contract addresses file..."
 mkdir -p /opt/contracts
@@ -27,7 +27,7 @@ forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
 
 # Parse deployed addresses from the broadcast JSON.
 l1_chain_id=$(cast chain-id --rpc-url "${L1_RPC_URL}")
-broadcast_file="/opt/pos-contracts/broadcast/deployPolAndMigration.s.sol/${l1_chain_id}/run-latest.json"
+broadcast_file="/opt/pos-contracts-anvil-pos/broadcast/deployPolAndMigration.s.sol/${l1_chain_id}/run-latest.json"
 pol_token=$(jq -r '.transactions[] | select(.contractName == "ERC20Permit") | .contractAddress' "${broadcast_file}" | head -1)
 migration=$(jq -r '.transactions[] | select(.contractName == "PolygonMigration") | .contractAddress' "${broadcast_file}" | head -1)
 echo "POL token: ${pol_token}"

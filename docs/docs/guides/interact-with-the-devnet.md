@@ -25,7 +25,7 @@ where `pos` is the name of the enclave.
 Let's store the L2 RPC URL in an environment variable for use with `cast`.
 
 ```bash
-export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
+export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator-archive rpc)
 echo $ETH_RPC_URL
 ```
 
@@ -75,7 +75,7 @@ polycli loadtest --rpc-url "$ETH_RPC_URL" --private-key "$pk" --verbosity 700 --
 Pretty often, you will want to check the output from the service. Here is how you can grab some logs:
 
 ```bash
-kurtosis service logs pos l2-el-1-bor-heimdall-v2-validator --follow
+kurtosis service logs pos l2-el-1-bor-heimdall-v2-validator-archive --follow
 ```
 
 ## Getting Shell Access
@@ -83,7 +83,7 @@ kurtosis service logs pos l2-el-1-bor-heimdall-v2-validator --follow
 In other cases, if you see an error, you might want to get a shell in the service to be able to poke around.
 
 ```bash
-kurtosis service shell pos l2-el-1-bor-heimdall-v2-validator
+kurtosis service shell pos l2-el-1-bor-heimdall-v2-validator-archive
 ```
 
 ## Inspecting Genesis and Contracts Files
@@ -95,10 +95,10 @@ kurtosis files inspect pos l2-cl-genesis genesis.json | jq
 kurtosis files inspect pos l2-el-genesis genesis.json | jq
 ```
 
-In the same way, you might want to check the MATIC contract addresses on L1 and L2.
+In the same way, you might want to check the deployed contract addresses on L1 and L2 (plasma bridge, MATIC→POL migration, pos bridge, sPOL/LST).
 
 ```bash
-kurtosis files inspect pos pos-bridge-addresses contractAddresses.json | jq
+kurtosis files inspect pos pos-contract-addresses contractAddresses.json | jq
 ```
 
 ## Clean Up the Environment

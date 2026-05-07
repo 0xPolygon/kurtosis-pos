@@ -1,0 +1,101 @@
+name: bridge
+description: |
+  Test the plasma bridge end-to-end: deposit POL from L1→L2 (exercises state
+  sync) and withdraw native tokens from L2→L1 (exercises checkpointing). The
+  withdraw must run after the deposit so the L2 side has a balance to burn.
+
+inputs:
+  enclave_name:
+    description: The name of the kurtosis enclave
+    required: false
+    default: pos
+  l1_rpc:
+    description: The RPC URL for the L1 node
+    required: false
+    default: el-1-geth-lighthouse
+  pos_e2e_tag:
+    description: The git tag, branch, or commit hash of 0xPolygon/pos-e2e
+    required: false
+    default: 3e1b345a7ae36cce9a0076e0b41c713601048b2e
+  pos_e2e_token:
+    description: GitHub token with read access to 0xPolygon/pos-e2e
+    required: true
+  polygon_cli_version:
+    description: The release version of polygon-cli
+    required: false
+    default: v0.1.111
+  compose_file:
+    description: |
+      Path to a restored docker-compose.yaml. When set, resolve the L1 RPC URL
+      from the compose file instead of calling kurtosis. Leave empty for fresh
+      kurtosis-deployed enclaves.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Clone 0xPolygon/pos-e2e
+      uses: actions/checkout@v6
+      with:
+        repository: 0xPolygon/pos-e2e
+        path: pos-e2e
+        ref: ${{ inputs.pos_e2e_tag }}
+        token: ${{ inputs.pos_e2e_token }}
+
+    - name: Install bats
+      uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
+      with:
+        support-path: ${{ github.workspace }}/lib/bats-support
+        assert-path: ${{ github.workspace }}/lib/bats-assert
+        detik-path: ${{ github.workspace }}/lib/bats-detik
+        file-path: ${{ github.workspace }}/lib/bats-file
+
+    - name: Install polygon-cli
+      shell: bash
+      run: |
+        pushd $(mktemp -d) || exit 1
+        curl -s -L "https://github.com/0xPolygon/polygon-cli/releases/download/${{ inputs.polygon_cli_version }}/polycli_${{ inputs.polygon_cli_version }}_linux_amd64.tar.gz" > polycli.tar.gz
+        tar xf polycli.tar.gz
+        sudo mv polycli_* /usr/local/bin/polycli
+        polycli version
+        popd
+
+    - name: Determine L1 RPC URL
+      shell: bash
+      run: |
+        if [[ -n "${{ inputs.compose_file }}" ]]; then
+          # Restored docker-compose devnet: resolve from the compose file.
+          # Service keys are prefixed with the enclave name; match the suffix.
+          # Pick the port whose container side is 8545 (RPC for both geth and anvil).
+          suffix="-${{ inputs.l1_rpc }}"
+          port=$(yq -r ".services | to_entries[] | select(.key | endswith(\"${suffix}\")) | .value.ports[] | select(endswith(\":8545\")) | split(\":\")[0]" "${{ inputs.compose_file }}" | head -n 1)
+          if [[ -z "$port" ]]; then
+            echo "Could not resolve L1 RPC port from ${{ inputs.compose_file }} for service suffix '-${{ inputs.l1_rpc }}'"
+            exit 1
+          fi
+          l1_rpc_url="http://localhost:${port}"
+        elif [[ "${{ inputs.l1_rpc }}" == "el-1-geth-lighthouse" ]]; then
+          l1_rpc_url="http://$(kurtosis port print ${{ inputs.enclave_name }} el-1-geth-lighthouse rpc)"
+        else
+          l1_rpc_url="$(kurtosis port print ${{ inputs.enclave_name }} ${{ inputs.l1_rpc }} rpc)"
+        fi
+        echo "L1_RPC_URL=$l1_rpc_url" >> $GITHUB_ENV
+        echo "l1_rpc_url=$l1_rpc_url"
+
+    - name: Test deposit and withdraw
+      working-directory: pos-e2e
+      shell: bash
+      run: |
+        # Order matters: withdraw burns L2 native tokens that the deposit minted.
+        bats --filter 'bridge POL from L1 to L2 via plasma bridge'             tests/bridge/plasma.bats
+        bats --filter 'withdraw native tokens from L2 to L1 via plasma bridge' tests/bridge/plasma.bats
+      env:
+        L1_RPC_URL: ${{ env.L1_RPC_URL }}
+        TIMEOUT_SECONDS: 1200 # default: 180; withdraw waits for the next checkpoint
+        # When running against a restored compose devnet, point pos-e2e's
+        # discovery helpers at the absolute paths produced by snapshot/extract.sh
+        # — bats runs from pos-e2e/ so its default `./tmp/...` is empty.
+        DOCKER_COMPOSE_FILE_PATH: ${{ inputs.compose_file }}
+        CONTRACT_ADDRESSES_PATH: ${{ inputs.compose_file != '' && format('{0}/tmp/contractAddresses.json', github.workspace) || '' }}
+        L2_GENESIS_PATH: ${{ inputs.compose_file != '' && format('{0}/tmp/l2-genesis.json', github.workspace) || '' }}

@@ -52,18 +52,19 @@ dev:
   # Required when should_deploy_matic_contracts: false
   l2_el_genesis_filepath: .github/configs/nightly/cl-el-genesis/l2-el-genesis.json
   l2_cl_genesis_filepath: .github/configs/nightly/cl-el-genesis/l2-cl-genesis.json
-  matic_contract_addresses_filepath: .github/configs/nightly/cl-el-genesis/pos-bridge-addresses.json
+  matic_contract_addresses_filepath: .github/configs/nightly/cl-el-genesis/pos-contract-addresses.json
 
 polygon_pos_package:
   log_level: info                 # error | warn | info | debug | trace
   log_format: text                # text | json
   participants:
-    - kind: validator             # validator | rpc | archive
+    - kind: validator             # validator | rpc
       el_type: bor                # bor | erigon
       cl_type: heimdall-v2        # only option currently
       el_image: 0xpolygon/bor:2.7.1
       cl_image: 0xpolygon/heimdall-v2:0.6.0
       count: 1
+      el_bor_archive_mode: false  # true = bor gcmode=archive, appends `-archive` to service name
   additional_services:
     - observability               # prometheus + grafana + panoptichain
     - bridge_spammer              # L1→L2 bridge load generator
@@ -123,7 +124,7 @@ Files with a `.norun` suffix (e.g. `large.yml.norun`) are valid configs excluded
 | L2 CL validator       | `l2-cl-<n>-heimdall-v2-bor-validator`            |
 | L2 EL RPC (bor)       | `l2-el-<n>-bor-heimdall-v2-rpc`                  |
 | L2 CL RPC             | `l2-cl-<n>-heimdall-v2-bor-rpc`                  |
-| L2 EL archive (bor)   | `l2-el-<n>-bor-heimdall-v2-archive`              |
+| L2 EL archive (bor)   | `l2-el-<n>-bor-heimdall-v2-<kind>-archive`       |
 | RabbitMQ (per-node)   | `l2-cl-<n>-rabbitmq`                             |
 | L1 EL (geth)          | `el-1-geth-lighthouse`                           |
 | L1 CL (lighthouse)    | `cl-1-lighthouse-geth`                           |

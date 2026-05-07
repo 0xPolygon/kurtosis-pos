@@ -54,6 +54,7 @@ def launch(
                     "stateless_parallel_import": participant.get(
                         "el_bor_stateless_parallel_import"
                     ),
+                    "archive_mode": participant.get("el_bor_archive_mode"),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     "el_gas_limit": network_params.get("el_gas_limit"),

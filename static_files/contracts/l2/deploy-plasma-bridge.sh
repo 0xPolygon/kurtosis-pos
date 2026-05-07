@@ -6,10 +6,10 @@ set -euxo pipefail
 
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
 
-cd /opt/pos-contracts
+cd /opt/pos-contracts-anvil-pos
 
 echo "Copying contract addresses file..."
-cp /opt/data/addresses/contractAddresses.json /opt/pos-contracts/contractAddresses.json
+cp /opt/data/addresses/contractAddresses.json /opt/pos-contracts-anvil-pos/contractAddresses.json
 
 # Deploy Polygon PoS contracts on L2.
 if [[ -z "${PRIVATE_KEY}" ]]; then

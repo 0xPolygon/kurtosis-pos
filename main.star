@@ -1,9 +1,7 @@
 additional_services_launcher = import_module("./src/additional_services/launcher.star")
 cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/config/constants.star")
-plasma_bridge_deployer = import_module("./src/contracts/plasma_bridge_deployer.star")
-matic_to_pol_migrator = import_module("./src/contracts/matic_to_pol_migrator.star")
-pos_bridge_deployer = import_module("./src/contracts/pos_bridge_deployer.star")
+contracts = import_module("./src/contracts/contracts.star")
 el_cl_launcher = import_module("./src/el_cl_launcher.star")
 el_genesis = import_module("./src/el/genesis.star")
 hex = import_module("./src/hex/hex.star")
@@ -83,34 +81,15 @@ def run(plan, args):
         plan.print("Number of validators: {}".format(len(validator_accounts)))
         plan.print(validator_accounts)
 
-        # Deploy plasma bridge contracts to L1.
         (
             l1_contract_addresses_artifact,
             validator_config_artifact,
-        ) = plasma_bridge_deployer.deploy_l1(
+        ) = contracts.deploy_l1_contracts(
             plan,
             polygon_pos_args,
             l1_context.rpc_url,
             admin_private_key,
             validator_accounts,
-        )
-
-        # Migrate MATIC to POL on L1.
-        l1_contract_addresses_artifact = matic_to_pol_migrator.migrate(
-            plan,
-            polygon_pos_args,
-            l1_context.rpc_url,
-            admin_private_key,
-            l1_contract_addresses_artifact,
-        )
-
-        # Deploy pos-bridge contracts to L1.
-        l1_contract_addresses_artifact = pos_bridge_deployer.deploy_l1(
-            plan,
-            polygon_pos_args,
-            l1_context.rpc_url,
-            admin_private_key,
-            l1_contract_addresses_artifact,
         )
 
         l2_cl_genesis_artifact = cl_genesis.generate(
@@ -187,27 +166,17 @@ def run(plan, args):
     if len(existing_participants) == 0:
         l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
 
-        # Deploy plasma bridge contracts to L2 and cross-chain wiring.
-        contract_addresses_artifact = plasma_bridge_deployer.deploy_l2(
-            plan,
-            polygon_pos_args,
-            l1_context.rpc_url,
-            l2_rpc_url,
-            admin_private_key,
-            l1_contract_addresses_artifact,
-        )
-
-        # Deploy pos-bridge contracts to L2 and cross-chain wiring.
-        contract_addresses_artifact = pos_bridge_deployer.deploy_l2(
-            plan,
-            polygon_pos_args,
-            l1_context.rpc_url,
-            l2_rpc_url,
-            admin_private_key,
-            contract_addresses_artifact,
-        )
-    else:
-        contract_addresses_artifact = l1_contract_addresses_artifact
+    contract_addresses_artifact = contracts.deploy_l2_contracts(
+        plan,
+        polygon_pos_args,
+        dev_args,
+        l1_context.rpc_url,
+        l2_rpc_url,
+        admin_private_key,
+        admin_address,
+        validator_accounts,
+        l1_contract_addresses_artifact,
+    )
 
     # Deploy additional services.
     additional_services_launcher.launch(
