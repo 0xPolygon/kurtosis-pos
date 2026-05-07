@@ -33,10 +33,12 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, l
 		return res
 	}
 
-	// Pick the first validator (sorted) as the sole tx sender.
+	// Pick the first validator (sorted) as the sole tx sender. Match
+	// regardless of trailing `-archive` suffix added by `el_bor_archive_mode:
+	// true` (the new default).
 	sender := ""
 	for _, s := range rpcs {
-		if strings.HasSuffix(s.Name, "-validator") {
+		if strings.Contains(s.Name, "-validator") {
 			sender = s.Name
 			break
 		}
