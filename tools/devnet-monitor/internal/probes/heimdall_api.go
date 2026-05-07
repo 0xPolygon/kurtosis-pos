@@ -14,7 +14,12 @@ import (
 // pollInterval is the cadence every probe uses to recheck the chain. Shared
 // across bor / heimdall / spans / milestones / checkpoints. Declared as a
 // var (not const) so tests can shrink it; production code never overrides.
-var pollInterval = 10 * time.Second
+//
+// The bor probe also sends a stimulus tx, but on its own slower clock
+// (stimulusInterval) — see bor_blocks.go. Polling and writing are decoupled
+// so the monitor reacts to chain progress within ~1s without flooding the
+// mempool with stimulus txs.
+var pollInterval = 1 * time.Second
 
 // pollHeimdallCounter is the shared poll loop for spans / milestones / checkpoints.
 // Each one reads a single counter from a Heimdall REST endpoint and waits for

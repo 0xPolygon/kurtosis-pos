@@ -14,9 +14,16 @@ import (
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probeapi"
 )
 
-// Bor monitors block progress on every Bor RPC. Sends a stimulus tx every
-// poll cycle from the first validator to keep an idle chain advancing.
+// Bor monitors block progress on every Bor RPC. Sends a stimulus tx from the
+// first validator every stimulusInterval to keep an idle chain advancing.
+// Polling cadence (pollInterval) is decoupled from writing cadence so the
+// probe detects chain progress quickly without flooding the mempool.
 type Bor struct{}
+
+// stimulusInterval is how often the bor probe injects a stimulus tx from the
+// validator. It's intentionally slower than pollInterval so a fast poll loop
+// doesn't generate one tx per second.
+var stimulusInterval = 10 * time.Second
 
 func (Bor) Name() string { return "bor" }
 
@@ -115,6 +122,10 @@ func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBl
 		lastLoggedLatest, lastLoggedFinalized uint64 = ^uint64(0), ^uint64(0)
 		lastLatest                                   = latestBaseline
 		lastFinalized                                = finalizedBaseline
+		// Send the first stimulus tx immediately, then every stimulusInterval.
+		// `time.Time{}` (zero value) is in the distant past, so the first
+		// `time.Since(...) >= stimulusInterval` check will pass.
+		lastStimulusAt time.Time
 	)
 
 	tick := time.NewTicker(pollInterval)
@@ -148,7 +159,8 @@ func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBl
 			}
 		}
 
-		if stimulate {
+		if stimulate && time.Since(lastStimulusAt) >= stimulusInterval {
+			lastStimulusAt = time.Now()
 			if err := bor.SendStimulusTx(ctx, gasPriceFactor); err != nil && !isCtxErr(err) {
 				lg.Warn("Stimulus tx failed", "node", svc.Name, "err", err, "gas_factor", gasPriceFactor)
 				gasPriceFactor *= 1.5
