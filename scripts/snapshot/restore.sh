@@ -63,12 +63,16 @@ fi
 log_info "Using snapshot folder: $snapshot_folder"
 
 log_info "Restoring docker volumes"
-volume_folder_path="$snapshot_folder/volumes"
+volume_folder_path="$(realpath "$snapshot_folder/volumes")"
 restore_docker_volumes "$volume_folder_path"
 log_info "Docker volumes restored"
 
 log_info "Starting devnet using docker-compose"
 docker_compose_file="$snapshot_folder/docker-compose.yaml"
+# `--wait` blocks until every service with a healthcheck is healthy. With the
+# tuned healthchecks emitted by snapshot.sh (start_interval=50ms) and the
+# dropped validator→rabbit dependency, this completes in ~5s on the small
+# devnet — and covers every L2 EL/CL node, not just bor-1.
 docker compose --file "$docker_compose_file" up --detach --wait
 log_info "Devnet started"
 
