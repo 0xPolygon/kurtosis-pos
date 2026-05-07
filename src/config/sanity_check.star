@@ -25,6 +25,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_produce_witness",  # Allow bor to start producing witnesses.
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
         "el_bor_stateless_parallel_import",  # Enable bor to use parallel import in stateless mode.
+        "el_bor_archive_mode",  # Run bor with gcmode=archive for full historical state retention.
         "count",
     ],
     "setup_images": [
@@ -84,7 +85,6 @@ VALID_L1_BACKENDS = [
 VALID_PARTICIPANT_KINDS = [
     constants.PARTICIPANT_KIND.validator,
     constants.PARTICIPANT_KIND.rpc,
-    constants.PARTICIPANT_KIND.archive,
 ]
 
 VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall_v2]

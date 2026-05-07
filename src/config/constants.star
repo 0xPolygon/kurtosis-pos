@@ -8,7 +8,6 @@ L1_BACKEND = struct(
 PARTICIPANT_KIND = struct(
     validator="validator",
     rpc="rpc",
-    archive="archive",
 )
 
 EL_TYPE = struct(
