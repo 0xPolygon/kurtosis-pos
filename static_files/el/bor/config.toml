@@ -117,8 +117,6 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   allow-unprotected-txs = true
   # Filename for IPC socket/pipe within the datadir (explicit paths escape it)
   ipcpath = "{{.data_folder_path}}/bor.ipc"
-  # Allow unprotected transactions (EIP-155)
-  allow-unprotected-txs = true
   [jsonrpc.http]
     # Enable the HTTP-RPC server (default: false)
     enabled = true
