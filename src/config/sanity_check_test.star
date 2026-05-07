@@ -80,3 +80,34 @@ def test_sanity_check_with_ethstats_server(plan):
             "image": constants.IMAGES.get("ethstats_server_image"),
         },
     }
+
+
+def test_sanity_check_with_private_tx_endpoints_without_relay(plan):
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_enable_private_tx_relay": False,
+        "el_bor_private_tx_bp_endpoints": ["http://bp:8545"],
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        '"el_bor_private_tx_bp_endpoints" is set but "el_bor_enable_private_tx_relay" is False',
+    )
+
+
+def test_sanity_check_with_private_tx_relay_topology(plan):
+    bp = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_accept_private_tx": True,
+    }
+    relayer = input_parser.POLYGON_POS_PARTICIPANT | {
+        "kind": constants.PARTICIPANT_KIND.rpc,
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_enable_private_tx_relay": True,
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [bp, relayer],
+    }
+    sanity_check.sanity_check_polygon_args(plan, args)

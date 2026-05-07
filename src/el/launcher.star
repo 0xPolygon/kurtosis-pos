@@ -22,6 +22,7 @@ def launch(
     cl_ws_rpc_url,
     el_account,
     el_static_nodes,
+    el_validator_rpc_urls,
     container_proc_manager_artifact,
     ethstats_server_params,
 ):
@@ -46,6 +47,7 @@ def launch(
         cl_ws_rpc_url,
         el_account,
         el_static_nodes,
+        el_validator_rpc_urls,
         container_proc_manager_artifact,
         ethstats_server_params,
     )
@@ -135,6 +137,12 @@ def generate_name(participant, id):
     # so it's discoverable from `kurtosis enclave inspect` without reading config.
     if participant.get("el_bor_archive_mode"):
         suffix = "{}-archive".format(suffix)
+    # Reflect private-tx role in the service name. We only suffix the relayer
+    # role: BP nodes (accept-private-tx) are still validators by every other
+    # measure, and pos-e2e's existing l2_el_validator_service discovery picks
+    # them up unchanged.
+    if participant.get("el_bor_enable_private_tx_relay"):
+        suffix = "{}-private-relay".format(suffix)
     return "l2-el-{}-{}-{}-{}".format(
         id,
         el_type,

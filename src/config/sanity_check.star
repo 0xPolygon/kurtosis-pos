@@ -26,6 +26,9 @@ POLYGON_POS_PARAMS = {
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
         "el_bor_stateless_parallel_import",  # Enable bor to use parallel import in stateless mode.
         "el_bor_archive_mode",  # Run bor with gcmode=archive for full historical state retention.
+        "el_bor_accept_private_tx",  # BP: accept eth_sendRawTransactionPrivate from a relayer.
+        "el_bor_enable_private_tx_relay",  # Relayer: enable [relay] enable-private-tx + suppress public gossip.
+        "el_bor_private_tx_bp_endpoints",  # Relayer: optional override of bp-rpc-endpoints (defaults to all validator EL urls).
         "count",
     ],
     "setup_images": [
@@ -337,6 +340,12 @@ def _validate_participant(p):
     if el_type != constants.EL_TYPE.bor:
         _fail_if_not_bor_el_type(p, "el_bor_produce_witness")
         _fail_if_not_bor_el_type(p, "el_bor_sync_with_witness")
+        _fail_if_not_bor_el_type(p, "el_bor_accept_private_tx")
+        _fail_if_not_bor_el_type(p, "el_bor_enable_private_tx_relay")
+        if p.get("el_bor_private_tx_bp_endpoints"):
+            fail(
+                'The "el_bor_private_tx_bp_endpoints" parameter is only valid for the bor EL client.'
+            )
 
     if not (el_type == constants.EL_TYPE.bor and p.get("el_bor_sync_with_witness")):
         stateless_parallel_import = p.get("el_bor_stateless_parallel_import")
@@ -344,6 +353,16 @@ def _validate_participant(p):
             fail(
                 'The "el_bor_stateless_parallel_import" parameter can only be enabled with bor EL client and when "el_bor_sync_with_witness" is set to true.'
             )
+
+    # Setting an explicit bp-rpc-endpoints override only makes sense on a relayer.
+    # Catch the typo where someone provides endpoints but forgets to enable the relay.
+    if (
+        p.get("el_bor_private_tx_bp_endpoints")
+        and not p.get("el_bor_enable_private_tx_relay")
+    ):
+        fail(
+            '"el_bor_private_tx_bp_endpoints" is set but "el_bor_enable_private_tx_relay" is False — endpoints would be ignored.'
+        )
 
 
 def _validate_validator_config_generator_image(plan, image, heimdall_v2_image):

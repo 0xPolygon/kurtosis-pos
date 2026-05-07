@@ -24,6 +24,7 @@ def launch(
     cl_ws_rpc_url,
     el_account,
     el_static_nodes,
+    el_validator_rpc_urls,  # accepted for API parity with bor; erigon has no relay feature
     container_proc_manager_artifact,  # accepted for API parity with bor but not used — see note below
     ethstats_server_params,
 ):

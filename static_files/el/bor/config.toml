@@ -115,6 +115,9 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # tooling sometimes broadcasts pre-EIP-155 raw txs (e.g. EIP-2470 deployer
   # bootstrap); enabling this matches Anvil's permissive default. (default: false)
   allow-unprotected-txs = true
+  # Block-producer side of the private-tx relay. When true, the node accepts
+  # eth_sendRawTransactionPrivate calls from the relayer. (default: false)
+  accept-private-tx = {{ if .accept_private_tx }}true{{ else }}false{{ end }}
   # Filename for IPC socket/pipe within the datadir (explicit paths escape it)
   ipcpath = "{{.data_folder_path}}/bor.ipc"
   [jsonrpc.http]
@@ -221,3 +224,17 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   globalqueue = 131072
   # Maximum amount of time non-executable transaction are queued
   lifetime = "1h30m0s"
+
+{{- if .enable_private_tx_relay }}
+
+[relay]
+  # Relayer side of the private-tx feature. When true, this node accepts
+  # eth_sendRawTransactionPrivate calls, suppresses devp2p gossip for the
+  # accepted tx hashes (eth/handler.go:768, eth/sync.go:42), and forwards each
+  # tx in parallel to the BPs listed below via eth_sendRawTransactionPrivate.
+  enable-private-tx = true
+  # In-cluster RPC URLs of the block producers that should receive private txs.
+  # Defaults to every validator EL node in the network when not overridden by
+  # el_bor_private_tx_bp_endpoints on the participant.
+  bp-rpc-endpoints = {{ .bp_rpc_endpoints_toml }}
+{{- end }}

@@ -93,6 +93,18 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_sync_with_witness": False,
     "el_bor_stateless_parallel_import": False,
     "el_bor_archive_mode": False,
+    # Bor private-transaction relay flags. See:
+    #   eth/relay/CLAUDE.md, internal/cli/server/flags.go (relay.* + accept-private-tx)
+    # accept_private_tx: BP-side. Allows this node to receive eth_sendRawTransactionPrivate
+    # from a relayer (sets [jsonrpc] accept-private-tx).
+    "el_bor_accept_private_tx": False,
+    # enable_private_tx_relay: relayer-side. Adds the [relay] block (enable-private-tx
+    # + bp-rpc-endpoints) so this node accepts user-facing eth_sendRawTransactionPrivate,
+    # suppresses devp2p gossip for those tx hashes, and forwards privately to the BPs.
+    "el_bor_enable_private_tx_relay": False,
+    # bp_rpc_endpoints: optional override. When relay is enabled and this list is empty,
+    # bor.launcher fills it with the in-cluster RPC URLs of all validator EL nodes.
+    "el_bor_private_tx_bp_endpoints": [],
 }
 
 POLYGON_POS_PACKAGE_ARGS = {

@@ -22,12 +22,30 @@ def launch(
     cl_ws_rpc_url,
     el_account,
     el_static_nodes,
+    el_validator_rpc_urls,
     container_proc_manager_artifact,
     ethstats_server_params,
 ):
     ethstats_server_secret = ""
     if ethstats_server_params:
         ethstats_server_secret = ethstats_server_params.get("ws_secret")
+
+    # Resolve bp-rpc-endpoints for the relayer. If the participant did not
+    # provide an explicit override, default to every validator EL service in
+    # the cluster (in-cluster DNS, http, port 8545). Pre-render as a TOML list
+    # literal so the template body stays simple.
+    enable_private_tx_relay = participant.get("el_bor_enable_private_tx_relay")
+    accept_private_tx = participant.get("el_bor_accept_private_tx")
+    bp_endpoints = list(participant.get("el_bor_private_tx_bp_endpoints") or [])
+    if enable_private_tx_relay and len(bp_endpoints) == 0:
+        bp_endpoints = list(el_validator_rpc_urls)
+    if enable_private_tx_relay and len(bp_endpoints) == 0:
+        fail(
+            "Participant '{}' has el_bor_enable_private_tx_relay=True but no validator EL nodes are present in the network and no el_bor_private_tx_bp_endpoints override was provided.".format(
+                el_node_name
+            )
+        )
+    bp_rpc_endpoints_toml = "[" + ", ".join(['"{}"'.format(u) for u in bp_endpoints]) + "]"
 
     bor_node_config_artifact = plan.render_templates(
         name="{}-config".format(el_node_name),
@@ -62,6 +80,10 @@ def launch(
                         "el_block_interval_seconds"
                     ),
                     "ethstats_server_secret": ethstats_server_secret,
+                    # relay (private tx)
+                    "accept_private_tx": accept_private_tx,
+                    "enable_private_tx_relay": enable_private_tx_relay,
+                    "bp_rpc_endpoints_toml": bp_rpc_endpoints_toml,
                     # ports
                     "rpc_port_number": shared.RPC_PORT_NUMBER,
                     "ws_port_number": shared.WS_PORT_NUMBER,

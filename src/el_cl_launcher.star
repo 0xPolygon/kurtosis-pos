@@ -25,7 +25,8 @@ def launch(
     network_params = polygon_pos_args.get("network_params")
 
     # Prepare network data for ALL participants (existing + new) so that
-    # static nodes and persistent peers include the full network topology.
+    # static nodes, persistent peers, and the relayer's bp-rpc-endpoints
+    # default include the full network topology.
     network_data = _prepare_network_data(participants, participant_start_index)
 
     # For existing EL nodes, replace the generated enode URLs with the actual
@@ -82,8 +83,17 @@ def launch(
     participant_index = 0
     validator_index = 0
     all_participants = []
+    # Names of validator EL services launched so far. Used to gate relayer
+    # startup on validator RPC readiness — bor's relay multiClient dials each
+    # bp-rpc-endpoint at boot via eth_blockNumber and silently disables the
+    # ones that don't respond (eth/relay/multiclient.go:60). If a relayer
+    # boots before its BPs are ready, the relay service ends up with zero
+    # working endpoints. See "[tx-relay] Failed to dial all rpc endpoints" in
+    # bor logs for the symptom.
+    launched_validator_el_names = []
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
+        is_private_relay = participant.get("el_bor_enable_private_tx_relay")
         for _ in range(participant.get("count")):
             if participant_index >= participant_start_index:
                 plan.print(
@@ -91,6 +101,11 @@ def launch(
                         participant_index + 1, str(participant)
                     )
                 )
+
+                # Block on validator EL readiness before bringing up a relayer.
+                if is_private_relay and len(launched_validator_el_names) > 0:
+                    for v_name in launched_validator_el_names:
+                        el_launcher.wait_for_node_startup(plan, v_name)
 
                 # Launch the CL node.
                 # Validators use pre-generated keys and run the bridge; rpc/archive nodes use
@@ -123,6 +138,7 @@ def launch(
                     cl_context.ws_rpc_url,
                     el_account,
                     network_data.el_static_nodes,
+                    network_data.el_validator_rpc_urls,
                     container_proc_manager_artifact,
                     ethstats_server_params,
                 )
@@ -137,6 +153,9 @@ def launch(
                         el_context=el_context,
                     )
                 )
+
+                if is_validator:
+                    launched_validator_el_names.append(el_context.service_name)
 
             # Always increment participant_index to track position across the full list.
             # Only increment validator_index for deployed validators (it indexes
@@ -175,6 +194,11 @@ def launch(
 def _prepare_network_data(participants, participant_start_index=0):
     # An array of EL enode URLs for the full network.
     el_static_nodes = []
+    # In-cluster JSON-RPC URLs of every validator EL node. Used as the default
+    # value for the relayer's [relay] bp-rpc-endpoints when the participant
+    # config does not provide an explicit override. Service DNS in kurtosis is
+    # the el_node_name; rpc port is el_shared.RPC_PORT_NUMBER (8545).
+    el_validator_rpc_urls = []
     # Validator configs and keystores for NEW validators only (to be generated).
     new_cl_validator_configs = []
     new_cl_validator_keystores = []
@@ -194,6 +218,12 @@ def _prepare_network_data(participants, participant_start_index=0):
                 el_node_name,
             )
             el_static_nodes.append(enode_url)
+
+            # Track validator EL RPC URLs for bp-rpc-endpoints default.
+            if p.get("kind") == constants.PARTICIPANT_KIND.validator:
+                el_validator_rpc_urls.append(
+                    "http://{}:{}".format(el_node_name, el_shared.RPC_PORT_NUMBER)
+                )
 
             # Generate validator configurations only for NEW validators.
             is_validator = p.get("kind") == constants.PARTICIPANT_KIND.validator
@@ -232,6 +262,7 @@ def _prepare_network_data(participants, participant_start_index=0):
         new_cl_validator_configs_str=";".join(new_cl_validator_configs),
         new_cl_validator_keystores=new_cl_validator_keystores,
         el_static_nodes=el_static_nodes,
+        el_validator_rpc_urls=el_validator_rpc_urls,
     )
 
 

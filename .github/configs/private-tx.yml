@@ -1,0 +1,28 @@
+polygon_pos_package:
+  participants:
+    # Block producer that accepts private transactions from the relayer via
+    # eth_sendRawTransactionPrivate (gated by [jsonrpc] accept-private-tx).
+    - kind: validator
+      el_type: bor
+      cl_type: heimdall-v2
+      el_bor_archive_mode: true
+      el_bor_accept_private_tx: true
+      count: 1
+    # Public RPC node — used by tests as the "non-private" peer to verify a
+    # privately-submitted tx is NOT gossiped over devp2p (it must never appear
+    # in this node's txpool before inclusion).
+    - kind: rpc
+      el_type: bor
+      cl_type: heimdall-v2
+      count: 1
+    # Relayer node — user-facing entry point for eth_sendRawTransactionPrivate.
+    # Suppresses public gossip for the accepted tx hashes and forwards each tx
+    # in parallel to the BPs listed in bp-rpc-endpoints. With the override
+    # left empty the launcher fills it with all validator EL nodes in the
+    # cluster.
+    - kind: rpc
+      el_type: bor
+      cl_type: heimdall-v2
+      el_bor_enable_private_tx_relay: true
+      count: 1
+  additional_services: []
