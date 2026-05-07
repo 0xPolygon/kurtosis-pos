@@ -66,3 +66,22 @@ jobs:
 
       - name: Run unit tests
         run: kurtosis-test .
+
+  devnet-monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: tools/devnet-monitor/go.mod
+          cache-dependency-path: tools/devnet-monitor/go.sum
+
+      - name: go vet
+        working-directory: tools/devnet-monitor
+        run: go vet ./...
+
+      - name: go test
+        working-directory: tools/devnet-monitor
+        run: go test ./...
