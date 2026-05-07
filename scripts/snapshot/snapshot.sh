@@ -549,8 +549,18 @@ wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 wait_for_checkpoint_quiescence() {
     local enclave_name="$1"
 
-    local cl_api_url root_chain_proxy l1_rpc_url
-    cl_api_url=$(kurtosis port print "$enclave_name" l2-cl-1-heimdall-v2-bor-validator http)
+    local cl_api_url root_chain_proxy l1_rpc_url cl_service
+    # Pick the first L2 CL validator regardless of el/cl flavour or archive suffix.
+    # `validator` is a `kind`, so the suffix is always `-validator` or `-validator-archive`.
+    cl_service=$(docker ps --filter "network=kt-$enclave_name" --format "{{.Names}}" \
+        | awk -F'--' '{print $1}' \
+        | grep -E '^l2-cl-[0-9]+-.*-validator(-archive)?$' \
+        | sort | head -n1)
+    if [[ -z "$cl_service" ]]; then
+        log_error "No L2 CL validator service found in enclave '$enclave_name'"
+        return 1
+    fi
+    cl_api_url=$(kurtosis port print "$enclave_name" "$cl_service" http)
     l1_rpc_url=$(kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
     root_chain_proxy=$(kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json \
         | sed -n '/^{/,$p' | jq -r '.root.RootChainProxy')
