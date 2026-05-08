@@ -17,14 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      KURTOSIS_VERSION: 1.15.2
+      KURTOSIS_VERSION: 1.18.2
 
     steps:
       - uses: actions/checkout@v6
 
       - name: Install kurtosis
         run: |
-          echo "deb [trusted=yes] https://apt.fury.io/kurtosis-tech/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
+          echo "deb [trusted=yes] https://sdk.kurtosis.com/kurtosis-cli-release-artifacts/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
           sudo apt update
           sudo apt install -y kurtosis-cli=${{ env.KURTOSIS_VERSION }}
           kurtosis analytics disable
@@ -33,14 +33,14 @@ jobs:
         run: kurtosis lint .
       
       - name: Run markdown linter
-        uses: rvben/rumdl@796443d01b28fb70c2897bc9cf9fb143148a6aab # v0.1.83
+        uses: rvben/rumdl@f8bdeb6a73c5f0741b58c25da2d38af5ee21b6e0 # v0.1.87
 
   typos:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
-      - uses: crate-ci/typos@cf5f1c29a8ac336af8568821ec41919923b05a83 # v1.45.1
+      - uses: crate-ci/typos@bbaefadf97b0ec5fdc942684b647f1a6ab250274 # v1.46.0
 
   unit:
     runs-on: ubuntu-latest
@@ -66,3 +66,22 @@ jobs:
 
       - name: Run unit tests
         run: kurtosis-test .
+
+  devnet-monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: tools/devnet-monitor/go.mod
+          cache-dependency-path: tools/devnet-monitor/go.sum
+
+      - name: go vet
+        working-directory: tools/devnet-monitor
+        run: go vet ./...
+
+      - name: go test
+        working-directory: tools/devnet-monitor
+        run: go test ./...

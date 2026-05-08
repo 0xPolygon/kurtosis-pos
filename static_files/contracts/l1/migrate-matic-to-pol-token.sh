@@ -45,7 +45,7 @@ fi
 # Merge the new addresses into contractAddresses.json.
 jq --arg pol "${pol_token}" --arg migration "${migration}" \
   '.root.tokens.PolToken = $pol | .root.tokens.PolygonMigration = $migration' \
-  contractAddresses.json > contractAddresses.json.tmp
+  contractAddresses.json >contractAddresses.json.tmp
 mv contractAddresses.json.tmp contractAddresses.json
 
 matic_token=$(jq -r '.root.tokens.MaticToken' contractAddresses.json)

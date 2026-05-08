@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/kurtosis/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
@@ -41,11 +41,11 @@ jobs:
 
       - uses: ./.github/actions/monitor
 
-      - uses: ./.github/actions/test-state-sync
+      - uses: ./.github/actions/test/bridge
         with:
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - uses: ./.github/actions/cleanup
+      - uses: ./.github/actions/kurtosis/cleanup
         if: always()
 
   list-ymls:
@@ -58,7 +58,7 @@ jobs:
       - id: set-matrix
         run: |
           if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            # Nightly mode: include all configs except cl-el-genesis, external-l1, and e2e-tests (handled by run-e2e-tests job)
+            # Nightly mode: include all configs except cl-el-genesis, external-l1, and e2e-tests (handled by test-e2e job)
             file_paths=$(ls -R ./.github/configs/{*,*/*,*/*/*}.yml | grep -Ev "cl-el-genesis|external-l1|e2e-tests")
           else
             # Regular mode: exclude nightly configs
@@ -92,7 +92,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/kurtosis/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
@@ -107,27 +107,27 @@ jobs:
         with:
           skip_checkpoints: ${{ contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why checkpoints are not being created in this case.
 
-      - uses: ./.github/actions/test-state-sync
+      - uses: ./.github/actions/test/bridge
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
         with:
           l1_rpc: ${{ contains(matrix.file.name, 'anvil') && 'anvil' || 'el-1-geth-lighthouse' }}
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - uses: ./.github/actions/cleanup
+      - uses: ./.github/actions/kurtosis/cleanup
         if: always()
         with:
           args_filename: ${{ matrix.file.name }}
           # Cache is only saved by main branch runs to avoid excessive storage use
           save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-mix' }}
 
-  run-e2e-tests:
+  test-e2e:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v6
 
-      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/kurtosis/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
@@ -139,11 +139,11 @@ jobs:
 
       - uses: ./.github/actions/monitor
 
-      - uses: ./.github/actions/run-e2e-tests
+      - uses: ./.github/actions/test/e2e
         with:
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - uses: ./.github/actions/cleanup
+      - uses: ./.github/actions/kurtosis/cleanup
         if: always()
         with:
           args_filename: e2e-tests
@@ -155,7 +155,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/kurtosis/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
@@ -183,11 +183,11 @@ jobs:
         with:
           skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
-      - uses: ./.github/actions/test-state-sync
+      - uses: ./.github/actions/test/bridge
         with:
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - uses: ./.github/actions/cleanup
+      - uses: ./.github/actions/kurtosis/cleanup
         if: always()
         with:
           args_filename: external-l1
@@ -199,7 +199,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/kurtosis/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
@@ -216,9 +216,9 @@ jobs:
       # than .github/configs/nightly/cl-el-genesis. Kurtosis 1.18+ strips leading
       # dots from top-level dirs when packing the package archive (mholt/archives
       # regression in kurtosis #2947), so `read_file(".github/...")` from main.star
-      # cannot locate files under hidden dirs locally. CI's pinned 1.15.2 isn't
-      # affected, but routing artifacts via a non-hidden dir keeps local and CI
-      # behaviour identical.
+      # cannot locate files under hidden dirs. Both local and CI are now on
+      # 1.18.x, so routing artifacts via a non-hidden dir is what makes the
+      # second deploy work in either environment.
       - name: Retrieve L2 CL genesis file
         run: |
           mkdir -p tmp/cl-el-genesis
@@ -259,9 +259,9 @@ jobs:
 
       - name: Stop L2 participants
         run: |
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-validator-archive
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-rabbitmq
-          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-v2-validator
+          kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-el-1-bor-heimdall-v2-validator-archive
 
       - name: Clean up L2 persistent volumes
         run: |
@@ -278,11 +278,11 @@ jobs:
         with:
           skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
-      - uses: ./.github/actions/test-state-sync
+      - uses: ./.github/actions/test/bridge
         with:
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - uses: ./.github/actions/cleanup
+      - uses: ./.github/actions/kurtosis/cleanup
         if: always()
         with:
           args_filename: cl-el-genesis
@@ -293,11 +293,11 @@ jobs:
     needs:
       - run-without-args
       - run-with-args
-      - run-e2e-tests
+      - test-e2e
       - run-with-external-l1
       - run-with-cl-el-genesis
     steps:
-      - uses: slackapi/slack-github-action@03ea5433c137af7c0495bc0cad1af10403fc800c # v3.0.2
+      - uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         with:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           method: chat.postMessage

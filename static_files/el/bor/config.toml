@@ -9,9 +9,9 @@ identity = "{{.node_name}}"
 # Blockchain sync mode: "full" or "stateless" (default: "full")
 syncmode = {{ if .sync_with_witness }}"stateless"{{ else }}"full"{{ end }}
 # Blockchain garbage collection mode: "full" or "archive" (default: "full")
-gcmode = {{ if eq .kind "archive" }}"archive"{{ else }}"full"{{ end }}
+gcmode = {{ if .archive_mode }}"archive"{{ else }}"full"{{ end }}
 # Enables the snapshot-database mode (default: true)
-snapshot = {{ or (eq .kind "archive") .produce_witness .sync_with_witness }}
+snapshot = {{ or .archive_mode .produce_witness .sync_with_witness }}
 # Logging verbosity for the server (5=trace|4=debug|3=info|2=warn|1=error|0=crit) (default: 3)
 verbosity = {{.log_level_to_int}}
 # Enables bor log retrieval (default: false)
@@ -37,11 +37,31 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Allow gas tip override (default: false)
   allow-gas-tip-override = true
   # Minimum gas price for mining a transaction (default: "24000000000")
+  # Both mainnet and amoy BPs run at 24 gwei (the 25 gwei PIP-35 floor is
+  # enforced separately via [txpool].pricelimit below).
+  #   mainnet BP: pos-ops/roles/deploy-mainnet-config/mainnet/anonymous-91/bor/config.toml#L66
+  #   amoy BP:    pos-ops/roles/deploy-amoy-config/amoy/pos-amoy-london-bp-nvme-01/bor/config.toml#L77
   gasprice = "24000000000"
   # Enable transaction prefetching during mining (default: false)
   prefetch = true
   # Percentage of gas limit to use for prefetching (default: 100)
   prefetchGasLimitPercent = 100
+  # Post-Lisovo dynamic target gas: adjusts the EIP-1559 target gas % each
+  # block to push baseFee toward `targetBaseFee`. Mirrors the amoy BP.
+  # Mainnet uses different values (targetBaseFee = 100 gwei, target % 15-70)
+  # but kurtosis is a devnet/testnet-shaped tool so amoy is the closer
+  # reference. On idle devnets baseFee will still deflate per EIP-1559
+  # (no traffic ⇒ gasUsed=0 ⇒ fee falls); mainnet's ~100 gwei steady state
+  # comes from organic traffic, not config. Run the tx_spammer additional
+  # service for sustained baseFee on a long-running devnet.
+  #   amoy BP (mirrored): pos-ops/roles/deploy-amoy-config/amoy/pos-amoy-london-bp-nvme-01/bor/config.toml#L84-L91
+  #   mainnet BP (ref):   pos-ops/roles/deploy-mainnet-config/mainnet/anonymous-91/bor/config.toml#L67-L74
+  enableDynamicGasLimit = false
+  enableDynamicTargetGas = true
+  targetBaseFee = 800
+  baseFeeBuffer = 0
+  targetGasMinPercentage = 50
+  targetGasMaxPercentage = 80
 {{- end }}
 
 [witness]
@@ -90,6 +110,11 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
 [jsonrpc]
   # Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap) (default: 1)
   txfeecap = 0.4194304
+  # Allow non-EIP-155 (chain-id-less) transactions. The L2 genesis sets
+  # eip155Block: 0, so legacy unprotected txs are normally rejected. Devnet
+  # tooling sometimes broadcasts pre-EIP-155 raw txs (e.g. EIP-2470 deployer
+  # bootstrap); enabling this matches Anvil's permissive default. (default: false)
+  allow-unprotected-txs = true
   # Filename for IPC socket/pipe within the datadir (explicit paths escape it)
   ipcpath = "{{.data_folder_path}}/bor.ipc"
   [jsonrpc.http]
@@ -155,9 +180,12 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Disable heuristic state prefetch during block import (less CPU and disk IO, more time waiting for data) (default: false)
   noprefetch = false
   # Enable recording the SHA3/keccak preimages of trie keys (default: false)
-  preimages = {{ ne .kind "validator" }}
+  # Required when archive_mode is on so debug_traceTransaction can resolve preimages.
+  preimages = {{ or (ne .kind "validator") .archive_mode }}
   # Number of block states (tries) to keep in memory (default: 128)
-  triesinmemory = {{ if eq .kind "validator" }}1{{ else }}128{{ end }}
+  # Validators normally trim aggressively (1) for performance; archive mode
+  # needs the full 128 to keep historical state queryable.
+  triesinmemory = {{ if and (eq .kind "validator") (not .archive_mode) }}1{{ else }}128{{ end }}
   # Size (in number of blocks) of the log cache for filtering (default: 32)
   blocklogs = 32
   # Time after which the Merkle Patricia Trie is stored to disc from memory (default: 1h0m0s)
@@ -171,11 +199,13 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Number of recent blocks to maintain log search index for (default = about 2 months, 0 = entire chain) (default: 2350000)
   logs = 2350000
   # Do not maintain log search index (default: false)
-  "logs.disable" = {{ eq .kind "validator" }}
+  # Validators skip the log index unless archive_mode promotes them.
+  "logs.disable" = {{ and (eq .kind "validator") (not .archive_mode) }}
   # Number of recent blocks to retain state history for, only relevant in state.scheme=path (default = 90,000 blocks, 0 = entire chain) (default: 90000)
-  state = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}90000{{ else if eq .kind "archive"}}0{{ end }}
+  # 0 = retain everything (archive_mode). Otherwise validators trim to 1024 and rpcs to 90000.
+  state = {{ if .archive_mode }}0{{ else if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}90000{{ end }}
   # Number of recent blocks to maintain transactions index for (default = about 2 months, 0 = entire chain) (default: 2350000)
-  transactions = {{ if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}2350000{{ else if eq .kind "archive"}}0{{ end }}
+  transactions = {{ if .archive_mode }}0{{ else if eq .kind "validator" }}1024{{ else if eq .kind "rpc"}}2350000{{ end }}
 
 [txpool]
   # Minimum gas price limit to enforce for acceptance into the pool.

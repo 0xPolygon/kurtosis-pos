@@ -23,7 +23,7 @@ echo "http://$(kurtosis port print pos el-1-geth-lighthouse rpc)"
 After starting your environment, run:
 
 ```bash
-kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc
+kurtosis port print pos l2-el-1-bor-heimdall-v2-validator-archive rpc
 ```
 
 This is in the case you deployed a heimdall-v2/bor devnet, otherwise you may need to update the name of the service.
@@ -45,13 +45,13 @@ where `0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea` is th
 To follow logs for a service:
 
 ```bash
-kurtosis service logs pos l2-el-1-bor-heimdall-v2-validator --follow
+kurtosis service logs pos l2-el-1-bor-heimdall-v2-validator-archive --follow
 ```
 
 To open a shell in a service:
 
 ```bash
-kurtosis service shell pos l2-el-1-bor-heimdall-v2-validator
+kurtosis service shell pos l2-el-1-bor-heimdall-v2-validator-archive
 ```
 
 ### How to list all the services and ports?

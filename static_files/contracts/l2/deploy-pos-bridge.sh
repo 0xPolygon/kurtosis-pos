@@ -72,14 +72,14 @@ mintable_erc1155_type=$(cast keccak "MintableERC1155")
 ether_root="0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 
 for pair in \
-    "ERC20:$(jq -r '.root.posBridge.DummyERC20' contractAddresses.json):$(jq -r '.child.posBridge.DummyERC20' contractAddresses.json):${erc20_type}" \
-    "MintableERC20:$(jq -r '.root.posBridge.DummyMintableERC20' contractAddresses.json):$(jq -r '.child.posBridge.DummyMintableERC20' contractAddresses.json):${mintable_erc20_type}" \
-    "ERC721:$(jq -r '.root.posBridge.DummyERC721' contractAddresses.json):$(jq -r '.child.posBridge.DummyERC721' contractAddresses.json):${erc721_type}" \
-    "MintableERC721:$(jq -r '.root.posBridge.DummyMintableERC721' contractAddresses.json):$(jq -r '.child.posBridge.DummyMintableERC721' contractAddresses.json):${mintable_erc721_type}" \
-    "ERC1155:$(jq -r '.root.posBridge.DummyERC1155' contractAddresses.json):$(jq -r '.child.posBridge.DummyERC1155' contractAddresses.json):${erc1155_type}" \
-    "MintableERC1155:$(jq -r '.root.posBridge.DummyMintableERC1155' contractAddresses.json):$(jq -r '.child.posBridge.DummyMintableERC1155' contractAddresses.json):${mintable_erc1155_type}" \
-    "Ether:${ether_root}:$(jq -r '.child.posBridge.MaticWETH' contractAddresses.json):${ether_type}"; do
-  IFS=':' read -r label root_token child_token tt <<< "${pair}"
+  "ERC20:$(jq -r '.root.posBridge.DummyERC20' contractAddresses.json):$(jq -r '.child.posBridge.DummyERC20' contractAddresses.json):${erc20_type}" \
+  "MintableERC20:$(jq -r '.root.posBridge.DummyMintableERC20' contractAddresses.json):$(jq -r '.child.posBridge.DummyMintableERC20' contractAddresses.json):${mintable_erc20_type}" \
+  "ERC721:$(jq -r '.root.posBridge.DummyERC721' contractAddresses.json):$(jq -r '.child.posBridge.DummyERC721' contractAddresses.json):${erc721_type}" \
+  "MintableERC721:$(jq -r '.root.posBridge.DummyMintableERC721' contractAddresses.json):$(jq -r '.child.posBridge.DummyMintableERC721' contractAddresses.json):${mintable_erc721_type}" \
+  "ERC1155:$(jq -r '.root.posBridge.DummyERC1155' contractAddresses.json):$(jq -r '.child.posBridge.DummyERC1155' contractAddresses.json):${erc1155_type}" \
+  "MintableERC1155:$(jq -r '.root.posBridge.DummyMintableERC1155' contractAddresses.json):$(jq -r '.child.posBridge.DummyMintableERC1155' contractAddresses.json):${mintable_erc1155_type}" \
+  "Ether:${ether_root}:$(jq -r '.child.posBridge.MaticWETH' contractAddresses.json):${ether_type}"; do
+  IFS=':' read -r label root_token child_token tt <<<"${pair}"
   # Idempotency: cl-el-genesis re-deploy hits these contracts a second time. mapToken
   # reverts with ALREADY_MAPPED if rootToken already has a child mapping, so skip when
   # the existing mapping already points to the expected child (re-deploys land at the

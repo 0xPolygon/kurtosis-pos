@@ -1,15 +1,13 @@
 name: snapshot
 
+# Build snapshot images for each devnet variant and validate them end-to-end.
+# Publish to GHCR on a successful tag push.
 on:
   schedule:
-    - cron: 0 6 * * * # Run this workflow every day at 6 AM Paris time (UTC).
+    - cron: 0 6 * * * # 6 AM UTC every day.
   workflow_dispatch:
-
-# Permissions required to pull images from GAR
-permissions:
-  contents: read
-  actions: write
-  id-token: write
+  push:
+    tags: ['v*']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,16 +20,37 @@ jobs:
   snapshot:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
+    permissions:
+      contents: read
+      actions: write
+      packages: write
+      id-token: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - devnet_type: small
+          - devnet_type: large
+            extra_flags: --args-file .github/configs/large.yml.norun
+
     steps:
       - uses: actions/checkout@v6
 
-      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/kurtosis/setup
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Deploy devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --args-file .github/configs/large.yml.norun .
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} ${{ matrix.extra_flags }} .
 
       - name: Create snapshot
         run: ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
@@ -39,7 +58,8 @@ jobs:
       - name: Verify snapshot image exists
         run: docker image inspect pos-devnet
 
-      - uses: ./.github/actions/cleanup
+      - name: Remove the kurtosis enclave
+        run: kurtosis enclave rm --force ${{ env.ENCLAVE_NAME }}
 
       - name: Extract snapshot data
         run: ./scripts/snapshot/extract.sh pos-devnet
@@ -47,15 +67,20 @@ jobs:
       - name: Restore devnet from snapshot
         run: ./scripts/snapshot/restore.sh
 
-      - name: Verify restored devnet produces blocks
+      - uses: ./.github/actions/monitor
+        with:
+          enclave_name: restored
+          compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
+
+      - uses: ./.github/actions/test/bridge
+        with:
+          enclave_name: restored
+          compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
+          pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
+
+      - name: Push snapshot image
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         run: |
-          target_block=200
-          while true; do
-            block=$(cast bn --rpc-url localhost:9545)
-            echo "L2 block: $block/$target_block"
-            if [[ "$block" -ge "$target_block" ]]; then
-              echo "Restored devnet is producing blocks!"
-              break
-            fi
-            sleep 5
-          done
+          image="ghcr.io/0xpolygon/pos-devnet-${{ matrix.devnet_type }}:${{ github.ref_name }}"
+          docker tag pos-devnet "$image"
+          docker push "$image"

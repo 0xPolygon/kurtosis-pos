@@ -27,7 +27,8 @@ polygon_pos_package:
       el_type: erigon
 
     # Bor archive node
-    - kind: archive
+    - kind: rpc
       count: 1
       cl_type: heimdall-v2
       el_type: bor
+      el_bor_archive_mode: true

@@ -21,11 +21,15 @@ dev:
   should_deploy_matic_contracts: true
 ```
 
-|             Field             |  Type  |     Default      |                                   Description                                                                            |
-| ----------------------------- | ------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| l1_backend                    | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight                                         |
-| should_deploy_l1              | bool   | true             | Whether to deploy the L1 chain                                                                                           |
-| should_deploy_matic_contracts | bool   | true             | Whether to deploy the contract suite (plasma bridge, MATIC→POL migration, pos bridge, sPOL/LST)                          |
+| Field                             | Type   | Default          | Description                                                                                                       |
+| --------------------------------- | ------ | ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| l1_backend                        | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight                                  |
+| should_deploy_l1                  | bool   | true             | Whether to deploy the L1 chain                                                                                    |
+| l1_rpc_url                        | string | -                | RPC URL of an existing L1 to connect to. Required when `should_deploy_l1: false`                                  |
+| should_deploy_matic_contracts     | bool   | true             | Whether to deploy the contract suite (plasma bridge, MATIC→POL migration, pos bridge, sPOL/LST)                   |
+| l2_el_genesis_filepath            | string | -                | Path to a pre-built L2 EL genesis file. Required when `should_deploy_matic_contracts: false`                      |
+| l2_cl_genesis_filepath            | string | -                | Path to a pre-built L2 CL genesis file. Required when `should_deploy_matic_contracts: false`                      |
+| matic_contract_addresses_filepath | string | -                | Path to a JSON of already-deployed MATIC contract addresses. Required when `should_deploy_matic_contracts: false` |
 
 ## L1 Configuration
 
@@ -123,27 +127,28 @@ These global settings apply to all participants unless overridden at the partici
 
 Default: a single validator.
 
-| Field                            | Type   | Default                     | Description                                                                               |
-| -------------------------------- | ------ | --------------------------- | ----------------------------------------------------------------------------------------- |
-| kind                             | string | validator                   | Role of the node in the network: `validator`, `rpc` or `archive`                          |
-| cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                          |
-| cl_image                         | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                                                   |
-| cl_queue_image                   | string | rabbitmq:4.2.5              | Image for the CL queue                                                                    |
-| cl_log_level                     | string | info                        | Log level for the CL client                                                               |
-| cl_log_format                    | string | text                        | Log format for the CL client                                                              |
-| cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                     |
-| cl_compact_enabled               | bool   | false                       | Compaction enabling.                                                                      |
-| cl_compaction_interval           | int    | 1000                        | Minimal blocks necessary to run a new compaction routine                                  |
-| cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                          |
-| cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                         |
-| el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                       |
-| el_image                         | string | 0xpolygon/bor:2.7.1         | Image for the EL client (bor: `0xpolygon/bor:2.7.1`, erigon: `0xpolygon/erigon:v3.5.0`)   |
-| el_log_level                     | string | info                        | Log level for the EL client                                                               |
-| el_log_format                    | string | text                        | Log format for the EL client                                                              |
-| el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                    |
-| el_bor_sync_with_witness         | bool   | false                       | Enable bor to sync new blocks using witnesses                                             |
-| el_bor_stateless_parallel_import | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`) |
-| count                            | int    | 1                           | Number of nodes to spin up for this participant                                           |
+| Field                            | Type   | Default                     | Description                                                                                                                                                                                                                                 |
+| -------------------------------- | ------ | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| kind                             | string | validator                   | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                     |
+| cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                                                                                                                                                                            |
+| cl_image                         | string | 0xpolygon/heimdall-v2:0.6.0 | Image for the CL client                                                                                                                                                                                                                     |
+| cl_queue_image                   | string | rabbitmq:4.2.5              | Image for the CL queue                                                                                                                                                                                                                      |
+| cl_log_level                     | string | info                        | Log level for the CL client                                                                                                                                                                                                                 |
+| cl_log_format                    | string | text                        | Log format for the CL client                                                                                                                                                                                                                |
+| cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                                                                                                                                                                       |
+| cl_compact_enabled               | bool   | false                       | Compaction enabling.                                                                                                                                                                                                                        |
+| cl_compaction_interval           | int    | 1000                        | Minimal blocks necessary to run a new compaction routine                                                                                                                                                                                    |
+| cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                                                                                                                                                                            |
+| cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                                                                                                                                                                           |
+| el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                                                                                                                                                                         |
+| el_image                         | string | 0xpolygon/bor:2.7.1         | Image for the EL client (bor: `0xpolygon/bor:2.7.1`, erigon: `0xpolygon/erigon:v3.5.0`)                                                                                                                                                     |
+| el_log_level                     | string | info                        | Log level for the EL client                                                                                                                                                                                                                 |
+| el_log_format                    | string | text                        | Log format for the EL client                                                                                                                                                                                                                |
+| el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                                                                                                                                                                      |
+| el_bor_sync_with_witness         | bool   | false                       | Enable bor to sync new blocks using witnesses                                                                                                                                                                                               |
+| el_bor_stateless_parallel_import | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)                                                                                                                                                   |
+| el_bor_archive_mode              | bool   | false                       | Run bor with `gcmode=archive` and full history retention. Orthogonal to `kind` — set on a validator or rpc node. Required for `debug_traceTransaction` on past blocks. The default single-node config sets this to `true` on the validator. |
+| count                            | int    | 1                           | Number of nodes to spin up for this participant                                                                                                                                                                                             |
 
 ### `setup_images`
 
@@ -159,34 +164,36 @@ Default: a single validator.
 You can check the admin private key and mnemonic default values at `src/config/input_parser.star`.
 :::
 
-| Field                                 | Type   | Default            | Description                                                        |
-| ------------------------------------- | ------ | ------------------ | ------------------------------------------------------------------ |
-| admin_private_key                     | string | 0xd403...60ea      | Private key used to deploy Polygon PoS contracts on both L1 and L2 |
-| preregistered_validator_keys_mnemonic | string | sibling lend brave | Mnemonic for validator keystores                                   |
-| validator_stake_amount_eth            | int    | 10000              | Amount of ether to stake for each validator                        |
-| validator_top_up_fee_amount_eth       | int    | 2000               | Top up fee amount in ether for each validator                      |
-| cl_environment                        | string | -                  | CL environment: `mainnet`, `mumbai`, or `local` (optional)         |
-| cl_span_poll_interval                 | string | 5s                 | Span poll interval on the CL chain                                 |
-| cl_checkpoint_poll_interval           | string | 5s                 | Checkpoint poll interval on the CL chain                           |
-| cl_max_age_num_blocks                 | int    | 100000             | Genesis evidence setting, useful to set smaller pruning intervals  |
-| el_block_interval_seconds             | int    | 1                  | Seconds per block on the EL chain                                  |
-| el_sprint_duration                    | int    | 16                 | Duration of an EL sprint (blocks)                                  |
-| el_span_duration                      | int    | 128                | Duration of an EL span (blocks).                                   |
-| el_gas_limit                          | int    | 65_000_000         | EL gas limit                                                       |
-| jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                       |
-| delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                        |
-| indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                       |
-| agra_fork_block                       | int    | 0                  | Block number for Agra hard fork activation                         |
-| napoli_fork_block                     | int    | 0                  | Block number for Napoli hard fork activation                       |
-| ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                    |
-| bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                       |
-| rio_fork_block                        | int    | 128                | Block number for Rio hard fork activation                          |
-| madhugiri_fork_block                  | int    | 128                | Block number for Madhugiri hard fork activation                    |
-| madhugiri_pro_fork_block              | int    | 128                | Block number for Madhugiri Pro hard fork activation                |
-| dandeli_fork_block                    | int    | 128                | Block number for Dandeli hard fork activation                      |
-| lisovo_fork_block                     | int    | 128                | Block number for Lisovo hard fork activation                       |
-| lisovo_pro_fork_block                 | int    | 128                | Block number for Lisovo Pro hard fork activation                   |
-| giugliano_fork_block                  | int    | 128                | Block number for Giugliano hard fork activation                    |
+| Field                                 | Type   | Default            | Description                                                                                                  |
+| ------------------------------------- | ------ | ------------------ | ------------------------------------------------------------------------------------------------------------ |
+| admin_private_key                     | string | 0xd403...60ea      | Private key used to deploy Polygon PoS contracts on both L1 and L2                                           |
+| preregistered_validator_keys_mnemonic | string | sibling lend brave | Mnemonic for validator keystores                                                                             |
+| validator_stake_amount_eth            | int    | 10000              | Amount of ether to stake for each validator                                                                  |
+| validator_top_up_fee_amount_eth       | int    | 2000               | Top up fee amount in ether for each validator                                                                |
+| cl_environment                        | string | -                  | CL environment: `mainnet`, `mumbai`, or `local` (optional)                                                   |
+| cl_span_poll_interval                 | string | 5s                 | Span poll interval on the CL chain                                                                           |
+| cl_checkpoint_poll_interval           | string | 5s                 | Checkpoint poll interval on the CL chain                                                                     |
+| cl_max_age_num_blocks                 | int    | 100000             | Genesis evidence setting, useful to set smaller pruning intervals                                            |
+| cl_avg_checkpoint_length              | string | 8                  | Average number of blocks per checkpoint (heimdall `chain_manager.params.chain_params.avg_checkpoint_length`) |
+| cl_checkpoint_buffer_time             | string | 10s                | Checkpoint buffer time (heimdall `chain_manager.params.chain_params.checkpoint_buffer_time`)                 |
+| el_block_interval_seconds             | int    | 1                  | Seconds per block on the EL chain                                                                            |
+| el_sprint_duration                    | int    | 16                 | Duration of an EL sprint (blocks)                                                                            |
+| el_span_duration                      | int    | 128                | Duration of an EL span (blocks).                                                                             |
+| el_gas_limit                          | int    | 200_000_000        | EL gas limit. Mirrors amoy BP (mainnet BP: 120M)                                                             |
+| jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                                                                 |
+| delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                                                                  |
+| indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                                                                 |
+| agra_fork_block                       | int    | 0                  | Block number for Agra hard fork activation                                                                   |
+| napoli_fork_block                     | int    | 0                  | Block number for Napoli hard fork activation                                                                 |
+| ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                                                              |
+| bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                                                                 |
+| rio_fork_block                        | int    | 128                | Block number for Rio hard fork activation                                                                    |
+| madhugiri_fork_block                  | int    | 128                | Block number for Madhugiri hard fork activation                                                              |
+| madhugiri_pro_fork_block              | int    | 128                | Block number for Madhugiri Pro hard fork activation                                                          |
+| dandeli_fork_block                    | int    | 128                | Block number for Dandeli hard fork activation                                                                |
+| lisovo_fork_block                     | int    | 128                | Block number for Lisovo hard fork activation                                                                 |
+| lisovo_pro_fork_block                 | int    | 128                | Block number for Lisovo Pro hard fork activation                                                             |
+| giugliano_fork_block                  | int    | 128                | Block number for Giugliano hard fork activation                                                              |
 
 ### `additional_services`
 
