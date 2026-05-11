@@ -23,15 +23,35 @@ def test_sanity_check_with_invalid_parallel_import(plan):
 
 
 def test_sanity_check_with_parallel_import(plan):
-    participant = input_parser.POLYGON_POS_PARTICIPANT | {
+    # Stateless validators can't seal blocks, so include a producing validator
+    # alongside the stateless one to satisfy the producer-set sanity check.
+    producing_validator = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_sync_with_witness": False,
+    }
+    stateless_validator = input_parser.POLYGON_POS_PARTICIPANT | {
         "el_type": constants.EL_TYPE.bor,
         "el_bor_sync_with_witness": True,
         "el_bor_stateless_parallel_import": True,
     }
     args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
-        "participants": [participant],
+        "participants": [producing_validator, stateless_validator],
     }
     sanity_check.sanity_check_polygon_args(plan, args)
+
+
+def test_sanity_check_fails_without_producing_validator(plan):
+    stateless_validator = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_sync_with_witness": True,
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [stateless_validator],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        "At least one validator participant must have `el_bor_sync_with_witness: false` so the network has a block producer.",
+    )
 
 
 def test_sanity_check_with_status_checker_missing_image(plan):

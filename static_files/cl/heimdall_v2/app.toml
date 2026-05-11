@@ -285,6 +285,12 @@ main_chain_max_gas_price = "400000000000"
 
 ##### Timeout Config #####
 no_ack_wait_time = "30m0s"
+
+# Ordered val IDs the bridge votes for as VeBlop producers. Stateless-sync
+# validators are excluded so they aren't elected to produce blocks (they have
+# no [miner] section in bor and can't seal). Computed automatically from the
+# participants list in src/cl/heimdall_v2/genesis.star.
+producer_votes = "{{.producer_votes}}"
 {{ end }}
 
 chain = "{{.cl_environment}}"

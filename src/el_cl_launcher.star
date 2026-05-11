@@ -1,5 +1,6 @@
 cl_launcher = import_module("./cl/launcher.star")
 cl_shared = import_module("./cl/shared.star")
+heimdall_v2_genesis = import_module("./cl/heimdall_v2/genesis.star")
 constants = import_module("./config/constants.star")
 el_launcher = import_module("./el/launcher.star")
 el_shared = import_module("./el/shared.star")
@@ -22,6 +23,12 @@ def launch(
     l1_rpc_url,
 ):
     network_params = polygon_pos_args.get("network_params")
+
+    # Comma-separated val IDs of validators eligible to produce blocks (i.e.,
+    # validators not running in stateless sync mode). All validator bridges
+    # vote for this same list via heimdall's `producer_votes` config so that
+    # VeBlop's stake-weighted election converges on the producing subset.
+    producer_votes_str = heimdall_v2_genesis.get_producer_vote_val_ids(participants)
 
     # Prepare network data and generate validator configs.
     network_data = _prepare_network_data(participants)
@@ -73,6 +80,7 @@ def launch(
                 cl_node_ids,
                 l1_rpc_url,
                 container_proc_manager_artifact,
+                producer_votes_str,
             )
 
             # Launch the EL node.

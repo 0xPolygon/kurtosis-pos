@@ -18,6 +18,7 @@ def launch(
     el_rpc_url,
     amqp_url,
     container_proc_manager_artifact,
+    producer_votes_str,
 ):
     heimdall_node_config_artifacts = plan.render_templates(
         name="{}-config".format(cl_node_name),
@@ -35,6 +36,7 @@ def launch(
                     "checkpoint_poll_interval": network_params.get(
                         "cl_checkpoint_poll_interval"
                     ),
+                    "producer_votes": producer_votes_str,
                     # URLs.
                     "amqp_url": amqp_url,
                     "el_rpc_url": el_rpc_url,
