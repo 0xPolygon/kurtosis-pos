@@ -12,6 +12,7 @@ HEIMDALL_V2_GENESIS_TEMPLATE_FILE_PATH = (
 def generate(
     plan,
     polygon_pos_args,
+    participants,
     validator_accounts,
     contract_addresses_artifact,
 ):
@@ -24,12 +25,31 @@ def generate(
     proposer = []
     if validators_number > 0:
         proposer = validator_data.validator_set[0]
+
+    # Producers are validators without `el_bor_sync_with_witness` (stateless
+    # nodes can't execute and seal blocks). Filter the full validator set down
+    # to the producing subset and use it for span 0's `selected_producers`.
+    producer_vote_ids = heimdall_v2_genesis.get_producer_vote_val_ids(participants)
+    producer_id_set = {v: True for v in producer_vote_ids.split(",") if v}
+    producing_validators = [
+        v for v in validator_data.validator_set if v["val_id"] in producer_id_set
+    ]
+
+    # Keep `producer_count` at the full validator set size so the legacy
+    # `selectNextProducers` early-returns all validators for any pre-Rio span
+    # beyond span 0 (which is genesis-set). With producer_count < validator
+    # count the legacy random-subset path can pick stateless validators into
+    # SelectedProducers, breaking heimdall's post-Rio milestone author check
+    # once IsRio(latestSpan.EndBlock+1) becomes true.
+    # VeBlop's producer_set_limit is hardcoded (helper/config.go:699), so this
+    # has no effect on post-Rio span sizing.
     cl_genesis_data = {
         "accounts": json.indent(json.encode(validator_data.accounts)),
         "balances": json.indent(json.encode(validator_data.balances)),
         "supply": json.indent(json.encode(validator_data.supply)),
         "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
         "validators": json.indent(json.encode(validator_data.validator_set)),
+        "selected_producers": json.indent(json.encode(producing_validators)),
         "proposer": json.indent(json.encode(proposer)),
         "producer_count": len(validator_data.validator_set),
         "total_voting_power": validator_data.total_voting_power,

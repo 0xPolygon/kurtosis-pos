@@ -95,6 +95,7 @@ def run(plan, args):
         l2_cl_genesis_artifact = cl_genesis.generate(
             plan,
             polygon_pos_args,
+            participants,
             validator_accounts,
             l1_contract_addresses_artifact,
         )

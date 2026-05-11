@@ -21,6 +21,7 @@ def launch(
     node_ids,
     l1_rpc_url,
     container_proc_manager_artifact,
+    producer_votes_str,
 ):
     # rabbitmq_url is only used by validator nodes to run the heimdall bridge.
     # Non-validator nodes don't run the bridge, so they don't need it.
@@ -53,6 +54,7 @@ def launch(
         el_rpc_url,
         rabbitmq_url,
         container_proc_manager_artifact,
+        producer_votes_str,
     )
     http_rpc_url = service.ports[cl_shared.RPC_PORT_ID].url
     (_, _, rpc_host_port) = http_rpc_url.partition("://")
