@@ -86,40 +86,50 @@ def launch(
         src=CONTAINER_PROC_MANAGER_FILE_PATH,
     )
 
-    # Start each participant, skipping those before participant_start_index.
+    # Two-pass launch sequence (refactored for multi-Heimdall coverage):
+    #
+    #   Pass 1 — launch every CL container, capturing its context in slot
+    #            order so a later EL can see the full set of CL endpoints
+    #            and build a comma-separated `--bor.heimdall.urls` list.
+    #   Pass 2 — launch every EL container, passing it the list of CL
+    #            api_urls / ws_rpc_urls (single-element by default; the
+    #            full list when `cl_failover: true` is set on the
+    #            participant).
+    #
+    # The two-pass split is structural — bor's MultiHeimdallClient
+    # failover (eth/ethconfig/config.go::parseURLs) accepts a comma-
+    # separated `[heimdall].url` and a comma-separated WS address, so
+    # any non-empty failover list must be available *before* the EL
+    # service is created.
+    ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
+
+    # Pass 1: launch all CLs and remember the slot ↔ participant mapping.
+    # Participants with index < participant_start_index are already running
+    # from a prior `kurtosis run` (enclave extension) and are skipped here.
+    # Each slot is {participant, participant_index, is_validator, is_private_relay, cl_context}.
+    slots = []
     participant_index = 0
+    # validator_index indexes into cl_validator_config_artifacts.keys, which
+    # only contains keys for NEW validators (skipping those already deployed).
     validator_index = 0
-    all_participants = []
-    # Names of validator EL services launched so far. Used to gate relayer
-    # startup on validator RPC readiness — bor's relay multiClient dials each
-    # bp-rpc-endpoint at boot via eth_blockNumber and silently disables the
-    # ones that don't respond (eth/relay/multiclient.go:60). If a relayer
-    # boots before its BPs are ready, the relay service ends up with zero
-    # working endpoints. See "[tx-relay] Failed to dial all rpc endpoints" in
-    # bor logs for the symptom.
-    launched_validator_el_names = []
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         is_private_relay = participant.get("el_bor_enable_private_tx_relay")
         for _ in range(participant.get("count")):
             if participant_index >= participant_start_index:
                 plan.print(
-                    "Launching participant {} with config: {}".format(
+                    "Launching CL for participant {} with config: {}".format(
                         participant_index + 1, str(participant)
                     )
                 )
 
-                # Block on validator EL readiness before bringing up a relayer.
-                if is_private_relay and len(launched_validator_el_names) > 0:
-                    for v_name in launched_validator_el_names:
-                        el_launcher.wait_for_node_startup(plan, v_name)
-
-                # Launch the CL node.
                 # Validators use pre-generated keys and run the bridge; rpc/archive nodes use
                 # auto-generated keys and run as full nodes without the bridge.
                 cl_keys_artifact = None
                 if is_validator and cl_validator_config_artifacts:
-                    cl_keys_artifact = cl_validator_config_artifacts.keys[validator_index]
+                    cl_keys_artifact = cl_validator_config_artifacts.keys[
+                        validator_index
+                    ]
                 cl_context = cl_launcher.launch(
                     plan,
                     participant,
@@ -133,44 +143,90 @@ def launch(
                     producer_votes_str,
                 )
 
-                # Launch the EL node.
-                el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
-                ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
-                el_context = el_launcher.launch(
-                    plan,
-                    participant,
-                    participant_index + 1,
-                    network_params,
-                    el_genesis_artifact,
-                    cl_context.api_url,
-                    cl_context.ws_rpc_url,
-                    el_account,
-                    network_data.el_static_nodes,
-                    network_data.el_validator_rpc_urls,
-                    container_proc_manager_artifact,
-                    ethstats_server_params,
-                )
-
-                # Add the node to the all_participants array.
-                all_participants.append(
-                    participant_module.new_participant(
-                        kind=participant.get("kind"),
-                        cl_type=participant.get("cl_type"),
-                        el_type=participant.get("el_type"),
+                slots.append(
+                    struct(
+                        participant=participant,
+                        participant_index=participant_index,
+                        is_validator=is_validator,
+                        is_private_relay=is_private_relay,
                         cl_context=cl_context,
-                        el_context=el_context,
                     )
                 )
 
                 if is_validator:
-                    launched_validator_el_names.append(el_context.service_name)
-
-            # Always increment participant_index to track position across the full list.
-            # Only increment validator_index for deployed validators (it indexes
-            # into the newly generated key artifacts, not the full validator list).
-            if participant_index >= participant_start_index and is_validator:
-                validator_index += 1
+                    validator_index += 1
             participant_index += 1
+
+    # Pass 2: launch all ELs, each with the full set of CL endpoints
+    # available for failover plumbing.
+    all_cl_api_urls = [s.cl_context.api_url for s in slots]
+    all_cl_ws_rpc_urls = [s.cl_context.ws_rpc_url for s in slots]
+
+    # Names of validator EL services launched so far. Used to gate relayer
+    # startup on validator RPC readiness — bor's relay multiClient dials each
+    # bp-rpc-endpoint at boot via eth_blockNumber and silently disables the
+    # ones that don't respond (eth/relay/multiclient.go:60). If a relayer
+    # boots before its BPs are ready, the relay service ends up with zero
+    # working endpoints. See "[tx-relay] Failed to dial all rpc endpoints" in
+    # bor logs for the symptom.
+    launched_validator_el_names = []
+
+    all_participants = []
+    for slot_index, slot in enumerate(slots):
+        participant = slot.participant
+        plan.print(
+            "Launching EL for participant {} with config: {}".format(
+                slot.participant_index + 1, str(participant)
+            )
+        )
+
+        if participant.get("cl_failover"):
+            # Own endpoint first, then every other CL as fallback. Order
+            # matters: bor probes the primary, then fails over to the
+            # next entry on error. See bor's eth/ethconfig/config.go.
+            cl_api_urls = [slot.cl_context.api_url] + [
+                u for i, u in enumerate(all_cl_api_urls) if i != slot_index
+            ]
+            cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url] + [
+                u for i, u in enumerate(all_cl_ws_rpc_urls) if i != slot_index
+            ]
+        else:
+            cl_api_urls = [slot.cl_context.api_url]
+            cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url]
+
+        # Block on validator EL readiness before bringing up a relayer EL.
+        if slot.is_private_relay and len(launched_validator_el_names) > 0:
+            for v_name in launched_validator_el_names:
+                el_launcher.wait_for_node_startup(plan, v_name)
+
+        el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[slot.participant_index]
+        el_context = el_launcher.launch(
+            plan,
+            participant,
+            slot.participant_index + 1,
+            network_params,
+            el_genesis_artifact,
+            cl_api_urls,
+            cl_ws_rpc_urls,
+            el_account,
+            network_data.el_static_nodes,
+            network_data.el_validator_rpc_urls,
+            container_proc_manager_artifact,
+            ethstats_server_params,
+        )
+
+        if slot.is_validator:
+            launched_validator_el_names.append(el_context.service_name)
+
+        all_participants.append(
+            participant_module.new_participant(
+                kind=participant.get("kind"),
+                cl_type=participant.get("cl_type"),
+                el_type=participant.get("el_type"),
+                cl_context=slot.cl_context,
+                el_context=el_context,
+            )
+        )
 
     # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:

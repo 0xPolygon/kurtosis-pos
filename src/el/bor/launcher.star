@@ -18,8 +18,8 @@ def launch(
     network_params,
     el_genesis_artifact,
     el_keys_artifact,
-    cl_api_url,
-    cl_ws_rpc_url,
+    cl_api_urls,
+    cl_ws_rpc_urls,
     el_account,
     el_static_nodes,
     el_validator_rpc_urls,
@@ -46,6 +46,14 @@ def launch(
             )
         )
     bp_rpc_endpoints_toml = "[" + ", ".join(['"{}"'.format(u) for u in bp_endpoints]) + "]"
+
+    # Bor supports comma-separated Heimdall endpoints natively via
+    # eth/ethconfig/config.go::parseURLs — the [heimdall].url field
+    # accepts the list and MultiHeimdallClient cascades on failure.
+    # When a single URL is passed (the common case), this produces the
+    # same string as the pre-multi-Heimdall code path.
+    cl_api_url = ",".join(cl_api_urls) if cl_api_urls else ""
+    cl_ws_rpc_url = ",".join(cl_ws_rpc_urls) if cl_ws_rpc_urls else ""
 
     bor_node_config_artifact = plan.render_templates(
         name="{}-config".format(el_node_name),

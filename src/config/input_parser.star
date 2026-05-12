@@ -105,6 +105,11 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     # bp_rpc_endpoints: optional override. When relay is enabled and this list is empty,
     # bor.launcher fills it with the in-cluster RPC URLs of all validator EL nodes.
     "el_bor_private_tx_bp_endpoints": [],
+    # When True, the EL-CL launcher passes the bor process every CL
+    # participant's REST API + WS URLs (own first, then every other) so
+    # bor's MultiHeimdallClient cascades when the primary fails. See
+    # src/el_cl_launcher.star pass 2.
+    "cl_failover": False,
 }
 
 POLYGON_POS_PACKAGE_ARGS = {

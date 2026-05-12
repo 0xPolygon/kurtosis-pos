@@ -29,6 +29,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_accept_private_tx",  # BP: accept eth_sendRawTransactionPrivate from a relayer.
         "el_bor_enable_private_tx_relay",  # Relayer: enable [relay] enable-private-tx + suppress public gossip.
         "el_bor_private_tx_bp_endpoints",  # Relayer: optional override of bp-rpc-endpoints (defaults to all validator EL urls).
+        "cl_failover",  # Pass every CL endpoint to bor's [heimdall].url so MultiHeimdallClient cascades on failure.
         "count",
     ],
     "setup_images": [
@@ -363,6 +364,7 @@ def _validate_participant(p):
             fail(
                 'The "el_bor_private_tx_bp_endpoints" parameter is only valid for the bor EL client.'
             )
+        _fail_if_not_bor_el_type(p, "cl_failover")
 
     if not (el_type == constants.EL_TYPE.bor and p.get("el_bor_sync_with_witness")):
         stateless_parallel_import = p.get("el_bor_stateless_parallel_import")

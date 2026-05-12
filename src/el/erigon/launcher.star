@@ -20,14 +20,19 @@ def launch(
     network_params,
     el_genesis_artifact,
     el_keys_artifact,
-    cl_api_url,
-    cl_ws_rpc_url,
+    cl_api_urls,
+    cl_ws_rpc_urls,
     el_account,
     el_static_nodes,
     el_validator_rpc_urls,  # accepted for API parity with bor; erigon has no relay feature
     container_proc_manager_artifact,  # accepted for API parity with bor but not used — see note below
     ethstats_server_params,
 ):
+    # Erigon does not support multi-Heimdall failover today, so only the
+    # primary URL is templated in. cl_ws_rpc_urls is accepted for API
+    # parity with the bor launcher and discarded.
+    cl_api_url = cl_api_urls[0] if cl_api_urls else ""
+
     erigon_node_config_artifact = plan.render_templates(
         name="{}-config".format(el_node_name),
         config={
