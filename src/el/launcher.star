@@ -18,13 +18,17 @@ def launch(
     id,
     network_params,
     el_genesis_artifact,
-    cl_api_url,
-    cl_ws_rpc_url,
+    cl_api_urls,
+    cl_ws_rpc_urls,
     el_account,
     el_static_nodes,
     container_proc_manager_artifact,
     ethstats_server_params,
 ):
+    # cl_api_urls / cl_ws_rpc_urls are lists. EL launchers that support
+    # multi-Heimdall failover (bor) comma-join them; launchers that
+    # don't (erigon) use only the first entry. See
+    # src/el_cl_launcher.star pass-2 for how the lists are built.
     el_node_name = generate_name(participant, id)
 
     # Generate keystore, nodekey and password.
@@ -42,8 +46,8 @@ def launch(
         network_params,
         el_genesis_artifact,
         el_keys_artifact,
-        cl_api_url,
-        cl_ws_rpc_url,
+        cl_api_urls,
+        cl_ws_rpc_urls,
         el_account,
         el_static_nodes,
         container_proc_manager_artifact,

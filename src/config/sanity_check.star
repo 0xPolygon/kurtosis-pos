@@ -26,6 +26,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
         "el_bor_stateless_parallel_import",  # Enable bor to use parallel import in stateless mode.
         "el_bor_archive_mode",  # Run bor with gcmode=archive for full historical state retention.
+        "cl_failover",  # Pass every CL endpoint to bor's [heimdall].url so MultiHeimdallClient cascades on failure.
         "count",
     ],
     "setup_images": [
@@ -352,6 +353,7 @@ def _validate_participant(p):
     if el_type != constants.EL_TYPE.bor:
         _fail_if_not_bor_el_type(p, "el_bor_produce_witness")
         _fail_if_not_bor_el_type(p, "el_bor_sync_with_witness")
+        _fail_if_not_bor_el_type(p, "cl_failover")
 
     if not (el_type == constants.EL_TYPE.bor and p.get("el_bor_sync_with_witness")):
         stateless_parallel_import = p.get("el_bor_stateless_parallel_import")

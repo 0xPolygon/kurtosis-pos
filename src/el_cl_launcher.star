@@ -51,20 +51,37 @@ def launch(
         src=CONTAINER_PROC_MANAGER_FILE_PATH,
     )
 
-    # Start each participant.
+    # Two-pass launch sequence (refactored for multi-Heimdall coverage,
+    # see ai/harness/profiles/polygon-pos/args/multi-heimdall.yml):
+    #
+    #   Pass 1 — launch every CL container, capturing its context in slot
+    #            order so a later EL can see the full set of CL endpoints
+    #            and build a comma-separated `--bor.heimdall.urls` list.
+    #   Pass 2 — launch every EL container, passing it the list of CL
+    #            api_urls / ws_rpc_urls (single-element by default; the
+    #            full list when `cl_failover: true` is set on the
+    #            participant).
+    #
+    # The two-pass split is structural — bor's MultiHeimdallClient
+    # failover (eth/ethconfig/config.go::parseURLs) accepts a comma-
+    # separated `[heimdall].url` and a comma-separated WS address, so
+    # any non-empty failover list must be available *before* the EL
+    # service is created.
+
+    # Pass 1: launch all CLs and remember the slot ↔ participant mapping.
+    ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
+    slots = []  # [{participant, participant_index, cl_context}, ...]
     participant_index = 0
     validator_index = 0
-    all_participants = []
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
             plan.print(
-                "Launching participant {} with config: {}".format(
+                "Launching CL for participant {} with config: {}".format(
                     participant_index + 1, str(participant)
                 )
             )
 
-            # Launch the CL node.
             # Validators use pre-generated keys and run the bridge; rpc/archive nodes use
             # auto-generated keys and run as full nodes without the bridge.
             cl_keys_artifact = None
@@ -83,38 +100,70 @@ def launch(
                 producer_votes_str,
             )
 
-            # Launch the EL node.
-            el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
-            ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
-            el_context = el_launcher.launch(
-                plan,
-                participant,
-                participant_index + 1,
-                network_params,
-                el_genesis_artifact,
-                cl_context.api_url,
-                cl_context.ws_rpc_url,
-                el_account,
-                network_data.el_static_nodes,
-                container_proc_manager_artifact,
-                ethstats_server_params,
-            )
-
-            # Add the node to the all_participants array.
-            all_participants.append(
-                participant_module.new_participant(
-                    kind=participant.get("kind"),
-                    cl_type=participant.get("cl_type"),
-                    el_type=participant.get("el_type"),
+            slots.append(
+                struct(
+                    participant=participant,
+                    participant_index=participant_index,
                     cl_context=cl_context,
-                    el_context=el_context,
                 )
             )
 
-            # Increment the indexes.
             participant_index += 1
             if is_validator:
                 validator_index += 1
+
+    # Pass 2: launch all ELs, each with the full set of CL endpoints
+    # available for failover plumbing.
+    all_cl_api_urls = [s.cl_context.api_url for s in slots]
+    all_cl_ws_rpc_urls = [s.cl_context.ws_rpc_url for s in slots]
+
+    all_participants = []
+    for slot_index, slot in enumerate(slots):
+        participant = slot.participant
+        plan.print(
+            "Launching EL for participant {} with config: {}".format(
+                slot.participant_index + 1, str(participant)
+            )
+        )
+
+        if participant.get("cl_failover"):
+            # Own endpoint first, then every other CL as fallback. Order
+            # matters: bor probes the primary, then fails over to the
+            # next entry on error. See bor's eth/ethconfig/config.go.
+            cl_api_urls = [slot.cl_context.api_url] + [
+                u for i, u in enumerate(all_cl_api_urls) if i != slot_index
+            ]
+            cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url] + [
+                u for i, u in enumerate(all_cl_ws_rpc_urls) if i != slot_index
+            ]
+        else:
+            cl_api_urls = [slot.cl_context.api_url]
+            cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url]
+
+        el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[slot.participant_index]
+        el_context = el_launcher.launch(
+            plan,
+            participant,
+            slot.participant_index + 1,
+            network_params,
+            el_genesis_artifact,
+            cl_api_urls,
+            cl_ws_rpc_urls,
+            el_account,
+            network_data.el_static_nodes,
+            container_proc_manager_artifact,
+            ethstats_server_params,
+        )
+
+        all_participants.append(
+            participant_module.new_participant(
+                kind=participant.get("kind"),
+                cl_type=participant.get("cl_type"),
+                el_type=participant.get("el_type"),
+                cl_context=slot.cl_context,
+                el_context=el_context,
+            )
+        )
 
     # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:
