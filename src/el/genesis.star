@@ -51,6 +51,7 @@ def generate(
                     "giugliano_fork_block": network_params.get(
                         "giugliano_fork_block"
                     ),
+                    "chicago_fork_block": network_params.get("chicago_fork_block"),
                 },
             )
         },

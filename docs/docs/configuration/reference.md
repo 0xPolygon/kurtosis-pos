@@ -197,6 +197,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | lisovo_fork_block                     | int    | 256                | Block number for Lisovo hard fork activation                                                                 |
 | lisovo_pro_fork_block                 | int    | 256                | Block number for Lisovo Pro hard fork activation                                                             |
 | giugliano_fork_block                  | int    | 256                | Block number for Giugliano hard fork activation                                                              |
+| chicago_fork_block                    | int    | 256                | Block number for Chicago hard fork activation                                                                |
 
 ### `additional_services`
 
