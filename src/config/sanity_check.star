@@ -376,9 +376,8 @@ def _validate_participant(p):
 
     # Setting an explicit bp-rpc-endpoints override only makes sense on a relayer.
     # Catch the typo where someone provides endpoints but forgets to enable the relay.
-    if (
-        p.get("el_bor_private_tx_bp_endpoints")
-        and not p.get("el_bor_enable_private_tx_relay")
+    if p.get("el_bor_private_tx_bp_endpoints") and not p.get(
+        "el_bor_enable_private_tx_relay"
     ):
         fail(
             '"el_bor_private_tx_bp_endpoints" is set but "el_bor_enable_private_tx_relay" is False — endpoints would be ignored.'

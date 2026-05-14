@@ -48,9 +48,7 @@ def generate(
                     "lisovo_pro_fork_block": network_params.get(
                         "lisovo_pro_fork_block"
                     ),
-                    "giugliano_fork_block": network_params.get(
-                        "giugliano_fork_block"
-                    ),
+                    "giugliano_fork_block": network_params.get("giugliano_fork_block"),
                     "chicago_fork_block": network_params.get("chicago_fork_block"),
                 },
             )

@@ -71,9 +71,7 @@ def launch(
         new_peer_ids = _read_cl_persistent_peers(
             plan, cl_validator_config_artifacts.persistent_peers
         )
-        cl_node_ids = ",".join(
-            [p for p in [existing_peer_ids, new_peer_ids] if p]
-        )
+        cl_node_ids = ",".join([p for p in [existing_peer_ids, new_peer_ids] if p])
     else:
         cl_node_ids = existing_peer_ids
 
@@ -350,7 +348,7 @@ def _read_existing_cl_peer_ids(plan, participants, participant_start_index):
                         cl_node_name
                     ),
                     image=constants.IMAGES.get("toolbox_image"),
-                    run="curl -sf http://{}:{} -d '{{\"method\":\"status\",\"params\":[],\"id\":1,\"jsonrpc\":\"2.0\"}}' | jq -r '.result.node_info.id' | tr -d '\\n'".format(
+                    run='curl -sf http://{}:{} -d \'{{"method":"status","params":[],"id":1,"jsonrpc":"2.0"}}\' | jq -r \'.result.node_info.id\' | tr -d \'\\n\''.format(
                         cl_node_name,
                         cl_shared.RPC_PORT_NUMBER,
                     ),
@@ -390,7 +388,7 @@ def _read_existing_el_enodes(plan, participants, participant_start_index):
                     el_node_name
                 ),
                 image=constants.IMAGES.get("toolbox_image"),
-                run="curl -sf http://{}:{} -X POST -H 'Content-Type: application/json' -d '{{\"method\":\"admin_nodeInfo\",\"params\":[],\"id\":1,\"jsonrpc\":\"2.0\"}}' | jq -r '.result.enode' | sed 's|enode://||;s|@.*||' | tr -d '\\n'".format(
+                run='curl -sf http://{}:{} -X POST -H \'Content-Type: application/json\' -d \'{{"method":"admin_nodeInfo","params":[],"id":1,"jsonrpc":"2.0"}}\' | jq -r \'.result.enode\' | sed \'s|enode://||;s|@.*||\' | tr -d \'\\n\''.format(
                     el_node_name,
                     el_shared.RPC_PORT_NUMBER,
                 ),

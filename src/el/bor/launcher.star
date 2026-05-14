@@ -45,7 +45,9 @@ def launch(
                 el_node_name
             )
         )
-    bp_rpc_endpoints_toml = "[" + ", ".join(['"{}"'.format(u) for u in bp_endpoints]) + "]"
+    bp_rpc_endpoints_toml = (
+        "[" + ", ".join(['"{}"'.format(u) for u in bp_endpoints]) + "]"
+    )
 
     # Bor supports comma-separated Heimdall endpoints natively via
     # eth/ethconfig/config.go::parseURLs — the [heimdall].url field
