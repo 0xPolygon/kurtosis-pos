@@ -306,18 +306,28 @@ def _validate_participants_have_validator(participants):
 
 def _validate_participants_have_producing_validator(participants):
     # Stateless-sync validators (el_bor_sync_with_witness=true) have no bor
-    # [miner] block and can't seal new blocks. At least one validator must run
-    # in normal mode, otherwise the chain has no producers and deadlocks.
+    # [miner] block and can't seal new blocks. When validators are being
+    # added, at least one must run in normal mode, otherwise the chain has
+    # no producers and deadlocks.
+    #
+    # If no validators are in the new participants list, this is an
+    # extend-enclave call (e.g. attaching an archive RPC); the producing
+    # validator is already running in `dev.existing_participants`, and the
+    # "must have a validator" guard in main.star covers the initial-deploy
+    # case where neither list has a validator.
+    has_validator = False
     for p in participants:
         if (
             p.get("kind") == constants.PARTICIPANT_KIND.validator
             and p.get("count", 0) > 0
-            and not p.get("el_bor_sync_with_witness")
         ):
-            return
-    fail(
-        "At least one validator participant must have `el_bor_sync_with_witness: false` so the network has a block producer."
-    )
+            has_validator = True
+            if not p.get("el_bor_sync_with_witness"):
+                return
+    if has_validator:
+        fail(
+            "At least one validator participant must have `el_bor_sync_with_witness: false` so the network has a block producer."
+        )
 
 
 def _validate_participants_count(participants):
