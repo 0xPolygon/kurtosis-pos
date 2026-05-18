@@ -92,11 +92,6 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_sync_with_witness": False,
     "el_bor_stateless_parallel_import": False,
     "el_bor_archive_mode": False,
-    # When True, the EL-CL launcher passes the bor process every CL
-    # participant's REST API + WS URLs (own first, then every other) so
-    # bor's MultiHeimdallClient cascades when the primary fails. See
-    # src/el_cl_launcher.star pass 2.
-    "cl_failover": True,
 }
 
 POLYGON_POS_PACKAGE_ARGS = {

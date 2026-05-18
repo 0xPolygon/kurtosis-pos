@@ -57,16 +57,15 @@ def launch(
     #   Pass 1 — launch every CL container, capturing its context in slot
     #            order so a later EL can see the full set of CL endpoints
     #            and build a comma-separated `--bor.heimdall.urls` list.
-    #   Pass 2 — launch every EL container, passing it the list of CL
-    #            api_urls / ws_rpc_urls (single-element by default; the
-    #            full list when `cl_failover: true` is set on the
-    #            participant).
+    #   Pass 2 — launch every EL container, passing it the full list of
+    #            CL api_urls / ws_rpc_urls (own first, then every other)
+    #            so bor's MultiHeimdallClient cascades on primary failure.
     #
     # The two-pass split is structural — bor's MultiHeimdallClient
     # failover (eth/ethconfig/config.go::parseURLs) accepts a comma-
     # separated `[heimdall].url` and a comma-separated WS address, so
-    # any non-empty failover list must be available *before* the EL
-    # service is created.
+    # the failover list must be available *before* the EL service is
+    # created.
 
     # Pass 1: launch all CLs and remember the slot ↔ participant mapping.
     ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
@@ -126,19 +125,15 @@ def launch(
             )
         )
 
-        if participant.get("cl_failover"):
-            # Own endpoint first, then every other CL as fallback. Order
-            # matters: bor probes the primary, then fails over to the
-            # next entry on error. See bor's eth/ethconfig/config.go.
-            cl_api_urls = [slot.cl_context.api_url] + [
-                u for i, u in enumerate(all_cl_api_urls) if i != slot_index
-            ]
-            cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url] + [
-                u for i, u in enumerate(all_cl_ws_rpc_urls) if i != slot_index
-            ]
-        else:
-            cl_api_urls = [slot.cl_context.api_url]
-            cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url]
+        # Own endpoint first, then every other CL as fallback. Order
+        # matters: bor probes the primary, then fails over to the next
+        # entry on error. See bor's eth/ethconfig/config.go.
+        cl_api_urls = [slot.cl_context.api_url] + [
+            u for i, u in enumerate(all_cl_api_urls) if i != slot_index
+        ]
+        cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url] + [
+            u for i, u in enumerate(all_cl_ws_rpc_urls) if i != slot_index
+        ]
 
         el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[slot.participant_index]
         el_context = el_launcher.launch(
