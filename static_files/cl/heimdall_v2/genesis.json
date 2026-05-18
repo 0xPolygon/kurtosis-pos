@@ -44,7 +44,7 @@
             "proposer": {{.proposer}},
             "total_voting_power": "{{.total_voting_power}}"
           },
-          "selected_producers": {{.validators}},
+          "selected_producers": {{.selected_producers}},
           "bor_chain_id": "{{.el_chain_id}}"
         }
       ]

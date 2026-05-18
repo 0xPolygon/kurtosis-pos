@@ -63,6 +63,7 @@ POLYGON_POS_PARAMS = {
         "lisovo_fork_block",
         "lisovo_pro_fork_block",
         "giugliano_fork_block",
+        "chicago_fork_block",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
@@ -150,6 +151,7 @@ def sanity_check_polygon_args(plan, input_args):
     participants = input_args.get("participants")
     _validate_participants_count(participants)
     _validate_participants_have_validator(participants)
+    _validate_participants_have_producing_validator(participants)
     for p in participants:
         _validate_participant(p)
 
@@ -294,6 +296,22 @@ def _validate_participants_have_validator(participants):
         ):
             return
     fail("At least one validator participant is required.")
+
+
+def _validate_participants_have_producing_validator(participants):
+    # Stateless-sync validators (el_bor_sync_with_witness=true) have no bor
+    # [miner] block and can't seal new blocks. At least one validator must run
+    # in normal mode, otherwise the chain has no producers and deadlocks.
+    for p in participants:
+        if (
+            p.get("kind") == constants.PARTICIPANT_KIND.validator
+            and p.get("count", 0) > 0
+            and not p.get("el_bor_sync_with_witness")
+        ):
+            return
+    fail(
+        "At least one validator participant must have `el_bor_sync_with_witness: false` so the network has a block producer."
+    )
 
 
 def _validate_participants_count(participants):

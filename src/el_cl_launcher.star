@@ -1,5 +1,6 @@
 cl_launcher = import_module("./cl/launcher.star")
 cl_shared = import_module("./cl/shared.star")
+heimdall_v2_genesis = import_module("./cl/heimdall_v2/genesis.star")
 constants = import_module("./config/constants.star")
 el_launcher = import_module("./el/launcher.star")
 el_shared = import_module("./el/shared.star")
@@ -23,6 +24,12 @@ def launch(
 ):
     network_params = polygon_pos_args.get("network_params")
 
+    # Comma-separated val IDs of validators eligible to produce blocks (i.e.,
+    # validators not running in stateless sync mode). All validator bridges
+    # vote for this same list via heimdall's `producer_votes` config so that
+    # VeBlop's stake-weighted election converges on the producing subset.
+    producer_votes_str = heimdall_v2_genesis.get_producer_vote_val_ids(participants)
+
     # Prepare network data and generate validator configs.
     network_data = _prepare_network_data(participants)
     cl_validator_config_artifacts = _generate_cl_validator_config(
@@ -44,20 +51,36 @@ def launch(
         src=CONTAINER_PROC_MANAGER_FILE_PATH,
     )
 
-    # Start each participant.
+    # Two-pass launch sequence (refactored for multi-Heimdall coverage,
+    # see ai/harness/profiles/polygon-pos/args/multi-heimdall.yml):
+    #
+    #   Pass 1 — launch every CL container, capturing its context in slot
+    #            order so a later EL can see the full set of CL endpoints
+    #            and build a comma-separated `--bor.heimdall.urls` list.
+    #   Pass 2 — launch every EL container, passing it the full list of
+    #            CL api_urls / ws_rpc_urls (own first, then every other)
+    #            so bor's MultiHeimdallClient cascades on primary failure.
+    #
+    # The two-pass split is structural — bor's MultiHeimdallClient
+    # failover (eth/ethconfig/config.go::parseURLs) accepts a comma-
+    # separated `[heimdall].url` and a comma-separated WS address, so
+    # the failover list must be available *before* the EL service is
+    # created.
+
+    # Pass 1: launch all CLs and remember the slot ↔ participant mapping.
+    ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
+    slots = []  # [{participant, participant_index, cl_context}, ...]
     participant_index = 0
     validator_index = 0
-    all_participants = []
     for _, participant in enumerate(participants):
         is_validator = participant.get("kind") == constants.PARTICIPANT_KIND.validator
         for _ in range(participant.get("count")):
             plan.print(
-                "Launching participant {} with config: {}".format(
+                "Launching CL for participant {} with config: {}".format(
                     participant_index + 1, str(participant)
                 )
             )
 
-            # Launch the CL node.
             # Validators use pre-generated keys and run the bridge; rpc/archive nodes use
             # auto-generated keys and run as full nodes without the bridge.
             cl_keys_artifact = None
@@ -73,40 +96,69 @@ def launch(
                 cl_node_ids,
                 l1_rpc_url,
                 container_proc_manager_artifact,
+                producer_votes_str,
             )
 
-            # Launch the EL node.
-            el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[participant_index]
-            ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
-            el_context = el_launcher.launch(
-                plan,
-                participant,
-                participant_index + 1,
-                network_params,
-                el_genesis_artifact,
-                cl_context.api_url,
-                cl_context.ws_rpc_url,
-                el_account,
-                network_data.el_static_nodes,
-                container_proc_manager_artifact,
-                ethstats_server_params,
-            )
-
-            # Add the node to the all_participants array.
-            all_participants.append(
-                participant_module.new_participant(
-                    kind=participant.get("kind"),
-                    cl_type=participant.get("cl_type"),
-                    el_type=participant.get("el_type"),
+            slots.append(
+                struct(
+                    participant=participant,
+                    participant_index=participant_index,
                     cl_context=cl_context,
-                    el_context=el_context,
                 )
             )
 
-            # Increment the indexes.
             participant_index += 1
             if is_validator:
                 validator_index += 1
+
+    # Pass 2: launch all ELs, each with the full set of CL endpoints
+    # available for failover plumbing.
+    all_cl_api_urls = [s.cl_context.api_url for s in slots]
+    all_cl_ws_rpc_urls = [s.cl_context.ws_rpc_url for s in slots]
+
+    all_participants = []
+    for slot_index, slot in enumerate(slots):
+        participant = slot.participant
+        plan.print(
+            "Launching EL for participant {} with config: {}".format(
+                slot.participant_index + 1, str(participant)
+            )
+        )
+
+        # Own endpoint first, then every other CL as fallback. Order
+        # matters: bor probes the primary, then fails over to the next
+        # entry on error. See bor's eth/ethconfig/config.go.
+        cl_api_urls = [slot.cl_context.api_url] + [
+            u for i, u in enumerate(all_cl_api_urls) if i != slot_index
+        ]
+        cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url] + [
+            u for i, u in enumerate(all_cl_ws_rpc_urls) if i != slot_index
+        ]
+
+        el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[slot.participant_index]
+        el_context = el_launcher.launch(
+            plan,
+            participant,
+            slot.participant_index + 1,
+            network_params,
+            el_genesis_artifact,
+            cl_api_urls,
+            cl_ws_rpc_urls,
+            el_account,
+            network_data.el_static_nodes,
+            container_proc_manager_artifact,
+            ethstats_server_params,
+        )
+
+        all_participants.append(
+            participant_module.new_participant(
+                kind=participant.get("kind"),
+                cl_type=participant.get("cl_type"),
+                el_type=participant.get("el_type"),
+                cl_context=slot.cl_context,
+                el_context=el_context,
+            )
+        )
 
     # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:
