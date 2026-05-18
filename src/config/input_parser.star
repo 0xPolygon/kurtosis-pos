@@ -96,7 +96,7 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     # participant's REST API + WS URLs (own first, then every other) so
     # bor's MultiHeimdallClient cascades when the primary fails. See
     # src/el_cl_launcher.star pass 2.
-    "cl_failover": False,
+    "cl_failover": True,
 }
 
 POLYGON_POS_PACKAGE_ARGS = {
