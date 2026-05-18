@@ -84,6 +84,21 @@ func TestMonitorHeimdall_TransientErrors(t *testing.T) {
 	}
 }
 
+// TestMonitorHeimdall_BaselineRetried: baseline read errors initially but
+// recovers within the timeout — probe should succeed.
+func TestMonitorHeimdall_BaselineRetried(t *testing.T) {
+	script := []cometStep{
+		{ok: false},             // baseline attempt 1: 503
+		{ok: false},             // baseline attempt 2: 503
+		{ok: true, height: 100}, // baseline attempt 3: OK
+		{ok: true, height: 160}, // poll: past 100+50
+	}
+	ok, _ := runHeimdallBlocksProbe(t, script, 50, 2*time.Second)
+	if !ok {
+		t.Fatal("expected success after baseline retry, got failure")
+	}
+}
+
 // TestMonitorHeimdall_StallFails: height never advances → fail.
 func TestMonitorHeimdall_StallFails(t *testing.T) {
 	script := []cometStep{

@@ -294,16 +294,6 @@ def _validate_list_of_dict(input_args, category):
                     )
 
 
-def _validate_participants_have_validator(participants):
-    for p in participants:
-        if (
-            p.get("kind") == constants.PARTICIPANT_KIND.validator
-            and p.get("count", 0) > 0
-        ):
-            return
-    fail("At least one validator participant is required.")
-
-
 def _validate_participants_have_producing_validator(participants):
     # Stateless-sync validators (el_bor_sync_with_witness=true) have no bor
     # [miner] block and can't seal new blocks. When validators are being
