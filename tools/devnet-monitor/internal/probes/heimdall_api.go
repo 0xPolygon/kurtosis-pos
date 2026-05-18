@@ -54,7 +54,8 @@ func pollHeimdallCounter(
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	baseline, err := readWithRetry(ctx, lg, "baseline", read, h)
+	baseline, err := readWithRetry(ctx, lg, "baseline",
+		func(c context.Context) (uint64, error) { return read(c, h) })
 	if err != nil {
 		lg.Error("Read baseline failed", "err", err)
 		res.Failed = 1
@@ -116,18 +117,22 @@ func pollHeimdallCounter(
 
 // readWithRetry retries the read on transient errors until it succeeds or ctx
 // expires. Uses the same pollInterval cadence as the main loop.
+//
+// The reader is a context-only closure so callers can bind their own client
+// type (heimdall, bor, …) and read shape (single counter, or multi-read
+// returning the first error from a pair). Shared across all probes that need
+// resilient baseline reads.
 func readWithRetry(
 	ctx context.Context,
 	lg *slog.Logger,
 	what string,
-	read func(context.Context, *chain.Heimdall) (uint64, error),
-	h *chain.Heimdall,
+	read func(context.Context) (uint64, error),
 ) (uint64, error) {
 	tick := time.NewTicker(pollInterval)
 	defer tick.Stop()
 	var lastErr error
 	for {
-		v, err := read(ctx, h)
+		v, err := read(ctx)
 		if err == nil {
 			return v, nil
 		}
