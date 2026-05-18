@@ -67,7 +67,13 @@ func (Heimdall) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Optio
 func monitorHeimdall(ctx context.Context, svc discover.Service, minBlocks int, lg *slog.Logger) bool {
 	h := chain.DialHeimdall(svc.URL)
 
-	baseline, err := h.Height(ctx)
+	// Retry the baseline read on transient errors so a node that's still
+	// warming up (e.g. heimdall mid-restart after a snapshot restore) gets
+	// the same grace as the poll loop below. The probe shares a single
+	// timeout across baseline + poll loop — if the read never succeeds,
+	// ctx will fire and we fail.
+	baseline, err := readWithRetry(ctx, lg, "baseline:"+svc.Name,
+		func(c context.Context) (uint64, error) { return h.Height(c) })
 	if err != nil {
 		lg.Error("Read baseline failed", "node", svc.Name, "err", err)
 		return false
