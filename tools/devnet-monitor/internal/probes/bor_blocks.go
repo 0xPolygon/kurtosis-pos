@@ -99,14 +99,23 @@ func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBl
 	}
 	defer bor.Close()
 
-	latestBaseline, latestErr := bor.LatestBlock(ctx)
-	finalizedBaseline, finalizedErr := bor.FinalizedBlock(ctx)
-	if latestErr != nil || finalizedErr != nil {
-		lg.Error("Read baseline failed",
-			"node", svc.Name,
-			"latest_err", latestErr,
-			"finalized_err", finalizedErr,
-		)
+	// Retry the baseline pair on transient errors so a node that's still
+	// warming up (e.g. erigon mid-restart after a snapshot restore) gets the
+	// same grace as the poll loop below. The probe shares a single timeout
+	// across baseline + poll loop — if neither read ever succeeds, ctx will
+	// fire and we fail.
+	var latestBaseline, finalizedBaseline uint64
+	if _, err = readWithRetry(ctx, lg, "baseline:"+svc.Name,
+		func(c context.Context) (uint64, error) {
+			var latestErr, finalizedErr error
+			latestBaseline, latestErr = bor.LatestBlock(c)
+			finalizedBaseline, finalizedErr = bor.FinalizedBlock(c)
+			if latestErr != nil {
+				return 0, latestErr
+			}
+			return 0, finalizedErr
+		}); err != nil {
+		lg.Error("Read baseline failed", "node", svc.Name, "err", err)
 		return false
 	}
 	latestRequired := latestBaseline + uint64(minBlocks)
