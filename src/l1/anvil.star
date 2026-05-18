@@ -10,6 +10,32 @@ ANVIL_PORT_NUMBER = 8545
 ANVIL_GENESIS_FILE_PATH = "../../static_files/l1/anvil/genesis.json"
 
 
+def _build_accounts_alloc(admin_address):
+    # Anvil's --mnemonic only funds addresses derived from that mnemonic, but
+    # PREFUNDED_ACCOUNTS now uses vanity addresses (not mnemonic-derived) for
+    # validator EVM identities. Without explicit funding here, validator bridges
+    # fail submitCheckpoint with "Insufficient funds for gas * price + value".
+    accounts = {
+        admin_address: {
+            "nonce": 0,
+            "balance": hex.int_to_hex(math.ether_to_wei(constants.ADMIN_BALANCE_ETH)),
+            "code": "0x",
+            "storage": {},
+        },
+    }
+    validator_balance_wei = hex.int_to_hex(
+        math.ether_to_wei(constants.VALIDATORS_BALANCE_ETH)
+    )
+    for a in prefunded_accounts_module.PREFUNDED_ACCOUNTS:
+        accounts[a.eth_tendermint.address] = {
+            "nonce": 0,
+            "balance": validator_balance_wei,
+            "code": "0x",
+            "storage": {},
+        }
+    return accounts
+
+
 def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
     genesis_artifact = plan.render_templates(
         name="l1-anvil-genesis",
@@ -17,10 +43,7 @@ def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
             "genesis.json": struct(
                 template=read_file(ANVIL_GENESIS_FILE_PATH),
                 data={
-                    "admin_address": admin_address,
-                    "admin_balance_wei": hex.int_to_hex(
-                        math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
-                    ),
+                    "accounts": json.encode(_build_accounts_alloc(admin_address)),
                 },
             )
         },
