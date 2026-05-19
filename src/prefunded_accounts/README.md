@@ -2,26 +2,36 @@
 
 The package prefunds some Ethereum and Tendermint accounts to make the validator setup easier and faster.
 
-Here are the commands to generate such accounts.
+Two generator scripts are provided. Both emit the same `accounts.star` schema, so the rest of the package consumes them identically.
 
-First, start a docker container that contains the different utils such as `polycli`, `jq` and `heimdallcli`.
+## `generate-vanity.sh` (canonical)
+
+Mines vanity addresses whose 5-char hex prefix encodes the 1-based account index by cyclic repeat (1 → `0x11111…`, 2 → `0x22222…`, 10 → `0x10101…`, 999 → `0x99999…`). This makes the first handful of validators and prefunded accounts instantly recognisable in logs, dashboards, and explorers.
+
+Run on the host (not inside the polycli container) — the script shells out to `docker` for the [`planxthanee/ethereum-wallet-generator`](https://hub.docker.com/r/planxthanee/ethereum-wallet-generator) miner and uses host `cast` to derive public keys.
+
+```bash
+ACCOUNTS_NUMBER=20 bash generate-vanity.sh
+```
+
+The accounts currently committed in `accounts.star` were produced this way.
+
+## `generate.sh` (mnemonic, deterministic fallback)
+
+The original BIP-44/mnemonic-derived generator. Kept around for anyone who needs deterministic re-derivation from a known seed.
+
+Run inside the polycli container.
 
 ```bash
 docker run -it --rm --volume "$(pwd):/tmp" --workdir /tmp ghcr.io/0xpolygon/pos-validator-config-generator:0.6.0 bash
 ```
 
-Inside the docker container, execute the following script to generate the accounts.
-
-In this example, we are going to generate 20 accounts using the following mnemonic.
-
-Please be aware that the process may take some time; the more accounts that need to be generated, the longer it will take!
-
 ```bash
-export ACCOUNTS_NUMBER=1000
+export ACCOUNTS_NUMBER=20
 export MNEMONIC="sibling lend brave explain wait orbit mom alcohol disorder message grace sun"
 bash generate.sh
 ```
 
-You will notice that executing the script will update the `accounts.star` file with the new accounts you just generated.
+Either script overwrites `accounts.star` in place; re-run the package afterwards to pick up the new accounts.
 
-You can now run the package and those accounts will already be pre-funded.
+Be aware that account generation takes time, and the more accounts requested, the longer it runs — vanity mining adds extra cost on top, growing roughly with the rarity of each target prefix.
