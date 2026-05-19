@@ -115,20 +115,20 @@ backup_docker_volumes() {
       fi
 
       # Store mapping
-      echo "${volume_name}|${sanitized_name}" >>"$temp_mounts"
+      echo "${volume_name}|${sanitized_name}" >> "$temp_mounts"
     done
   done
 
   # Load mappings into associative array
   while IFS='|' read -r original sanitized; do
     volume_mapping["$original"]="$sanitized"
-  done <"$temp_mounts"
+  done < "$temp_mounts"
   rm -f "$temp_mounts"
 
   # Alpine image pinned by digest so backup output is reproducible across runs.
   # Pull once before the parallel loop to avoid registry rate-limits.
   local alpine_image="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11"
-  if ! docker image inspect "$alpine_image" >/dev/null 2>&1; then
+  if ! docker image inspect "$alpine_image" > /dev/null 2>&1; then
     docker pull "$alpine_image"
   fi
 
@@ -175,7 +175,7 @@ generate_docker_compose() {
   docker run --rm \
     --volume /var/run/docker.sock:/var/run/docker.sock \
     ghcr.io/red5d/docker-autocompose@sha256:4d878dbda37b77ec6babea06d398095ff46054b06ee507abbb3f1e71eef2e868 \
-    "${CONTAINERS[@]}" >"$docker_compose_file"
+    "${CONTAINERS[@]}" > "$docker_compose_file"
 }
 
 configure_networks() {
@@ -256,7 +256,7 @@ rename_file_artifact_volumes() {
   local docker_compose_file="$1"
 
   mapping_file=$(mktemp)
-  yq '.services | to_entries[] | .key as $service | .value.volumes[]? | select(. | type == "string" and contains("files-artifact-expansion")) | split(":") | "\(.[0])|\($service)|\(.[1])"' "$docker_compose_file" | tr -d '"' >"$mapping_file"
+  yq '.services | to_entries[] | .key as $service | .value.volumes[]? | select(. | type == "string" and contains("files-artifact-expansion")) | split(":") | "\(.[0])|\($service)|\(.[1])"' "$docker_compose_file" | tr -d '"' > "$mapping_file"
 
   declare -A volume_mapping
   while IFS='|' read -r old_volume service mount_path; do
@@ -266,7 +266,7 @@ rename_file_artifact_volumes() {
     clean_path=$(echo "$mount_path" | sed 's|^/||' | sed 's|/|-|g')
     new_volume="${service}-${clean_path}"
     volume_mapping["$old_volume"]="$new_volume"
-  done <"$mapping_file"
+  done < "$mapping_file"
 
   for old_vol in "${!volume_mapping[@]}"; do
     new_vol="${volume_mapping[$old_vol]}"
@@ -565,7 +565,7 @@ wait_for_checkpoint_quiescence() {
   # ethereum-package's `el-1-geth-lighthouse`. Both expose `rpc`. Probe
   # the anvil name first; only one of the two services exists in any
   # given enclave.
-  l1_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2>/dev/null ||
+  l1_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null ||
     kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
   root_chain_proxy=$(kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json |
     sed -n '/^{/,$p' | jq -r '.root.RootChainProxy')
@@ -575,9 +575,9 @@ wait_for_checkpoint_quiescence() {
     # `currentHeaderBlock()` returns the next-slot id (multiples of
     # ChildChainBlockInterval=10000); divide to get the count of acks on L1.
     local l1_header_block l1_acks heimdall_acks
-    l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2>/dev/null | head -n 1 | awk '{print $1}')
+    l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | head -n 1 | awk '{print $1}')
     l1_acks=$((l1_header_block / 10000))
-    heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2>/dev/null | jq -r '.ack_count // 0')
+    heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2> /dev/null | jq -r '.ack_count // 0')
 
     log_info "Checkpoint quiescence check ${step}/${num_steps}: L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}"
     # The L1 contract counter advances *before* heimdall sees the ack;
@@ -610,10 +610,10 @@ log_info "Extracting kurtosis file artifacts"
 # kurtosis files inspect prepends a "File contents:" banner. Strip everything
 # before the first '{' and re-format with jq so the output is canonical JSON.
 kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json |
-  sed -n '/^{/,$p' | jq . >"$contract_addresses_tmp"
+  sed -n '/^{/,$p' | jq . > "$contract_addresses_tmp"
 kurtosis files inspect "$enclave_name" l2-el-genesis genesis.json |
-  sed -n '/^{/,$p' | jq . >"$l2_genesis_tmp"
-log_info "File artifacts extracted (contractAddresses.json: $(wc -c <"$contract_addresses_tmp") bytes, l2-genesis.json: $(wc -c <"$l2_genesis_tmp") bytes)"
+  sed -n '/^{/,$p' | jq . > "$l2_genesis_tmp"
+log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract_addresses_tmp") bytes, l2-genesis.json: $(wc -c < "$l2_genesis_tmp") bytes)"
 
 # Stop containers in dependency order to avoid app/store divergence:
 # 1. L2 CL (heimdall) first — stops block production at consensus layer
@@ -678,7 +678,7 @@ log_info "Docker-compose generated and sanitized"
 log_info "Packaging snapshot into docker image"
 # Create a Dockerfile
 pushd "$tmp_dir"
-cat >"Dockerfile" <<'EOF'
+cat > "Dockerfile" << 'EOF'
 FROM scratch
 COPY volumes/*.tar.gz /volumes/
 COPY docker-compose.yaml /docker-compose.yaml

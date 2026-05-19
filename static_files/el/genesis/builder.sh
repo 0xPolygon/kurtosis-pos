@@ -35,14 +35,14 @@ fi
 # Append the admin address to the alloc field.
 admin_address=$(echo "${ADMIN_ADDRESS}" | sed 's/^0x//')
 jq --arg a "${admin_address}" --arg b "${ADMIN_BALANCE_WEI}" \
-  '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+  '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the EIP-2935 block hash history contract to the alloc field.
 eip2935_address="0000F90827F1C53a10cb7A02335B175320002935"
 eip2935_code="0x3373fffffffffffffffffffffffffffffffffffffffe14604657602036036042575f35600143038111604257611fff81430311604257611fff9006545f5260205ff35b5f5ffd5b5f35611fff60014303065500"
 jq --arg a "${eip2935_address}" --arg c "${eip2935_code}" \
-  '.alloc[$a] = {"balance": "0x0", "code": $c}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+  '.alloc[$a] = {"balance": "0x0", "code": $c}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the canonical EIP-2470 / arachnid CREATE2 deployer to the alloc field.
@@ -57,17 +57,17 @@ mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 create2_address="4e59b44847b379578588920ca78fbf26c0b4956c"
 create2_code="0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3"
 jq --arg a "${create2_address}" --arg c "${create2_code}" \
-  '.alloc[$a] = {"balance": "0x0", "code": $c}' "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+  '.alloc[$a] = {"balance": "0x0", "code": $c}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
 jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
-  "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" >tmp.json
+  "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
 # Add the genesis timestamp to the EL genesis.
 timestamp=$(printf "0x%x" "${EL_GENESIS_TIMESTAMP}")
-jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" >tmp.json
+jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
 # Verify and output the EL genesis file.

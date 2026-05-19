@@ -24,7 +24,7 @@ restore_docker_volumes() {
     (
       volume_name=$(basename "$v" .tar.gz | sed 's/_/--/g')
       echo "$volume_name"
-      docker volume create "$volume_name" >/dev/null
+      docker volume create "$volume_name" > /dev/null
       docker run --rm \
         -v "$volume_name":/data \
         -v "$volume_folder_path":/backup \
@@ -38,7 +38,7 @@ restore_docker_volumes() {
     (
       volume_name=$(basename "$d" | sed 's/_/--/g')
       echo "$volume_name"
-      docker volume create "$volume_name" >/dev/null
+      docker volume create "$volume_name" > /dev/null
       docker run --rm \
         -v "$volume_name":/data \
         -v "$(realpath "$d")":/backup \

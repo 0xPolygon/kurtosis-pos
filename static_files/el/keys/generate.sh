@@ -16,5 +16,5 @@ echo "PRIVATE_KEY: ${PRIVATE_KEY}"
 echo "EL_CLIENT_CONFIG_PATH: ${EL_CLIENT_CONFIG_PATH}"
 
 polycli parseethwallet --hexkey "${PRIVATE_KEY}" --keystore "${EL_CLIENT_CONFIG_PATH}/keystore"
-echo "${PRIVATE_KEY}" >"${EL_CLIENT_CONFIG_PATH}/nodekey"
+echo "${PRIVATE_KEY}" > "${EL_CLIENT_CONFIG_PATH}/nodekey"
 touch "${EL_CLIENT_CONFIG_PATH}/password.txt"

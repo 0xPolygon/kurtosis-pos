@@ -79,7 +79,7 @@ for pair in \
   "ERC1155:$(jq -r '.root.posBridge.DummyERC1155' contractAddresses.json):$(jq -r '.child.posBridge.DummyERC1155' contractAddresses.json):${erc1155_type}" \
   "MintableERC1155:$(jq -r '.root.posBridge.DummyMintableERC1155' contractAddresses.json):$(jq -r '.child.posBridge.DummyMintableERC1155' contractAddresses.json):${mintable_erc1155_type}" \
   "Ether:${ether_root}:$(jq -r '.child.posBridge.MaticWETH' contractAddresses.json):${ether_type}"; do
-  IFS=':' read -r label root_token child_token tt <<<"${pair}"
+  IFS=':' read -r label root_token child_token tt <<< "${pair}"
   # Idempotency: cl-el-genesis re-deploy hits these contracts a second time. mapToken
   # reverts with ALREADY_MAPPED if rootToken already has a child mapping, so skip when
   # the existing mapping already points to the expected child (re-deploys land at the

@@ -99,7 +99,7 @@ cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
 # Persist the new impl address in the merged artifact for traceability.
 jq --arg vs "${new_validator_share}" \
   '.root.ValidatorShareImpl = $vs' \
-  "${CONTRACT_ADDRESSES_FILE}" >"${CONTRACT_ADDRESSES_FILE}.tmp"
+  "${CONTRACT_ADDRESSES_FILE}" > "${CONTRACT_ADDRESSES_FILE}.tmp"
 mv "${CONTRACT_ADDRESSES_FILE}.tmp" "${CONTRACT_ADDRESSES_FILE}"
 
 echo "ValidatorShare upgrade complete. Updated contractAddresses.json:"
