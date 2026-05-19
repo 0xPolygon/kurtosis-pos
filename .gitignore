@@ -3,3 +3,5 @@ params.yml
 
 # Built binaries from tools/
 tools/devnet-monitor/devnet-monitor
+.idea
+*.DS_Store
