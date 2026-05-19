@@ -117,13 +117,16 @@ def generate(
 # Returns how many seconds to push the genesis timestamp into the future so all
 # validators are ready to mine when bor wakes up. Numbers chosen by hand:
 #   - 0 for single-node devnet: nothing to peer with, no race.
-#   - 45s base: spread between two parallel container starts. The previous 20s
-#     floor was too tight on GitHub Actions runners — the hv2-bor and hv2-mix
-#     stability configs (n=2) saw 30–43% deploy failures from nodes mining
-#     before peering and forking at genesis.
-#   - +5s per extra validator: docker daemon / disk / image-pull contention.
-#   - 180s cap: beyond that, image-pull bandwidth dominates and more delay does not help.
+#   - 90s base: covers Docker Desktop / local-dev environments where image-pull
+#     and the static-nodes P2P handshake settle slower than GHA runners. The
+#     previous 45s floor was sufficient for n=2 on GHA but failed at n=4 on
+#     macOS — bor woke up before all peers had completed handshake, forking at
+#     sprint 0 (Heimdall HTTP 500 on /bor/spans/1, gRPC code 18 on span
+#     broadcasts, l2-startup-monitor 5-min timeout).
+#   - +15s per extra validator: docker daemon / disk / image-pull contention
+#     scales faster than the original +5s slope assumed once n > 2.
+#   - 240s cap: image-pull bandwidth dominates beyond that.
 def _compute_delay(n):
     if n <= 1:
         return 0
-    return min(180, 45 + 5 * (n - 2))
+    return min(240, 90 + 15 * (n - 2))
