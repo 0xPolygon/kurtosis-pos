@@ -34,6 +34,7 @@
       "lisovoBlock": {{.lisovo_fork_block}},
       "lisovoProBlock": {{.lisovo_pro_fork_block}},
       "giuglianoBlock": {{.giugliano_fork_block}},
+      "chicagoBlock": {{.chicago_fork_block}},
       "stateSyncConfirmationDelay": {
         "0": 32
       },

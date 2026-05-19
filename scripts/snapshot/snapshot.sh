@@ -561,7 +561,12 @@ wait_for_checkpoint_quiescence() {
     return 1
   fi
   cl_api_url=$(kurtosis port print "$enclave_name" "$cl_service" http)
-  l1_rpc_url=$(kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
+  # `l1_backend` chooses between a single-node `anvil` service and the
+  # ethereum-package's `el-1-geth-lighthouse`. Both expose `rpc`. Probe
+  # the anvil name first; only one of the two services exists in any
+  # given enclave.
+  l1_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2>/dev/null ||
+    kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
   root_chain_proxy=$(kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json |
     sed -n '/^{/,$p' | jq -r '.root.RootChainProxy')
 

@@ -49,13 +49,13 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.2",
+    "l1_el_image": "ethereum/client-go:v1.17.3",
     "l1_cl_image": "sigp/lighthouse:v8.1.3",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.7.1",
-    "l2_el_bor_image": "0xpolygon/bor:2.7.2",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.5.0",
+    "l2_el_bor_image": "0xpolygon/bor:2.8.0",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.6.0",
     "l2_cl_queue_image": "rabbitmq:4.2.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
@@ -116,6 +116,7 @@ EL_HARD_FORK_BLOCKS = {
     "ahmedabad": 0,
     "bhilai": 0,
     # rio must be enabled at block 128 because it's hardcoded in heimdall-v2 codebase
+    # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
     "rio": 128,
     # hardforks happening after rio should also be enabled at block 128 or later
     "madhugiri": 128,
@@ -124,4 +125,5 @@ EL_HARD_FORK_BLOCKS = {
     "lisovo": 128,
     "lisovoPro": 128,
     "giugliano": 128,
+    "chicago": 128,
 }

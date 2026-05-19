@@ -23,13 +23,13 @@
     "docusaurus-lunr-search": "^3.6.0",
     "lunr": "^2.3.9",
     "prism-react-renderer": "^2.4.1",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.1",
     "@docusaurus/tsconfig": "^3.10.1",
-    "@docusaurus/types": "^3.10.0",
+    "@docusaurus/types": "^3.10.1",
     "typescript": "~6.0.3"
   },
   "browserslist": {

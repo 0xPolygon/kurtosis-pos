@@ -1,6 +1,24 @@
 constants = import_module("../../config/constants.star")
 
 
+def get_producer_vote_val_ids(participants):
+    # Walks `participants` in declared order, assigns val ID `i+1` to each
+    # validator slot (respecting `count`), and returns the comma-separated list
+    # of val IDs for validators *without* `el_bor_sync_with_witness: true`.
+    # Mirrors the val ID assignment in `main.star`'s `get_validator_accounts`
+    # and `get_validator_data` below so IDs stay consistent.
+    val_id = 0
+    producer_ids = []
+    for p in participants:
+        is_validator = p.get("kind") == constants.PARTICIPANT_KIND.validator
+        for _ in range(p.get("count")):
+            if is_validator:
+                val_id += 1
+                if not p.get("el_bor_sync_with_witness"):
+                    producer_ids.append(str(val_id))
+    return ",".join(producer_ids)
+
+
 def get_validator_data(validator_accounts):
     accounts = []
     balances = []

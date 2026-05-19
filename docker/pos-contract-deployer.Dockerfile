@@ -1,4 +1,4 @@
-FROM node:20-slim AS builder
+FROM node:26-slim AS builder
 LABEL description="pos-contract-deployer builder"
 
 # pos-contracts (anvil-pos) - 2025-08-01
