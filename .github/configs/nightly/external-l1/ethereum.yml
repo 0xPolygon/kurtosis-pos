@@ -11,13 +11,20 @@ participants:
 
 network_params:
   network_id: "3151908"
-  # prefunded_accounts must include the canonical EIP-2470 CREATE2 deployer at
-  # 0x4e59b44... — sPOL's Deploy.s.sol uses `new X{salt: y}` syntax which solc
-  # compiles to a CALL into that address, and the LST step would fail with
-  # "missing CREATE2 deployer" without it. Mirrors the prealloc done by
-  # src/l1/ethereum_package.star for the should_deploy_l1=true path; we have
-  # to repeat the entry here because this scenario launches ethereum-package
-  # directly, bypassing kurtosis-pos's L1 launcher helper.
-  prefunded_accounts: '{"0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9": {"balance": "1000000000ETH"}, "0x4e59b44847b379578588920cA78FbF26c0B4956C": {"balance": "0ETH", "code": "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3"}}'
+  # prefunded_accounts mirrors the prealloc done by src/l1/ethereum_package.star
+  # for the should_deploy_l1=true path; we have to repeat the entries here
+  # because this scenario launches ethereum-package directly, bypassing
+  # kurtosis-pos's L1 launcher helper. It must include:
+  #   - the admin (0x74Ed6F46...) used to deploy and operate L1 contracts;
+  #   - the canonical EIP-2470 CREATE2 deployer at 0x4e59b44... — sPOL's
+  #     Deploy.s.sol uses `new X{salt: y}` syntax which solc compiles to a CALL
+  #     into that address, and the LST step would fail with "missing CREATE2
+  #     deployer" without it;
+  #   - the first 10 validator vanity addresses from
+  #     src/prefunded_accounts/accounts.star — heimdall validators submit
+  #     checkpoints from these addresses, and an unfunded signer fails with
+  #     "insufficient funds for gas * price + value" (which made the bridge
+  #     withdraw tests hang waiting for a checkpoint that never landed).
+  prefunded_accounts: '{"0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9": {"balance": "1000000000ETH"}, "0x4e59b44847b379578588920cA78FbF26c0B4956C": {"balance": "0ETH", "code": "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3"}, "0x11111f7eaa946be186bedc72df002ff166ee9045": {"balance": "10000ETH"}, "0x22222743b71969b4f3fb87a650ec116548ed740b": {"balance": "10000ETH"}, "0x33333fae0b3a33c88f4b9a1313147fc60f721f67": {"balance": "10000ETH"}, "0x44444baa7e42ed432556acd1e47c546793f9e165": {"balance": "10000ETH"}, "0x5555583243bbaaddb38713c6c008701cdae73a75": {"balance": "10000ETH"}, "0x66666f88bc5720214b941fc9c9d3190093c94b4a": {"balance": "10000ETH"}, "0x77777106ea5bec90bc5b52dbeb465f4a6a467960": {"balance": "10000ETH"}, "0x888883de3e8fb5c8e9c5ec34106d26aca272b306": {"balance": "10000ETH"}, "0x999998fe132d7c2ee4d568606056c279ed791bf1": {"balance": "10000ETH"}, "0x1010104191c700348e4ee44eb3f54287c0e8d5ef": {"balance": "10000ETH"}}'
   seconds_per_slot: 1
   preset: minimal
