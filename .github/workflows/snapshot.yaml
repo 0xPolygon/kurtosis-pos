@@ -18,11 +18,6 @@ env:
 
 jobs:
   snapshot:
-    # The large devnet (7 validators + 4 RPCs) saturates `ubuntu-latest`
-    # (4-CPU/16GB), with two validators stalling around block 10 because
-    # bor's MultiHeimdallClient opens an 11x11 WS subscription mesh; on
-    # `ubuntu-latest-8-cores` (8-CPU/32GB) the snapshot wait completes.
-    # Small stays on `ubuntu-latest` since it has only 4 nodes.
     runs-on: ${{ matrix.devnet_type == 'large' && 'ubuntu-latest-8-cores' || 'ubuntu-latest' }}
     # Hard-pin to the canonical org so a fork of this public repo can never
     # schedule a job on `0xPolygon`'s billable larger runners. The trigger
