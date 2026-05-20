@@ -36,10 +36,10 @@ set -euxo pipefail
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
 
 for v in PRIVATE_KEY L1_RPC_URL; do
-  if [[ -z "${!v:-}" ]]; then
-    echo "Error: ${v} is not set"
-    exit 1
-  fi
+	if [[ -z "${!v:-}" ]]; then
+		echo "Error: ${v} is not set"
+		exit 1
+	fi
 done
 
 cd /opt/pos-contracts-main
@@ -51,12 +51,12 @@ registry_proxy_address=$(jq -r '.root.Registry' "${CONTRACT_ADDRESSES_FILE}")
 governance_proxy_address=$(jq -r '.root.GovernanceProxy' "${CONTRACT_ADDRESSES_FILE}")
 
 if [[ -z "${registry_proxy_address}" || "${registry_proxy_address}" == "null" ]]; then
-  echo "Error: Registry address missing from ${CONTRACT_ADDRESSES_FILE}"
-  exit 1
+	echo "Error: Registry address missing from ${CONTRACT_ADDRESSES_FILE}"
+	exit 1
 fi
 if [[ -z "${governance_proxy_address}" || "${governance_proxy_address}" == "null" ]]; then
-  echo "Error: GovernanceProxy address missing from ${CONTRACT_ADDRESSES_FILE}"
-  exit 1
+	echo "Error: GovernanceProxy address missing from ${CONTRACT_ADDRESSES_FILE}"
+	exit 1
 fi
 
 echo "Deploying upgraded ValidatorShare implementation..."
@@ -65,25 +65,25 @@ echo "Deploying upgraded ValidatorShare implementation..."
 # deploy raw bytecode without needing the .sol file path.
 artifact="/opt/pos-contracts-main/out/ValidatorShare.sol/ValidatorShare.json"
 if [[ ! -f "${artifact}" ]]; then
-  echo "Error: ValidatorShare artifact missing at ${artifact}"
-  exit 1
+	echo "Error: ValidatorShare artifact missing at ${artifact}"
+	exit 1
 fi
 bytecode=$(jq -r '.bytecode.object' "${artifact}")
 if [[ -z "${bytecode}" || "${bytecode}" == "null" ]]; then
-  echo "Error: failed to read ValidatorShare bytecode from ${artifact}"
-  exit 1
+	echo "Error: failed to read ValidatorShare bytecode from ${artifact}"
+	exit 1
 fi
 new_validator_share=$(cast send \
-  --rpc-url "${L1_RPC_URL}" \
-  --private-key "${PRIVATE_KEY}" \
-  --legacy \
-  --create "${bytecode}" \
-  --json |
-  jq -r '.contractAddress')
+	--rpc-url "${L1_RPC_URL}" \
+	--private-key "${PRIVATE_KEY}" \
+	--legacy \
+	--create "${bytecode}" \
+	--json |
+	jq -r '.contractAddress')
 
 if [[ -z "${new_validator_share}" || "${new_validator_share}" == "null" ]]; then
-  echo "Error: failed to parse deployed ValidatorShare address."
-  exit 1
+	echo "Error: failed to parse deployed ValidatorShare address."
+	exit 1
 fi
 echo "New ValidatorShare implementation: ${new_validator_share}"
 
@@ -94,12 +94,12 @@ echo "Pointing Registry.validatorShare -> ${new_validator_share}..."
 key_hash=$(cast keccak "validatorShare")
 calldata=$(cast calldata "updateContractMap(bytes32,address)" "${key_hash}" "${new_validator_share}")
 cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
-  "${governance_proxy_address}" "update(address,bytes)" "${registry_proxy_address}" "${calldata}"
+	"${governance_proxy_address}" "update(address,bytes)" "${registry_proxy_address}" "${calldata}"
 
 # Persist the new impl address in the merged artifact for traceability.
 jq --arg vs "${new_validator_share}" \
-  '.root.ValidatorShareImpl = $vs' \
-  "${CONTRACT_ADDRESSES_FILE}" >"${CONTRACT_ADDRESSES_FILE}.tmp"
+	'.root.ValidatorShareImpl = $vs' \
+	"${CONTRACT_ADDRESSES_FILE}" >"${CONTRACT_ADDRESSES_FILE}.tmp"
 mv "${CONTRACT_ADDRESSES_FILE}.tmp" "${CONTRACT_ADDRESSES_FILE}"
 
 echo "ValidatorShare upgrade complete. Updated contractAddresses.json:"

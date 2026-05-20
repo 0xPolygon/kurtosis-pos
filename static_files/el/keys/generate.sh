@@ -5,12 +5,12 @@ set -euxo pipefail
 
 # Checking environment variables.
 if [[ -z "${PRIVATE_KEY}" ]]; then
-  echo "Error: PRIVATE_KEY environment variable is not set"
-  exit 1
+	echo "Error: PRIVATE_KEY environment variable is not set"
+	exit 1
 fi
 if [[ -z "${EL_CLIENT_CONFIG_PATH}" ]]; then
-  echo "Error: EL_CLIENT_CONFIG_PATH environment variable is not set"
-  exit 1
+	echo "Error: EL_CLIENT_CONFIG_PATH environment variable is not set"
+	exit 1
 fi
 echo "PRIVATE_KEY: ${PRIVATE_KEY}"
 echo "EL_CLIENT_CONFIG_PATH: ${EL_CLIENT_CONFIG_PATH}"

@@ -18,31 +18,31 @@ set -uxo pipefail
 
 # Checking environment variables.
 if [[ -z "${ACCOUNTS_NUMBER}" ]]; then
-  echo "Error: ACCOUNTS_NUMBER environment variable is not set"
-  exit 1
+	echo "Error: ACCOUNTS_NUMBER environment variable is not set"
+	exit 1
 fi
 echo "ACCOUNTS_NUMBER: ${ACCOUNTS_NUMBER}"
 
 # Dependencies.
 command -v docker >/dev/null || {
-  echo "Error: docker not found in PATH"
-  exit 1
+	echo "Error: docker not found in PATH"
+	exit 1
 }
 command -v cast >/dev/null || {
-  echo "Error: cast (foundry) not found in PATH"
-  exit 1
+	echo "Error: cast (foundry) not found in PATH"
+	exit 1
 }
 command -v jq >/dev/null || {
-  echo "Error: jq not found in PATH"
-  exit 1
+	echo "Error: jq not found in PATH"
+	exit 1
 }
 command -v xxd >/dev/null || {
-  echo "Error: xxd not found in PATH"
-  exit 1
+	echo "Error: xxd not found in PATH"
+	exit 1
 }
 command -v base64 >/dev/null || {
-  echo "Error: base64 not found in PATH"
-  exit 1
+	echo "Error: base64 not found in PATH"
+	exit 1
 }
 
 mkdir -p db
@@ -50,38 +50,38 @@ mkdir -p db
 
 echo "Mining ${ACCOUNTS_NUMBER} vanity accounts (this will take a while)..."
 for ((i = 1; i <= ACCOUNTS_NUMBER; i++)); do
-  # Cyclic 5-char prefix: "$i" repeated, truncated to 5 chars.
-  s="${i}${i}${i}${i}${i}"
-  prefix="${s:0:5}"
-  echo "[${i}/${ACCOUNTS_NUMBER}] mining 0x${prefix}..."
+	# Cyclic 5-char prefix: "$i" repeated, truncated to 5 chars.
+	s="${i}${i}${i}${i}${i}"
+	prefix="${s:0:5}"
+	echo "[${i}/${ACCOUNTS_NUMBER}] mining 0x${prefix}..."
 
-  line=$(docker run --rm -v "${PWD}/db:/db:rw" planxthanee/ethereum-wallet-generator:latest \
-    -mode 2 -contains "0x${prefix}" -n -1 -limit 1 -c 16 |
-    tail -n 8 | head -n 1)
+	line=$(docker run --rm -v "${PWD}/db:/db:rw" planxthanee/ethereum-wallet-generator:latest \
+		-mode 2 -contains "0x${prefix}" -n -1 -limit 1 -c 16 |
+		tail -n 8 | head -n 1)
 
-  # Output line format: "<0xaddress> <privkey-without-0x>"
-  read -r eth_address eth_private_key <<<"${line}"
-  if [[ -z "${eth_address}" || -z "${eth_private_key}" ]]; then
-    echo "Error: failed to parse vanity generator output for prefix 0x${prefix}: '${line}'"
-    exit 1
-  fi
+	# Output line format: "<0xaddress> <privkey-without-0x>"
+	read -r eth_address eth_private_key <<<"${line}"
+	if [[ -z "${eth_address}" || -z "${eth_private_key}" ]]; then
+		echo "Error: failed to parse vanity generator output for prefix 0x${prefix}: '${line}'"
+		exit 1
+	fi
 
-  # Uncompressed public key (X||Y, no 04 prefix) — matches ETHPublicKey format.
-  eth_public_key=$(cast wallet public-key --private-key "0x${eth_private_key}")
+	# Uncompressed public key (X||Y, no 04 prefix) — matches ETHPublicKey format.
+	eth_public_key=$(cast wallet public-key --private-key "0x${eth_private_key}")
 
-  # CometBFT pubkey: 04 || X || Y, base64-encoded.
-  cometbft_public_key=$(printf '04%s' "${eth_public_key#0x}" | xxd -r -p | base64 | tr -d '\n')
-  # CometBFT privkey: raw 32-byte privkey, base64-encoded.
-  cometbft_private_key=$(printf '%s' "${eth_private_key}" | xxd -r -p | base64 | tr -d '\n')
+	# CometBFT pubkey: 04 || X || Y, base64-encoded.
+	cometbft_public_key=$(printf '04%s' "${eth_public_key#0x}" | xxd -r -p | base64 | tr -d '\n')
+	# CometBFT privkey: raw 32-byte privkey, base64-encoded.
+	cometbft_private_key=$(printf '%s' "${eth_private_key}" | xxd -r -p | base64 | tr -d '\n')
 
-  jq --null-input --compact-output \
-    --arg path "vanity/0x${prefix}" \
-    --arg eth_addr "${eth_address}" \
-    --arg eth_pub "${eth_public_key}" \
-    --arg eth_priv "${eth_private_key}" \
-    --arg cb_pub "${cometbft_public_key}" \
-    --arg cb_priv "${cometbft_private_key}" \
-    '{
+	jq --null-input --compact-output \
+		--arg path "vanity/0x${prefix}" \
+		--arg eth_addr "${eth_address}" \
+		--arg eth_pub "${eth_public_key}" \
+		--arg eth_priv "${eth_private_key}" \
+		--arg cb_pub "${cometbft_public_key}" \
+		--arg cb_priv "${cometbft_private_key}" \
+		'{
       Path: $path,
       ETHAddress: $eth_addr,
       ETHPublicKey: $eth_pub,

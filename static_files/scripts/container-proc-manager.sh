@@ -49,6 +49,6 @@ wait $child_pid
 
 # Only start dummy process if we were manually trapped
 if [ "$trapped" = "false" ]; then
-  echo "Child process exited naturally, container-proc-manager exiting" >&2
-  exit $?
+	echo "Child process exited naturally, container-proc-manager exiting" >&2
+	exit $?
 fi

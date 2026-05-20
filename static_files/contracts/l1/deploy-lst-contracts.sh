@@ -34,28 +34,28 @@ export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 # against ".ethereum-polygon"; using that key satisfies the check without
 # needing a change in spol-contracts.
 jq -n \
-  --arg saltPrefix "kurtosis-" \
-  --argjson chainIdL1 "${L1_CHAIN_ID}" \
-  --argjson chainIdL2 "${L2_CHAIN_ID}" \
-  --arg polTokenL1 "${POL_TOKEN_L1}" \
-  --arg polTokenL2 "${POL_TOKEN_L2}" \
-  --arg maticTokenL1 "${MATIC_TOKEN_L1}" \
-  --arg polygonMigration "${POLYGON_MIGRATION}" \
-  --arg stakeManager "${STAKE_MANAGER}" \
-  --arg admin "${ADMIN_ADDRESS}" \
-  --arg feeReceiver "${FEE_RECEIVER_VALUE}" \
-  --argjson rewardFee "${REWARD_FEE:-50}" \
-  --argjson maxDivergence "${MAX_DIVERGENCE:-10}" \
-  --arg withdrawManager "${WITHDRAW_MANAGER}" \
-  --arg erc20predicate "${ERC20_PREDICATE}" \
-  --arg childChainManager "${CHILD_CHAIN_MANAGER}" \
-  --arg rootChainManager "${ROOT_CHAIN_MANAGER}" \
-  --arg rcmERC20Predicate "${ERC20_PREDICATE}" \
-  --arg depositManager "${DEPOSIT_MANAGER}" \
-  --arg stateSenderL1 "${STATE_SENDER_L1}" \
-  --arg checkpointManager "${CHECKPOINT_MANAGER}" \
-  --arg stateSyncerL2 "${STATE_SYNCER_L2}" \
-  '{
+	--arg saltPrefix "kurtosis-" \
+	--argjson chainIdL1 "${L1_CHAIN_ID}" \
+	--argjson chainIdL2 "${L2_CHAIN_ID}" \
+	--arg polTokenL1 "${POL_TOKEN_L1}" \
+	--arg polTokenL2 "${POL_TOKEN_L2}" \
+	--arg maticTokenL1 "${MATIC_TOKEN_L1}" \
+	--arg polygonMigration "${POLYGON_MIGRATION}" \
+	--arg stakeManager "${STAKE_MANAGER}" \
+	--arg admin "${ADMIN_ADDRESS}" \
+	--arg feeReceiver "${FEE_RECEIVER_VALUE}" \
+	--argjson rewardFee "${REWARD_FEE:-50}" \
+	--argjson maxDivergence "${MAX_DIVERGENCE:-10}" \
+	--arg withdrawManager "${WITHDRAW_MANAGER}" \
+	--arg erc20predicate "${ERC20_PREDICATE}" \
+	--arg childChainManager "${CHILD_CHAIN_MANAGER}" \
+	--arg rootChainManager "${ROOT_CHAIN_MANAGER}" \
+	--arg rcmERC20Predicate "${ERC20_PREDICATE}" \
+	--arg depositManager "${DEPOSIT_MANAGER}" \
+	--arg stateSenderL1 "${STATE_SENDER_L1}" \
+	--arg checkpointManager "${CHECKPOINT_MANAGER}" \
+	--arg stateSyncerL2 "${STATE_SYNCER_L2}" \
+	'{
     "ethereum-polygon": {
       scenarioName: "kurtosis-devnet",
       saltPrefix: $saltPrefix,
@@ -89,8 +89,8 @@ jq -n \
 # CLI here. --non-interactive suppresses the multi-chain broadcast confirmation
 # prompt that forge shows when vm.createSelectFork() is used in the script.
 forge script script/Deploy.s.sol:Deploy \
-  --sig 'run(string)' 'ethereum-polygon' \
-  --rpc-url "${L1_RPC_URL}" --broadcast --legacy --non-interactive
+	--sig 'run(string)' 'ethereum-polygon' \
+	--rpc-url "${L1_RPC_URL}" --broadcast --legacy --non-interactive
 
 # Merge LST addresses into the accumulated contractAddresses.json so a single
 # artifact carries plasma + matic-to-pol + pos-bridge + spol. Upstream's
@@ -101,8 +101,8 @@ jq -s '.[0] as $pos | .[1] as $spol
   | $pos
   | .root.spol = $spol.sPOL_L1
   | .child.spol = $spol.sPOL_L2' \
-  /opt/data/pos-addresses/contractAddresses.json script/deployment.json \
-  >/opt/contracts/contractAddresses.json
+	/opt/data/pos-addresses/contractAddresses.json script/deployment.json \
+	>/opt/contracts/contractAddresses.json
 echo "LST contracts deployed. Updated contractAddresses.json:"
 cat /opt/contracts/contractAddresses.json
 
@@ -114,10 +114,10 @@ cat /opt/contracts/contractAddresses.json
 # used when a forge multi-step deploy genuinely needs Solidity (e.g. CREATE2 +
 # vm.createSelectFork in Deploy.s.sol).
 for v in VALIDATOR_COUNT INITIAL_DEPOSIT_WEI ADMIN_ADDRESS; do
-  if [[ -z "${!v:-}" ]]; then
-    echo "Error: ${v} is not set"
-    exit 1
-  fi
+	if [[ -z "${!v:-}" ]]; then
+		echo "Error: ${v} is not set"
+		exit 1
+	fi
 done
 
 CONTROLLER=$(jq -re '.sPOL_L1.sPOLControllerProxy' script/deployment.json)
@@ -126,9 +126,9 @@ DEAD="0x000000000000000000000000000000000000dEaD"
 
 # 1. Add every kurtosis-registered validator (ids are 1..N, sequential).
 for ((i = 1; i <= VALIDATOR_COUNT; i++)); do
-  cast send "${CONTROLLER}" "addValidator(uint16)" "$i" \
-    --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
-  echo "Validator added: $i"
+	cast send "${CONTROLLER}" "addValidator(uint16)" "$i" \
+		--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	echo "Validator added: $i"
 done
 
 # 2. Distribute deposit shares equally. Remainder from integer division goes to
@@ -138,38 +138,38 @@ remainder=$((100 - base_share * VALIDATOR_COUNT))
 val_ids="1"
 shares="$((base_share + remainder))"
 for ((i = 2; i <= VALIDATOR_COUNT; i++)); do
-  val_ids="${val_ids},${i}"
-  shares="${shares},${base_share}"
+	val_ids="${val_ids},${i}"
+	shares="${shares},${base_share}"
 done
 cast send "${CONTROLLER}" "updateValidatorTargetShare(uint16[],uint8[])" \
-  "[${val_ids}]" "[${shares}]" \
-  --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	"[${val_ids}]" "[${shares}]" \
+	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
 echo "Deposit shares set across ${VALIDATOR_COUNT} validators (base=${base_share}%, validator-1=$((base_share + remainder))%)"
 
 # 3. Bootstrap deposit so the controller has non-zero state when the e2e tests
 # start. Mirrors mainnet's bootstrap (sPOL-contracts/script/SetupInitialValidators.s.sol).
 POL_TOKEN=$(cast call "${CONTROLLER}" "polToken()(address)" --rpc-url "${L1_RPC_URL}")
 cast send "${POL_TOKEN}" "approve(address,uint256)" "${CONTROLLER}" "${INITIAL_DEPOSIT_WEI}" \
-  --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
 cast send "${CONTROLLER}" "buySPOL(uint256)" "${INITIAL_DEPOSIT_WEI}" \
-  --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
 spol_minted=$(cast call "${SPOL_TOKEN}" "balanceOf(address)(uint256)" "${ADMIN_ADDRESS}" --rpc-url "${L1_RPC_URL}" | awk '{print $1}')
 echo "sPOL minted to deployer: ${spol_minted}"
 
 # 4. Lock the bootstrap sPOL at 0xdead — it is not meant to be redeemed.
 cast send "${SPOL_TOKEN}" "transfer(address,uint256)" "${DEAD}" "${spol_minted}" \
-  --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
 echo "sPOL locked at 0xdead: ${spol_minted}"
 
 # Verify state.
 dead_balance=$(cast call "${SPOL_TOKEN}" "balanceOf(address)(uint256)" "${DEAD}" --rpc-url "${L1_RPC_URL}" | awk '{print $1}')
 deployer_balance=$(cast call "${SPOL_TOKEN}" "balanceOf(address)(uint256)" "${ADMIN_ADDRESS}" --rpc-url "${L1_RPC_URL}" | awk '{print $1}')
 if [[ "${dead_balance}" == "0" ]]; then
-  echo "Error: bootstrap sPOL not at dead address"
-  exit 1
+	echo "Error: bootstrap sPOL not at dead address"
+	exit 1
 fi
 if [[ "${deployer_balance}" != "0" ]]; then
-  echo "Error: deployer should hold 0 sPOL after lock, got ${deployer_balance}"
-  exit 1
+	echo "Error: deployer should hold 0 sPOL after lock, got ${deployer_balance}"
+	exit 1
 fi
 echo "Kurtosis devnet validator setup complete!"

@@ -17,8 +17,8 @@ mv tmp.json "${CL_GENESIS_FILE}"
 
 # Verify and output the CL genesis file.
 if [[ -s "${CL_GENESIS_FILE}" ]]; then
-  echo "L2 CL genesis:"
-  cat "${CL_GENESIS_FILE}"
+	echo "L2 CL genesis:"
+	cat "${CL_GENESIS_FILE}"
 else
-  echo "Error: ${CL_GENESIS_FILE} does not exist or is empty."
+	echo "Error: ${CL_GENESIS_FILE} does not exist or is empty."
 fi
