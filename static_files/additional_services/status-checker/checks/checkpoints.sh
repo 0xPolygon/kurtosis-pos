@@ -13,45 +13,45 @@ now=$(date +%s)
 error=0
 
 for key in $(echo "$L2_URLS" | jq -r 'keys[]'); do
-	# Get heimdall api url
-	heimdall_api=$(echo "$L2_URLS" | jq -r --arg k "$key" '.[$k].heimdall')
-	if [[ -z "$heimdall_api" || "$heimdall_api" == "null" ]]; then
-		echo "ERROR: $key heimdall api is empty"
-		error=1
-		continue
-	fi
+  # Get heimdall api url
+  heimdall_api=$(echo "$L2_URLS" | jq -r --arg k "$key" '.[$k].heimdall')
+  if [[ -z "$heimdall_api" || "$heimdall_api" == "null" ]]; then
+    echo "ERROR: $key heimdall api is empty"
+    error=1
+    continue
+  fi
 
-	# Get the last checkpoint
-	checkpoint=$(curl -s "$heimdall_api/checkpoints/latest" | jq -r '.checkpoint')
-	if [[ -z "$checkpoint" || "$checkpoint" == "null" ]]; then
-		echo "ERROR: $key unable to retrieve the last checkpoint"
-		error=1
-		continue
-	fi
+  # Get the last checkpoint
+  checkpoint=$(curl -s "$heimdall_api/checkpoints/latest" | jq -r '.checkpoint')
+  if [[ -z "$checkpoint" || "$checkpoint" == "null" ]]; then
+    echo "ERROR: $key unable to retrieve the last checkpoint"
+    error=1
+    continue
+  fi
 
-	# Get checkpoint id and timestamp
-	id=$(echo "$checkpoint" | jq -r '.id')
-	if [[ -z "$id" || "$id" == "null" ]]; then
-		echo "ERROR: $key response missing checkpoint id"
-		error=1
-		continue
-	fi
+  # Get checkpoint id and timestamp
+  id=$(echo "$checkpoint" | jq -r '.id')
+  if [[ -z "$id" || "$id" == "null" ]]; then
+    echo "ERROR: $key response missing checkpoint id"
+    error=1
+    continue
+  fi
 
-	ts=$(echo "$checkpoint" | jq -r '.timestamp')
-	if [[ -z "$ts" || "$ts" == "null" ]]; then
-		echo "ERROR: $key response missing checkpoint timestamp"
-		error=1
-		continue
-	fi
+  ts=$(echo "$checkpoint" | jq -r '.timestamp')
+  if [[ -z "$ts" || "$ts" == "null" ]]; then
+    echo "ERROR: $key response missing checkpoint timestamp"
+    error=1
+    continue
+  fi
 
-	# Check that the checkpoint is not too old
-	now=$(date +%s)
-	dt=$((now - ts))
-	if [[ "$dt" -gt "$stuck_threshold_seconds" ]]; then
-		echo "ERROR: $key checkpoint is stuck at id $id"
-		error=1
-		continue
-	fi
+  # Check that the checkpoint is not too old
+  now=$(date +%s)
+  dt=$((now - ts))
+  if [[ "$dt" -gt "$stuck_threshold_seconds" ]]; then
+    echo "ERROR: $key checkpoint is stuck at id $id"
+    error=1
+    continue
+  fi
 done
 
 exit "$error"

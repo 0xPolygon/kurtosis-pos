@@ -7,10 +7,10 @@ set -euxo pipefail
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
 
 for v in PRIVATE_KEY L1_RPC_URL; do
-	if [[ -z "${!v:-}" ]]; then
-		echo "Error: ${v} is not set"
-		exit 1
-	fi
+  if [[ -z "${!v:-}" ]]; then
+    echo "Error: ${v} is not set"
+    exit 1
+  fi
 done
 
 cd /opt/pos-portal
@@ -22,13 +22,13 @@ cp /opt/data/addresses/contractAddresses.json /opt/pos-portal/contractAddresses.
 echo "Deploying pos-bridge L1 (root) contracts..."
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast --legacy \
-	scripts/deployment-scripts/deployPosBridgeRoot.s.sol:DeployPosBridgeRootScript
+  scripts/deployment-scripts/deployPosBridgeRoot.s.sol:DeployPosBridgeRootScript
 
 cp contractAddresses.json "${CONTRACT_ADDRESSES_FILE}"
 if [[ -s "${CONTRACT_ADDRESSES_FILE}" ]]; then
-	echo "pos-bridge L1 deployed. Updated contractAddresses.json:"
-	cat "${CONTRACT_ADDRESSES_FILE}"
+  echo "pos-bridge L1 deployed. Updated contractAddresses.json:"
+  cat "${CONTRACT_ADDRESSES_FILE}"
 else
-	echo "Error: ${CONTRACT_ADDRESSES_FILE} does not exist or is empty."
-	exit 1
+  echo "Error: ${CONTRACT_ADDRESSES_FILE} does not exist or is empty."
+  exit 1
 fi
