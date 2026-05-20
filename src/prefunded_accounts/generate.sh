@@ -24,29 +24,29 @@ fi
 echo "ACCOUNTS_NUMBER: ${ACCOUNTS_NUMBER}"
 
 # Dependencies.
-command -v docker >/dev/null || {
+command -v docker > /dev/null || {
 	echo "Error: docker not found in PATH"
 	exit 1
 }
-command -v cast >/dev/null || {
+command -v cast > /dev/null || {
 	echo "Error: cast (foundry) not found in PATH"
 	exit 1
 }
-command -v jq >/dev/null || {
+command -v jq > /dev/null || {
 	echo "Error: jq not found in PATH"
 	exit 1
 }
-command -v xxd >/dev/null || {
+command -v xxd > /dev/null || {
 	echo "Error: xxd not found in PATH"
 	exit 1
 }
-command -v base64 >/dev/null || {
+command -v base64 > /dev/null || {
 	echo "Error: base64 not found in PATH"
 	exit 1
 }
 
 mkdir -p db
-: >eth_cometbft_accounts.json.lines
+: > eth_cometbft_accounts.json.lines
 
 echo "Mining ${ACCOUNTS_NUMBER} vanity accounts (this will take a while)..."
 for ((i = 1; i <= ACCOUNTS_NUMBER; i++)); do
@@ -60,7 +60,7 @@ for ((i = 1; i <= ACCOUNTS_NUMBER; i++)); do
 		tail -n 8 | head -n 1)
 
 	# Output line format: "<0xaddress> <privkey-without-0x>"
-	read -r eth_address eth_private_key <<<"${line}"
+	read -r eth_address eth_private_key <<< "${line}"
 	if [[ -z "${eth_address}" || -z "${eth_private_key}" ]]; then
 		echo "Error: failed to parse vanity generator output for prefix 0x${prefix}: '${line}'"
 		exit 1
@@ -89,13 +89,13 @@ for ((i = 1; i <= ACCOUNTS_NUMBER; i++)); do
       CometBftAddress: $eth_addr,
       CometBftPublicKey: $cb_pub,
       CometBftPrivateKey: $cb_priv
-    }' >>eth_cometbft_accounts.json.lines
+    }' >> eth_cometbft_accounts.json.lines
 done
 
-jq --slurp '.' eth_cometbft_accounts.json.lines >eth_cometbft_accounts.json
+jq --slurp '.' eth_cometbft_accounts.json.lines > eth_cometbft_accounts.json
 
 echo "Generating the Starlark accounts.star file..."
-jq --raw-output '[.[] | "    # \(.Path)\n    account.new_validator(\n        # ETH/Tendermint account - used by heimdall validators.\n        account.new(\n            \"\(.ETHAddress)\",\n            \"\(.ETHPublicKey)\",\n            \"\(.ETHPrivateKey)\",\n        ),\n        # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.\n        account.new(\n            \"\(.CometBftAddress)\",\n            \"\(.CometBftPublicKey)\",\n            \"\(.CometBftPrivateKey)\",\n        ),\n    ),"] | "account = import_module(\"../account/account.star\")\n\nPREFUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json >accounts.star
+jq --raw-output '[.[] | "    # \(.Path)\n    account.new_validator(\n        # ETH/Tendermint account - used by heimdall validators.\n        account.new(\n            \"\(.ETHAddress)\",\n            \"\(.ETHPublicKey)\",\n            \"\(.ETHPrivateKey)\",\n        ),\n        # CometBFT account (secp256k1) - used by heimdall-v2 validators and derived from the ETH private key.\n        account.new(\n            \"\(.CometBftAddress)\",\n            \"\(.CometBftPublicKey)\",\n            \"\(.CometBftPrivateKey)\",\n        ),\n    ),"] | "account = import_module(\"../account/account.star\")\n\nPREFUNDED_ACCOUNTS = [\n" + (join("\n")) + "\n]"' eth_cometbft_accounts.json > accounts.star
 
 echo "Cleaning up..."
 rm -rf eth_cometbft_accounts.json eth_cometbft_accounts.json.lines db/

@@ -80,7 +80,7 @@ jq -n \
       checkpointManager: $checkpointManager,
       stateSyncerL2: $stateSyncerL2
     }
-  }' >script/input.json
+  }' > script/input.json
 
 # Deploy sPOL contracts L1 then L2 via the existing run(string) entrypoint.
 # Forge runs against L1_RPC_URL as primary; the script reaches L2 internally
@@ -102,7 +102,7 @@ jq -s '.[0] as $pos | .[1] as $spol
   | .root.spol = $spol.sPOL_L1
   | .child.spol = $spol.sPOL_L2' \
 	/opt/data/pos-addresses/contractAddresses.json script/deployment.json \
-	>/opt/contracts/contractAddresses.json
+	> /opt/contracts/contractAddresses.json
 echo "LST contracts deployed. Updated contractAddresses.json:"
 cat /opt/contracts/contractAddresses.json
 
@@ -127,7 +127,7 @@ DEAD="0x000000000000000000000000000000000000dEaD"
 # 1. Add every kurtosis-registered validator (ids are 1..N, sequential).
 for ((i = 1; i <= VALIDATOR_COUNT; i++)); do
 	cast send "${CONTROLLER}" "addValidator(uint16)" "$i" \
-		--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+		--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy > /dev/null
 	echo "Validator added: $i"
 done
 
@@ -143,22 +143,22 @@ for ((i = 2; i <= VALIDATOR_COUNT; i++)); do
 done
 cast send "${CONTROLLER}" "updateValidatorTargetShare(uint16[],uint8[])" \
 	"[${val_ids}]" "[${shares}]" \
-	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy > /dev/null
 echo "Deposit shares set across ${VALIDATOR_COUNT} validators (base=${base_share}%, validator-1=$((base_share + remainder))%)"
 
 # 3. Bootstrap deposit so the controller has non-zero state when the e2e tests
 # start. Mirrors mainnet's bootstrap (sPOL-contracts/script/SetupInitialValidators.s.sol).
 POL_TOKEN=$(cast call "${CONTROLLER}" "polToken()(address)" --rpc-url "${L1_RPC_URL}")
 cast send "${POL_TOKEN}" "approve(address,uint256)" "${CONTROLLER}" "${INITIAL_DEPOSIT_WEI}" \
-	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy > /dev/null
 cast send "${CONTROLLER}" "buySPOL(uint256)" "${INITIAL_DEPOSIT_WEI}" \
-	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy > /dev/null
 spol_minted=$(cast call "${SPOL_TOKEN}" "balanceOf(address)(uint256)" "${ADMIN_ADDRESS}" --rpc-url "${L1_RPC_URL}" | awk '{print $1}')
 echo "sPOL minted to deployer: ${spol_minted}"
 
 # 4. Lock the bootstrap sPOL at 0xdead — it is not meant to be redeemed.
 cast send "${SPOL_TOKEN}" "transfer(address,uint256)" "${DEAD}" "${spol_minted}" \
-	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy >/dev/null
+	--rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy > /dev/null
 echo "sPOL locked at 0xdead: ${spol_minted}"
 
 # Verify state.

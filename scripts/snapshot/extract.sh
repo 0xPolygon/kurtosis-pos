@@ -35,7 +35,7 @@ docker cp "$container_id:/contractAddresses.json" "$output_dir/contractAddresses
 docker cp "$container_id:/l2-genesis.json" "$output_dir/l2-genesis.json"
 log_info "Files downloaded to $output_dir"
 
-docker rm "$container_id" >/dev/null
+docker rm "$container_id" > /dev/null
 log_info "Temporary container removed"
 
 # Extract all volume archives in parallel
