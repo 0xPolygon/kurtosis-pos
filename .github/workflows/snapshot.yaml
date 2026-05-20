@@ -18,7 +18,19 @@ env:
 
 jobs:
   snapshot:
-    runs-on: ubuntu-latest
+    # The large devnet (7 validators + 4 RPCs) saturates `ubuntu-latest`
+    # (4-CPU/16GB), with two validators stalling around block 10 because
+    # bor's MultiHeimdallClient opens an 11x11 WS subscription mesh; on
+    # `ubuntu-latest-8-cores` (8-CPU/32GB) the snapshot wait completes.
+    # Small stays on `ubuntu-latest` since it has only 4 nodes.
+    runs-on: ${{ matrix.devnet_type == 'large' && 'ubuntu-latest-8-cores' || 'ubuntu-latest' }}
+    # Hard-pin to the canonical org so a fork of this public repo can never
+    # schedule a job on `0xPolygon`'s billable larger runners. The trigger
+    # set above already excludes `pull_request` from forks, but this guards
+    # against a future trigger addition that would otherwise expose the
+    # larger runner (and its docker/gcp secrets) to attacker-controlled
+    # workflow files.
+    if: github.repository == '0xPolygon/kurtosis-pos'
     timeout-minutes: 60
 
     permissions:
