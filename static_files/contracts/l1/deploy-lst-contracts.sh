@@ -80,7 +80,7 @@ jq -n \
       checkpointManager: $checkpointManager,
       stateSyncerL2: $stateSyncerL2
     }
-  }' > script/input.json
+  }' >script/input.json
 
 # Deploy sPOL contracts L1 then L2 via the existing run(string) entrypoint.
 # Forge runs against L1_RPC_URL as primary; the script reaches L2 internally
@@ -102,7 +102,7 @@ jq -s '.[0] as $pos | .[1] as $spol
   | .root.spol = $spol.sPOL_L1
   | .child.spol = $spol.sPOL_L2' \
   /opt/data/pos-addresses/contractAddresses.json script/deployment.json \
-  > /opt/contracts/contractAddresses.json
+  >/opt/contracts/contractAddresses.json
 echo "LST contracts deployed. Updated contractAddresses.json:"
 cat /opt/contracts/contractAddresses.json
 

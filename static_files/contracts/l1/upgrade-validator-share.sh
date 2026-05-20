@@ -78,8 +78,8 @@ new_validator_share=$(cast send \
   --private-key "${PRIVATE_KEY}" \
   --legacy \
   --create "${bytecode}" \
-  --json \
-  | jq -r '.contractAddress')
+  --json |
+  jq -r '.contractAddress')
 
 if [[ -z "${new_validator_share}" || "${new_validator_share}" == "null" ]]; then
   echo "Error: failed to parse deployed ValidatorShare address."
@@ -99,7 +99,7 @@ cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
 # Persist the new impl address in the merged artifact for traceability.
 jq --arg vs "${new_validator_share}" \
   '.root.ValidatorShareImpl = $vs' \
-  "${CONTRACT_ADDRESSES_FILE}" > "${CONTRACT_ADDRESSES_FILE}.tmp"
+  "${CONTRACT_ADDRESSES_FILE}" >"${CONTRACT_ADDRESSES_FILE}.tmp"
 mv "${CONTRACT_ADDRESSES_FILE}.tmp" "${CONTRACT_ADDRESSES_FILE}"
 
 echo "ValidatorShare upgrade complete. Updated contractAddresses.json:"

@@ -16,7 +16,6 @@
 #   - Exits with the child process exit code on natural termination.
 #   - Runs indefinitely (via tail -f /dev/null) if SIGTRAP was received.
 
-
 # Assign the command passed as arguments to a variable.
 # The "$*" captures all command-line arguments as a single string.
 # For example, running `./container-proc-manager.sh sleep 100` will store "sleep 100" in child_cmd.

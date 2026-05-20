@@ -31,7 +31,7 @@ jobs:
 
       - name: Run kurtosis linter
         run: kurtosis lint .
-      
+
       - name: Run markdown linter
         uses: rvben/rumdl@3cf0ff7193ebd32f6f158d1b668592390ceaa696 # v0.1.91
 
@@ -85,3 +85,16 @@ jobs:
       - name: go test
         working-directory: tools/devnet-monitor
         run: go test ./...
+
+  shfmt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: mfinelli/setup-shfmt@v4
+        with:
+          shfmt-version: 3.13.1
+
+      - name: Run shfmt
+        run: shfmt -d .
