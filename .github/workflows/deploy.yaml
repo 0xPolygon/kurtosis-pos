@@ -276,15 +276,13 @@ jobs:
           root_chain_proxy=$(jq -r '.root.RootChainProxy' tmp/cl-el-genesis/pos-contract-addresses.json)
           l1_rpc="http://$(kurtosis port print ${{ env.ENCLAVE_NAME }} el-1-geth-lighthouse rpc)"
           admin_private_key=0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea
-          # cast call prints "<decimal> [<scientific>]" (e.g. "10000 [1e4]"),
-          # so compare numerically rather than string-matching.
-          before=$(cast call --rpc-url "${l1_rpc}" "${root_chain_proxy}" "_nextHeaderBlock()(uint256)")
+          before=$(cast call --json --rpc-url "${l1_rpc}" "${root_chain_proxy}" "_nextHeaderBlock()(uint256)" | jq -r '.[0]')
           echo "RootChainProxy._nextHeaderBlock before reset: ${before}"
           cast send --rpc-url "${l1_rpc}" --private-key "${admin_private_key}" \
             "${root_chain_proxy}" "setNextHeaderBlock(uint256)" 10000
-          after=$(cast call --rpc-url "${l1_rpc}" "${root_chain_proxy}" "_nextHeaderBlock()(uint256)")
+          after=$(cast call --json --rpc-url "${l1_rpc}" "${root_chain_proxy}" "_nextHeaderBlock()(uint256)" | jq -r '.[0]')
           echo "RootChainProxy._nextHeaderBlock after reset: ${after}"
-          if (( ${after%% *} != 10000 )); then
+          if [[ "${after}" != "10000" ]]; then
             echo "Expected _nextHeaderBlock=10000 after reset, got ${after}"
             exit 1
           fi
