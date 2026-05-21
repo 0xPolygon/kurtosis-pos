@@ -1,0 +1,8 @@
+root = true
+
+# Shell scripts — read by shfmt automatically, no command flags needed.
+[*.sh]
+indent_style = space
+indent_size = 2
+switch_case_indent = true
+space_redirects = true
