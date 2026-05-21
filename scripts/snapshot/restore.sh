@@ -16,37 +16,37 @@ source "${SCRIPT_DIR}/log.sh"
 ALPINE_IMAGE="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11"
 
 restore_docker_volumes() {
-    local volume_folder_path="$1"
+  local volume_folder_path="$1"
 
-    # Restore from archives (.tar.gz)
-    for v in "$volume_folder_path"/*.tar.gz; do
-        [[ -f "$v" ]] || continue
-        (
-            volume_name=$(basename "$v" .tar.gz | sed 's/_/--/g')
-            echo "$volume_name"
-            docker volume create "$volume_name" >/dev/null
-            docker run --rm \
-                -v "$volume_name":/data \
-                -v "$volume_folder_path":/backup \
-                "$ALPINE_IMAGE" tar xzf /backup/$(basename "$v") -C /data
-        ) &
-    done
+  # Restore from archives (.tar.gz)
+  for v in "$volume_folder_path"/*.tar.gz; do
+    [[ -f "$v" ]] || continue
+    (
+      volume_name=$(basename "$v" .tar.gz | sed 's/_/--/g')
+      echo "$volume_name"
+      docker volume create "$volume_name" > /dev/null
+      docker run --rm \
+        -v "$volume_name":/data \
+        -v "$volume_folder_path":/backup \
+        "$ALPINE_IMAGE" tar xzf /backup/$(basename "$v") -C /data
+    ) &
+  done
 
-    # Restore from directories
-    for d in "$volume_folder_path"/*/; do
-        [[ -d "$d" ]] || continue
-        (
-            volume_name=$(basename "$d" | sed 's/_/--/g')
-            echo "$volume_name"
-            docker volume create "$volume_name" >/dev/null
-            docker run --rm \
-                -v "$volume_name":/data \
-                -v "$(realpath "$d")":/backup \
-                "$ALPINE_IMAGE" sh -c "cd /backup && tar cf - . | tar xf - -C /data"
-        ) &
-    done
+  # Restore from directories
+  for d in "$volume_folder_path"/*/; do
+    [[ -d "$d" ]] || continue
+    (
+      volume_name=$(basename "$d" | sed 's/_/--/g')
+      echo "$volume_name"
+      docker volume create "$volume_name" > /dev/null
+      docker run --rm \
+        -v "$volume_name":/data \
+        -v "$(realpath "$d")":/backup \
+        "$ALPINE_IMAGE" sh -c "cd /backup && tar cf - . | tar xf - -C /data"
+    ) &
+  done
 
-    wait
+  wait
 }
 
 ##############################################################################
