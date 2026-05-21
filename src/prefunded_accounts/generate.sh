@@ -24,28 +24,43 @@ fi
 echo "ACCOUNTS_NUMBER: ${ACCOUNTS_NUMBER}"
 
 # Dependencies.
-command -v docker >/dev/null || { echo "Error: docker not found in PATH"; exit 1; }
-command -v cast   >/dev/null || { echo "Error: cast (foundry) not found in PATH"; exit 1; }
-command -v jq     >/dev/null || { echo "Error: jq not found in PATH"; exit 1; }
-command -v xxd    >/dev/null || { echo "Error: xxd not found in PATH"; exit 1; }
-command -v base64 >/dev/null || { echo "Error: base64 not found in PATH"; exit 1; }
+command -v docker > /dev/null || {
+  echo "Error: docker not found in PATH"
+  exit 1
+}
+command -v cast > /dev/null || {
+  echo "Error: cast (foundry) not found in PATH"
+  exit 1
+}
+command -v jq > /dev/null || {
+  echo "Error: jq not found in PATH"
+  exit 1
+}
+command -v xxd > /dev/null || {
+  echo "Error: xxd not found in PATH"
+  exit 1
+}
+command -v base64 > /dev/null || {
+  echo "Error: base64 not found in PATH"
+  exit 1
+}
 
 mkdir -p db
 : > eth_cometbft_accounts.json.lines
 
 echo "Mining ${ACCOUNTS_NUMBER} vanity accounts (this will take a while)..."
-for ((i=1; i<=ACCOUNTS_NUMBER; i++)); do
+for ((i = 1; i <= ACCOUNTS_NUMBER; i++)); do
   # Cyclic 5-char prefix: "$i" repeated, truncated to 5 chars.
   s="${i}${i}${i}${i}${i}"
   prefix="${s:0:5}"
   echo "[${i}/${ACCOUNTS_NUMBER}] mining 0x${prefix}..."
 
   line=$(docker run --rm -v "${PWD}/db:/db:rw" planxthanee/ethereum-wallet-generator:latest \
-    -mode 2 -contains "0x${prefix}" -n -1 -limit 1 -c 16 \
-    | tail -n 8 | head -n 1)
+    -mode 2 -contains "0x${prefix}" -n -1 -limit 1 -c 16 |
+    tail -n 8 | head -n 1)
 
   # Output line format: "<0xaddress> <privkey-without-0x>"
-  read -r eth_address eth_private_key <<<"${line}"
+  read -r eth_address eth_private_key <<< "${line}"
   if [[ -z "${eth_address}" || -z "${eth_private_key}" ]]; then
     echo "Error: failed to parse vanity generator output for prefix 0x${prefix}: '${line}'"
     exit 1

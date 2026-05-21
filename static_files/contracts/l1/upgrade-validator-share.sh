@@ -78,8 +78,8 @@ new_validator_share=$(cast send \
   --private-key "${PRIVATE_KEY}" \
   --legacy \
   --create "${bytecode}" \
-  --json \
-  | jq -r '.contractAddress')
+  --json |
+  jq -r '.contractAddress')
 
 if [[ -z "${new_validator_share}" || "${new_validator_share}" == "null" ]]; then
   echo "Error: failed to parse deployed ValidatorShare address."
