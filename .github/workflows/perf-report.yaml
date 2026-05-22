@@ -40,7 +40,7 @@ jobs:
           mapfile -t artifacts < <(
             gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" \
               --paginate \
-              --jq '.artifacts[] | select(.name | startswith("perf-")) | "\(.id) \(.name)"'
+              --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"'
           )
           if [[ ${#artifacts[@]} -eq 0 ]]; then
             echo "No perf-* artifacts on upstream run ${RUN_ID} — exiting."
@@ -81,7 +81,7 @@ jobs:
             mapfile -t artifacts < <(
               gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/artifacts" \
                 --paginate \
-                --jq '.artifacts[] | select(.name | startswith("perf-")) | "\(.id) \(.name)"'
+                --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"'
             )
             for entry in "${artifacts[@]}"; do
               aid=${entry%% *}
@@ -129,6 +129,6 @@ jobs:
       - name: Upload rendered report as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: perf-report-${{ github.event.workflow_run.id }}
+          name: kurtosis-pos-perf-report-${{ github.event.workflow_run.id }}
           path: tmp/perf-out/report.md
           retention-days: 30

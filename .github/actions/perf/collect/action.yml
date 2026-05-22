@@ -43,9 +43,11 @@ runs:
       if: hashFiles(format('{0}/perf-{1}.json', inputs.perf_dir, inputs.job_id)) != ''
       uses: actions/upload-artifact@v4
       with:
-        # Prefix with "perf-" so perf-report.yaml can list matching artifacts
-        # without picking up unrelated uploads from the same workflow run.
-        name: perf-${{ inputs.job_id }}
+        # Naming follows the kurtosis-pos-<kind>-<run_id>-<discriminator>
+        # convention used by the cleanup action's enclave dumps. The
+        # "kurtosis-pos-perf-" prefix lets perf-report.yaml list matching
+        # artifacts without picking up unrelated uploads on the same run.
+        name: kurtosis-pos-perf-${{ github.run_id }}-${{ inputs.job_id }}
         path: ${{ inputs.perf_dir }}/perf-${{ inputs.job_id }}.json
         if-no-files-found: error
         retention-days: 30
