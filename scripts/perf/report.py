@@ -26,7 +26,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -157,7 +156,9 @@ def fmt_baseline(stats: BaselineStats, unit_hint: str) -> str:
     def f(v: float) -> str:
         if unit_hint == "MiB":
             return f"{v:.1f}"
-        return f"{v:.2f}"
+        if unit_hint == "s":
+            return f"{v:.2f}"
+        return f"{v:g}"
 
     return f"{f(stats.min)} / {f(stats.avg)} / {f(stats.max)}"
 

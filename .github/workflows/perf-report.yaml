@@ -31,6 +31,7 @@ jobs:
       # actions/download-artifact does not support cross-workflow downloads,
       # so use the GitHub API via gh.
       - name: Download current-run perf artifacts
+        id: download
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.event.workflow_run.id }}
@@ -55,9 +56,11 @@ jobs:
             rm "tmp/perf-current/${name}.zip"
           done
           ls -la tmp/perf-current/
+          echo "has_artifacts=true" >> "$GITHUB_OUTPUT"
 
       - name: Resolve baseline runs
         id: baseline
+        if: steps.download.outputs.has_artifacts == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
@@ -93,6 +96,7 @@ jobs:
           done
 
       - name: Render report
+        if: steps.download.outputs.has_artifacts == 'true'
         run: |
           mkdir -p tmp/perf-out
           python3 scripts/perf/report.py \
@@ -102,6 +106,7 @@ jobs:
 
       - name: Resolve PR number
         id: pr
+        if: steps.download.outputs.has_artifacts == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
@@ -119,7 +124,7 @@ jobs:
           echo "Resolved PR: ${pr:-<none>}"
 
       - name: Upsert sticky PR comment
-        if: steps.pr.outputs.number != ''
+        if: steps.download.outputs.has_artifacts == 'true' && steps.pr.outputs.number != ''
         uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
         with:
           number: ${{ steps.pr.outputs.number }}
@@ -127,6 +132,7 @@ jobs:
           path: tmp/perf-out/report.md
 
       - name: Upload rendered report as artifact
+        if: steps.download.outputs.has_artifacts == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: kurtosis-pos-perf-report-${{ github.event.workflow_run.id }}
