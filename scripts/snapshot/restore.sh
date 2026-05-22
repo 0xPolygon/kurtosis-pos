@@ -62,6 +62,28 @@ if [[ -z "$snapshot_folder" ]]; then
 fi
 log_info "Using snapshot folder: $snapshot_folder"
 
+# Sanity check: snapshot layout must exist before we try to restore.
+if [[ ! -d "$snapshot_folder/volumes" ]]; then
+  log_error "Volumes directory not found: $snapshot_folder/volumes"
+  log_error "Did you run extract.sh first?"
+  exit 1
+fi
+if [[ ! -f "$snapshot_folder/docker-compose.yaml" ]]; then
+  log_error "docker-compose.yaml not found in $snapshot_folder"
+  exit 1
+fi
+
+# The generated compose uses `healthcheck.start_interval`, which requires
+# Docker Engine 25+ (Nov 2023). Older versions reject the field with an
+# opaque schema error. Surface a clear message instead.
+docker_server_version=$(docker version --format '{{.Server.Version}}' 2>/dev/null || echo "")
+docker_major="${docker_server_version%%.*}"
+if [[ -z "$docker_major" || "$docker_major" -lt 25 ]]; then
+  log_error "Docker Engine 25+ required (found: ${docker_server_version:-unknown})"
+  log_error "The snapshot's compose uses healthcheck.start_interval, added in Docker 25."
+  exit 1
+fi
+
 log_info "Restoring docker volumes"
 volume_folder_path="$(realpath "$snapshot_folder/volumes")"
 restore_docker_volumes "$volume_folder_path"
@@ -70,7 +92,7 @@ log_info "Docker volumes restored"
 log_info "Starting devnet using docker-compose"
 docker_compose_file="$snapshot_folder/docker-compose.yaml"
 # `--wait` blocks until every service with a healthcheck is healthy. With the
-# tuned healthchecks emitted by snapshot.sh (start_interval=50ms) and the
+# tuned healthchecks emitted by snapshot.sh (start_interval=250ms) and the
 # dropped validator→rabbit dependency, this completes in ~5s on the small
 # devnet — and covers every L2 EL/CL node, not just bor-1.
 docker compose --file "$docker_compose_file" up --detach --wait

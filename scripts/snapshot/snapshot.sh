@@ -370,11 +370,13 @@ configure_service_dependencies() {
 add_health_checks() {
   local docker_compose_file="$1"
 
-  # All probes use start_interval=50ms (Docker 25+) so the first probe fires
-  # ~50ms after container start instead of waiting for `interval`. This is
+  # All probes use start_interval=250ms (Docker 25+) so the first probe fires
+  # ~250ms after container start instead of waiting for `interval`. This is
   # the dominant lever for restore time — without it each `depends_on:
   # service_healthy` link in the chain rabbitmq → heimdall → bor burns ~5s
-  # of slack on top of actual service boot.
+  # of slack on top of actual service boot. 250ms is the sweet spot: fast
+  # enough that no link burns measurable slack, slow enough that we don't
+  # hammer the JSON-RPC probes on bor during start_period.
   #
   # `interval` is the steady-state probe cadence after the container is
   # already healthy — it does not affect restore. Keep it at 5s for cheap
@@ -389,7 +391,7 @@ add_health_checks() {
                 .value.healthcheck = {
                     "test": ["CMD-SHELL", "bash -c \"exec 3<>/dev/tcp/localhost/5672 && exec 3>&-\""],
                     "interval": "5s",
-                    "start_interval": "50ms",
+                    "start_interval": "250ms",
                     "timeout": "10s",
                     "retries": 5,
                     "start_period": "10s"
@@ -406,7 +408,7 @@ add_health_checks() {
                 .value.healthcheck = {
                     "test": ["CMD", "wget", "--spider", "-q", "-T", "5", "http://localhost:1317/bor/spans/latest"],
                     "interval": "5s",
-                    "start_interval": "50ms",
+                    "start_interval": "250ms",
                     "timeout": "10s",
                     "retries": 10,
                     "start_period": "20s"
@@ -423,7 +425,7 @@ add_health_checks() {
                 .value.healthcheck = {
                     "test": ["CMD-SHELL", "wget --quiet --timeout=5 --post-data=\"{\\\"method\\\":\\\"eth_blockNumber\\\",\\\"params\\\":[],\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\"}\" --header=\"Content-Type: application/json\" --output-document=- http://localhost:8545 | grep -q result"],
                     "interval": "5s",
-                    "start_interval": "50ms",
+                    "start_interval": "250ms",
                     "timeout": "10s",
                     "retries": 12,
                     "start_period": "30s"
@@ -441,7 +443,7 @@ add_health_checks() {
                 .value.healthcheck = {
                     "test": ["CMD-SHELL", "bash -c \"exec 3<>/dev/tcp/localhost/8545 && exec 3>&-\""],
                     "interval": "5s",
-                    "start_interval": "50ms",
+                    "start_interval": "250ms",
                     "timeout": "10s",
                     "retries": 12,
                     "start_period": "30s"
