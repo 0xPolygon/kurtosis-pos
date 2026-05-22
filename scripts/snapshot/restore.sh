@@ -91,11 +91,35 @@ log_info "Docker volumes restored"
 
 log_info "Starting devnet using docker-compose"
 docker_compose_file="$snapshot_folder/docker-compose.yaml"
-# `--wait` blocks until every service with a healthcheck is healthy. With the
-# tuned healthchecks emitted by snapshot.sh (start_interval=250ms) and the
-# dropped validator→rabbit dependency, this completes in ~5s on the small
-# devnet — and covers every L2 EL/CL node, not just bor-1.
-docker compose --file "$docker_compose_file" up --detach --wait
+# Bring everything up detached without --wait. `compose up --wait` aborts the
+# moment any service container exits, even if `restart: unless-stopped` will
+# bring it back. Some services (heimdall, bor) panic on first boot post-restore
+# and self-heal after one or two restarts. Polling for healthy ourselves rides
+# through the restart cycle.
+docker compose --file "$docker_compose_file" up --detach
+
+# Poll until every healthcheck-bearing service is healthy, or hit the deadline.
+wait_deadline=$(( $(date +%s) + 120 ))
+all_services=$(docker compose --file "$docker_compose_file" config --services)
+log_info "Waiting for services to become healthy (timeout: 120s)"
+while :; do
+  unhealthy_or_pending=""
+  for svc in $all_services; do
+    cid=$(docker compose --file "$docker_compose_file" ps --quiet "$svc" 2> /dev/null)
+    [[ -z "$cid" ]] && { unhealthy_or_pending="$svc(missing)"; continue; }
+    health=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid" 2> /dev/null)
+    case "$health" in
+      healthy | none) ;; # ok — `none` means no healthcheck declared
+      *) unhealthy_or_pending="$svc($health)" ;;
+    esac
+  done
+  [[ -z "$unhealthy_or_pending" ]] && break
+  if (( $(date +%s) >= wait_deadline )); then
+    log_error "Timed out waiting for services to become healthy. Still pending: $unhealthy_or_pending"
+    exit 1
+  fi
+  sleep 1
+done
 log_info "Devnet started"
 
 log_info "Use 'docker compose --file $docker_compose_file down --volumes' to remove the devnet"

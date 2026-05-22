@@ -322,10 +322,19 @@ configure_service_dependencies() {
   # chain spent waiting on rabbit's start_period.
   #
   # L2: CL (rpc/archive) DOES depend on a validator CL — forces RPCs to start
-  # AFTER validators are healthy, so Docker's embedded DNS has registered
-  # every l2-cl-* alias by the time cometBFT on the RPC tries to resolve
-  # persistent_peers. Without this, RPC nodes hit "server misbehaving" DNS
-  # errors at startup, never retry, and stay peerless forever.
+  # AFTER the validator's container is up, so Docker's embedded DNS has
+  # registered every l2-cl-* alias by the time cometBFT on the RPC tries to
+  # resolve persistent_peers. Without this, RPC nodes hit "server
+  # misbehaving" DNS errors at startup, never retry, and stay peerless
+  # forever.
+  #
+  # We use `service_started` rather than `service_healthy` here: heimdall's
+  # first-boot panic (nil-deref in cometbft buildLastCommitInfoFromStore)
+  # makes the validator transiently `unhealthy` even though
+  # `restart: unless-stopped` heals it within a second or two. With
+  # `service_healthy`, `docker compose up` itself aborts the moment the
+  # validator goes unhealthy. `service_started` only blocks until the
+  # validator container exists; restore.sh's poll loop handles the rest.
   yq --in-place --yaml-output \
     --arg enclave_name "$enclave_name" '
         (.services | keys) as $all_services |
@@ -345,7 +354,7 @@ configure_service_dependencies() {
                 elif $ref_validator_cl != null and .key != $ref_validator_cl then
                     # No rabbitmq sibling → this is rpc/archive. Keep the
                     # dependency on a validator-CL for DNS warm-up.
-                    .value.depends_on = {($ref_validator_cl): {"condition": "service_healthy"}}
+                    .value.depends_on = {($ref_validator_cl): {"condition": "service_started"}}
                 else . end
             else . end
         )
@@ -353,7 +362,9 @@ configure_service_dependencies() {
 
   # L2: EL depends on CL with matching index. Bor/erigon talk to heimdall at
   # startup; without this dependency they can hit DNS-misbehaving errors
-  # before heimdall registers its alias.
+  # before heimdall registers its alias. Same `service_started` rationale as
+  # above — heimdall may transiently flap during first boot, and bor has its
+  # own retry loop for heimdall RPC anyway.
   yq --in-place --yaml-output \
     --arg enclave_name "$enclave_name" '
         (.services | keys) as $all_services |
@@ -361,7 +372,7 @@ configure_service_dependencies() {
             if .key | test("^" + $enclave_name + "-l2-el-[0-9]+-") then
                 (.key | capture("^" + $enclave_name + "-l2-el-(?<idx>[0-9]+)-")) as $match |
                 ($all_services[] | select((test("^" + $enclave_name + "-l2-cl-" + $match.idx + "-")) and (test("rabbitmq") | not))) as $cl_service |
-                .value.depends_on = {($cl_service): {"condition": "service_healthy"}}
+                .value.depends_on = {($cl_service): {"condition": "service_started"}}
             else . end
         )
     ' "$docker_compose_file"
