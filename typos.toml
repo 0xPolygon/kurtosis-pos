@@ -6,4 +6,5 @@ extend-ignore-re = [
 [files]
 extend-exclude = [
   "static_files/additional_services/grafana/dashboards/bor.json",
+  "static_files/additional_services/grafana/dashboards/heimdall.json",
 ]
