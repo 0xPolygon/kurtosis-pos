@@ -257,6 +257,36 @@ jobs:
           mv tmp/cl-el-genesis/l2-el-genesis.json.new tmp/cl-el-genesis/l2-el-genesis.json
           jq ".alloc.\"${state_receiver_key}\".storage" tmp/cl-el-genesis/l2-el-genesis.json
 
+      # The redeploy reuses the L1 from the first deploy, so RootChainProxy
+      # still has _nextHeaderBlock advanced from the first deploy's checkpoints
+      # (e.g. 40000 after 3 checkpoints) and headerBlocks[currentHeaderBlock()]
+      # pointing at bor blocks 0..N. On redeploy, heimdall starts from genesis
+      # but reads RootChain via nextExpectedCheckpoint(): it sets
+      # startBlock = currentEnd + 1 (e.g. 312) and broadcasts that to its own
+      # MsgCheckpoint handler, which rejects it because the local checkpoint
+      # store is empty and msg.StartBlock != 0 ("first checkpoint to start
+      # from block 0"). No checkpoint ever lands, so the withdraw bats test
+      # waits forever for wait_for_new_checkpoint and the job hits 30m timeout.
+      # setNextHeaderBlock(10000) is the RootChain housekeeping function (only
+      # owner = admin = deployer) that resets _nextHeaderBlock to MAX_DEPOSITS
+      # and clears headerBlocks; currentHeaderBlock() then returns 0 and the
+      # first proposal from heimdall uses startBlock=0, which is accepted.
+      - name: Reset L1 RootChain header block counter
+        run: |
+          root_chain_proxy=$(jq -r '.root.RootChainProxy' tmp/cl-el-genesis/pos-contract-addresses.json)
+          l1_rpc="http://$(kurtosis port print ${{ env.ENCLAVE_NAME }} el-1-geth-lighthouse rpc)"
+          admin_private_key=0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea
+          before=$(cast call --json --rpc-url "${l1_rpc}" "${root_chain_proxy}" "_nextHeaderBlock()(uint256)" | jq -r '.[0]')
+          echo "RootChainProxy._nextHeaderBlock before reset: ${before}"
+          cast send --rpc-url "${l1_rpc}" --private-key "${admin_private_key}" \
+            "${root_chain_proxy}" "setNextHeaderBlock(uint256)" 10000
+          after=$(cast call --json --rpc-url "${l1_rpc}" "${root_chain_proxy}" "_nextHeaderBlock()(uint256)" | jq -r '.[0]')
+          echo "RootChainProxy._nextHeaderBlock after reset: ${after}"
+          if [[ "${after}" != "10000" ]]; then
+            echo "Expected _nextHeaderBlock=10000 after reset, got ${after}"
+            exit 1
+          fi
+
       - name: Stop L2 participants
         run: |
           kurtosis service stop ${{ env.ENCLAVE_NAME }} l2-cl-1-heimdall-v2-bor-validator-archive
@@ -275,8 +305,6 @@ jobs:
         run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=./.github/configs/nightly/cl-el-genesis/polygon-pos-with-cl-el-genesis.yml .
 
       - uses: ./.github/actions/monitor
-        with:
-          skip_checkpoints: 'true'  # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test/bridge
         with:
