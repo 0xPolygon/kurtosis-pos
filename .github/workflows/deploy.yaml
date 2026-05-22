@@ -21,9 +21,6 @@ concurrency:
 env:
   ENCLAVE_NAME: pos
   DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
-  # Tracked by .github/actions/perf/collect and scripts/perf/aggregate.sh.
-  # See scripts/perf/README.md for the artifact schema.
-  PERF_DIR: tmp/perf
 
 jobs:
   run-without-args:

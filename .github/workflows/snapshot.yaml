@@ -15,9 +15,6 @@ concurrency:
 
 env:
   ENCLAVE_NAME: pos
-  # Tracked by .github/actions/perf/collect and scripts/perf/aggregate.sh.
-  # See scripts/perf/README.md for the artifact schema.
-  PERF_DIR: tmp/perf
 
 jobs:
   snapshot:
