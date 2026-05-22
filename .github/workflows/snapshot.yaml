@@ -103,7 +103,7 @@ jobs:
           compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - uses: ./.github/actions/perf/collect
+      - uses: ./.github/actions/perf
         if: always()
         with:
           job_id: snapshot-${{ matrix.devnet_type }}

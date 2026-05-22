@@ -47,7 +47,7 @@ jobs:
         with:
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - uses: ./.github/actions/perf/collect
+      - uses: ./.github/actions/perf
         if: always()
         with:
           job_id: deploy-default
@@ -142,7 +142,7 @@ jobs:
           l1_rpc: ${{ contains(matrix.file.name, 'anvil') && 'anvil' || 'el-1-geth-lighthouse' }}
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
 
-      - uses: ./.github/actions/perf/collect
+      - uses: ./.github/actions/perf
         if: always() && steps.perf.outputs.enabled == 'true'
         with:
           job_id: deploy-${{ matrix.file.name }}

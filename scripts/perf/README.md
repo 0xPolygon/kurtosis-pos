@@ -17,7 +17,7 @@ small:
 | `snapshot` | `small`, `large`                                                              |
 
 To add a job, append its config name to `PERF_CONFIGS` in `deploy.yaml`'s
-`run-with-args` matrix (or wire `perf/collect` into a new workflow).
+`run-with-args` matrix (or wire `./.github/actions/perf` into a new workflow).
 
 ## Phases
 
@@ -76,7 +76,7 @@ scripts/perf/
 ├── report.py          # render Markdown table (current vs baseline)
 └── README.md          # this file
 
-.github/actions/perf/collect/   # composite: aggregate + upload artifact
+.github/actions/perf/           # composite: aggregate + upload artifact
 .github/actions/monitor/        # extended with target_block / emit_timing_path
 .github/workflows/perf-report.yaml  # fan-in workflow, posts the PR comment
 ```
