@@ -1,11 +1,11 @@
 contract_util = import_module("../contracts/util.star")
 constants = import_module("../config/constants.star")
+grafana = import_module("./grafana.star")
 shared = import_module("./shared.star")
 util = import_module("./util.star")
 
 PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star@f5ce159aec728898e3deb827f6b921f8ecfc527f"
 
-GRAFANA_PACKAGE = "github.com/kurtosis-tech/grafana-package/main.star@c8ff0b52d25deb0bc4ec95971dcf25b2fca11287"
 GRAFANA_DASHBOARDS = "../../static_files/additional_services/grafana/dashboards"
 
 PANOPTICHAIN_PORT = 9090
@@ -13,6 +13,14 @@ PANOPTICHAIN_METRICS_PATH = "/metrics"
 PANOPTICHAIN_CONFIG_FILE_PATH = (
     "../../static_files/additional_services/panoptichain/config.yml"
 )
+
+# Bor / Erigon expose Prometheus metrics here; heimdall-v2 (CometBFT) uses /metrics.
+EL_METRICS_PATH = "/debug/metrics/prometheus"
+CL_METRICS_PATH = "/metrics"
+
+# Local devnet: scrape EL/CL on every block. Panoptichain polls L1 RPCs on its
+# own 15s cadence so no point scraping it any faster.
+EL_CL_SCRAPE_INTERVAL = "1s"
 
 
 def launch(
@@ -108,7 +116,9 @@ def launch_prometheus(plan, l2_participants, panoptichain_url):
         max_memory=shared.MAX_MEM,
         node_selectors=None,
         storage_tsdb_retention_time="1d",
-        storage_tsdb_retention_size="512MB",
+        # ~1000 bor metric families x N nodes x 1s scrape blows past the
+        # upstream 512MB default within minutes; sized for a few hours instead.
+        storage_tsdb_retention_size="4GB",
         image=constants.IMAGES.get("prometheus_image"),
     )
 
@@ -123,12 +133,17 @@ def generate_metrics_jobs(l2_participants, panoptichain_url):
         }
     ]
     for p in l2_participants:
-        for context in [p.cl_context, p.el_context]:
+        contexts_and_paths = [
+            (p.cl_context, CL_METRICS_PATH),
+            (p.el_context, EL_METRICS_PATH),
+        ]
+        for context, metrics_path in contexts_and_paths:
             if context.service_name not in unique_metrics_jobs:
                 unique_metrics_jobs[context.service_name] = {
                     "Name": context.service_name,
                     "Endpoint": context.metrics_url.removeprefix("http://"),
-                    "MetricsPath": "/debug/metrics/prometheus",
+                    "MetricsPath": metrics_path,
+                    "ScrapeInterval": EL_CL_SCRAPE_INTERVAL,
                 }
                 metrics_jobs.append(unique_metrics_jobs[context.service_name])
     return metrics_jobs
@@ -138,8 +153,7 @@ def launch_grafana(plan, prometheus_url):
     grafana_dashboards_files_artifact = plan.upload_files(
         name="grafana-dashboards", src=GRAFANA_DASHBOARDS
     )
-    # no max cpu or mem limits for grafana
-    import_module(GRAFANA_PACKAGE).run(
+    grafana.run(
         plan,
         prometheus_url,
         name="grafana",

@@ -1,0 +1,25 @@
+apiVersion: 1
+
+# can add support for non prometheus datasource to this package in the future
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    url: {{ .PrometheusURL }}
+    basicAuth: false
+    isDefault: true
+    editable: true
+
+{{- range .PostgresDatabases }}
+  - name: {{ .Name }}
+    type: postgres
+    url: {{ .URL }}
+    user: {{ .User }}
+    secureJsonData:
+      password: '{{ .Password }}'
+    jsonData:
+      database: {{ .Name }}
+      sslmode: 'disable'
+      postgresVersion: {{ .Version }}
+{{- end }}
