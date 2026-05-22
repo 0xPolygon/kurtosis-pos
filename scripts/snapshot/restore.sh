@@ -18,22 +18,23 @@ ALPINE_IMAGE="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd
 restore_docker_volumes() {
   local volume_folder_path="$1"
 
-  # Extract each `.tar.gz` into its target docker volume in parallel. The
-  # extraction runs inside an alpine container so it executes as root and
-  # can honour modes like the `0600` no-execute on lighthouse VC's
-  # `secrets/` directory — host-side `tar xzf` as a non-root user silently
-  # corrupts that volume by failing to write files into the read+write-only
-  # directory.
-  for v in "$volume_folder_path"/*.tar.gz; do
-    [[ -f "$v" ]] || continue
+  # Each volume lives as an extracted directory under $volume_folder_path
+  # (extract.sh produced these inside an alpine container so restrictive
+  # modes like `0600` on lighthouse VC's `secrets/` dir are preserved
+  # correctly). Pack each directory back into its target docker volume.
+  # The pack+unpack happens inside an alpine container as root so we can
+  # read the host-owned files (where the user may have edited configs)
+  # and write into volumes that expect root-owned content.
+  for d in "$volume_folder_path"/*/; do
+    [[ -d "$d" ]] || continue
     (
-      volume_name=$(basename "$v" .tar.gz | sed 's/_/--/g')
+      volume_name=$(basename "$d" | sed 's/_/--/g')
       echo "$volume_name"
       docker volume create "$volume_name" > /dev/null
       docker run --rm \
         -v "$volume_name":/data \
-        -v "$volume_folder_path":/backup \
-        "$ALPINE_IMAGE" tar xzf /backup/$(basename "$v") -C /data
+        -v "$(realpath "$d")":/backup \
+        "$ALPINE_IMAGE" sh -c "cd /backup && tar cf - . | tar xf - -C /data"
     ) &
   done
 
