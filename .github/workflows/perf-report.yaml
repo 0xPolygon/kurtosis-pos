@@ -69,10 +69,13 @@ jobs:
           # Last 10 successful runs of the same workflow on main. Exclude the
           # triggering run (in case this is itself a main push).
           mkdir -p tmp/perf-baseline
+          # /actions/runs returns runs across all workflows; widen the page to
+          # 100 so the post-filter by workflow name still leaves enough samples.
           mapfile -t run_ids < <(
             gh api "repos/${GITHUB_REPOSITORY}/actions/runs" \
               -f "branch=main" \
               -f "status=success" \
+              -f "per_page=100" \
               --jq ".workflow_runs[] | select(.name == \"${WORKFLOW_NAME}\" and .head_sha != \"${CURRENT_SHA}\") | .id" \
               | head -n 10
           )
