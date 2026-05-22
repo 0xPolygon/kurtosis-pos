@@ -76,7 +76,7 @@ fi
 # The generated compose uses `healthcheck.start_interval`, which requires
 # Docker Engine 25+ (Nov 2023). Older versions reject the field with an
 # opaque schema error. Surface a clear message instead.
-docker_server_version=$(docker version --format '{{.Server.Version}}' 2>/dev/null || echo "")
+docker_server_version=$(docker version --format '{{.Server.Version}}' 2> /dev/null || echo "")
 docker_major="${docker_server_version%%.*}"
 if [[ -z "$docker_major" || "$docker_major" -lt 25 ]]; then
   log_error "Docker Engine 25+ required (found: ${docker_server_version:-unknown})"
@@ -99,14 +99,17 @@ docker_compose_file="$snapshot_folder/docker-compose.yaml"
 docker compose --file "$docker_compose_file" up --detach
 
 # Poll until every healthcheck-bearing service is healthy, or hit the deadline.
-wait_deadline=$(( $(date +%s) + 120 ))
+wait_deadline=$(($(date +%s) + 120))
 all_services=$(docker compose --file "$docker_compose_file" config --services)
 log_info "Waiting for services to become healthy (timeout: 120s)"
 while :; do
   unhealthy_or_pending=""
   for svc in $all_services; do
     cid=$(docker compose --file "$docker_compose_file" ps --quiet "$svc" 2> /dev/null)
-    [[ -z "$cid" ]] && { unhealthy_or_pending="$svc(missing)"; continue; }
+    [[ -z "$cid" ]] && {
+      unhealthy_or_pending="$svc(missing)"
+      continue
+    }
     health=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid" 2> /dev/null)
     case "$health" in
       healthy | none) ;; # ok — `none` means no healthcheck declared
@@ -114,7 +117,7 @@ while :; do
     esac
   done
   [[ -z "$unhealthy_or_pending" ]] && break
-  if (( $(date +%s) >= wait_deadline )); then
+  if (($(date +%s) >= wait_deadline)); then
     log_error "Timed out waiting for services to become healthy. Still pending: $unhealthy_or_pending"
     exit 1
   fi
