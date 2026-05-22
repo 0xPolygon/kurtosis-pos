@@ -38,16 +38,10 @@ log_info "Files downloaded to $output_dir"
 docker rm "$container_id" > /dev/null
 log_info "Temporary container removed"
 
-# Extract all volume archives in parallel
-log_info "Extracting volume archives"
-for f in "$volume_folder_path"/*.tar.gz; do
-  (
-    name=$(basename "$f" .tar.gz)
-    mkdir -p "$volume_folder_path/$name"
-    tar -xzf "$f" -C "$volume_folder_path/$name" --no-same-owner
-    log_info "Extracted: $name"
-    rm "$f"
-  ) &
-done
-wait
-log_info "Snapshot extracted to $output_dir"
+# Leave volume archives as `.tar.gz`. restore.sh's `restore_docker_volumes`
+# runs `tar xzf` inside a privileged alpine container, which is the only way
+# to honour archived modes like the `0600` (no-execute) on lighthouse VC's
+# `secrets/` directory: extracting on the host as a non-root user produces
+# `Permission denied` writing into that dir, which silently corrupts the
+# VC's keystore/secret pairing.
+log_info "Snapshot ready in $output_dir (volumes left as tarballs)"

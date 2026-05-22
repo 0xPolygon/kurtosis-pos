@@ -18,7 +18,12 @@ ALPINE_IMAGE="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd
 restore_docker_volumes() {
   local volume_folder_path="$1"
 
-  # Restore from archives (.tar.gz)
+  # Extract each `.tar.gz` into its target docker volume in parallel. The
+  # extraction runs inside an alpine container so it executes as root and
+  # can honour modes like the `0600` no-execute on lighthouse VC's
+  # `secrets/` directory — host-side `tar xzf` as a non-root user silently
+  # corrupts that volume by failing to write files into the read+write-only
+  # directory.
   for v in "$volume_folder_path"/*.tar.gz; do
     [[ -f "$v" ]] || continue
     (
@@ -29,20 +34,6 @@ restore_docker_volumes() {
         -v "$volume_name":/data \
         -v "$volume_folder_path":/backup \
         "$ALPINE_IMAGE" tar xzf /backup/$(basename "$v") -C /data
-    ) &
-  done
-
-  # Restore from directories
-  for d in "$volume_folder_path"/*/; do
-    [[ -d "$d" ]] || continue
-    (
-      volume_name=$(basename "$d" | sed 's/_/--/g')
-      echo "$volume_name"
-      docker volume create "$volume_name" > /dev/null
-      docker run --rm \
-        -v "$volume_name":/data \
-        -v "$(realpath "$d")":/backup \
-        "$ALPINE_IMAGE" sh -c "cd /backup && tar cf - . | tar xf - -C /data"
     ) &
   done
 
