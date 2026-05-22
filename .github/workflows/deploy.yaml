@@ -24,7 +24,6 @@ env:
   # Tracked by .github/actions/perf/collect and scripts/perf/aggregate.sh.
   # See scripts/perf/README.md for the artifact schema.
   PERF_DIR: tmp/perf
-  PERF_TARGET_BLOCK: '256'
 
 jobs:
   run-without-args:
@@ -46,9 +45,6 @@ jobs:
           ./scripts/perf/measure.sh end deploy --extra config=default
 
       - uses: ./.github/actions/monitor
-        with:
-          target_block: ${{ env.PERF_TARGET_BLOCK }}
-          emit_timing_path: ${{ env.PERF_DIR }}/results.jsonl
 
       - uses: ./.github/actions/test/bridge
         with:
@@ -142,8 +138,6 @@ jobs:
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
         with:
           skip_checkpoints: ${{ contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why checkpoints are not being created in this case.
-          target_block: ${{ steps.perf.outputs.enabled == 'true' && env.PERF_TARGET_BLOCK || '0' }}
-          emit_timing_path: ${{ steps.perf.outputs.enabled == 'true' && format('{0}/results.jsonl', env.PERF_DIR) || '' }}
 
       - uses: ./.github/actions/test/bridge
         if: ${{ !contains(matrix.file.name, 'additional-services') }}

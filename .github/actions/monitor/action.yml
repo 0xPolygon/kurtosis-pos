@@ -27,19 +27,6 @@ inputs:
     description: Skip span monitoring.
     required: false
     default: 'false'
-  target_block:
-    description: |
-      Absolute Bor block height. When > 0, the bor probe records the wall-clock
-      at the first observation of latest >= target_block and appends a
-      time-to-block record to emit_timing_path. Used by CI perf monitoring.
-    required: false
-    default: '0'
-  emit_timing_path:
-    description: |
-      Append-only file path where the time-to-block record is written. Required
-      when target_block > 0.
-    required: false
-    default: ''
 
 runs:
   using: composite
@@ -77,23 +64,9 @@ runs:
       shell: bash
       run: echo "LOG_LEVEL=DEBUG" >> "$GITHUB_ENV"
 
-    - name: Resolve bor perf flags
-      id: bor_perf
-      shell: bash
-      run: |
-        flags=""
-        if [[ "${{ inputs.target_block }}" != "0" && -n "${{ inputs.target_block }}" ]]; then
-          if [[ -z "${{ inputs.emit_timing_path }}" ]]; then
-            echo "target_block is set but emit_timing_path is empty" >&2
-            exit 1
-          fi
-          flags="--target-block ${{ inputs.target_block }} --emit-timing ${{ inputs.emit_timing_path }}"
-        fi
-        echo "flags=${flags}" >> "$GITHUB_OUTPUT"
-
     - name: Monitor bor block progress
       shell: bash
-      run: tools/devnet-monitor/devnet-monitor bor ${{ steps.target.outputs.flag }} ${{ steps.bor_perf.outputs.flags }}
+      run: tools/devnet-monitor/devnet-monitor bor ${{ steps.target.outputs.flag }}
 
     - name: Monitor heimdall block progress
       shell: bash

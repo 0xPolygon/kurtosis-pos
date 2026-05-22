@@ -18,7 +18,6 @@ env:
   # Tracked by .github/actions/perf/collect and scripts/perf/aggregate.sh.
   # See scripts/perf/README.md for the artifact schema.
   PERF_DIR: tmp/perf
-  PERF_TARGET_BLOCK: '256'
 
 jobs:
   snapshot:
@@ -65,16 +64,6 @@ jobs:
           ./scripts/perf/measure.sh start deploy
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} ${{ matrix.extra_flags }} .
           ./scripts/perf/measure.sh end deploy --extra flavour=${{ matrix.devnet_type }}
-
-      # Measure time-to-block-256 on the initial deploy before snapshotting.
-      # The bor probe records the timing as a side-effect and continues until
-      # min-blocks is satisfied; the surrounding monitor steps catch
-      # heimdall/spans/etc. The same TTB-256 measurement repeats after restore.
-      - uses: ./.github/actions/monitor
-        with:
-          enclave_name: ${{ env.ENCLAVE_NAME }}
-          target_block: ${{ env.PERF_TARGET_BLOCK }}
-          emit_timing_path: ${{ env.PERF_DIR }}/results.jsonl
 
       - name: Create snapshot
         run: |

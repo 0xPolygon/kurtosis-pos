@@ -18,14 +18,6 @@ type Options struct {
 	MinMilestones  int           // milestones
 	MinCheckpoints int           // checkpoints
 	Timeout        time.Duration // every probe
-
-	// TargetBlock is an absolute Bor block height. When > 0, the bor probe
-	// records the wall-clock at the first cross-RPC observation of
-	// latest >= TargetBlock and writes a one-line JSON record to EmitTimingPath.
-	// The probe does not exit early on this signal — it keeps running until
-	// MinBlocks is satisfied or the timeout fires.
-	TargetBlock    uint64
-	EmitTimingPath string
 }
 
 // Result is what every probe returns. Failed > 0 implies the probe failed.

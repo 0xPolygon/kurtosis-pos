@@ -21,17 +21,18 @@ To add a job, append its config name to `PERF_CONFIGS` in `deploy.yaml`'s
 
 ## Phases
 
-| Phase                 | Where measured               | Notes                                                                                                                                              |
-| --------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `deploy`              | `kurtosis run` step          | Wall-clock around the whole `kurtosis run`.                                                                                                        |
-| `time-to-block`       | `monitor` action (bor probe) | First cross-RPC observation of `latest >= target_block` (256 today). Recorded as a side-effect; the probe continues to its existing exit criteria. |
-| `snapshot-build`      | `snapshot.yaml` only         | `scripts/snapshot/snapshot.sh`.                                                                                                                    |
-| `snapshot-image-size` | `snapshot.yaml` only         | `docker image inspect pos-devnet --format '{{.Size}}'`. Not a duration; reported in MiB.                                                           |
-| `restore`             | `snapshot.yaml` only         | `scripts/snapshot/restore.sh`.                                                                                                                     |
+| Phase                 | Where measured       | Notes                                                                                    |
+| --------------------- | -------------------- | ---------------------------------------------------------------------------------------- |
+| `deploy`              | `kurtosis run` step  | Wall-clock around the whole `kurtosis run`.                                              |
+| `snapshot-build`      | `snapshot.yaml` only | `scripts/snapshot/snapshot.sh`.                                                          |
+| `snapshot-image-size` | `snapshot.yaml` only | `docker image inspect pos-devnet --format '{{.Size}}'`. Not a duration; reported in MiB. |
+| `restore`             | `snapshot.yaml` only | `scripts/snapshot/restore.sh`.                                                           |
 
-`time-to-block-256` is approximate: it's bounded above by the bor probe's
-poll cadence (~1s today) and below by the moment the validator's first
-sprint lands. Use the delta between runs, not the absolute value.
+The existing devnet-monitor probes (`bor`, `heimdall`, `spans`,
+`milestones`, `checkpoints`) cover correctness of chain bring-up. A
+separate "time-to-block-N" perf metric would mostly duplicate that signal
+without adding anything the `deploy` wall-clock doesn't already capture,
+so it's intentionally absent.
 
 ## Artifact schema
 
