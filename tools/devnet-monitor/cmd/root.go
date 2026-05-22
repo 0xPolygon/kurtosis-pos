@@ -28,6 +28,10 @@ var (
 	flagMinSpans       int
 	flagMinMilestones  int
 	flagMinCheckpoints int
+
+	// bor-only flags for the time-to-block measurement used by CI perf.
+	flagTargetBlock    uint64
+	flagEmitTimingPath string
 )
 
 // Root returns the root cobra command, wired with subcommands.

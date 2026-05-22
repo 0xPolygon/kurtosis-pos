@@ -21,6 +21,10 @@ concurrency:
 env:
   ENCLAVE_NAME: pos
   DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
+  # Tracked by .github/actions/perf/collect and scripts/perf/aggregate.sh.
+  # See scripts/perf/README.md for the artifact schema.
+  PERF_DIR: tmp/perf
+  PERF_TARGET_BLOCK: '256'
 
 jobs:
   run-without-args:
@@ -37,13 +41,24 @@ jobs:
       - name: Deploy devnet
         run: |
           set -o pipefail
+          ./scripts/perf/measure.sh start deploy
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+          ./scripts/perf/measure.sh end deploy --extra config=default
 
       - uses: ./.github/actions/monitor
+        with:
+          target_block: ${{ env.PERF_TARGET_BLOCK }}
+          emit_timing_path: ${{ env.PERF_DIR }}/results.jsonl
 
       - uses: ./.github/actions/test/bridge
         with:
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
+
+      - uses: ./.github/actions/perf/collect
+        if: always()
+        with:
+          job_id: deploy-default
+          flavour: default
 
       - uses: ./.github/actions/kurtosis/cleanup
         if: always()
@@ -89,6 +104,12 @@ jobs:
       fail-fast: false
       matrix:
         file: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
+    env:
+      # Configs whose perf phases feed the rolling baseline. Keep this set
+      # small and representative — every entry adds a row per phase to the
+      # PR comment and contributes runner-variance to the baseline. To add
+      # one, append its name from .github/configs/ (slash → dash, no .yml).
+      PERF_CONFIGS: heimdall-v2-bor heimdall-v2-mix l1-backends-anvil
     steps:
       - uses: actions/checkout@v6
 
@@ -97,21 +118,44 @@ jobs:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
+      - name: Resolve perf gate
+        id: perf
+        run: |
+          if [[ " ${PERF_CONFIGS} " == *" ${{ matrix.file.name }} "* ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Deploy devnet
         run: |
           set -o pipefail
+          if [[ "${{ steps.perf.outputs.enabled }}" == "true" ]]; then
+            ./scripts/perf/measure.sh start deploy
+          fi
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
+          if [[ "${{ steps.perf.outputs.enabled }}" == "true" ]]; then
+            ./scripts/perf/measure.sh end deploy --extra config=${{ matrix.file.name }}
+          fi
 
       - uses: ./.github/actions/monitor
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
         with:
           skip_checkpoints: ${{ contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why checkpoints are not being created in this case.
+          target_block: ${{ steps.perf.outputs.enabled == 'true' && env.PERF_TARGET_BLOCK || '0' }}
+          emit_timing_path: ${{ steps.perf.outputs.enabled == 'true' && format('{0}/results.jsonl', env.PERF_DIR) || '' }}
 
       - uses: ./.github/actions/test/bridge
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
         with:
           l1_rpc: ${{ contains(matrix.file.name, 'anvil') && 'anvil' || 'el-1-geth-lighthouse' }}
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
+
+      - uses: ./.github/actions/perf/collect
+        if: always() && steps.perf.outputs.enabled == 'true'
+        with:
+          job_id: deploy-${{ matrix.file.name }}
+          flavour: ${{ matrix.file.name }}
 
       - uses: ./.github/actions/kurtosis/cleanup
         if: always()

@@ -12,10 +12,17 @@ func borCmd() *cobra.Command {
 		Use:   "bor",
 		Short: "Monitor Bor (EL) block progress; sends a stimulus tx every poll",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			return runOne(probes.Bor{}, probeapi.Options{MinBlocks: flagMinBlocks, Timeout: flagTimeout})
+			return runOne(probes.Bor{}, probeapi.Options{
+				MinBlocks:      flagMinBlocks,
+				Timeout:        flagTimeout,
+				TargetBlock:    flagTargetBlock,
+				EmitTimingPath: flagEmitTimingPath,
+			})
 		},
 	}
 	c.Flags().IntVar(&flagMinBlocks, "min-blocks", 50, "blocks the chain must advance past baseline")
+	c.Flags().Uint64Var(&flagTargetBlock, "target-block", 0, "absolute block height at which to record a CI perf timing (0 disables)")
+	c.Flags().StringVar(&flagEmitTimingPath, "emit-timing", "", "append-only file to record the time-to-block JSON record (used by scripts/perf/aggregate.sh)")
 	return c
 }
 

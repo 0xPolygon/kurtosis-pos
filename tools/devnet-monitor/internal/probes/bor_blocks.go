@@ -4,7 +4,10 @@ package probes
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -60,6 +63,13 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, l
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
+	// targetLatch records the wall-clock at the first cross-RPC observation of
+	// latest >= opts.TargetBlock. nil when no target is set.
+	var targetLatch *targetBlockLatch
+	if opts.TargetBlock > 0 {
+		targetLatch = newTargetBlockLatch(opts.TargetBlock, opts.EmitTimingPath, start, lg)
+	}
+
 	var (
 		wg     sync.WaitGroup
 		mu     sync.Mutex
@@ -69,7 +79,7 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, l
 		wg.Add(1)
 		go func(svc discover.Service) {
 			defer wg.Done()
-			if !monitorBor(ctx, svc, svc.Name == sender, opts.MinBlocks, lg) {
+			if !monitorBor(ctx, svc, svc.Name == sender, opts.MinBlocks, targetLatch, lg) {
 				mu.Lock()
 				failed = append(failed, svc.Name)
 				mu.Unlock()
@@ -77,6 +87,11 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, l
 		}(s)
 	}
 	wg.Wait()
+	if targetLatch != nil && !targetLatch.fired() {
+		lg.Warn("Target block not reached before probe exit",
+			"target_block", opts.TargetBlock,
+		)
+	}
 
 	res.Checked = len(rpcs)
 	res.Failed = len(failed)
@@ -91,7 +106,11 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, l
 // Transient read errors don't fail the probe — we log and keep polling. Only
 // the timeout (set on ctx by the caller) ends the loop. The failure log
 // reports the last good observation rather than a post-cancel zero.
-func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBlocks int, lg *slog.Logger) bool {
+//
+// targetLatch may be nil; when set, monitorBor reports every successful
+// `latest` read to it so the first goroutine to cross the threshold records
+// the timing.
+func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBlocks int, targetLatch *targetBlockLatch, lg *slog.Logger) bool {
 	bor, err := chain.DialBor(ctx, svc.URL)
 	if err != nil {
 		lg.Error("Dial failed", "node", svc.Name, "err", err)
@@ -163,6 +182,9 @@ func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBl
 				)
 				lastLoggedLatest, lastLoggedFinalized = latest, finalized
 			}
+			if targetLatch != nil {
+				targetLatch.observe(svc.Name, latest)
+			}
 			if latest >= latestRequired && finalized >= finalizedRequired {
 				return true
 			}
@@ -200,4 +222,86 @@ func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBl
 // shutdown of the surrounding context.
 func isCtxErr(err error) bool {
 	return errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded)
+}
+
+// targetBlockLatch records, once across all RPC goroutines, the wall-clock
+// at which `latest >= target` is first observed. The first goroutine to
+// observe wins; subsequent observations are no-ops.
+//
+// When emitPath is non-empty, the latch writes a single-line JSON record on
+// fire. Errors at write time are logged but do not fail the probe — the
+// timing is a metric, not a correctness signal.
+type targetBlockLatch struct {
+	target   uint64
+	emitPath string
+	start    time.Time
+	lg       *slog.Logger
+
+	once      sync.Once
+	firedFlag bool
+	mu        sync.Mutex
+}
+
+func newTargetBlockLatch(target uint64, emitPath string, start time.Time, lg *slog.Logger) *targetBlockLatch {
+	return &targetBlockLatch{target: target, emitPath: emitPath, start: start, lg: lg}
+}
+
+func (l *targetBlockLatch) observe(node string, latest uint64) {
+	if latest < l.target {
+		return
+	}
+	l.once.Do(func() {
+		ts := time.Now()
+		elapsed := ts.Sub(l.start)
+		l.lg.Info("Target block reached",
+			"node", node,
+			"target_block", l.target,
+			"observed_block", latest,
+			"elapsed_seconds", elapsed.Seconds(),
+		)
+		l.mu.Lock()
+		l.firedFlag = true
+		l.mu.Unlock()
+		if l.emitPath == "" {
+			return
+		}
+		if err := writeTargetTiming(l.emitPath, node, l.target, latest, l.start, ts); err != nil {
+			l.lg.Warn("Emit target-block timing failed",
+				"path", l.emitPath,
+				"err", err,
+			)
+		}
+	})
+}
+
+func (l *targetBlockLatch) fired() bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.firedFlag
+}
+
+// writeTargetTiming serialises the timing record to emitPath. Format matches
+// scripts/perf/measure.sh's JSONL schema so aggregate.sh can ingest it
+// without special-casing.
+func writeTargetTiming(emitPath, node string, target, observed uint64, start, ts time.Time) error {
+	if dir := filepath.Dir(emitPath); dir != "" && dir != "." {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return fmt.Errorf("mkdir %s: %w", dir, err)
+		}
+	}
+	f, err := os.OpenFile(emitPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		return fmt.Errorf("open %s: %w", emitPath, err)
+	}
+	defer f.Close()
+	// Duration in seconds with millisecond precision. RFC3339 timestamps.
+	durationS := float64(ts.Sub(start).Milliseconds()) / 1000.0
+	line := fmt.Sprintf(
+		`{"phase":"time-to-block","started_at":"%s","ended_at":"%s","duration_s":%.3f,"extras":{"target_block":%d,"observed_block":%d,"node":%q}}`+"\n",
+		start.UTC().Format(time.RFC3339), ts.UTC().Format(time.RFC3339), durationS, target, observed, node,
+	)
+	if _, err := f.WriteString(line); err != nil {
+		return fmt.Errorf("write: %w", err)
+	}
+	return nil
 }
