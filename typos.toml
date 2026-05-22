@@ -2,3 +2,8 @@
 extend-ignore-re = [
   "\".*=\",", # cometbft private keys
 ]
+
+[files]
+extend-exclude = [
+  "static_files/additional_services/grafana/dashboards/bor.json",
+]
