@@ -11,23 +11,23 @@ paths. Each added job multiplies the rows in the PR comment and contributes
 runner-variance to the rolling baseline, so this list is intentionally
 small:
 
-| Workflow | Jobs |
-|---|---|
-| `deploy` | `run-without-args`, `heimdall-v2-bor`, `heimdall-v2-mix`, `l1-backends-anvil` |
-| `snapshot` | `small`, `large` |
+| Workflow   | Jobs                                                                          |
+| ---------- | ----------------------------------------------------------------------------- |
+| `deploy`   | `run-without-args`, `heimdall-v2-bor`, `heimdall-v2-mix`, `l1-backends-anvil` |
+| `snapshot` | `small`, `large`                                                              |
 
 To add a job, append its config name to `PERF_CONFIGS` in `deploy.yaml`'s
 `run-with-args` matrix (or wire `perf/collect` into a new workflow).
 
 ## Phases
 
-| Phase | Where measured | Notes |
-|---|---|---|
-| `deploy` | `kurtosis run` step | Wall-clock around the whole `kurtosis run`. |
-| `time-to-block` | `monitor` action (bor probe) | First cross-RPC observation of `latest >= target_block` (256 today). Recorded as a side-effect; the probe continues to its existing exit criteria. |
-| `snapshot-build` | `snapshot.yaml` only | `scripts/snapshot/snapshot.sh`. |
-| `snapshot-image-size` | `snapshot.yaml` only | `docker image inspect pos-devnet --format '{{.Size}}'`. Not a duration; reported in MiB. |
-| `restore` | `snapshot.yaml` only | `scripts/snapshot/restore.sh`. |
+| Phase                 | Where measured               | Notes                                                                                                                                              |
+| --------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deploy`              | `kurtosis run` step          | Wall-clock around the whole `kurtosis run`.                                                                                                        |
+| `time-to-block`       | `monitor` action (bor probe) | First cross-RPC observation of `latest >= target_block` (256 today). Recorded as a side-effect; the probe continues to its existing exit criteria. |
+| `snapshot-build`      | `snapshot.yaml` only         | `scripts/snapshot/snapshot.sh`.                                                                                                                    |
+| `snapshot-image-size` | `snapshot.yaml` only         | `docker image inspect pos-devnet --format '{{.Size}}'`. Not a duration; reported in MiB.                                                           |
+| `restore`             | `snapshot.yaml` only         | `scripts/snapshot/restore.sh`.                                                                                                                     |
 
 `time-to-block-256` is approximate: it's bounded above by the bor probe's
 poll cadence (~1s today) and below by the moment the validator's first
@@ -68,7 +68,7 @@ Each job uploads a single `perf-<job>.json`:
 
 ## Components
 
-```
+```text
 scripts/perf/
 ├── measure.sh         # start <phase> / end <phase> / emit <phase> --extra k=v
 ├── aggregate.sh       # roll tmp/perf/results.jsonl + env metadata into perf-<job>.json
@@ -82,22 +82,13 @@ scripts/perf/
 
 ## Adding a new phase
 
-1. In the workflow step that runs the work, call:
-
-   ```bash
-   ./scripts/perf/measure.sh start <phase-name>
-   <command>
-   ./scripts/perf/measure.sh end <phase-name> --extra <k>=<v>
-   ```
-
+1. In the workflow step that runs the work, call
+   `./scripts/perf/measure.sh start <phase-name>` before the command and
+   `./scripts/perf/measure.sh end <phase-name> --extra <k>=<v>` after.
    `--extra` pairs go into the `extras` object and surface in the report.
-
-2. For non-timing metrics (sizes, counts), use `emit` instead of `start/end`:
-
-   ```bash
-   ./scripts/perf/measure.sh emit snapshot-image-size --extra bytes=$size
-   ```
-
+2. For non-timing metrics (sizes, counts), use `emit` instead of
+   `start/end`, e.g.
+   `./scripts/perf/measure.sh emit snapshot-image-size --extra bytes=$size`.
 3. If the phase's extras include a numeric value the report should show,
    add the key to `NUMERIC_EXTRA_KEYS` in `report.py`.
 
