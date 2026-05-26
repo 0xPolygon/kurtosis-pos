@@ -81,11 +81,11 @@ runs:
       id: archive-name
       shell: bash
       run: |
-        archive_name="kurtosis_pos_dump_${{ github.run_id }}"
+        archive_name="kurtosis-pos-dump-${{ github.run_id }}"
         if [[ -z "${{ inputs.args_filename }}" ]]; then
-          archive_name+="_without_args"
+          archive_name+="-without-args"
         else
-          archive_name+="_with_args_${{ inputs.args_filename }}"
+          archive_name+="-with-args-${{ inputs.args_filename }}"
         fi
         echo "ARCHIVE_NAME=${archive_name}" >> "${GITHUB_OUTPUT}"
         echo "ARCHIVE_NAME=${archive_name}"
