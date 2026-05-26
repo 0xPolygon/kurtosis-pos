@@ -186,6 +186,81 @@ def unit_hint(p: PhaseRecord) -> str:
     return nv[1] if nv else ""
 
 
+def _env_name(jr: JobReport) -> str:
+    return jr.flavour or jr.job
+
+
+def _phase_by_name(jr: JobReport, name: str) -> PhaseRecord | None:
+    for p in jr.phases:
+        if p.phase == name:
+            return p
+    return None
+
+
+def _single_phase_table(
+    title: str,
+    phase_name: str,
+    current_jobs: list[JobReport],
+    baselines: dict[tuple[str, str], BaselineStats],
+) -> list[str]:
+    rows = [
+        (jr, _phase_by_name(jr, phase_name))
+        for jr in sorted(current_jobs, key=_env_name)
+    ]
+    rows = [(jr, p) for jr, p in rows if p is not None]
+    if not rows:
+        return []
+    out = [
+        f"### {title}",
+        "",
+        "| Env | Current | Baseline (min / avg / max) | Δ vs avg | N |",
+        "|---|---|---|---|---|",
+    ]
+    for jr, p in rows:
+        stats = baselines.get((jr.job, p.phase), BaselineStats())
+        out.append(
+            f"| `{_env_name(jr)}` | {fmt_value(p)} | {fmt_baseline(stats, unit_hint(p))} "
+            f"| {fmt_delta(p, stats)} | {stats.count} |"
+        )
+    out.append("")
+    return out
+
+
+def _snapshot_table(
+    current_jobs: list[JobReport],
+    baselines: dict[tuple[str, str], BaselineStats],
+) -> list[str]:
+    rows = []
+    for jr in sorted(current_jobs, key=_env_name):
+        build = _phase_by_name(jr, "snapshot-build")
+        size = _phase_by_name(jr, "snapshot-image-size")
+        if build is None and size is None:
+            continue
+        rows.append((jr, build, size))
+    if not rows:
+        return []
+    out = [
+        "### Snapshot",
+        "",
+        "| Env | Build time | Image size | Δ build | Δ size | N build | N size |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for jr, build, size in rows:
+        build_stats = baselines.get((jr.job, "snapshot-build"), BaselineStats()) if build else BaselineStats()
+        size_stats = baselines.get((jr.job, "snapshot-image-size"), BaselineStats()) if size else BaselineStats()
+        out.append(
+            f"| `{_env_name(jr)}` "
+            f"| {fmt_value(build) if build else 'n/a'} "
+            f"| {fmt_value(size) if size else 'n/a'} "
+            f"| {fmt_delta(build, build_stats) if build else '—'} "
+            f"| {fmt_delta(size, size_stats) if size else '—'} "
+            f"| {build_stats.count} "
+            f"| {size_stats.count} |"
+        )
+    out.append("")
+    return out
+
+
 def render(current_jobs: list[JobReport], baselines: dict[tuple[str, str], BaselineStats]) -> str:
     if not current_jobs:
         return "_No perf artifacts found in this run._\n"
@@ -193,24 +268,12 @@ def render(current_jobs: list[JobReport], baselines: dict[tuple[str, str], Basel
     lines = [
         "## ⏱ CI perf report",
         "",
-        "Per-phase wall-clock from this run vs the rolling stats of the last successful main runs.",
+        "Per-env metrics from this run vs the rolling stats of the last successful main runs.",
         "",
     ]
-    for jr in sorted(current_jobs, key=lambda j: j.job):
-        title = jr.job
-        if jr.flavour and jr.flavour != jr.job:
-            title = f"{jr.job} (`{jr.flavour}`)"
-        lines.append(f"### `{title}`")
-        lines.append("")
-        lines.append("| Phase | Current | Baseline (min / avg / max) | Δ vs avg | Samples |")
-        lines.append("|---|---|---|---|---|")
-        for p in jr.phases:
-            stats = baselines.get((jr.job, p.phase), BaselineStats())
-            uh = unit_hint(p)
-            lines.append(
-                f"| `{p.phase}` | {fmt_value(p)} | {fmt_baseline(stats, uh)} | {fmt_delta(p, stats)} | {stats.count} |"
-            )
-        lines.append("")
+    lines += _single_phase_table("Deploy", "deploy", current_jobs, baselines)
+    lines += _snapshot_table(current_jobs, baselines)
+    lines += _single_phase_table("Restore", "restore", current_jobs, baselines)
     lines.append("_Baseline is the last 10 successful main runs (or fewer if not yet available). Δ flags ±10%._")
     lines.append("")
     return "\n".join(lines)
