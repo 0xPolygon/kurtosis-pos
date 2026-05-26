@@ -57,13 +57,28 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} ${{ matrix.extra_flags }} .
+        run: |
+          ./scripts/perf/measure.sh start deploy
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} ${{ matrix.extra_flags }} .
+          ./scripts/perf/measure.sh end deploy --extra flavour=${{ matrix.devnet_type }}
 
       - name: Create snapshot
-        run: ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
+        run: |
+          ./scripts/perf/measure.sh start snapshot-build
+          ./scripts/snapshot/snapshot.sh ${{ env.ENCLAVE_NAME }}
+          ./scripts/perf/measure.sh end snapshot-build --extra flavour=${{ matrix.devnet_type }}
 
       - name: Verify snapshot image exists
         run: docker image inspect pos-devnet
+
+      - name: Record snapshot image size
+        run: |
+          size=$(docker image inspect pos-devnet --format '{{.Size}}')
+          digest=$(docker image inspect pos-devnet --format '{{.Id}}')
+          ./scripts/perf/measure.sh emit snapshot-image-size \
+            --extra bytes=$size \
+            --extra digest=$digest \
+            --extra flavour=${{ matrix.devnet_type }}
 
       - name: Remove the kurtosis enclave
         run: kurtosis enclave rm --force ${{ env.ENCLAVE_NAME }}
@@ -72,7 +87,10 @@ jobs:
         run: ./scripts/snapshot/extract.sh pos-devnet
 
       - name: Restore devnet from snapshot
-        run: ./scripts/snapshot/restore.sh
+        run: |
+          ./scripts/perf/measure.sh start restore
+          ./scripts/snapshot/restore.sh
+          ./scripts/perf/measure.sh end restore --extra flavour=${{ matrix.devnet_type }}
 
       - uses: ./.github/actions/monitor
         with:
@@ -84,6 +102,12 @@ jobs:
           enclave_name: restored
           compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
+
+      - uses: ./.github/actions/perf
+        if: always()
+        with:
+          job_id: snapshot-${{ matrix.devnet_type }}
+          flavour: ${{ matrix.devnet_type }}
 
       - name: Push snapshot image
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
