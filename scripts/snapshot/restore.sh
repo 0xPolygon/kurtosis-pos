@@ -14,21 +14,36 @@ source "${SCRIPT_DIR}/log.sh"
 # Alpine image pinned by digest — same as snapshot.sh — so the restore tooling
 # is reproducible and not affected by an upstream `alpine:latest` rebase.
 ALPINE_IMAGE="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11"
+ALPINE_ZSTD_IMAGE="kurtosis-pos-alpine-zstd:local"
+
+# Build the zstd-enabled alpine image once. Matches the snapshot-side derivation
+# so a snapshot built on one host can be restored on another without depending
+# on a pre-built image being present.
+ensure_alpine_zstd_image() {
+  if ! docker image inspect "$ALPINE_ZSTD_IMAGE" > /dev/null 2>&1; then
+    docker build --quiet --tag "$ALPINE_ZSTD_IMAGE" - << EOF > /dev/null
+FROM $ALPINE_IMAGE
+RUN apk add --no-cache zstd
+EOF
+  fi
+}
 
 restore_docker_volumes() {
   local volume_folder_path="$1"
 
-  # Restore from archives (.tar.gz)
-  for v in "$volume_folder_path"/*.tar.gz; do
+  ensure_alpine_zstd_image
+
+  # Restore from archives (.tar.zst)
+  for v in "$volume_folder_path"/*.tar.zst; do
     [[ -f "$v" ]] || continue
     (
-      volume_name=$(basename "$v" .tar.gz | sed 's/_/--/g')
+      volume_name=$(basename "$v" .tar.zst | sed 's/_/--/g')
       echo "$volume_name"
       docker volume create "$volume_name" > /dev/null
       docker run --rm \
         -v "$volume_name":/data \
         -v "$volume_folder_path":/backup \
-        "$ALPINE_IMAGE" tar xzf /backup/$(basename "$v") -C /data
+        "$ALPINE_ZSTD_IMAGE" sh -c "zstd -d -q -c /backup/$(basename "$v") | tar xf - -C /data"
     ) &
   done
 
