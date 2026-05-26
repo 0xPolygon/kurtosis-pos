@@ -38,13 +38,15 @@ log_info "Files downloaded to $output_dir"
 docker rm "$container_id" > /dev/null
 log_info "Temporary container removed"
 
-# Extract all volume archives in parallel
+# Extract all volume archives in parallel.
+# zstd is invoked via `--` to be safe with filenames, and `-d -c` streams to tar
+# so we don't materialize an intermediate uncompressed tar on disk.
 log_info "Extracting volume archives"
-for f in "$volume_folder_path"/*.tar.gz; do
+for f in "$volume_folder_path"/*.tar.zst; do
   (
-    name=$(basename "$f" .tar.gz)
+    name=$(basename "$f" .tar.zst)
     mkdir -p "$volume_folder_path/$name"
-    tar -xzf "$f" -C "$volume_folder_path/$name" --no-same-owner
+    zstd -d -q -c -- "$f" | tar -xf - -C "$volume_folder_path/$name" --no-same-owner
     log_info "Extracted: $name"
     rm "$f"
   ) &
