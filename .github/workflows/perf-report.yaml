@@ -77,7 +77,9 @@ jobs:
           mkdir -p tmp/perf-baseline
           # /actions/runs returns runs across all workflows; widen the page to
           # 100 so the post-filter by workflow name still leaves enough samples.
-          runs_listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs" \
+          # -X GET is required: gh api defaults to POST when any -f field is
+          # supplied, which 404s on this GET-only endpoint.
+          runs_listing=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs" \
             -f "branch=main" \
             -f "status=success" \
             -f "per_page=100" \
