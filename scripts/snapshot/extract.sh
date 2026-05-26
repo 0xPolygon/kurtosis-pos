@@ -8,6 +8,19 @@ source "${SCRIPT_DIR}/log.sh"
 # Alpine image pinned by digest so the extract tooling is reproducible and
 # not affected by an upstream `alpine:latest` rebase. Must match restore.sh.
 ALPINE_IMAGE="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11"
+ALPINE_ZSTD_IMAGE="kurtosis-pos-alpine-zstd:local"
+
+# Build the zstd-enabled alpine image once. Matches the snapshot/restore-side
+# derivation so a snapshot built on one host can be extracted on another
+# without depending on a pre-built image being present.
+ensure_alpine_zstd_image() {
+  if ! docker image inspect "$ALPINE_ZSTD_IMAGE" > /dev/null 2>&1; then
+    docker build --quiet --tag "$ALPINE_ZSTD_IMAGE" - << EOF > /dev/null
+FROM $ALPINE_IMAGE
+RUN apk add --no-cache zstd
+EOF
+  fi
+}
 
 # Parse arguments
 image_name="${1:-""}"
@@ -42,22 +55,23 @@ log_info "Files downloaded to $output_dir"
 docker rm "$container_id" > /dev/null
 log_info "Temporary container removed"
 
-# Extract each `.tar.gz` into its own directory under $volume_folder_path/.
-# Run the extraction inside an alpine container so it executes as root: the
-# archives include directories with modes like `0600` (no execute bit) — on
-# the lighthouse VC's `secrets/` dir — and host-side tar as a non-root user
-# would silently fail to write files into them, corrupting the validator's
-# keystore/secret pairing.
+# Extract each `.tar.zst` into its own directory under $volume_folder_path/.
+# Run the extraction inside an alpine container (with zstd) so it executes as
+# root: the archives include directories with modes like `0600` (no execute
+# bit) — on the lighthouse VC's `secrets/` dir — and host-side tar as a
+# non-root user would silently fail to write files into them, corrupting the
+# validator's keystore/secret pairing.
+ensure_alpine_zstd_image
 log_info "Extracting volume archives"
 abs_volume_folder_path="$(realpath "$volume_folder_path")"
-for f in "$volume_folder_path"/*.tar.gz; do
+for f in "$volume_folder_path"/*.tar.zst; do
   (
-    name=$(basename "$f" .tar.gz)
+    name=$(basename "$f" .tar.zst)
     mkdir -p "$volume_folder_path/$name"
     docker run --rm \
       -v "$abs_volume_folder_path":/backup \
       -v "$abs_volume_folder_path/$name":/out \
-      "$ALPINE_IMAGE" sh -c "tar xzf /backup/$(basename "$f") -C /out && chown -R $(id -u):$(id -g) /out"
+      "$ALPINE_ZSTD_IMAGE" sh -c "zstd -d -q -c /backup/$(basename "$f") | tar xf - -C /out && chown -R $(id -u):$(id -g) /out"
     log_info "Extracted: $name"
     rm "$f"
   ) &

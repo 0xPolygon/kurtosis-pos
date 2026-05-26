@@ -14,6 +14,19 @@ source "${SCRIPT_DIR}/log.sh"
 # Alpine image pinned by digest — same as snapshot.sh — so the restore tooling
 # is reproducible and not affected by an upstream `alpine:latest` rebase.
 ALPINE_IMAGE="alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11"
+ALPINE_ZSTD_IMAGE="kurtosis-pos-alpine-zstd:local"
+
+# Build the zstd-enabled alpine image once. Matches the snapshot-side derivation
+# so a snapshot built on one host can be restored on another without depending
+# on a pre-built image being present.
+ensure_alpine_zstd_image() {
+  if ! docker image inspect "$ALPINE_ZSTD_IMAGE" > /dev/null 2>&1; then
+    docker build --quiet --tag "$ALPINE_ZSTD_IMAGE" - << EOF > /dev/null
+FROM $ALPINE_IMAGE
+RUN apk add --no-cache zstd
+EOF
+  fi
+}
 
 restore_docker_volumes() {
   local volume_folder_path="$1"

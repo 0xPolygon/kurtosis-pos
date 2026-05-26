@@ -77,7 +77,9 @@ jobs:
           mkdir -p tmp/perf-baseline
           # /actions/runs returns runs across all workflows; widen the page to
           # 100 so the post-filter by workflow name still leaves enough samples.
-          runs_listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs" \
+          # -X GET is required: gh api defaults to POST when any -f field is
+          # supplied, which 404s on this GET-only endpoint.
+          runs_listing=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs" \
             -f "branch=main" \
             -f "status=success" \
             -f "per_page=100" \
@@ -125,11 +127,13 @@ jobs:
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           EVENT: ${{ github.event.workflow_run.event }}
         run: |
-          # workflow_run carries no PR number for pull_request events. Look it
-          # up by head_sha. Returns empty for push-to-main runs, which we
-          # treat as "no PR to comment on".
+          # workflow_run carries no PR number. Look it up by head_sha for any
+          # event whose head sits on a branch with an open PR — covers both
+          # PR-triggered runs and manual workflow_dispatch on a PR branch.
+          # Returns empty for push-to-main runs, which we treat as "no PR to
+          # comment on".
           pr=""
-          if [[ "$EVENT" == "pull_request" ]]; then
+          if [[ "$EVENT" == "pull_request" || "$EVENT" == "workflow_dispatch" ]]; then
             pr=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls" \
               --jq '.[] | select(.state == "open") | .number' | head -n 1)
           fi
@@ -141,7 +145,7 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
         with:
           number: ${{ steps.pr.outputs.number }}
-          header: ci-perf-report
+          header: ci-perf-report-${{ github.event.workflow_run.name }}
           path: tmp/perf-out/report.md
 
       - name: Upload rendered report as artifact
