@@ -1,0 +1,53 @@
+name: perf-collect
+description: |
+  Aggregate per-phase timings recorded by scripts/perf/measure.sh into a
+  single JSON artifact, then upload it. Idempotent: if no results were
+  recorded (e.g. the deploy step failed before any measure.sh end ran), the
+  step succeeds with a warning and uploads nothing.
+
+inputs:
+  job_id:
+    description: |
+      Unique identifier for this CI job — used as both the artifact name and
+      the per-job perf JSON filename. Should be stable across reruns
+      (e.g. "deploy-heimdall-v2-mix", "snapshot-small").
+    required: true
+  flavour:
+    description: |
+      Optional matrix dimension recorded in the artifact metadata (e.g.
+      "small", "large", "heimdall-v2-mix"). Surfaces in perf-report.yaml.
+    required: false
+    default: ''
+  perf_dir:
+    description: Directory holding $PERF_DIR/results.jsonl.
+    required: false
+    default: tmp/perf
+
+runs:
+  using: composite
+  steps:
+    - name: Aggregate perf results
+      shell: bash
+      env:
+        PERF_DIR: ${{ inputs.perf_dir }}
+        PERF_JOB: ${{ inputs.job_id }}
+        PERF_FLAVOUR: ${{ inputs.flavour }}
+      run: |
+        if [[ ! -f "${PERF_DIR}/results.jsonl" ]]; then
+          echo "::warning::No perf results recorded at ${PERF_DIR}/results.jsonl — skipping aggregation"
+          exit 0
+        fi
+        ./scripts/perf/aggregate.sh --output "${PERF_DIR}/perf-${PERF_JOB}.json"
+
+    - name: Upload perf artifact
+      if: hashFiles(format('{0}/perf-{1}.json', inputs.perf_dir, inputs.job_id)) != ''
+      uses: actions/upload-artifact@v7
+      with:
+        # Naming follows the kurtosis-pos-<kind>-<run_id>-<discriminator>
+        # convention used by the cleanup action's enclave dumps. The
+        # "kurtosis-pos-perf-" prefix lets perf-report.yaml list matching
+        # artifacts without picking up unrelated uploads on the same run.
+        name: kurtosis-pos-perf-${{ github.run_id }}-${{ inputs.job_id }}
+        path: ${{ inputs.perf_dir }}/perf-${{ inputs.job_id }}.json
+        if-no-files-found: error
+        retention-days: 30
