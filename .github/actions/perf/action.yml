@@ -41,7 +41,7 @@ runs:
 
     - name: Upload perf artifact
       if: hashFiles(format('{0}/perf-{1}.json', inputs.perf_dir, inputs.job_id)) != ''
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         # Naming follows the kurtosis-pos-<kind>-<run_id>-<discriminator>
         # convention used by the cleanup action's enclave dumps. The

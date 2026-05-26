@@ -77,7 +77,6 @@ scripts/perf/
 └── README.md          # this file
 
 .github/actions/perf/           # composite: aggregate + upload artifact
-.github/actions/monitor/        # extended with target_block / emit_timing_path
 .github/workflows/perf-report.yaml  # fan-in workflow, posts the PR comment
 ```
 

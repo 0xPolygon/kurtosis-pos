@@ -38,11 +38,17 @@ jobs:
         run: |
           mkdir -p tmp/perf-current
           # List artifacts on the upstream run, filter to perf-*, download each.
-          mapfile -t artifacts < <(
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" \
-              --paginate \
-              --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"'
-          )
+          # Capture into a variable first so set -e catches gh api failures —
+          # otherwise mapfile only sees its own (always-success) exit code and
+          # a network blip / 5xx / rate-limit silently produces an empty list.
+          listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" \
+            --paginate \
+            --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"')
+          mapfile -t artifacts <<< "$listing"
+          # mapfile on an empty string yields a 1-element array containing "".
+          if [[ ${#artifacts[@]} -eq 1 && -z "${artifacts[0]}" ]]; then
+            artifacts=()
+          fi
           if [[ ${#artifacts[@]} -eq 0 ]]; then
             echo "No perf-* artifacts on upstream run ${RUN_ID} — exiting."
             echo "has_artifacts=false" >> "$GITHUB_OUTPUT"
@@ -71,24 +77,28 @@ jobs:
           mkdir -p tmp/perf-baseline
           # /actions/runs returns runs across all workflows; widen the page to
           # 100 so the post-filter by workflow name still leaves enough samples.
-          mapfile -t run_ids < <(
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs" \
-              -f "branch=main" \
-              -f "status=success" \
-              -f "per_page=100" \
-              --jq ".workflow_runs[] | select(.name == \"${WORKFLOW_NAME}\" and .head_sha != \"${CURRENT_SHA}\") | .id" \
-              | head -n 10
-          )
+          runs_listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs" \
+            -f "branch=main" \
+            -f "status=success" \
+            -f "per_page=100" \
+            --jq ".workflow_runs[] | select(.name == \"${WORKFLOW_NAME}\" and .head_sha != \"${CURRENT_SHA}\") | .id" \
+            | head -n 10)
+          mapfile -t run_ids <<< "$runs_listing"
+          if [[ ${#run_ids[@]} -eq 1 && -z "${run_ids[0]}" ]]; then
+            run_ids=()
+          fi
           echo "Baseline run IDs: ${run_ids[*]:-<none>}"
           echo "count=${#run_ids[@]}" >> "$GITHUB_OUTPUT"
           for id in "${run_ids[@]}"; do
             dest="tmp/perf-baseline/${id}"
             mkdir -p "$dest"
-            mapfile -t artifacts < <(
-              gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/artifacts" \
-                --paginate \
-                --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"'
-            )
+            baseline_listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/artifacts" \
+              --paginate \
+              --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"')
+            mapfile -t artifacts <<< "$baseline_listing"
+            if [[ ${#artifacts[@]} -eq 1 && -z "${artifacts[0]}" ]]; then
+              artifacts=()
+            fi
             for entry in "${artifacts[@]}"; do
               aid=${entry%% *}
               aname=${entry#* }
@@ -136,7 +146,7 @@ jobs:
 
       - name: Upload rendered report as artifact
         if: steps.download.outputs.has_artifacts == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: kurtosis-pos-perf-report-${{ github.event.workflow_run.id }}
           path: tmp/perf-out/report.md
