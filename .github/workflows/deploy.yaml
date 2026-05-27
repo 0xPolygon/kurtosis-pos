@@ -37,13 +37,21 @@ jobs:
       - name: Deploy devnet
         run: |
           set -o pipefail
+          ./scripts/perf/measure.sh start deploy
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
+          ./scripts/perf/measure.sh end deploy --extra config=default
 
       - uses: ./.github/actions/monitor
 
       - uses: ./.github/actions/test/bridge
         with:
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
+
+      - uses: ./.github/actions/perf
+        if: always()
+        with:
+          job_id: deploy-default
+          flavour: default
 
       - uses: ./.github/actions/kurtosis/cleanup
         if: always()
@@ -89,6 +97,12 @@ jobs:
       fail-fast: false
       matrix:
         file: ${{ fromJson(needs.list-ymls.outputs.matrix) }}
+    env:
+      # Configs whose perf phases feed the rolling baseline. Keep this set
+      # small and representative — every entry adds a row per phase to the
+      # PR comment and contributes runner-variance to the baseline. To add
+      # one, append its name from .github/configs/ (slash → dash, no .yml).
+      PERF_CONFIGS: heimdall-v2-bor heimdall-v2-mix l1-backends-anvil
     steps:
       - uses: actions/checkout@v6
 
@@ -97,10 +111,25 @@ jobs:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
+      - name: Resolve perf gate
+        id: perf
+        run: |
+          if [[ " ${PERF_CONFIGS} " == *" ${{ matrix.file.name }} "* ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Deploy devnet
         run: |
           set -o pipefail
+          if [[ "${{ steps.perf.outputs.enabled }}" == "true" ]]; then
+            ./scripts/perf/measure.sh start deploy
+          fi
           kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.file.path }} . 2>&1 | tee run.log
+          if [[ "${{ steps.perf.outputs.enabled }}" == "true" ]]; then
+            ./scripts/perf/measure.sh end deploy --extra config=${{ matrix.file.name }}
+          fi
 
       - uses: ./.github/actions/monitor
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
@@ -112,6 +141,12 @@ jobs:
         with:
           l1_rpc: ${{ contains(matrix.file.name, 'anvil') && 'anvil' || 'el-1-geth-lighthouse' }}
           pos_e2e_token: ${{ secrets.GH_TOKEN_POS_E2E_READ }}
+
+      - uses: ./.github/actions/perf
+        if: always() && steps.perf.outputs.enabled == 'true'
+        with:
+          job_id: deploy-${{ matrix.file.name }}
+          flavour: ${{ matrix.file.name }}
 
       - uses: ./.github/actions/kurtosis/cleanup
         if: always()

@@ -19,12 +19,20 @@ permissions:
   id-token: write
 
 env:
-  # Number of parallel runs per config. 20 gives >99.9% chance of detecting a
-  # 33% failure rate; adjust once the devnet is stable.
-  RUN_COUNT: 30
-  # Configs to test. "default" runs without an args file (1 validator); all
-  # others map to .github/configs/<config>.yml.
-  CONFIGS: '["default", "heimdall-v2-bor", "heimdall-v2-mix"]'
+  # Per-config run counts and runner sizes. Total = 256, the GitHub matrix cap.
+  #   default / heimdall-v2-bor / heimdall-v2-mix : 80 each on ubuntu-latest
+  #     (~±5 pp 95%-CI half-width on observed rates).
+  #   large : 16 on ubuntu-latest-8-cores (heavy runner — 7 validators, 4 RPCs,
+  #     1 archive + L1 stack won't fit on a 2-vCPU/7-GB standard runner).
+  # large's CI is wider (~±11 pp) by design; 16 keeps the billable-runner cost
+  # bounded while still catching catastrophic regressions on the big config.
+  STABILITY_MATRIX: |
+    [
+      {"config": "default",         "args_file": "",                                        "runner": "ubuntu-latest",         "count": 80},
+      {"config": "heimdall-v2-bor", "args_file": ".github/configs/heimdall-v2-bor.yml",     "runner": "ubuntu-latest",         "count": 80},
+      {"config": "heimdall-v2-mix", "args_file": ".github/configs/heimdall-v2-mix.yml",     "runner": "ubuntu-latest",         "count": 80},
+      {"config": "large",           "args_file": ".github/configs/large.yml.norun",         "runner": "ubuntu-latest-8-cores", "count": 16}
+    ]
   # Kurtosis enclave name. Reused across all jobs — safe because each job runs on
   # its own runner with an isolated Docker daemon.
   ENCLAVE_NAME: pos
@@ -36,26 +44,45 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     outputs:
-      index: ${{ steps.set.outputs.index }}
+      include: ${{ steps.set.outputs.include }}
       configs: ${{ steps.set.outputs.configs }}
     steps:
       - id: set
+        env:
+          STABILITY_MATRIX: ${{ env.STABILITY_MATRIX }}
         run: |
-          echo "index=$(seq 1 ${{ env.RUN_COUNT }} | jq -sc .)" >> $GITHUB_OUTPUT
-          echo 'configs<<EOF' >> $GITHUB_OUTPUT
-          echo '${{ env.CONFIGS }}' >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
+          # Explode STABILITY_MATRIX into one matrix entry per (config, index)
+          # pair. Each entry carries the runner and args_file so the run job
+          # doesn't need to re-derive them from the config name.
+          include=$(echo "$STABILITY_MATRIX" | jq -c '
+            [.[] as $c | range(1; $c.count + 1) as $i | {
+              config:    $c.config,
+              args_file: $c.args_file,
+              runner:    $c.runner,
+              index:     $i
+            }]
+          ')
+          echo "include=$include" >> "$GITHUB_OUTPUT"
+
+          # List of config names, kept for the summary step.
+          configs=$(echo "$STABILITY_MATRIX" | jq -c '[.[].config]')
+          echo "configs=$configs" >> "$GITHUB_OUTPUT"
 
   stability-run:
     needs: [generate-matrix]
     name: run-${{ matrix.config }}-${{ matrix.index }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    # Hard-pin to the canonical org so a fork of this public repo can never
+    # schedule a `large` job on `0xPolygon`'s billable larger runners. The
+    # scheduled / workflow_dispatch triggers above can't be fired from forks
+    # today, but this guards against a future trigger addition that would
+    # otherwise expose the larger runner to attacker-controlled workflow files.
+    if: github.repository == '0xPolygon/kurtosis-pos'
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        config: ${{ fromJson(needs.generate-matrix.outputs.configs) }}
-        index: ${{ fromJson(needs.generate-matrix.outputs.index) }}
+        include: ${{ fromJson(needs.generate-matrix.outputs.include) }}
     steps:
       - uses: actions/checkout@v6
 
@@ -69,10 +96,10 @@ jobs:
         continue-on-error: true
         run: |
           set -o pipefail
-          if [[ "${{ matrix.config }}" == "default" ]]; then
+          if [[ -z "${{ matrix.args_file }}" ]]; then
             kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed . 2>&1 | tee run.log
           else
-            kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=.github/configs/${{ matrix.config }}.yml . 2>&1 | tee run.log
+            kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file=${{ matrix.args_file }} . 2>&1 | tee run.log
           fi
 
       - name: Monitor devnet
