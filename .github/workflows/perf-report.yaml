@@ -117,7 +117,8 @@ jobs:
           python3 scripts/perf/report.py \
             --current tmp/perf-current \
             --baseline tmp/perf-baseline \
-            --output tmp/perf-out/report.md
+            --output tmp/perf-out/report.md \
+            --source "${{ github.event.workflow_run.name }}"
 
       - name: Resolve PR number
         id: pr

@@ -197,11 +197,26 @@ def _phase_by_name(jr: JobReport, name: str) -> PhaseRecord | None:
     return None
 
 
+def _fmt_delta_vs(current: PhaseRecord, other: PhaseRecord | None) -> str:
+    if other is None or other.duration_s <= 0 or current.duration_s <= 0:
+        return "—"
+    pct = (current.duration_s - other.duration_s) / other.duration_s * 100
+    sign = "+" if pct >= 0 else ""
+    arrow = ""
+    if pct > 10:
+        arrow = " 🔺"
+    elif pct < -10:
+        arrow = " 🟢"
+    return f"{sign}{pct:.1f}%{arrow}"
+
+
 def _single_phase_table(
     title: str,
     phase_name: str,
     current_jobs: list[JobReport],
     baselines: dict[tuple[str, str], BaselineStats],
+    compare_to: str | None = None,
+    compare_label: str | None = None,
 ) -> list[str]:
     rows = [
         (jr, _phase_by_name(jr, phase_name))
@@ -210,18 +225,30 @@ def _single_phase_table(
     rows = [(jr, p) for jr, p in rows if p is not None]
     if not rows:
         return []
+    header = "| Env | Current | Baseline (min / avg / max) | Δ vs avg |"
+    sep = "|---|---|---|---|"
+    if compare_to:
+        header += f" {compare_label} |"
+        sep += "---|"
+    header += " N |"
+    sep += "---|"
     out = [
         f"### {title}",
         "",
-        "| Env | Current | Baseline (min / avg / max) | Δ vs avg | N |",
-        "|---|---|---|---|---|",
+        header,
+        sep,
     ]
     for jr, p in rows:
         stats = baselines.get((jr.job, p.phase), BaselineStats())
-        out.append(
+        row = (
             f"| `{_env_name(jr)}` | {fmt_value(p)} | {fmt_baseline(stats, unit_hint(p))} "
-            f"| {fmt_delta(p, stats)} | {stats.count} |"
+            f"| {fmt_delta(p, stats)} |"
         )
+        if compare_to:
+            other = _phase_by_name(jr, compare_to)
+            row += f" {_fmt_delta_vs(p, other)} |"
+        row += f" {stats.count} |"
+        out.append(row)
     out.append("")
     return out
 
@@ -261,19 +288,33 @@ def _snapshot_table(
     return out
 
 
-def render(current_jobs: list[JobReport], baselines: dict[tuple[str, str], BaselineStats]) -> str:
+SOURCE_LABELS = {
+    "deploy": "deploy workflow",
+    "snapshot": "snapshot workflow",
+}
+
+
+def render(
+    current_jobs: list[JobReport],
+    baselines: dict[tuple[str, str], BaselineStats],
+    source: str | None = None,
+) -> str:
     if not current_jobs:
         return "_No perf artifacts found in this run._\n"
 
+    suffix = f" — {SOURCE_LABELS[source]}" if source in SOURCE_LABELS else ""
     lines = [
-        "## ⏱ CI perf report",
+        f"## ⏱ CI perf report{suffix}",
         "",
         "Per-env metrics from this run vs the rolling stats of the last successful main runs.",
         "",
     ]
     lines += _single_phase_table("Deploy", "deploy", current_jobs, baselines)
     lines += _snapshot_table(current_jobs, baselines)
-    lines += _single_phase_table("Restore", "restore", current_jobs, baselines)
+    lines += _single_phase_table(
+        "Restore", "restore", current_jobs, baselines,
+        compare_to="deploy", compare_label="vs deploy",
+    )
     lines.append("_Baseline is the last 10 successful main runs (or fewer if not yet available). Δ flags ±10%._")
     lines.append("")
     return "\n".join(lines)
@@ -284,11 +325,12 @@ def main() -> int:
     ap.add_argument("--current", required=True, type=Path)
     ap.add_argument("--baseline", required=True, type=Path)
     ap.add_argument("--output", required=True, type=Path)
+    ap.add_argument("--source", default=None, help="upstream workflow name (e.g. 'deploy', 'snapshot')")
     args = ap.parse_args()
 
     current_jobs = load_run(args.current)
     baselines = collect_baselines(args.baseline)
-    md = render(current_jobs, baselines)
+    md = render(current_jobs, baselines, source=args.source)
     args.output.write_text(md)
     print(md)
     return 0
