@@ -211,7 +211,9 @@ jobs:
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
 
-          # Build Slack summary lines.
+          # Build Slack summary lines. Failure rate < 5% is treated as green —
+          # the per-config CIs are wide enough (~±5 pp for the n=80 configs,
+          # ~±11 pp for n=16 large) that occasional flakes aren't a regression.
           slack_lines=""
           for config in "${configs[@]}"; do
             if [[ ${total_map[$config]} -eq 0 ]]; then
@@ -219,6 +221,8 @@ jobs:
               slack_lines+="• \`${config}\`: no results\n"
             elif [[ ${failures_map[$config]} -eq 0 ]]; then
               slack_lines+="• \`${config}\`: 0 failures out of ${total_map[$config]} runs ✅\n"
+            elif [[ ${rate_map[$config]} -lt 5 ]]; then
+              slack_lines+="• \`${config}\`: ${failures_map[$config]} failures out of ${total_map[$config]} runs (${rate_map[$config]}%) ✅\n"
             else
               slack_lines+="• \`${config}\`: ${failures_map[$config]} failures out of ${total_map[$config]} runs (${rate_map[$config]}%) ❌\n"
             fi
