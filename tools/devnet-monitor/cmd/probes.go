@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"time"
+
 	"github.com/spf13/cobra"
 
 	"github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor/internal/probeapi"
@@ -35,8 +37,15 @@ func spansCmd() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "spans",
 		Short: "Monitor bor span rotation",
-		RunE: func(_ *cobra.Command, _ []string) error {
-			return runOne(probes.Spans{}, probeapi.Options{MinSpans: flagMinSpans, Timeout: flagTimeout})
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			// One span lasts EL_SPRINT_DURATION * 8 bor blocks (~4 min at 2s
+			// block time), so the shared 5-min default leaves no margin for
+			// startup delay. Use a per-probe default unless --timeout was set.
+			timeout := flagTimeout
+			if !cmd.Flags().Changed("timeout") {
+				timeout = 8 * time.Minute
+			}
+			return runOne(probes.Spans{}, probeapi.Options{MinSpans: flagMinSpans, Timeout: timeout})
 		},
 	}
 	c.Flags().IntVar(&flagMinSpans, "min-spans", 1, "spans the chain must advance past baseline")
