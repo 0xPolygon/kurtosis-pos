@@ -1,34 +1,41 @@
 polygon_pos_package:
   participants:
-    # Bor validator nodes (7 validators, 3 active block producers)
+    # Bor validator nodes (5 total - 3 full + 2 stateless validators, 3 active block producers)
     - kind: validator
-      count: 7
+      cl_type: heimdall-v2
+      el_type: bor
       el_bor_produce_witness: true
+      count: 3
+
+    - kind: validator
       cl_type: heimdall-v2
       el_type: bor
-
-    # Bor and erigon RPC nodes (3 rpc nodes, one stateless bor node, one stateful bor node, one stateful erigon node)
-    - kind: rpc
-      count: 1
+      el_bor_produce_witness: true
       el_bor_sync_with_witness: true
+      count: 2
+
+    # Bor and Erigon RPC nodes (3 rpc nodes, one stateful bor node, one stateless bor node, one stateful erigon node)
+    - kind: rpc
       cl_type: heimdall-v2
       el_type: bor
+      el_bor_sync_with_witness: false
+      count: 1
 
     - kind: rpc
-      count: 1
-      el_bor_sync_with_witness: false
       cl_type: heimdall-v2
       el_type: bor
-    
-    - kind: rpc
+      el_bor_sync_with_witness: true
       count: 1
-      el_bor_sync_with_witness: false
+
+    - kind: rpc
       cl_type: heimdall-v2
       el_type: erigon
+      el_bor_sync_with_witness: false
+      count: 1
 
     # Bor archive node
     - kind: rpc
-      count: 1
       cl_type: heimdall-v2
       el_type: bor
       el_bor_archive_mode: true
+      count: 1
