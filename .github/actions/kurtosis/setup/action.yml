@@ -95,6 +95,11 @@ runs:
       with:
         version: ${{ inputs.foundry_version }}
         cache: true
+        # Key the cache by foundry version (not the default job+sha) so all matrix
+        # jobs share one entry and a given version is only downloaded once. Avoids
+        # hammering foundry's CDN on every run, which 504s intermittently.
+        cache-key: foundry-${{ inputs.foundry_version }}-${{ runner.os }}
+        cache-restore-keys: foundry-${{ inputs.foundry_version }}-
 
     # Login to registries
     - name: Login to docker hub registry
