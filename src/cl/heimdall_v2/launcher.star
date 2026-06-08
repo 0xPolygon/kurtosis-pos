@@ -118,7 +118,17 @@ def launch(
                         shared.CONFIG_FOLDER_PATH
                     ),
                     # Auto-generate node keys (no pre-generated validator keys for rpc/archive nodes).
-                    "heimdalld init {} --home /tmp/init-data".format(cl_node_name),
+                    # `--overwrite` keeps `heimdalld init` idempotent across a
+                    # `kurtosis service stop`/`start`: that restarts the *same*
+                    # container, so /tmp/init-data survives. Without it the second
+                    # boot aborts with "genesis.json file already exists" before
+                    # `heimdalld start`, the container exits, and the node never
+                    # comes back (the `rpc` port is dropped). Only genesis.json is
+                    # rewritten; existing node_key/priv_validator_key are kept, so
+                    # the P2P node ID stays stable.
+                    "heimdalld init {} --home /tmp/init-data --overwrite".format(
+                        cl_node_name
+                    ),
                     "cp /tmp/init-data/config/node_key.json /tmp/init-data/config/priv_validator_key.json {}/config/".format(
                         shared.CONFIG_FOLDER_PATH
                     ),
