@@ -1,0 +1,158 @@
+name: perf-report
+
+# Fan-in workflow. Triggered after `deploy` or `snapshot` complete (any
+# conclusion). Downloads perf-* artifacts from the upstream run, compares
+# against the last 10 successful main runs of the same workflow, and either
+# posts a sticky PR comment (for PR-triggered runs) or uploads the rendered
+# Markdown as an artifact (for push-to-main runs).
+on:
+  workflow_run:
+    workflows: [deploy, snapshot]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # workflow_run triggers from forks have no access to secrets and can't
+    # comment on PRs. Skip those — we'll still render a report from the main
+    # repo when the fork PR's checks finish under the upstream runner.
+    if: ${{ github.event.workflow_run.repository.full_name == github.repository }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      # Download artifacts from the upstream workflow_run. The built-in
+      # actions/download-artifact does not support cross-workflow downloads,
+      # so use the GitHub API via gh.
+      - name: Download current-run perf artifacts
+        id: download
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          mkdir -p tmp/perf-current
+          # List artifacts on the upstream run, filter to perf-*, download each.
+          # Capture into a variable first so set -e catches gh api failures —
+          # otherwise mapfile only sees its own (always-success) exit code and
+          # a network blip / 5xx / rate-limit silently produces an empty list.
+          listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" \
+            --paginate \
+            --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"')
+          mapfile -t artifacts <<< "$listing"
+          # mapfile on an empty string yields a 1-element array containing "".
+          if [[ ${#artifacts[@]} -eq 1 && -z "${artifacts[0]}" ]]; then
+            artifacts=()
+          fi
+          if [[ ${#artifacts[@]} -eq 0 ]]; then
+            echo "No perf-* artifacts on upstream run ${RUN_ID} — exiting."
+            echo "has_artifacts=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          for entry in "${artifacts[@]}"; do
+            id=${entry%% *}
+            name=${entry#* }
+            gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}/zip" > "tmp/perf-current/${name}.zip"
+            unzip -j -o "tmp/perf-current/${name}.zip" -d "tmp/perf-current/"
+            rm "tmp/perf-current/${name}.zip"
+          done
+          ls -la tmp/perf-current/
+          echo "has_artifacts=true" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve baseline runs
+        id: baseline
+        if: steps.download.outputs.has_artifacts == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          CURRENT_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          # Last 10 successful runs of the same workflow on main. Exclude the
+          # triggering run (in case this is itself a main push).
+          mkdir -p tmp/perf-baseline
+          # /actions/runs returns runs across all workflows; widen the page to
+          # 100 so the post-filter by workflow name still leaves enough samples.
+          # -X GET is required: gh api defaults to POST when any -f field is
+          # supplied, which 404s on this GET-only endpoint.
+          runs_listing=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs" \
+            -f "branch=main" \
+            -f "status=success" \
+            -f "per_page=100" \
+            --jq ".workflow_runs[] | select(.name == \"${WORKFLOW_NAME}\" and .head_sha != \"${CURRENT_SHA}\") | .id" \
+            | head -n 10)
+          mapfile -t run_ids <<< "$runs_listing"
+          if [[ ${#run_ids[@]} -eq 1 && -z "${run_ids[0]}" ]]; then
+            run_ids=()
+          fi
+          echo "Baseline run IDs: ${run_ids[*]:-<none>}"
+          echo "count=${#run_ids[@]}" >> "$GITHUB_OUTPUT"
+          for id in "${run_ids[@]}"; do
+            dest="tmp/perf-baseline/${id}"
+            mkdir -p "$dest"
+            baseline_listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/artifacts" \
+              --paginate \
+              --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"')
+            mapfile -t artifacts <<< "$baseline_listing"
+            if [[ ${#artifacts[@]} -eq 1 && -z "${artifacts[0]}" ]]; then
+              artifacts=()
+            fi
+            for entry in "${artifacts[@]}"; do
+              aid=${entry%% *}
+              aname=${entry#* }
+              gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${aid}/zip" > "${dest}/${aname}.zip" || continue
+              unzip -j -o "${dest}/${aname}.zip" -d "${dest}/" || true
+              rm -f "${dest}/${aname}.zip"
+            done
+          done
+
+      - name: Render report
+        if: steps.download.outputs.has_artifacts == 'true'
+        run: |
+          mkdir -p tmp/perf-out
+          python3 scripts/perf/report.py \
+            --current tmp/perf-current \
+            --baseline tmp/perf-baseline \
+            --output tmp/perf-out/report.md \
+            --source "${{ github.event.workflow_run.name }}"
+
+      - name: Resolve PR number
+        id: pr
+        if: steps.download.outputs.has_artifacts == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          EVENT: ${{ github.event.workflow_run.event }}
+        run: |
+          # workflow_run carries no PR number. Look it up by head_sha for any
+          # event whose head sits on a branch with an open PR — covers both
+          # PR-triggered runs and manual workflow_dispatch on a PR branch.
+          # Returns empty for push-to-main runs, which we treat as "no PR to
+          # comment on".
+          pr=""
+          if [[ "$EVENT" == "pull_request" || "$EVENT" == "workflow_dispatch" ]]; then
+            pr=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls" \
+              --jq '.[] | select(.state == "open") | .number' | head -n 1)
+          fi
+          echo "number=${pr}" >> "$GITHUB_OUTPUT"
+          echo "Resolved PR: ${pr:-<none>}"
+
+      - name: Upsert sticky PR comment
+        if: steps.download.outputs.has_artifacts == 'true' && steps.pr.outputs.number != ''
+        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        with:
+          number: ${{ steps.pr.outputs.number }}
+          header: ci-perf-report-${{ github.event.workflow_run.name }}
+          path: tmp/perf-out/report.md
+
+      - name: Upload rendered report as artifact
+        if: steps.download.outputs.has_artifacts == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: kurtosis-pos-perf-report-${{ github.event.workflow_run.id }}
+          path: tmp/perf-out/report.md
+          retention-days: 30
