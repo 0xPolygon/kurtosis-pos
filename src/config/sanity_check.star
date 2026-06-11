@@ -29,6 +29,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_accept_private_tx",  # BP: accept eth_sendRawTransactionPrivate from a relayer.
         "el_bor_enable_private_tx_relay",  # Relayer: enable [relay] enable-private-tx + suppress public gossip.
         "el_bor_private_tx_bp_endpoints",  # Relayer: optional override of bp-rpc-endpoints (defaults to all validator EL urls).
+        "el_bor_extra_args",  # Escape hatch: extra bor CLI flags appended to `bor server` (override config.toml).
         "cl_failover",  # Pass every CL endpoint to bor's [heimdall].url so MultiHeimdallClient cascades on failure.
         "count",
     ],
@@ -365,6 +366,10 @@ def _validate_participant(p):
             fail(
                 'The "el_bor_private_tx_bp_endpoints" parameter is only valid for the bor EL client.'
             )
+        if p.get("el_bor_extra_args"):
+            fail(
+                'The "el_bor_extra_args" parameter is only valid for the bor EL client.'
+            )
         _fail_if_not_bor_el_type(p, "cl_failover")
 
     if not (el_type == constants.EL_TYPE.bor and p.get("el_bor_sync_with_witness")):
@@ -373,6 +378,16 @@ def _validate_participant(p):
             fail(
                 'The "el_bor_stateless_parallel_import" parameter can only be enabled with bor EL client and when "el_bor_sync_with_witness" is set to true.'
             )
+
+    # el_bor_extra_args must be a list of string tokens — a bare string would be
+    # iterated character-by-character when joined into the bor command.
+    extra_args = p.get("el_bor_extra_args")
+    if extra_args and type(extra_args) != type([]):
+        fail(
+            '"el_bor_extra_args" must be a list of CLI-flag tokens, e.g. ["--p2p.nosnap"]; got {}.'.format(
+                type(extra_args)
+            )
+        )
 
     # Setting an explicit bp-rpc-endpoints override only makes sense on a relayer.
     # Catch the typo where someone provides endpoints but forgets to enable the relay.

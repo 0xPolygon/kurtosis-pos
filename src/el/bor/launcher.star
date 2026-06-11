@@ -57,6 +57,23 @@ def launch(
     cl_api_url = ",".join(cl_api_urls) if cl_api_urls else ""
     cl_ws_rpc_url = ",".join(cl_ws_rpc_urls) if cl_ws_rpc_urls else ""
 
+    # Extra bor CLI flags from the participant, appended verbatim to the
+    # `bor server` command where they take precedence over config.toml. This is
+    # an escape hatch for flags the package does not model as first-class
+    # fields (e.g. --p2p.nosnap, --miner.disable-pending-block, --grpc.token).
+    # Provide a list of already-split tokens, e.g.
+    #   el_bor_extra_args:
+    #     - "--p2p.nosnap"
+    #     - "--grpc.addr"
+    #     - "0.0.0.0:3131"
+    # Tokens are space-joined; values containing spaces are not supported (use
+    # a dedicated participant field or genesis override for those). They are
+    # interpolated UNESCAPED into the `sh -c` command below — same trust model
+    # as static_nodes / bp_rpc_endpoints_toml: operator-authored devnet config,
+    # not untrusted input. Do not feed externally-sourced values here.
+    el_extra_args = participant.get("el_bor_extra_args") or []
+    extra_args_str = " ".join([str(a) for a in el_extra_args])
+
     bor_node_config_artifact = plan.render_templates(
         name="{}-config".format(el_node_name),
         config={
@@ -116,9 +133,11 @@ def launch(
         "mkdir -p {}".format(BOR_APP_DATA_FOLDER_PATH),
         "cp /opt/data/keys/nodekey {}/nodekey".format(BOR_APP_DATA_FOLDER_PATH),
         "cp -r /opt/data/keys/keystore {}".format(BOR_APP_DATA_FOLDER_PATH),
-        # Start bor using the container proc manager script.
-        "/usr/local/share/container-proc-manager.sh bor server --config {}/config.toml".format(
-            BOR_CONFIG_FOLDER_PATH
+        # Start bor using the container proc manager script. el_bor_extra_args
+        # (if any) are appended after --config so they override config.toml.
+        "/usr/local/share/container-proc-manager.sh bor server --config {}/config.toml{}".format(
+            BOR_CONFIG_FOLDER_PATH,
+            " " + extra_args_str if extra_args_str else "",
         ),
     ]
 

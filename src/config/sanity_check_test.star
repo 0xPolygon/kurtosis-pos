@@ -146,3 +146,53 @@ def test_sanity_check_with_private_tx_relay_topology(plan):
         "participants": [bp, relayer],
     }
     sanity_check.sanity_check_polygon_args(plan, args)
+
+
+def test_sanity_check_with_bor_extra_args(plan):
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_extra_args": [
+            "--p2p.nosnap",
+            "--miner.disable-pending-block",
+            "--grpc.addr",
+            "0.0.0.0:3131",
+        ],
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    sanity_check.sanity_check_polygon_args(plan, args)
+
+
+def test_sanity_check_with_bor_extra_args_on_erigon(plan):
+    # A producing bor validator so the network still has a block producer,
+    # plus an erigon rpc that illegally carries el_bor_extra_args.
+    producing_validator = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+    }
+    erigon = input_parser.POLYGON_POS_PARTICIPANT | {
+        "kind": constants.PARTICIPANT_KIND.rpc,
+        "el_type": constants.EL_TYPE.erigon,
+        "el_bor_extra_args": ["--p2p.nosnap"],
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [producing_validator, erigon],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        'The "el_bor_extra_args" parameter is only valid for the bor EL client.',
+    )
+
+
+def test_sanity_check_with_bor_extra_args_not_a_list(plan):
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": constants.EL_TYPE.bor,
+        "el_bor_extra_args": "--p2p.nosnap",
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        '"el_bor_extra_args" must be a list of CLI-flag tokens',
+    )

@@ -105,6 +105,12 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     # bp_rpc_endpoints: optional override. When relay is enabled and this list is empty,
     # bor.launcher fills it with the in-cluster RPC URLs of all validator EL nodes.
     "el_bor_private_tx_bp_endpoints": [],
+    # el_bor_extra_args: escape hatch for arbitrary bor CLI flags not modelled
+    # as first-class fields. A list of already-split tokens appended verbatim to
+    # `bor server` (after --config, so they override config.toml). E.g.
+    #   ["--p2p.nosnap", "--miner.disable-pending-block", "--grpc.addr", "0.0.0.0:3131"].
+    # Bor only; tokens with embedded spaces are not supported.
+    "el_bor_extra_args": [],
     # When True, the EL-CL launcher passes the bor process every CL
     # participant's REST API + WS URLs (own first, then every other) so
     # bor's MultiHeimdallClient cascades when the primary fails. See
