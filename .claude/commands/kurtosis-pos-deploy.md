@@ -62,7 +62,7 @@ polygon_pos_package:
       el_type: bor                # bor | erigon
       cl_type: heimdall-v2        # only option currently
       el_image: 0xpolygon/bor:2.8.3-beta5
-      cl_image: 0xpolygon/heimdall-v2:0.8.1
+      cl_image: 0xpolygon/heimdall-v2:0.9.0-beta
       count: 1
       el_bor_archive_mode: false  # true = bor gcmode=archive, appends `-archive` to service name
   additional_services:
@@ -82,7 +82,7 @@ polygon_pos_package:
 | L2 EL chain ID    | `4927`                                                               |
 | L2 CL chain ID    | `heimdall-4927`                                                      |
 | Bor image         | `0xpolygon/bor:2.8.3-beta5`                                                |
-| Heimdall-v2 image | `0xpolygon/heimdall-v2:0.8.1`                                        |
+| Heimdall-v2 image | `0xpolygon/heimdall-v2:0.9.0-beta`                                        |
 | Sprint duration   | 16 blocks                                                            |
 | Rio HF activation | block 256                                                            |
 | Admin address     | `0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9`                         |

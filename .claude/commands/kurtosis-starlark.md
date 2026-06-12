@@ -74,7 +74,7 @@ image = "0xpolygon/bor:2.8.3-beta5"
 # DO — constants.star
 IMAGES = {
     "l2_el_bor_image":         "0xpolygon/bor:2.8.3-beta5",
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.8.1",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.9.0-beta",
 }
 
 # launcher
