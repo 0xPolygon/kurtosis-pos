@@ -69,11 +69,11 @@ if el_type == constants.EL_TYPE.bor: ...
 
 ```python
 # DON'T — image strings scattered across launchers
-image = "0xpolygon/bor:2.8.2"
+image = "0xpolygon/bor:2.8.3-beta5"
 
 # DO — constants.star
 IMAGES = {
-    "l2_el_bor_image":         "0xpolygon/bor:2.8.2",
+    "l2_el_bor_image":         "0xpolygon/bor:2.8.3-beta5",
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.8.1",
 }
 
