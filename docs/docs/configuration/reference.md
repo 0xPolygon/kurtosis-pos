@@ -131,7 +131,7 @@ Default: a single validator.
 | -------------------------------- | ------ | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | kind                             | string | validator                   | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                     |
 | cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                                                                                                                                                                            |
-| cl_image                         | string | 0xpolygon/heimdall-v2:0.8.1 | Image for the CL client                                                                                                                                                                                                                     |
+| cl_image                         | string | 0xpolygon/heimdall-v2:0.8.2 | Image for the CL client                                                                                                                                                                                                                     |
 | cl_queue_image                   | string | rabbitmq:4.2.5              | Image for the CL queue                                                                                                                                                                                                                      |
 | cl_log_level                     | string | info                        | Log level for the CL client                                                                                                                                                                                                                 |
 | cl_log_format                    | string | text                        | Log format for the CL client                                                                                                                                                                                                                |
@@ -156,7 +156,7 @@ Default: a single validator.
 | -------------------------- | ------ | ------------------------------------------------------ | ------------------------------------------- |
 | contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.4          | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.8.1 | Image used to generate validator configs    |
+| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.8.2 | Image used to generate validator configs    |
 
 ### `network_params`
 
