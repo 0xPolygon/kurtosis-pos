@@ -26,6 +26,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_sync_with_witness",  # Enable bor to sync new blocks using witnesses.
         "el_bor_stateless_parallel_import",  # Enable bor to use parallel import in stateless mode.
         "el_bor_archive_mode",  # Run bor with gcmode=archive for full historical state retention.
+        "cl_bor_grpc_flag",  # Enable heimdall → bor gRPC transport (default HTTP).
         "count",
     ],
     "setup_images": [

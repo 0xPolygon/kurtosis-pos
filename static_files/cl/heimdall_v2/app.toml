@@ -247,10 +247,10 @@ eth_rpc_url = "{{.l1_rpc_url}}"
 bor_rpc_url = "{{.el_rpc_url}}"
 
 # GRPC flag for bor chain
-bor_grpc_flag = "false"
+bor_grpc_flag = "{{.cl_bor_grpc_flag}}"
 
 # GRPC endpoint for bor chain
-bor_grpc_url = "localhost:3131"
+bor_grpc_url = "{{.el_grpc_url}}"
 
 # RPC endpoint for cometBFT
 comet_bft_rpc_url = "http://0.0.0.0:{{.rpc_port_number}}"
@@ -277,11 +277,9 @@ sh_stake_update_interval = "3h0m0s"
 sh_checkpoint_ack_interval = "30m0s"
 sh_max_depth_duration = "24h0m0s"
 
-#### gas limits ####
-main_chain_gas_limit = "5000000"
-
-#### gas price ####
-main_chain_max_gas_price = "400000000000"
+#### gas price configs (EIP-1559) ####
+main_chain_gas_fee_cap = "500000000000"
+main_chain_gas_tip_cap = "10000000000"
 
 ##### Timeout Config #####
 no_ack_wait_time = "30m0s"
