@@ -76,6 +76,7 @@ def launch(
                     "discovery_port_number": shared.DISCOVERY_PORT_NUMBER,
                     "metrics_port_number": shared.METRICS_PORT_NUMBER,
                     "pprof_port_number": shared.PPROF_PORT_NUMBER,
+                    "grpc_port_number": shared.GRPC_PORT_NUMBER,
                     "ethstats_server_port_number": constants.ETHSTATS_SERVER_PORT_NUMBER,
                 },
             ),
@@ -123,6 +124,10 @@ def launch(
                 shared.PPROF_PORT_ID: PortSpec(
                     number=shared.PPROF_PORT_NUMBER,
                     application_protocol="http",
+                ),
+                shared.GRPC_PORT_ID: PortSpec(
+                    number=shared.GRPC_PORT_NUMBER,
+                    application_protocol="grpc",
                 ),
             },
             files={
