@@ -147,37 +147,48 @@ def launch(
         ),
     ]
 
+    # bor's gRPC port is published only when the paired heimdall dials bor over
+    # gRPC (cl_bor_grpc_flag) — the same gate as the [grpc] block in the bor
+    # config.toml template. With the flag off (the default) bor binds gRPC
+    # loopback-only, so there is no externally-reachable server to publish.
+    # NOTE: when the flag is on this publishes bor's gRPC admin API
+    # unauthenticated over plaintext; heimdall refuses to send a bearer token
+    # over non-local plaintext (x/bor/grpc/client.go), so authenticating it
+    # would require TLS on bor's gRPC. Treat cl_bor_grpc_flag as devnet-only.
+    el_ports = {
+        shared.RPC_PORT_ID: PortSpec(
+            number=shared.RPC_PORT_NUMBER,
+            application_protocol="http",
+        ),
+        shared.WS_PORT_ID: PortSpec(
+            number=shared.WS_PORT_NUMBER,
+            application_protocol="ws",
+        ),
+        shared.DISCOVERY_PORT_ID: PortSpec(
+            number=shared.DISCOVERY_PORT_NUMBER,
+            application_protocol="http",
+        ),
+        shared.METRICS_PORT_ID: PortSpec(
+            number=shared.METRICS_PORT_NUMBER,
+            application_protocol="http",
+        ),
+        shared.PPROF_PORT_ID: PortSpec(
+            number=shared.PPROF_PORT_NUMBER,
+            application_protocol="http",
+        ),
+    }
+    if participant.get("cl_bor_grpc_flag"):
+        el_ports[shared.GRPC_PORT_ID] = PortSpec(
+            number=shared.GRPC_PORT_NUMBER,
+            application_protocol="grpc",
+        )
+
     return plan.add_service(
         name=el_node_name,
         config=ServiceConfig(
             image=participant.get("el_image"),
             # All port checks are disabled, see the comment above.
-            ports={
-                shared.RPC_PORT_ID: PortSpec(
-                    number=shared.RPC_PORT_NUMBER,
-                    application_protocol="http",
-                ),
-                shared.WS_PORT_ID: PortSpec(
-                    number=shared.WS_PORT_NUMBER,
-                    application_protocol="ws",
-                ),
-                shared.DISCOVERY_PORT_ID: PortSpec(
-                    number=shared.DISCOVERY_PORT_NUMBER,
-                    application_protocol="http",
-                ),
-                shared.METRICS_PORT_ID: PortSpec(
-                    number=shared.METRICS_PORT_NUMBER,
-                    application_protocol="http",
-                ),
-                shared.PPROF_PORT_ID: PortSpec(
-                    number=shared.PPROF_PORT_NUMBER,
-                    application_protocol="http",
-                ),
-                shared.GRPC_PORT_ID: PortSpec(
-                    number=shared.GRPC_PORT_NUMBER,
-                    application_protocol="grpc",
-                ),
-            },
+            ports=el_ports,
             files={
                 # app data
                 BOR_APP_DATA_FOLDER_PATH: Directory(
