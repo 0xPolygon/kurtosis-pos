@@ -118,6 +118,11 @@ def launch(
                     "metrics_port_number": shared.METRICS_PORT_NUMBER,
                     "pprof_port_number": shared.PPROF_PORT_NUMBER,
                     "grpc_port_number": shared.GRPC_PORT_NUMBER,
+                    # Only expose bor's gRPC server on all interfaces when the
+                    # paired heimdall dials it over gRPC; otherwise bor keeps its
+                    # own (loopback-only on >= v2.8.3) default. See the gated
+                    # [grpc] block in the bor config.toml template.
+                    "cl_bor_grpc_flag": participant.get("cl_bor_grpc_flag"),
                     "ethstats_server_port_number": constants.ETHSTATS_SERVER_PORT_NUMBER,
                 },
             ),
