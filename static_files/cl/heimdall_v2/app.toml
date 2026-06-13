@@ -277,11 +277,20 @@ sh_stake_update_interval = "3h0m0s"
 sh_checkpoint_ack_interval = "30m0s"
 sh_max_depth_duration = "24h0m0s"
 
-#### gas limits ####
-main_chain_gas_limit = "5000000"
-
-#### gas price ####
-main_chain_max_gas_price = "400000000000"
+#### L1 (main chain) gas config ####
+# Deliberately omitted so every heimdall-v2 release falls back to its own
+# binary defaults.  heimdall-v2 loads this section with
+# viper.UnmarshalExact, so any key unknown to the running release is FATAL
+# at startup ("'custom' has invalid keys: ..."), and v0.9.0 (PR #532)
+# renamed the gas keys:
+#   <= v0.8.x: main_chain_gas_limit / main_chain_max_gas_price
+#              (both fall back to defaults when absent; the gas limit was
+#              unused outside config plumbing)
+#   >= v0.9.0: main_chain_gas_fee_cap / main_chain_gas_tip_cap (EIP-1559;
+#              configuredGasCaps() defaults to 500 gwei / 10 gwei when
+#              absent)
+# Setting either generation of keys here would crash the other generation,
+# so no version-spanning template can pin them statically.
 
 ##### Timeout Config #####
 no_ack_wait_time = "30m0s"
