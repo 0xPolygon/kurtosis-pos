@@ -53,14 +53,14 @@ IMAGES = {
     "l1_cl_image": "sigp/lighthouse:v8.1.3",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.8.1",
-    "l2_el_bor_image": "0xpolygon/bor:2.8.2",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.9.0-beta",
+    "l2_el_bor_image": "0xpolygon/bor:2.8.3-beta5",
     "l2_el_erigon_image": "0xpolygon/erigon:v3.6.1-beta",
     "l2_cl_queue_image": "rabbitmq:4.2.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
-    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.8.1",
+    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.9.0-beta",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
@@ -115,16 +115,16 @@ ETHSTATS_SERVER_WS_SECRET = "sharedsecret"
 #     "napoli": 0,
 #     "ahmedabad": 0,
 #     "bhilai": 0,
-#     # rio must be enabled at block 256 because it's hardcoded in heimdall-v2 codebase
+#     # rio must be enabled at block 128 because it's hardcoded in heimdall-v2 codebase
 #     # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
-#     "rio": 256,
-#     # hardforks happening after rio should also be enabled at block 256 or later
-#     "madhugiri": 256,
-#     "madhugiriPro": 256,
-#     "dandeli": 256,
-#     "lisovo": 256,
-#     "lisovoPro": 256,
-#     "giugliano": 256,
+#     "rio": 128,
+#     # hardforks happening after rio should also be enabled at block 128 or later
+#     "madhugiri": 128,
+#     "madhugiriPro": 128,
+#     "dandeli": 128,
+#     "lisovo": 128,
+#     "lisovoPro": 128,
+#     "giugliano": 128,
 # }
 
 EL_HARD_FORK_BLOCKS = {
@@ -135,7 +135,15 @@ EL_HARD_FORK_BLOCKS = {
     "napoli": 0,
     "ahmedabad": 0,
     "bhilai": 0,
-    "rio": 256,
+    # rio must be enabled at block 128 because it's hardcoded in heimdall-v2's
+    # default ("local") chain config since v0.9.0 (rioHeight = 128 in
+    # helper/config.go; v0.8.x hardcoded 256).
+    # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
+    "rio": 128,
+    # Later EL forks keep the 64-block staggered ladder so fork-transition
+    # tests get a real activation window per fork (heimdall hardcodes only
+    # rio among the EL-coupled heights).  pos-e2e re-pins these per run via
+    # patch-constants-star.sh, capped at the minimum bor version in the mix.
     "madhugiri": 320,
     "madhugiriPro": 384,
     "dandeli": 448,
@@ -147,9 +155,16 @@ EL_HARD_FORK_BLOCKS = {
 
 # Heimdall-v2-side hardforks (no bor genesis impact). Activation heights are
 # hardcoded in the heimdall-v2 binary per chain (mainnet/mumbai/amoy/default
-# — see helper/config.go); the values below MUST match the binary's "default"
-# (local devnet) entries. Diverging from the binary will not change runtime
-# behaviour but will cause pos-e2e tests that wait on these blocks to drift.
+# — see helper/config.go). The stock binary ships 0 ("never active") for
+# every gate below on the default (local devnet) chain; the values here
+# document the schedule activated by pos-e2e's patched image
+# (pos-e2e scripts/pos-e2e/patches/heimdall-default-devnet-cl-forks.patch)
+# and MUST stay in lockstep with it — pos-e2e's patch-constants-star.sh
+# drift-guards this dict against its own CL_FORK_BLOCKS map and fails CI on
+# mismatch. Production activation order is mirrored:
+# phuket < feeWithdrawValidatorGate < zurich.
 CL_HARD_FORK_BLOCKS = {
     "phuket": 704,
+    "feeWithdrawValidatorGate": 832,
+    "zurich": 896,
 }

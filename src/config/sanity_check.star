@@ -31,6 +31,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_private_tx_bp_endpoints",  # Relayer: optional override of bp-rpc-endpoints (defaults to all validator EL urls).
         "el_bor_extra_args",  # Escape hatch: extra bor CLI flags appended to `bor server` (override config.toml).
         "cl_failover",  # Pass every CL endpoint to bor's [heimdall].url so MultiHeimdallClient cascades on failure.
+        "cl_bor_grpc_flag",  # Enable heimdall → bor gRPC transport (default HTTP).
         "count",
     ],
     "setup_images": [

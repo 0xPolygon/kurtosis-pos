@@ -247,10 +247,10 @@ eth_rpc_url = "{{.l1_rpc_url}}"
 bor_rpc_url = "{{.el_rpc_url}}"
 
 # GRPC flag for bor chain
-bor_grpc_flag = "false"
+bor_grpc_flag = "{{.cl_bor_grpc_flag}}"
 
 # GRPC endpoint for bor chain
-bor_grpc_url = "localhost:3131"
+bor_grpc_url = "{{.el_grpc_url}}"
 
 # RPC endpoint for cometBFT
 comet_bft_rpc_url = "http://0.0.0.0:{{.rpc_port_number}}"
@@ -288,7 +288,7 @@ sh_max_depth_duration = "24h0m0s"
 #              unused outside config plumbing)
 #   >= v0.9.0: main_chain_gas_fee_cap / main_chain_gas_tip_cap (EIP-1559;
 #              configuredGasCaps() defaults to 500 gwei / 10 gwei when
-#              absent)
+#              absent — identical to the values main pinned explicitly)
 # Setting either generation of keys here would crash the other generation,
 # so no version-spanning template can pin them statically.
 
