@@ -144,13 +144,13 @@ EL_HARD_FORK_BLOCKS = {
     # tests get a real activation window per fork (heimdall hardcodes only
     # rio among the EL-coupled heights).  pos-e2e re-pins these per run via
     # patch-constants-star.sh, capped at the minimum bor version in the mix.
-    "madhugiri": 320,
-    "madhugiriPro": 384,
-    "dandeli": 448,
-    "lisovo": 512,
-    "lisovoPro": 576,
-    "giugliano": 640,
-    "chicago": 768,  # Simulate activation after Phuket HF on Heimdall.
+    "madhugiri": 256,
+    "madhugiriPro": 320,
+    "dandeli": 384,
+    "lisovo": 448,
+    "lisovoPro": 512,
+    "giugliano": 576,
+    "chicago": 704,  # Simulate activation after Phuket HF on Heimdall.
 }
 
 # Heimdall-v2-side hardforks (no bor genesis impact). Activation heights are
@@ -164,7 +164,7 @@ EL_HARD_FORK_BLOCKS = {
 # mismatch. Production activation order is mirrored:
 # phuket < feeWithdrawValidatorGate < zurich.
 CL_HARD_FORK_BLOCKS = {
-    "phuket": 704,
-    "feeWithdrawValidatorGate": 832,
-    "zurich": 896,
+    "phuket": 640,
+    "feeWithdrawValidatorGate": 768,
+    "zurich": 832,
 }
