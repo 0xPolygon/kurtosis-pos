@@ -54,7 +54,7 @@ IMAGES = {
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.9.0-beta",
-    "l2_el_bor_image": "0xpolygon/bor:2.8.3-beta5",
+    "l2_el_bor_image": "0xpolygon/bor:2.8.3",
     "l2_el_erigon_image": "0xpolygon/erigon:v3.6.1-beta",
     "l2_cl_queue_image": "rabbitmq:4.2.5",
     # utilities
