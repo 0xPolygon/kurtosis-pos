@@ -17,12 +17,22 @@ MATIC_TOKEN_L1=$(jq -re '.root.tokens.MaticToken' /opt/data/pos-addresses/contra
 POL_TOKEN_L1=$(jq -re '.root.tokens.PolToken' /opt/data/pos-addresses/contractAddresses.json)
 POLYGON_MIGRATION=$(jq -re '.root.tokens.PolygonMigration' /opt/data/pos-addresses/contractAddresses.json)
 WITHDRAW_MANAGER=$(jq -re '.root.WithdrawManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-ERC20_PREDICATE=$(jq -re '.root.predicates.ERC20Predicate' /opt/data/pos-addresses/contractAddresses.json)
 DEPOSIT_MANAGER=$(jq -re '.root.DepositManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
 STATE_SENDER_L1=$(jq -re '.root.StateSender' /opt/data/pos-addresses/contractAddresses.json)
 CHECKPOINT_MANAGER=$(jq -re '.root.RootChainProxy' /opt/data/pos-addresses/contractAddresses.json)
 ROOT_CHAIN_MANAGER=$(jq -re '.root.posBridge.RootChainManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
 CHILD_CHAIN_MANAGER=$(jq -re '.child.ChildChain' /opt/data/pos-addresses/contractAddresses.json)
+
+# Derive the sPOL deposit predicate from what RootChainManager ACTUALLY routes
+# keccak256("ERC20") deposits through — NOT the static .root.predicates.ERC20Predicate
+# json key. The messenger's initialize approves sPOL to this predicate, and the
+# migration's receiveMessage -> rootChainManager.depositFor(sPOL) pulls sPOL via
+# typeToPredicate(tokenType).transferFrom. If the json key and the registered
+# predicate ever diverge, the approval misses the real spender and depositFor
+# reverts ERC20InsufficientAllowance (0xfb8f41b2). Reading the live value
+# guarantees the approved spender == the spender depositFor uses.
+ERC20_PREDICATE=$(cast call --rpc-url "${L1_RPC_URL}" \
+  "${ROOT_CHAIN_MANAGER}" "typeToPredicate(bytes32)(address)" "$(cast keccak "ERC20")")
 STATE_SYNCER_L2="0x0000000000000000000000000000000000001001"
 POL_TOKEN_L2="0x0000000000000000000000000000000000001010"
 FEE_RECEIVER_VALUE="${FEE_RECEIVER:-$ADMIN_ADDRESS}"
