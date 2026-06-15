@@ -110,27 +110,37 @@ cat /opt/contracts/contractAddresses.json
 # re-deposit works. The migration's receiveMessage calls
 # `rootChainManager.depositFor(childTunnel, sPOL, ...)` (sPOLMessenger.sol),
 # which reverts "RootChainManager: TOKEN_NOT_MAPPED" until sPOL is mapped.
-# sPOL is a MintableERC20 child — `sPOLChild.deposit` is `onlyChildChainManager`
-# and the bridge MINTS on L2 / BURNS on L1, so the type is keccak256("MintableERC20")
-# (the MintableERC20 predicate is already registered by deploy-pos-bridge's
-# DummyMintableERC20 mapping). This mirrors the canonical governance step in
-# spol-contracts/script/BridgeMappingCalldata.s.sol; the deploy ran the sPOL
-# contracts but never mapped the token, so a real migration could not complete
-# on the devnet. The L1 mapToken state-syncs the L2 ChildChainManager side too
-# (RCM->CCM was paired in deploy-pos-bridge). ADMIN holds MAPPER_ROLE.
+# sPOL maps under keccak256("ERC20") — the PLAIN ERC20 type, NOT MintableERC20.
+# On L1 the RootChainManager treats sPOL as a standard locked ERC20: a migration's
+# receiveMessage calls `rootChainManager.depositFor(childTunnel, sPOL, ...)`
+# (sPOLMessenger.sol), and depositFor pulls sPOL from the messenger via
+# typeToPredicate(tokenType).transferFrom. The messenger's initialize approves
+# sPOL to the PLAIN ERC20Predicate (`sPOLToken.approve(_rcmERC20Predicate, max)`,
+# rcmERC20Predicate=ERC20_PREDICATE above), so the mapping MUST resolve to that
+# same predicate or depositFor reverts ERC20InsufficientAllowance (0xfb8f41b2).
+# deploy-pos-bridge registers ERC20Predicate under keccak256("ERC20"); mapping
+# under keccak256("MintableERC20") instead routes through the MintableERC20Predicate
+# (unapproved) and breaks the migration. This matches the canonical governance
+# step (spol-contracts/script/BridgeMappingCalldata.s.sol, literal
+# 0x8ae8...345b == keccak256("ERC20") — its "MintableERC20" comment is a mislabel)
+# and the spol-contracts migration integration tests (sPOLMigrationBackfill.t.sol,
+# sPOLControllerFullL1.t.sol), which both map with keccak256("ERC20"). The deploy
+# ran the sPOL contracts but never mapped the token, so a real migration could not
+# complete on the devnet. The L1 mapToken state-syncs the L2 ChildChainManager side
+# too (RCM->CCM was paired in deploy-pos-bridge). ADMIN holds MAPPER_ROLE.
 SPOL_L1=$(jq -re '.sPOL_L1.sPOLProxy' script/deployment.json)
 SPOL_CHILD_L2=$(jq -re '.sPOL_L2.sPOLChildProxy' script/deployment.json)
-MINTABLE_ERC20_TYPE=$(cast keccak "MintableERC20")
+ERC20_TYPE=$(cast keccak "ERC20")
 # Idempotency: the cl-el-genesis re-deploy runs this step twice; mapToken
 # reverts ALREADY_MAPPED on the second pass, so skip when already pointing at
 # the expected child (and fail loud if it points elsewhere — stale routing).
 spol_current_child=$(cast call --rpc-url "${L1_RPC_URL}" \
   "${ROOT_CHAIN_MANAGER}" "rootToChildToken(address)(address)" "${SPOL_L1}")
 if [[ "${spol_current_child}" == "0x0000000000000000000000000000000000000000" ]]; then
-  echo "Mapping sPOL (${SPOL_L1} <-> ${SPOL_CHILD_L2}) as MintableERC20 on RootChainManager..."
+  echo "Mapping sPOL (${SPOL_L1} <-> ${SPOL_CHILD_L2}) as ERC20 on RootChainManager..."
   cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy \
     "${ROOT_CHAIN_MANAGER}" "mapToken(address,address,bytes32)" \
-    "${SPOL_L1}" "${SPOL_CHILD_L2}" "${MINTABLE_ERC20_TYPE}"
+    "${SPOL_L1}" "${SPOL_CHILD_L2}" "${ERC20_TYPE}"
 elif [[ "${spol_current_child,,}" == "${SPOL_CHILD_L2,,}" ]]; then
   echo "sPOL already mapped on RootChainManager to ${spol_current_child} — skipping"
 else
