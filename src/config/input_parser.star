@@ -84,7 +84,6 @@ POLYGON_POS_PARTICIPANT = {
     "cl_indexer_pruning_enabled": constants.CL_INDEXER_PRUNING_ENABLED,
     "el_type": constants.EL_TYPE.bor,
     "el_image": constants.IMAGES.get("l2_el_bor_image"),
-    "cl_bor_grpc_flag": False,
     "count": 1,
 }
 

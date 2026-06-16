@@ -247,7 +247,9 @@ eth_rpc_url = "{{.l1_rpc_url}}"
 bor_rpc_url = "{{.el_rpc_url}}"
 
 # GRPC flag for bor chain
-bor_grpc_flag = "{{.cl_bor_grpc_flag}}"
+# Enabled by default — gRPC transport for heimdall → bor comms (lower extendVote latency
+# vs HTTP). To revert to HTTP, set this to "false".
+bor_grpc_flag = "true"
 
 # GRPC endpoint for bor chain
 bor_grpc_url = "{{.el_grpc_url}}"
