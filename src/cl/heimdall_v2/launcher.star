@@ -43,7 +43,6 @@ def launch(
                     "el_rpc_url": el_rpc_url,
                     "el_grpc_url": el_grpc_url,
                     "l1_rpc_url": l1_rpc_url,
-                    "cl_bor_grpc_flag": participant.get("cl_bor_grpc_flag"),
                     # Port numbers.
                     "rest_api_port_number": shared.REST_API_PORT_NUMBER,
                     "grpc_port_number": shared.GRPC_PORT_NUMBER,
