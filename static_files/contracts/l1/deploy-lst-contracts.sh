@@ -21,7 +21,15 @@ DEPOSIT_MANAGER=$(jq -re '.root.DepositManagerProxy' /opt/data/pos-addresses/con
 STATE_SENDER_L1=$(jq -re '.root.StateSender' /opt/data/pos-addresses/contractAddresses.json)
 CHECKPOINT_MANAGER=$(jq -re '.root.RootChainProxy' /opt/data/pos-addresses/contractAddresses.json)
 ROOT_CHAIN_MANAGER=$(jq -re '.root.posBridge.RootChainManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-CHILD_CHAIN_MANAGER=$(jq -re '.child.ChildChain' /opt/data/pos-addresses/contractAddresses.json)
+# The POS-PORTAL ChildChainManager (mirrors .root.posBridge.RootChainManagerProxy
+# above) — NOT the legacy/plasma .child.ChildChain. This is the contract that
+# receives depositFor state-syncs on L2 and calls sPOLChild.deposit(); sPOLChild's
+# initialize wires it as the authorized childChainManager. Using .child.ChildChain
+# (a different address) makes sPOLChild.deposit revert AddressUnauthorized when the
+# pos-portal CCM delivers the migration-completion deposit — bor counts the
+# state-sync as consumed but rolls the effect back, so onGoingMigration never
+# flips false and the migration never completes on L2 (the sPOL is never credited).
+CHILD_CHAIN_MANAGER=$(jq -re '.child.posBridge.ChildChainManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
 
 # TWO DIFFERENT ERC20 predicates — the migration touches both bridges, and each
 # leg needs its own. Conflating them breaks the other leg (verified by tracing
