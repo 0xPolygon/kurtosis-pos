@@ -86,6 +86,12 @@ POLYGON_POS_PARTICIPANT = {
     "el_type": constants.EL_TYPE.bor,
     "el_image": constants.IMAGES.get("l2_el_bor_image"),
     "cl_bor_grpc_flag": False,
+    # cl_bor_rpc_urls: comma-separated, priority-ordered list of bor RPC URLs
+    # rendered into heimdall app.toml's `bor_rpc_url`. >= 2 endpoints enable
+    # heimdall-v2's bor-endpoint failover (heimdall-v2 #605; helper/
+    # bor_failover_config.go parseURLs comma-splits this field). Empty (default)
+    # keeps the previous single-endpoint behavior (the co-located bor EL).
+    "cl_bor_rpc_urls": "",
     "count": 1,
 }
 

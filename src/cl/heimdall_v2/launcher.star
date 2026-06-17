@@ -40,7 +40,11 @@ def launch(
                     "producer_votes": producer_votes_str,
                     # URLs.
                     "amqp_url": amqp_url,
-                    "el_rpc_url": el_rpc_url,
+                    # bor_rpc_url: the participant's comma-separated bor RPC URL
+                    # list (cl_bor_rpc_urls) when set — >= 2 endpoints enable
+                    # heimdall-v2 bor-endpoint failover (#605) — else the
+                    # co-located bor EL's single RPC URL (previous behavior).
+                    "bor_rpc_url": participant.get("cl_bor_rpc_urls") or el_rpc_url,
                     "el_grpc_url": el_grpc_url,
                     "l1_rpc_url": l1_rpc_url,
                     "cl_bor_grpc_flag": participant.get("cl_bor_grpc_flag"),

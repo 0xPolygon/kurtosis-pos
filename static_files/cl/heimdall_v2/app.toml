@@ -243,8 +243,11 @@ max-txs = -1
 # RPC endpoint for ethereum chain
 eth_rpc_url = "{{.l1_rpc_url}}"
 
-# RPC endpoint for bor chain
-bor_rpc_url = "{{.el_rpc_url}}"
+# RPC endpoint(s) for bor chain. Accepts a comma-separated, priority-ordered
+# list for heimdall-v2 bor-endpoint failover (#605); a single URL keeps the
+# previous single-endpoint behavior. Rendered from the participant's
+# cl_bor_rpc_urls (when set) or the co-located bor EL RPC URL.
+bor_rpc_url = "{{.bor_rpc_url}}"
 
 # GRPC flag for bor chain
 bor_grpc_flag = "{{.cl_bor_grpc_flag}}"
