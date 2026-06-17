@@ -1,4 +1,4 @@
-ARG HEIMDALL_V2_VERSION="0.9.0-beta"
+ARG HEIMDALL_V2_VERSION="0.9.0-beta2"
 FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
@@ -13,7 +13,7 @@ RUN apk add --no-cache git build-base \
   && make build
 
 
-FROM alpine:3.23
+FROM alpine:3.24
 LABEL description="CL genesis builder image"
 LABEL author="devtools@polygon.technology"
 
