@@ -118,11 +118,6 @@ def launch(
                     "metrics_port_number": shared.METRICS_PORT_NUMBER,
                     "pprof_port_number": shared.PPROF_PORT_NUMBER,
                     "grpc_port_number": shared.GRPC_PORT_NUMBER,
-                    # Only expose bor's gRPC server on all interfaces when the
-                    # paired heimdall dials it over gRPC; otherwise bor keeps its
-                    # own (loopback-only on >= v2.8.3) default. See the gated
-                    # [grpc] block in the bor config.toml template.
-                    "cl_bor_grpc_flag": participant.get("cl_bor_grpc_flag"),
                     "ethstats_server_port_number": constants.ETHSTATS_SERVER_PORT_NUMBER,
                 },
             ),
@@ -147,14 +142,11 @@ def launch(
         ),
     ]
 
-    # bor's gRPC port is published only when the paired heimdall dials bor over
-    # gRPC (cl_bor_grpc_flag) — the same gate as the [grpc] block in the bor
-    # config.toml template. With the flag off (the default) bor binds gRPC
-    # loopback-only, so there is no externally-reachable server to publish.
-    # NOTE: when the flag is on this publishes bor's gRPC admin API
-    # unauthenticated over plaintext; heimdall refuses to send a bearer token
-    # over non-local plaintext (x/bor/grpc/client.go), so authenticating it
-    # would require TLS on bor's gRPC. Treat cl_bor_grpc_flag as devnet-only.
+    # bor's gRPC server is ALWAYS exposed on the enclave network: heimdall dials
+    # bor over gRPC by default (app.toml bor_grpc_flag = "true", kurtosis-pos
+    # #631), so every bor node must publish its gRPC port (config.toml binds it
+    # to 0.0.0.0). DEVNET-ONLY: this is bor's unauthenticated plaintext gRPC admin
+    # API (bor PR #2078 hardens it to loopback by default in production).
     el_ports = {
         shared.RPC_PORT_ID: PortSpec(
             number=shared.RPC_PORT_NUMBER,
@@ -176,12 +168,11 @@ def launch(
             number=shared.PPROF_PORT_NUMBER,
             application_protocol="http",
         ),
-    }
-    if participant.get("cl_bor_grpc_flag"):
-        el_ports[shared.GRPC_PORT_ID] = PortSpec(
+        shared.GRPC_PORT_ID: PortSpec(
             number=shared.GRPC_PORT_NUMBER,
             application_protocol="grpc",
-        )
+        ),
+    }
 
     return plan.add_service(
         name=el_node_name,

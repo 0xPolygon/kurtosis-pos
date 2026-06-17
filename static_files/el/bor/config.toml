@@ -156,18 +156,17 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   prometheus-addr = "0.0.0.0:{{.metrics_port_number}}"
   # Enable expensive metrics collection and reporting (default: false)
   expensive = false
-{{- if .cl_bor_grpc_flag }}
 
 [grpc]
-  # gRPC server for heimdall->bor communication. Only emitted when the paired
-  # heimdall dials bor over gRPC (participant `cl_bor_grpc_flag`); bound to all
-  # interfaces so the separate heimdall container can reach it. When the flag is
-  # off (the default), this block is omitted so bor falls back to its own
-  # version-appropriate default: loopback (127.0.0.1:3131) on >= v2.8.3, which
-  # keeps the unauthenticated gRPC admin API (ChainSetHead, PeersRemove, ...)
-  # off the enclave network. See bor PR #2078.
+  # gRPC server for heimdall->bor communication. heimdall dials bor over gRPC by
+  # default (app.toml bor_grpc_flag = "true", kurtosis-pos #631), so bor MUST
+  # serve gRPC on all interfaces for the separate heimdall container to reach it
+  # — without this the heimdall->bor block/span/state-sync calls fail and the
+  # chain never advances its span (deploy then times out waiting for span > 0).
+  # DEVNET-ONLY: this exposes bor's unauthenticated gRPC admin API on the enclave
+  # network (bor PR #2078 hardens it to loopback by default in production;
+  # kurtosis-pos is a disposable devnet).
   addr = "0.0.0.0:{{.grpc_port_number}}"
-{{- end }}
 
 [pprof]
   # Enable the pprof HTTP server (default: false)
