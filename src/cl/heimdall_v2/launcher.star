@@ -5,6 +5,40 @@ shared = import_module("../shared.star")
 # The folder where the heimdall templates are stored in the repository.
 HEIMDALL_TEMPLATES_FOLDER_PATH = "../../../static_files/cl/heimdall_v2"
 
+# Minimum bor version whose gRPC BorApi is complete enough for heimdall's gRPC
+# transport. bor #2194 ("full grpc implementation", first released in
+# v2.8.3-beta5) added BOTH GetBlockInfoInBatch AND full proto-Header population.
+# Older bor (<= 2.8.2, 2.7.x) returns Unimplemented for GetBlockInfoInBatch and
+# emits a 3-field header, so a heimdall on the gRPC transport (the default since
+# #631) cannot generate milestone propositions — the milestone never reaches the
+# 2/3 majority that gates VeBLOP span rotation and the chain is stuck at span 0
+# (deploy then times out at the wait.star l2-startup-monitor). Pin heimdall to
+# the HTTP transport (bor_rpc_url, which every bor version serves) for older bor.
+BOR_GRPC_MIN_VERSION = (2, 8, 3)
+
+
+def _bor_image_version(el_image):
+    """Parse (major, minor, patch) from a bor image ref's tag, or None.
+
+    Strips the tag after the final ':' (a registry host:port keeps its own ':',
+    so rsplit(1) still isolates the tag), a leading 'v', and any -prerelease or
+    +build suffix (so v2.8.3-beta5 -> (2, 8, 3), matching bor's release lineage:
+    #2194 landed in the 2.8.3 betas). Returns None for untagged or non-semver
+    tags (e.g. branch/commit images), which then default to the safe HTTP path.
+    """
+    if ":" not in el_image:
+        return None
+    base = el_image.rsplit(":", 1)[-1].lstrip("v").split("-")[0].split("+")[0]
+    parts = base.split(".")
+    if len(parts) < 3:
+        return None
+    nums = []
+    for p in parts[:3]:
+        if not p.isdigit():
+            return None
+        nums.append(int(p))
+    return (nums[0], nums[1], nums[2])
+
 
 def launch(
     plan,
@@ -21,17 +55,23 @@ def launch(
     container_proc_manager_artifact,
     producer_votes_str,
 ):
-    # heimdall dials bor over gRPC only when its paired EL is bor: bor serves the
-    # gRPC API (el/bor config.toml binds 0.0.0.0:3131, #631), but erigon
-    # implements bor's HTTP RPC and NOT its gRPC server. #631 hardcoded the flag
-    # on for every heimdall node, which left the erigon-paired RPC participant
-    # dialing a gRPC endpoint that is never served (refused connections, no
-    # block/header/state-sync data). Gate the flag on el_type so erigon-paired
-    # heimdall stays on the working HTTP transport (bor_rpc_url), and leave the
-    # gRPC URL empty there since heimdall short-circuits gRPC init when off.
+    # heimdall dials bor over gRPC (the default since #631) ONLY when the paired
+    # EL both speaks bor's gRPC AND speaks the complete version of it:
+    #   * el_type must be bor — erigon implements bor's HTTP RPC but NOT its gRPC
+    #     server, so an erigon-paired heimdall on gRPC would dial an endpoint that
+    #     is never served (refused connections, no block/header/state-sync data).
+    #   * the bor version must be >= BOR_GRPC_MIN_VERSION — older bor lacks
+    #     #2194's GetBlockInfoInBatch + full proto-Header, which stalls span
+    #     rotation (see BOR_GRPC_MIN_VERSION). Unparseable tags default to HTTP.
+    # When gRPC is off, heimdall short-circuits its gRPC init and uses the HTTP
+    # transport (bor_rpc_url), so leave the gRPC URL empty.
     el_is_bor = participant.get("el_type") == constants.EL_TYPE.bor
-    bor_grpc_flag = "true" if el_is_bor else "false"
-    bor_grpc_url = el_grpc_url if el_is_bor else ""
+    bor_version = _bor_image_version(participant.get("el_image") or "")
+    bor_grpc_supported = (
+        el_is_bor and bor_version != None and bor_version >= BOR_GRPC_MIN_VERSION
+    )
+    bor_grpc_flag = "true" if bor_grpc_supported else "false"
+    bor_grpc_url = el_grpc_url if bor_grpc_supported else ""
 
     heimdall_node_config_artifacts = plan.render_templates(
         name="{}-config".format(cl_node_name),
