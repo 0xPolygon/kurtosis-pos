@@ -21,6 +21,18 @@ def launch(
     container_proc_manager_artifact,
     producer_votes_str,
 ):
+    # heimdall dials bor over gRPC only when its paired EL is bor: bor serves the
+    # gRPC API (el/bor config.toml binds 0.0.0.0:3131, #631), but erigon
+    # implements bor's HTTP RPC and NOT its gRPC server. #631 hardcoded the flag
+    # on for every heimdall node, which left the erigon-paired RPC participant
+    # dialing a gRPC endpoint that is never served (refused connections, no
+    # block/header/state-sync data). Gate the flag on el_type so erigon-paired
+    # heimdall stays on the working HTTP transport (bor_rpc_url), and leave the
+    # gRPC URL empty there since heimdall short-circuits gRPC init when off.
+    el_is_bor = participant.get("el_type") == constants.EL_TYPE.bor
+    bor_grpc_flag = "true" if el_is_bor else "false"
+    bor_grpc_url = el_grpc_url if el_is_bor else ""
+
     heimdall_node_config_artifacts = plan.render_templates(
         name="{}-config".format(cl_node_name),
         config={
@@ -45,7 +57,8 @@ def launch(
                     # heimdall-v2 bor-endpoint failover (#605) — else the
                     # co-located bor EL's single RPC URL (previous behavior).
                     "bor_rpc_url": participant.get("cl_bor_rpc_urls") or el_rpc_url,
-                    "el_grpc_url": el_grpc_url,
+                    "bor_grpc_flag": bor_grpc_flag,
+                    "bor_grpc_url": bor_grpc_url,
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
                     "rest_api_port_number": shared.REST_API_PORT_NUMBER,

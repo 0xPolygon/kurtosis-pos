@@ -250,12 +250,17 @@ eth_rpc_url = "{{.l1_rpc_url}}"
 bor_rpc_url = "{{.bor_rpc_url}}"
 
 # GRPC flag for bor chain
-# Enabled by default — gRPC transport for heimdall → bor comms (lower extendVote latency
-# vs HTTP). To revert to HTTP, set this to "false".
-bor_grpc_flag = "true"
+# Enabled for bor-paired heimdall nodes — gRPC transport for heimdall → bor
+# comms (lower extendVote latency vs HTTP). Rendered "false" when the paired EL
+# is erigon: erigon implements bor's RPC but NOT bor's gRPC server, so an
+# erigon-paired heimdall must stay on the HTTP transport (bor_rpc_url) or every
+# block/header/state-sync query hits a refused gRPC dial. See the heimdall_v2
+# launcher (el_type gate).
+bor_grpc_flag = "{{.bor_grpc_flag}}"
 
-# GRPC endpoint for bor chain
-bor_grpc_url = "{{.el_grpc_url}}"
+# GRPC endpoint for bor chain. Empty when bor_grpc_flag is "false" (erigon EL):
+# heimdall short-circuits gRPC init when the flag is off, so no endpoint is dialed.
+bor_grpc_url = "{{.bor_grpc_url}}"
 
 # RPC endpoint for cometBFT
 comet_bft_rpc_url = "http://0.0.0.0:{{.rpc_port_number}}"
