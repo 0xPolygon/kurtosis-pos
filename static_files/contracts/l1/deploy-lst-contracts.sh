@@ -21,34 +21,21 @@ DEPOSIT_MANAGER=$(jq -re '.root.DepositManagerProxy' /opt/data/pos-addresses/con
 STATE_SENDER_L1=$(jq -re '.root.StateSender' /opt/data/pos-addresses/contractAddresses.json)
 CHECKPOINT_MANAGER=$(jq -re '.root.RootChainProxy' /opt/data/pos-addresses/contractAddresses.json)
 ROOT_CHAIN_MANAGER=$(jq -re '.root.posBridge.RootChainManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
-# The POS-PORTAL ChildChainManager (mirrors .root.posBridge.RootChainManagerProxy
-# above) — NOT the legacy/plasma .child.ChildChain. This is the contract that
-# receives depositFor state-syncs on L2 and calls sPOLChild.deposit(); sPOLChild's
-# initialize wires it as the authorized childChainManager. Using .child.ChildChain
-# (a different address) makes sPOLChild.deposit revert AddressUnauthorized when the
-# pos-portal CCM delivers the migration-completion deposit — bor counts the
-# state-sync as consumed but rolls the effect back, so onGoingMigration never
-# flips false and the migration never completes on L2 (the sPOL is never credited).
+# pos-portal ChildChainManager (the one sPOLChild.initialize authorizes), NOT the
+# legacy plasma .child.ChildChain. With the wrong address the migration-completion
+# deposit reverts AddressUnauthorized in sPOLChild.deposit, so onGoingMigration
+# never flips and the migration never completes on L2.
 CHILD_CHAIN_MANAGER=$(jq -re '.child.posBridge.ChildChainManagerProxy' /opt/data/pos-addresses/contractAddresses.json)
 
-# TWO DIFFERENT ERC20 predicates — the migration touches both bridges, and each
-# leg needs its own. Conflating them breaks the other leg (verified by tracing
-# both reverts on a live devnet):
-#
-#   * ERC20_PREDICATE  -> polBridger (input.json `erc20predicate`). polBridger.exitPOL
-#     calls IERC20PredicateBurnOnly(erc20predicate).startExitWithBurntTokens — a
-#     PLASMA exit. This must be the plasma ERC20PredicateBurnOnly at
-#     `.root.predicates.ERC20Predicate`. Pointing it at the pos-portal predicate
-#     makes startExitWithBurntTokens revert (~226 gas, no such fn).
-#
-#   * RCM_ERC20_PREDICATE -> messenger (input.json `rcmERC20Predicate`). The
-#     messenger's initialize approves sPOL to this predicate, and the migration's
-#     receiveMessage -> rootChainManager.depositFor(sPOL) pulls sPOL via
-#     RootChainManager.typeToPredicate(keccak256("ERC20")).transferFrom — a
-#     POS-PORTAL deposit. Approving the plasma predicate instead leaves the real
-#     pos-portal predicate unapproved -> depositFor reverts ERC20InsufficientAllowance
-#     (0xfb8f41b2). Derive it live from typeToPredicate so the approved spender is
-#     exactly the one depositFor uses.
+# The migration touches both bridges, so each leg needs its own ERC20 predicate
+# (conflating them reverts the other leg — both traced on a live devnet):
+#   * ERC20_PREDICATE -> erc20predicate: plasma ERC20PredicateBurnOnly, used by
+#     polBridger.exitPOL's startExitWithBurntTokens (pos-portal predicate has no
+#     such fn -> ~226-gas revert).
+#   * RCM_ERC20_PREDICATE -> rcmERC20Predicate: pos-portal predicate, the spender
+#     the messenger approves sPOL to and that depositFor pulls through. Derived
+#     live from typeToPredicate so it's exactly that spender (plasma predicate ->
+#     depositFor reverts ERC20InsufficientAllowance 0xfb8f41b2).
 ERC20_PREDICATE=$(jq -re '.root.predicates.ERC20Predicate' /opt/data/pos-addresses/contractAddresses.json)
 RCM_ERC20_PREDICATE=$(cast call --rpc-url "${L1_RPC_URL}" \
   "${ROOT_CHAIN_MANAGER}" "typeToPredicate(bytes32)(address)" "$(cast keccak "ERC20")")
@@ -135,28 +122,15 @@ jq -s '.[0] as $pos | .[1] as $spol
 echo "LST contracts deployed. Updated contractAddresses.json:"
 cat /opt/contracts/contractAddresses.json
 
-# Map sPOL in the PoS bridge (RootChainManager) so a migration's L1->L2 sPOL
-# re-deposit works. The migration's receiveMessage calls
-# `rootChainManager.depositFor(childTunnel, sPOL, ...)` (sPOLMessenger.sol),
-# which reverts "RootChainManager: TOKEN_NOT_MAPPED" until sPOL is mapped.
-# sPOL maps under keccak256("ERC20") — the PLAIN ERC20 type, NOT MintableERC20.
-# On L1 the RootChainManager treats sPOL as a standard locked ERC20: a migration's
-# receiveMessage calls `rootChainManager.depositFor(childTunnel, sPOL, ...)`
-# (sPOLMessenger.sol), and depositFor pulls sPOL from the messenger via
-# typeToPredicate(tokenType).transferFrom. The messenger's initialize approves
-# sPOL to the PLAIN ERC20Predicate (`sPOLToken.approve(_rcmERC20Predicate, max)`,
-# rcmERC20Predicate=ERC20_PREDICATE above), so the mapping MUST resolve to that
-# same predicate or depositFor reverts ERC20InsufficientAllowance (0xfb8f41b2).
-# deploy-pos-bridge registers ERC20Predicate under keccak256("ERC20"); mapping
-# under keccak256("MintableERC20") instead routes through the MintableERC20Predicate
-# (unapproved) and breaks the migration. This matches the canonical governance
-# step (spol-contracts/script/BridgeMappingCalldata.s.sol, literal
-# 0x8ae8...345b == keccak256("ERC20") — its "MintableERC20" comment is a mislabel)
-# and the spol-contracts migration integration tests (sPOLMigrationBackfill.t.sol,
-# sPOLControllerFullL1.t.sol), which both map with keccak256("ERC20"). The deploy
-# ran the sPOL contracts but never mapped the token, so a real migration could not
-# complete on the devnet. The L1 mapToken state-syncs the L2 ChildChainManager side
-# too (RCM->CCM was paired in deploy-pos-bridge). ADMIN holds MAPPER_ROLE.
+# Map sPOL in RootChainManager — the deploy ran the sPOL contracts but never
+# mapped the token, so the migration's receiveMessage -> depositFor(sPOL) reverts
+# TOKEN_NOT_MAPPED. Map under keccak256("ERC20") (plain ERC20), NOT MintableERC20:
+# deploy-pos-bridge registered ERC20Predicate under keccak256("ERC20") and that's
+# the spender the messenger approves, so the MintableERC20 type routes through an
+# unapproved predicate -> ERC20InsufficientAllowance (0xfb8f41b2). Matches the
+# canonical governance step (BridgeMappingCalldata.s.sol — its "MintableERC20"
+# comment is a mislabel; the literal is keccak256("ERC20")) and the migration
+# integration tests. mapToken state-syncs the L2 CCM side too; ADMIN holds MAPPER_ROLE.
 SPOL_L1=$(jq -re '.sPOL_L1.sPOLProxy' script/deployment.json)
 SPOL_CHILD_L2=$(jq -re '.sPOL_L2.sPOLChildProxy' script/deployment.json)
 ERC20_TYPE=$(cast keccak "ERC20")
