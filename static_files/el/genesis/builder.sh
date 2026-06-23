@@ -70,6 +70,15 @@ timestamp=$(printf "0x%x" "${EL_GENESIS_TIMESTAMP}")
 jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
+# Fund reserved-blockspace clients (devnet test stub). The reserved set lives in
+# config.bor.reservedClients (static genesis); fund each address so it can submit
+# the zero-fee txs that exercise the reserved path. No-op when the list is absent.
+for addr in $(jq -r '.config.bor.reservedClients // [] | .[].addresses[]' "${EL_GENESIS_FILE}" | sed 's/^0x//'); do
+  echo "Funding reserved client: 0x${addr}"
+  jq --arg a "${addr}" '.alloc[$a] = {"balance": "0xD3C21BCECCEDA1000000"}' "${EL_GENESIS_FILE}" > tmp.json
+  mv tmp.json "${EL_GENESIS_FILE}"
+done
+
 # Verify and output the EL genesis file.
 if [[ -s "${EL_GENESIS_FILE}" ]]; then
   echo "L2 EL genesis:"

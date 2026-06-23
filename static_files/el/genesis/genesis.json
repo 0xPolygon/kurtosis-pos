@@ -60,7 +60,14 @@
       "coinbase": {
         "0": "0x0000000000000000000000000000000000000000",
         "{{.rio_fork_block}}": "0x000000000000000000000000000000000000ba5e"
-      }
+      },
+      "reservedBlockspaceBlock": 8,
+      "reservedClients": [
+        {
+          "addresses": ["0xBBd913cF26a853cB26f42975dE6eF5d17de9EC47"],
+          "quotaGas": 30000000
+        }
+      ]
     },
     "nonce": "0x0"
   },
