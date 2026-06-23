@@ -73,7 +73,16 @@ mv tmp.json "${EL_GENESIS_FILE}"
 # Fund reserved-blockspace clients (devnet test stub). The reserved set lives in
 # config.bor.reservedClients (static genesis); fund each address so it can submit
 # the zero-fee txs that exercise the reserved path. No-op when the list is absent.
-for addr in $(jq -r '.config.bor.reservedClients // [] | .[].addresses[]' "${EL_GENESIS_FILE}" | sed 's/^0x//'); do
+#
+# Requires a bor image built from a branch that understands reservedBlockspaceBlock
+# / reservedClients (the reserved-blockspace bor branch). A stock bor image ignores
+# those config keys, so the fork never activates and the devnet behaves like a
+# normal one despite the funded client — set el_image to the fork-aware bor image.
+#
+# Lowercase the alloc key (tr) to match every other alloc entry. geth parses alloc
+# keys case-insensitively, but a uniform lowercase key avoids a duplicate-key clash
+# if a reserved address ever coincides with an existing alloc entry.
+for addr in $(jq -r '.config.bor.reservedClients // [] | .[].addresses[]' "${EL_GENESIS_FILE}" | sed 's/^0x//' | tr 'A-F' 'a-f'); do
   echo "Funding reserved client: 0x${addr}"
   jq --arg a "${addr}" '.alloc[$a] = {"balance": "0xD3C21BCECCEDA1000000"}' "${EL_GENESIS_FILE}" > tmp.json
   mv tmp.json "${EL_GENESIS_FILE}"
