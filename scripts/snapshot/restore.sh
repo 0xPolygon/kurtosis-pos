@@ -117,7 +117,9 @@ if [[ -s "$anvil_state_file" ]]; then
   anvil_body_file=$(mktemp)
   {
     printf '{"jsonrpc":"2.0","method":"anvil_loadState","params":["'
-    cat "$anvil_state_file"
+    # Strip any whitespace (a stray trailing newline embedded mid-string would
+    # make the JSON-RPC body invalid); the hex itself has no internal spaces.
+    tr -d '[:space:]' < "$anvil_state_file"
     printf '"],"id":1}'
   } > "$anvil_body_file"
   anvil_load_response=$(curl -fsSL -X POST -H 'Content-Type: application/json' \

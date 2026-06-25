@@ -675,9 +675,12 @@ anvil_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null || tr
 if [[ -n "$anvil_rpc_url" ]]; then
   log_info "Capturing anvil L1 state via ${anvil_rpc_url} (anvil_dumpState)"
   anvil_state_tmp=$(mktemp)
+  # `jq -j` (not -r): emit the hex with NO trailing newline. restore.sh splices
+  # the file contents straight into a JSON string, so a trailing newline would
+  # produce an invalid anvil_loadState request body.
   curl -fsSL -X POST -H 'Content-Type: application/json' \
     --data '{"jsonrpc":"2.0","method":"anvil_dumpState","params":[],"id":1}' \
-    "$anvil_rpc_url" | jq -r '.result // empty' > "$anvil_state_tmp"
+    "$anvil_rpc_url" | jq -j '.result // empty' > "$anvil_state_tmp"
   if [[ "$(wc -c < "$anvil_state_tmp")" -lt 100 ]]; then
     log_error "anvil_dumpState returned an unexpectedly short result ($(wc -c < "$anvil_state_tmp") bytes)"
     exit 1
