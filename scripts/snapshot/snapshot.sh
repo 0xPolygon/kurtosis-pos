@@ -461,6 +461,22 @@ configure_ports() {
         )
     ' "$docker_compose_file"
 
+  # L1 EL via `l1_backend: anvil` - the single `anvil` service stands in for
+  # `el-1-geth-lighthouse` and serves the same JSON-RPC on 8545, but its name
+  # carries no `-el-N-` segment so the L1 EL block above skips it, leaving the
+  # published compose with no host binding for anvil. Bind it to host 8545 to
+  # match the geth mapping. anvil and el-1-geth-lighthouse are mutually
+  # exclusive (one L1 backend per enclave), so this is a no-op under the
+  # ethereum-package backend.
+  yq --in-place --yaml-output \
+    --arg enclave_name "$enclave_name" '
+        .services |= with_entries(
+            if .key | test("^" + $enclave_name + "-anvil") then
+                .value.ports = ["8545:8545"]
+            else . end
+        )
+    ' "$docker_compose_file"
+
   # L2 CL (consensus layer) - both the REST API (port 1317) and the cometBFT
   # RPC (port 26657) are mapped to the host. REST is what bridge tests and
   # checkpoint/milestone monitors hit; cometBFT RPC is what the heimdall
