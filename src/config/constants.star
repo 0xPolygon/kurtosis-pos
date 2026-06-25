@@ -151,6 +151,7 @@ EL_HARD_FORK_BLOCKS = {
     "lisovoPro": 512,
     "giugliano": 576,
     "chicago": 704,  # Simulate activation after Phuket HF on Heimdall.
+    "valencia": 896,  # Newest bor fork; after Chicago + all CL forks (zurich=832) so every fork is active by activation.
 }
 
 # Heimdall-v2-side hardforks (no bor genesis impact). Activation heights are
