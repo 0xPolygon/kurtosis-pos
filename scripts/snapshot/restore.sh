@@ -87,15 +87,17 @@ docker_compose_file="$snapshot_folder/docker-compose.yaml"
 docker compose --file "$docker_compose_file" up --detach --wait
 log_info "Devnet started"
 
-# Re-apply the anvil L1 backend's captured state. snapshot.sh wrote the live
-# post-deploy state to /opt/anvil/state_dump.hex (a captured volume) via the
-# `anvil_dumpState` RPC, because anvil's `--dump-state` writes only on SIGINT —
-# not the SIGTERM the stop sequence sends — so the on-disk state isn't otherwise
-# captured. Replay it via `anvil_loadState` so the restored devnet has the
-# deployed L1 contracts. No-op under the ethereum-package L1 backend (no anvil
-# service). snapshot.sh::configure_ports binds anvil to host 8545.
-anvil_service=$(docker compose --file "$docker_compose_file" config --services 2> /dev/null | grep -E -- '(^|-)anvil$' | head -1 || true)
-if [[ -n "$anvil_service" ]]; then
+# Re-apply the anvil L1 backend's captured state. snapshot.sh baked the live
+# post-deploy anvil state (captured via the `anvil_dumpState` RPC) into the
+# image as /anvil-state.hex, which extract.sh wrote out to the snapshot folder.
+# anvil's own `--dump-state` writes only on SIGINT (not the SIGTERM the stop
+# sequence sends), so the on-disk state isn't otherwise captured. Replay the hex
+# via `anvil_loadState` so the restored devnet has the deployed L1 contracts.
+# The file is present only for anvil-backend snapshots; absent under the
+# ethereum-package backend, where this is a no-op. snapshot.sh::configure_ports
+# binds anvil to host 8545.
+anvil_state_file="$snapshot_folder/anvil-state.hex"
+if [[ -s "$anvil_state_file" ]]; then
   anvil_rpc_url="http://127.0.0.1:8545"
   log_info "Re-applying captured anvil state via ${anvil_rpc_url} (anvil_loadState)"
   # `up --wait` gates on anvil's container healthcheck, which doesn't exercise
@@ -110,32 +112,22 @@ if [[ -n "$anvil_service" ]]; then
     fi
     sleep 1
   done
-  # Stream the hex out, then assemble the JSON-RPC body in a file: the blob is
-  # multi-MB and exceeds ARG_MAX as a command-line argument, so it must go
-  # through file/pipe redirection end to end.
-  anvil_state_hex_file=$(mktemp)
-  docker compose --file "$docker_compose_file" exec -T "$anvil_service" \
-    cat /opt/anvil/state_dump.hex > "$anvil_state_hex_file" 2> /dev/null || true
-  if [[ "$(wc -c < "$anvil_state_hex_file")" -lt 100 ]]; then
-    log_warn "anvil ${anvil_service}:/opt/anvil/state_dump.hex missing or empty — snapshot predates the anvil-state capture; skipping"
-    rm -f "$anvil_state_hex_file"
-  else
-    anvil_body_file=$(mktemp)
-    {
-      printf '{"jsonrpc":"2.0","method":"anvil_loadState","params":["'
-      cat "$anvil_state_hex_file"
-      printf '"],"id":1}'
-    } > "$anvil_body_file"
-    rm -f "$anvil_state_hex_file"
-    anvil_load_response=$(curl -fsSL -X POST -H 'Content-Type: application/json' \
-      --data-binary "@${anvil_body_file}" "$anvil_rpc_url")
-    rm -f "$anvil_body_file"
-    if ! printf '%s' "$anvil_load_response" | jq -e '.result == true' > /dev/null 2>&1; then
-      log_error "anvil_loadState rejected the captured state: ${anvil_load_response}"
-      exit 1
-    fi
-    log_info "anvil L1 state restored"
+  # Assemble the JSON-RPC body in a file: the hex blob is multi-MB and exceeds
+  # ARG_MAX as a command-line argument, so it goes through file redirection.
+  anvil_body_file=$(mktemp)
+  {
+    printf '{"jsonrpc":"2.0","method":"anvil_loadState","params":["'
+    cat "$anvil_state_file"
+    printf '"],"id":1}'
+  } > "$anvil_body_file"
+  anvil_load_response=$(curl -fsSL -X POST -H 'Content-Type: application/json' \
+    --data-binary "@${anvil_body_file}" "$anvil_rpc_url")
+  rm -f "$anvil_body_file"
+  if ! printf '%s' "$anvil_load_response" | jq -e '.result == true' > /dev/null 2>&1; then
+    log_error "anvil_loadState rejected the captured state: ${anvil_load_response}"
+    exit 1
   fi
+  log_info "anvil L1 state restored"
 fi
 
 log_info "Use 'docker compose --file $docker_compose_file down --volumes' to remove the devnet"

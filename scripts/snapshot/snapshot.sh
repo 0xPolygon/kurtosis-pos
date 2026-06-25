@@ -658,39 +658,31 @@ wait_for_checkpoint_quiescence() {
 log_info "Waiting for heimdall's checkpoint ack_count to catch up with L1"
 wait_for_checkpoint_quiescence "$enclave_name"
 
-# Persist the anvil L1 backend's post-deploy state into the snapshot.
-# anvil boots `--load-state /opt/anvil/genesis.json --dump-state /tmp/state_dump.json`
-# (src/l1/anvil.star): the dump path is /tmp (not a captured volume) AND anvil
-# only writes it on SIGINT, not the SIGTERM that the stop sequence below sends —
-# so without intervention the deployed L1 contracts and checkpoint state are
-# lost on restore and the restored devnet comes up on bare genesis. Capture the
-# live state via the `anvil_dumpState` RPC and write the hex blob into the anvil
-# container's /opt/anvil volume, which IS captured; restore.sh replays it via
-# `anvil_loadState`. Done after quiescence so the captured anvil state is
-# self-consistent with heimdall's acknowledged checkpoints. No-op under the
-# ethereum-package L1 backend, which has no anvil service.
+# Persist the anvil L1 backend's post-deploy state into the snapshot. anvil
+# boots `--load-state /opt/anvil/genesis.json --dump-state /tmp/state_dump.json`
+# (src/l1/anvil.star): /tmp is not captured, AND anvil writes that dump only on
+# SIGINT (not the SIGTERM the stop sequence below sends) — so without
+# intervention the deployed L1 contracts and checkpoint state are lost on
+# restore and the restored devnet comes up on bare genesis. Capture the live
+# state via the `anvil_dumpState` RPC and bake it into the snapshot IMAGE as
+# /anvil-state.hex (the same image-file bake contractAddresses.json uses — a
+# `docker cp` into the live /opt/anvil files-artifact volume does NOT survive
+# volume capture). restore.sh replays it via `anvil_loadState`. Captured after
+# quiescence so it's consistent with heimdall's acked checkpoints. No-op under
+# the ethereum-package L1 backend, which has no anvil service.
+anvil_state_tmp=""
 anvil_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null || true)
 if [[ -n "$anvil_rpc_url" ]]; then
   log_info "Capturing anvil L1 state via ${anvil_rpc_url} (anvil_dumpState)"
-  anvil_state_hex=$(curl -fsSL -X POST -H 'Content-Type: application/json' \
+  anvil_state_tmp=$(mktemp)
+  curl -fsSL -X POST -H 'Content-Type: application/json' \
     --data '{"jsonrpc":"2.0","method":"anvil_dumpState","params":[],"id":1}' \
-    "$anvil_rpc_url" | jq -r '.result // empty')
-  if [[ "${#anvil_state_hex}" -lt 100 ]]; then
-    log_error "anvil_dumpState returned an unexpectedly short result (${#anvil_state_hex} chars)"
+    "$anvil_rpc_url" | jq -r '.result // empty' > "$anvil_state_tmp"
+  if [[ "$(wc -c < "$anvil_state_tmp")" -lt 100 ]]; then
+    log_error "anvil_dumpState returned an unexpectedly short result ($(wc -c < "$anvil_state_tmp") bytes)"
     exit 1
   fi
-  anvil_container=$(docker ps --filter "network=kt-$enclave_name" --format '{{.Names}}' | grep '^anvil--' | head -1)
-  if [[ -z "$anvil_container" ]]; then
-    log_error "Could not locate the live anvil container in network kt-$enclave_name"
-    exit 1
-  fi
-  # docker cp from a tempfile rather than piping the (multi-MB) hex through
-  # `docker exec -i ... sh -c 'cat >'`, which can break-pipe on large blobs.
-  anvil_state_local=$(mktemp)
-  printf '%s' "$anvil_state_hex" > "$anvil_state_local"
-  docker cp "$anvil_state_local" "$anvil_container:/opt/anvil/state_dump.hex"
-  rm -f "$anvil_state_local"
-  log_info "Wrote ${#anvil_state_hex} chars of anvil state to ${anvil_container}:/opt/anvil/state_dump.hex"
+  log_info "Captured $(wc -c < "$anvil_state_tmp") bytes of anvil state for /anvil-state.hex"
 fi
 
 # Extract kurtosis file artifacts that post-restore e2e tests need.
@@ -703,7 +695,7 @@ fi
 #     (L2_STATE_RECEIVER_ADDRESS, used by state-sync helpers).
 contract_addresses_tmp=$(mktemp)
 l2_genesis_tmp=$(mktemp)
-trap "rm -f '$contract_addresses_tmp' '$l2_genesis_tmp'" EXIT
+trap "rm -f '$contract_addresses_tmp' '$l2_genesis_tmp' '$anvil_state_tmp'" EXIT
 log_info "Extracting kurtosis file artifacts"
 # kurtosis files inspect prepends a "File contents:" banner. Strip everything
 # before the first '{' and re-format with jq so the output is canonical JSON.
@@ -765,6 +757,10 @@ log_info "Backups completed"
 # Move the previously-extracted file artifacts into the snapshot tree.
 mv "$contract_addresses_tmp" "$tmp_dir/contractAddresses.json"
 mv "$l2_genesis_tmp" "$tmp_dir/l2-genesis.json"
+# Stage the captured anvil state (anvil backend only) for baking into the image.
+if [[ -n "$anvil_state_tmp" ]]; then
+  mv "$anvil_state_tmp" "$tmp_dir/anvil-state.hex"
+fi
 
 log_info "Generating docker-compose"
 docker_compose_file_path="$tmp_dir/docker-compose.yaml"
@@ -783,6 +779,11 @@ COPY docker-compose.yaml /docker-compose.yaml
 COPY contractAddresses.json /contractAddresses.json
 COPY l2-genesis.json /l2-genesis.json
 EOF
+# Bake the captured anvil L1 state (anvil backend only) so restore.sh can
+# replay it; absent under the ethereum-package backend.
+if [[ -f "anvil-state.hex" ]]; then
+  echo "COPY anvil-state.hex /anvil-state.hex" >> "Dockerfile"
+fi
 # Build the docker image
 image_name="pos-devnet"
 docker build --tag "$image_name" .
