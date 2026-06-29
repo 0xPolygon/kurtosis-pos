@@ -33,7 +33,7 @@ jobs:
         run: kurtosis lint .
 
       - name: Run markdown linter
-        uses: rvben/rumdl@e8147c3e3ebbcc4a7cddfc9869afb7ff0dd4402b # v0.2.20
+        uses: rvben/rumdl@0cbb0855cd8a0db65791419d6a34007b887c5be5 # v0.2.26
 
   typos:
     runs-on: ubuntu-latest
