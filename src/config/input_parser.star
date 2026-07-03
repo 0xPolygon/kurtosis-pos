@@ -144,6 +144,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         "lisovo_pro_fork_block": constants.EL_HARD_FORK_BLOCKS.get("lisovoPro"),
         "giugliano_fork_block": constants.EL_HARD_FORK_BLOCKS.get("giugliano"),
         "chicago_fork_block": constants.EL_HARD_FORK_BLOCKS.get("chicago"),
+        "valencia_fork_block": constants.EL_HARD_FORK_BLOCKS.get("valencia"),
     },
     "additional_services": [],
 }

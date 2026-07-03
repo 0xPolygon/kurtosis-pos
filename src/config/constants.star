@@ -54,8 +54,8 @@ IMAGES = {
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.9.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.8.3",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.6.1-beta",
+    "l2_el_bor_image": "0xpolygon/bor:2.9.0",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.7.2",
     "l2_cl_queue_image": "rabbitmq:4.2.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
@@ -126,4 +126,8 @@ EL_HARD_FORK_BLOCKS = {
     "lisovoPro": 128,
     "giugliano": 128,
     "chicago": 128,
+    # Newest bor EL fork; after chicago. Requires bor >= 2.9.0 (older public
+    # bor images ignore the unknown valenciaBlock genesis field). Activated at
+    # devnet block 896 to mirror the reviewed production fork ordering.
+    "valencia": 896,
 }
