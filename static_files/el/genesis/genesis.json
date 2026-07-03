@@ -55,6 +55,7 @@
       },
       "validatorContract": "0x0000000000000000000000000000000000001000",
       "stateReceiverContract": "0x0000000000000000000000000000000000001001",
+      "reservedRegistryContract": "0x0000000000000000000000000000000000001002",
       "burntContract": {
         "0": "0x000000000000000000000000000000000000dead"
       },
@@ -65,7 +66,7 @@
       "reservedBlockspaceBlock": 8,
       "reservedClients": [
         {
-          "addresses": ["0xBBd913cF26a853cB26f42975dE6eF5d17de9EC47"],
+          "addresses": ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"],
           "quotaGas": 30000000
         }
       ]
