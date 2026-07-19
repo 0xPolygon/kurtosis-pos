@@ -43,9 +43,47 @@ block_number() {
 }
 
 enode() {
-  svc_logs "$1" \
-    | grep -oE 'enode://[0-9a-f]{128}@[0-9.]+:[0-9]+' \
-    | tail -n1
+  local url; url="$(rpc_url "$1")"
+  curl -fsS -X POST -H 'content-type: application/json' \
+    --data '{"jsonrpc":"2.0","id":1,"method":"admin_nodeInfo","params":[]}' \
+    "$url" 2>/dev/null \
+    | grep -oE 'enode://[0-9a-f]{128}@[^"]+' | head -n1
+}
+
+_ALL_SERVICES=""
+all_services() {
+  if [ -z "$_ALL_SERVICES" ]; then
+    # Node services end in -validator or -rpc; drop helper services (-config, -keys,
+    # -keys-generator-config, etc.). Indexing is 1-based and sequential across kinds
+    # (validators 1..N, then RPCs N+1..), so patterns must stay index-agnostic.
+    _ALL_SERVICES="$(kurtosis enclave inspect "$ENCLAVE" 2>/dev/null \
+      | grep -oE 'l2-(el|cl)-[0-9]+-[a-z0-9-]+' \
+      | grep -E '(validator|rpc)$' | sort -u || true)"
+  fi
+  printf '%s\n' "$_ALL_SERVICES"
+}
+
+find_service() { all_services | grep -E "$1" | head -n1 || true; }
+
+heimdall_for() {
+  local bor="$1" idx role
+  idx="$(printf '%s' "$bor" | sed -E 's/^l2-el-([0-9]+)-.*/\1/')"
+  case "$bor" in
+    *validator*) role='validator' ;;
+    *rpc*)       role='rpc' ;;
+    *)           role='' ;;
+  esac
+  find_service "^l2-cl-${idx}-heimdall.*${role}"
+}
+
+other_validator() {
+  all_services | grep -E '^l2-el-[0-9]+-bor-.*validator' | grep -vx "$1" | head -n1 || true
+}
+
+dump_enclave() {
+  warn "discovered l2 services: $(all_services | tr '\n' ' ')"
+  warn "raw 'kurtosis enclave inspect $ENCLAVE':"
+  kurtosis enclave inspect "$ENCLAVE" 2>&1 | sed 's/^/    /' | head -n 100 >&2 || true
 }
 
 metric_value() {
@@ -89,3 +127,4 @@ LOGSIG_JAIL='Downloader: locally jailing peer'
 LOGSIG_BACKOFF='Downloader: backing off peer'
 LOGSIG_CONSENSUS_BACKOFF='local consensus data unavailable'
 LOGSIG_INVALID_CHAIN_CTX='retrieved hash chain is invalid: .*context deadline exceeded'
+LOGSIG_SPAN_FETCH_FAIL='Unable to fetch span|error while trying fetching from Heimdall'

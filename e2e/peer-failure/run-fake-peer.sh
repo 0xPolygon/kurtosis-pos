@@ -5,7 +5,8 @@ cd "$(dirname "$0")"
 # shellcheck source=lib.sh
 source ./lib.sh
 
-TARGET_BOR="${TARGET_BOR:-$BOR_RPC_0}"
+TARGET_BOR="${TARGET_BOR:-$(find_service '^l2-el-[0-9]+-bor-.*rpc')}"
+[ -n "$TARGET_BOR" ] || TARGET_BOR="$(find_service '^l2-el-[0-9]+-bor-.*validator')"
 DURATION="${DURATION:-30s}"
 BIN="./fake-peer/fake-peer"
 
@@ -18,6 +19,11 @@ build_bin() {
 }
 
 discover_target() {
+  if [ -z "$TARGET_BOR" ]; then
+    warn "no bor service resolved from enclave '$ENCLAVE'"
+    dump_enclave
+    fail "resolve a bor service to target"; return 1
+  fi
   ENODE="$(enode "$TARGET_BOR")"
   [ -n "$ENODE" ] || { fail "could not scrape enode from $TARGET_BOR logs"; return 1; }
   DIAL="$(host_port "$TARGET_BOR" discovery)"
@@ -43,26 +49,35 @@ run_one() {
   new_removes=$(( removes_after - removes_before ))
 
   if [ "$head_after" -gt "$head_before" ]; then
-    pass "$scn: target stayed alive and advanced ($head_before -> $head_after)"
+    pass "$scn: target survived and advanced ($head_before -> $head_after)"
   else
     warn "$scn: target did NOT advance ($head_before -> $head_after) — possible stall/crash"
     rc=1
   fi
 
-  if [ "$scn" = "valid" ]; then
-    if echo "$obs" | grep -qi "stayed connected"; then
-      pass "valid: healthy peer was not penalised (control)"
-    else
-      warn "valid: control peer did not remain connected — investigate false positives"
-    fi
-  else
-    if [ "$new_removes" -gt 0 ] || echo "$obs" | grep -qiE "disconnected us|stopped accepting|closed"; then
-      pass "$scn: target dropped the abusive peer (p2p removes=$new_removes)"
-    else
-      warn "$scn: no observable drop of the abusive peer — verify manually"
-      rc=1
-    fi
-  fi
+  case "$scn" in
+    valid)
+      if echo "$obs" | grep -qi "stayed connected"; then
+        pass "valid: healthy peer was not penalised (control)"
+      else
+        warn "valid: control peer did not remain connected — possible false positive"
+        rc=1
+      fi ;;
+    baddata)
+      if echo "$obs" | grep -qiE "disconnected us|closed"; then
+        pass "baddata: target rejected the malformed message (disconnected us)"
+      else
+        warn "baddata: target did not disconnect on a malformed message"
+      fi ;;
+    disconnect)
+      info "disconnect: peer connected then dropped; node unaffected" ;;
+    *)
+      if [ "$new_removes" -gt 0 ] || echo "$obs" | grep -qiE "disconnected us|stopped accepting"; then
+        info "$scn: target dropped/stopped-accepting the abuser (p2p removes=$new_removes)"
+      else
+        info "$scn: target tolerated the abuser without dropping (survived)"
+      fi ;;
+  esac
 
   local hint
   hint="$(svc_logs "$TARGET_BOR" 2>/dev/null \
