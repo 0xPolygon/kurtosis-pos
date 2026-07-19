@@ -233,3 +233,17 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   rebroadcast-max-age = "1m"
   # Max transactions to rebroadcast per cycle to limit bandwidth usage (min: 1)
   rebroadcast-batch-size = 200
+
+{{/* Local experiment: sequence-store preconfirmations. Validators publish the
+     block lifecycle; RPC nodes re-execute the stream for preconf receipts.
+     The store (ingress :9550, gateway :9551 over Redpanda) runs on the host
+     machine — producers publish to the ingress, consumers read the gateway. */}}
+[sequencer]
+{{- if eq .kind "validator" }}
+  role = "producer"
+  refresh = "100ms"
+  endpoint = "host.docker.internal:9550"
+{{- else }}
+  role = "consumer"
+  endpoint = "host.docker.internal:9551"
+{{- end }}
