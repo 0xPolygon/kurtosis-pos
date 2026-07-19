@@ -21,12 +21,15 @@ _peer_reached() { [ "$(block_number "$PEER_BOR")" -ge "$1" ]; }
 _span_failing() { svc_logs "$TARGET_BOR" 2>/dev/null | grep -qE "Unable to fetch span|waiting for new span|context deadline exceeded"; }
 
 restored=0
+# Idempotent restore. The test restarts TARGET_BOR mid-run, so one or both services
+# may already be running here; start each quietly and tolerate "already running"
+# (kurtosis errors with a Docker name conflict, which is harmless during restore).
 restore() {
   [ "$restored" = 1 ] && return 0
   restored=1
-  warn "restoring devnet: starting $TARGET_HEIMDALL and $TARGET_BOR"
-  svc_start "$TARGET_HEIMDALL" || true
-  svc_start "$TARGET_BOR" || true
+  warn "restoring devnet: ensuring $TARGET_HEIMDALL and $TARGET_BOR are running"
+  kurtosis service start "$ENCLAVE" "$TARGET_HEIMDALL" >/dev/null 2>&1 || true
+  kurtosis service start "$ENCLAVE" "$TARGET_BOR" >/dev/null 2>&1 || true
 }
 trap restore EXIT
 
