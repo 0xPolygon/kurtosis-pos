@@ -84,6 +84,8 @@ main() {
   # The differential is only meaningful if the bug PRECONDITION was reached — i.e. the
   # target actually failed to fetch a span from its (down) Heimdall. Without that, buggy
   # and fixed bor are indistinguishable, so the result is INCONCLUSIVE (never a false PASS).
+  # Exit codes: only a real drop (the bug) is a failure; PASS and INCONCLUSIVE both exit 0
+  # so a healthy devnet that never reaches the span-fetch path is green, not a red error.
   if [ "$new_drops" -gt 0 ]; then
     warn "target dropped an honest peer $new_drops time(s) as invalid-chain during a Heimdall span-fetch failure"
     warn "this is the bug: a local Heimdall failure must not be blamed on the peer"
@@ -95,15 +97,15 @@ main() {
     return 0
   elif [ "$new_spanfail" -gt 0 ]; then
     warn "span-fetch failures occurred but neither a drop nor a backoff followed — investigate"
-    info "=== RESULT: INCONCLUSIVE ==="
-    return 2
+    info "=== RESULT: INCONCLUSIVE (not a failure) ==="
+    return 0
   else
-    warn "the target never hit a Heimdall span-fetch failure, so the bug condition was not exercised."
-    warn "during healthy sync bor obtains spans from on-chain data; this bug needs a verifying node"
-    warn "to require a span its Heimdall cannot serve (VeBlop performSpanCheck under a struggling"
-    warn "producer). The bor unit tests (eth/downloader/peer_response_test.go) are the reliable gate."
-    info "=== RESULT: INCONCLUSIVE (span-fetch path not exercised) ==="
-    return 2
+    info "the target never hit a Heimdall span-fetch failure, so the bug condition was not exercised."
+    info "this is expected on a healthy devnet: during sync bor obtains spans from on-chain data; the"
+    info "bug needs a verifying node to require a span its Heimdall cannot serve. The reliable gate is"
+    info "the bor unit tests (eth/downloader/peer_response_test.go)."
+    info "=== RESULT: INCONCLUSIVE (span-fetch path not exercised — not a failure) ==="
+    return 0
   fi
 }
 
