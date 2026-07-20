@@ -104,9 +104,13 @@ wait_until() {
   done
 }
 
+# Capture-then-grep on a here-string. Under `set -o pipefail`, `svc_logs | grep -q` lets
+# grep close the pipe on first match, killing `kurtosis service logs` with SIGPIPE (141);
+# pipefail then reports the pipeline as failed even on a match. Capturing first avoids it.
 assert_log_contains() {
-  local svc="$1" pat="$2" desc="$3"
-  if svc_logs "$svc" | grep -qE "$pat"; then
+  local svc="$1" pat="$2" desc="$3" logs
+  logs="$(svc_logs "$svc" 2>/dev/null || true)"
+  if grep -qE "$pat" <<<"$logs"; then
     pass "$desc"
   else
     fail "$desc — expected bor log matching /$pat/ on $svc"
@@ -114,8 +118,9 @@ assert_log_contains() {
 }
 
 assert_log_absent() {
-  local svc="$1" pat="$2" desc="$3"
-  if svc_logs "$svc" | grep -qE "$pat"; then
+  local svc="$1" pat="$2" desc="$3" logs
+  logs="$(svc_logs "$svc" 2>/dev/null || true)"
+  if grep -qE "$pat" <<<"$logs"; then
     fail "$desc — unexpected bor log matching /$pat/ on $svc"
   else
     pass "$desc"
@@ -128,3 +133,6 @@ LOGSIG_BACKOFF='Downloader: backing off peer'
 LOGSIG_CONSENSUS_BACKOFF='local consensus data unavailable'
 LOGSIG_INVALID_CHAIN_CTX='retrieved hash chain is invalid: .*context deadline exceeded'
 LOGSIG_SPAN_FETCH_FAIL='Unable to fetch span|error while trying fetching from Heimdall'
+# A peer dropped because a Heimdall span fetch failed (503 from the fault proxy, or a
+# real deadline): "Synchronisation failed, dropping peer ... retrieved hash chain is invalid: ...".
+LOGSIG_INVALID_CHAIN_SPAN='Synchronisation failed, dropping peer.*retrieved hash chain is invalid'
