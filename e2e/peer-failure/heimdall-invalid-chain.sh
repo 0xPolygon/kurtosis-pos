@@ -16,13 +16,18 @@ PROXY_SVC="heimdall-spanfault-proxy"
 # appends --bor.heimdall <url>, which overrides [heimdall].url in config.toml.
 BOR_SETUP='cp /opt/data/genesis/genesis.json /etc/bor/genesis.json && cp /opt/data/keys/password.txt /etc/bor && mkdir -p /var/lib/bor && cp /opt/data/keys/nodekey /var/lib/bor/nodekey && cp -r /opt/data/keys/keystore /var/lib/bor && /usr/local/share/container-proc-manager.sh bor server --config /etc/bor/config.toml'
 
-repoint() { kurtosis service update --cmd "$BOR_SETUP${1:+ $1}" "$ENCLAVE" "$TARGET_BOR" >/dev/null 2>&1; }
+# BOR_IMAGE (optional): pin the target's image on every repoint. Leave unset in CI, where
+# the enclave already runs the image built from the branch under test. Set it to run the
+# differential against a specific build locally, e.g. BOR_IMAGE=bor:fix to verify the fix.
+_img_flag() { [ -n "${BOR_IMAGE:-}" ] && printf -- '--image %s' "$BOR_IMAGE"; }
+
+repoint() { kurtosis service update $(_img_flag) --cmd "$BOR_SETUP${1:+ $1}" "$ENCLAVE" "$TARGET_BOR" >/dev/null 2>&1; }
 
 # Like repoint, but first wipes the chaindata subdir (/var/lib/bor/bor) so bor re-syncs
 # from genesis. A fresh sync MUST fetch span 0 from Heimdall to verify the first sprint,
 # which is what drives the request into the fault proxy. Identity (nodekey/keystore) lives
 # at the datadir root and is re-copied by BOR_SETUP, so it survives the wipe.
-repoint_fresh() { kurtosis service update --cmd "rm -rf /var/lib/bor/bor && $BOR_SETUP${1:+ $1}" "$ENCLAVE" "$TARGET_BOR" >/dev/null 2>&1; }
+repoint_fresh() { kurtosis service update $(_img_flag) --cmd "rm -rf /var/lib/bor/bor && $BOR_SETUP${1:+ $1}" "$ENCLAVE" "$TARGET_BOR" >/dev/null 2>&1; }
 
 # NOTE: capture-then-grep on a here-string, NOT `svc_logs | grep -q`. Under `set -o
 # pipefail`, `grep -q` exits on first match and closes the pipe, so `kurtosis service logs`
@@ -94,10 +99,15 @@ main() {
   # no pre-wipe baseline to subtract. LOGSIG_INVALID_CHAIN_SPAN matches only the sync-path
   # drop ("Synchronisation failed, dropping peer ... retrieved hash chain is invalid"), not
   # the poll-loop 503s, so it cleanly separates the buggy path from the fix's backoff path.
-  local drops backoffs victims
-  drops="$(svc_logs "$TARGET_BOR" 2>/dev/null | grep -cE "$LOGSIG_INVALID_CHAIN_SPAN" || true)"
-  backoffs="$(svc_logs "$TARGET_BOR" 2>/dev/null | grep -cE "$LOGSIG_CONSENSUS_BACKOFF" || true)"
-  victims="$(svc_logs "$TARGET_BOR" 2>/dev/null | grep -E "$LOGSIG_INVALID_CHAIN_SPAN" | grep -oE 'peer=[0-9a-f]+' | sort -u | wc -l | tr -d ' ')"
+  # Capture logs once, then grep the buffer. Every grep is guarded with `|| true`: on the
+  # PASS path there are zero drops, so the drop/victims greps match nothing and exit 1 —
+  # under `set -o pipefail` + `set -e` that would abort the script *before* the verdict
+  # (looks like a spurious exit-1 "failure"). Guarding keeps a zero count as a real 0.
+  local logs drops backoffs victims
+  logs="$(svc_logs "$TARGET_BOR" 2>/dev/null || true)"
+  drops="$(grep -cE "$LOGSIG_INVALID_CHAIN_SPAN" <<<"$logs" || true)"
+  backoffs="$(grep -cE "$LOGSIG_CONSENSUS_BACKOFF" <<<"$logs" || true)"
+  victims="$(grep -E "$LOGSIG_INVALID_CHAIN_SPAN" <<<"$logs" | grep -oE 'peer=[0-9a-f]+' | sort -u | wc -l | tr -d ' ' || true)"
 
   info "observed: span-caused peer drops=$drops (distinct victims=$victims)  consensus-backoffs=$backoffs"
 
