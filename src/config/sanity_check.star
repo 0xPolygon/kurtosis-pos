@@ -65,6 +65,9 @@ POLYGON_POS_PARAMS = {
         "giugliano_fork_block",
         "chicago_fork_block",
         "valencia_fork_block",
+        "sequencer_enabled",
+        "sequencer_image",
+        "sequencer_redpanda_image",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
