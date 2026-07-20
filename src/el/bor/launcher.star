@@ -69,6 +69,7 @@ def launch(
                     "el_block_interval_seconds": network_params.get(
                         "el_block_interval_seconds"
                     ),
+                    "sequencer_enabled": network_params.get("sequencer_enabled"),
                     "ethstats_server_secret": ethstats_server_secret,
                     # ports
                     "rpc_port_number": shared.RPC_PORT_NUMBER,

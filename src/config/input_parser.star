@@ -134,6 +134,14 @@ POLYGON_POS_PACKAGE_ARGS = {
         #   amoy BP:    pos-ops/roles/deploy-amoy-config/amoy/pos-amoy-london-bp-nvme-01/bor/config.toml#L83
         #   mainnet BP: pos-ops/roles/deploy-mainnet-config/mainnet/anonymous-91/bor/config.toml#L65
         "el_gas_limit": 200000000,
+        # Sequence-store preconfirmation experiment: when enabled, an
+        # in-enclave store (Redpanda + seqstore ingress/gateway/auditor) is
+        # launched and bor's [sequencer] config section is rendered.
+        # Requires an EL image built from the bor sequencer prototype
+        # branch; plain bor ignores the section.
+        "sequencer_enabled": False,
+        "sequencer_image": "seqstore:local",
+        "sequencer_redpanda_image": "redpandadata/redpanda:latest",
         # Polygon PoS hard fork configurations
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),
