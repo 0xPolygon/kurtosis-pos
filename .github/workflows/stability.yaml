@@ -84,7 +84,7 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.generate-matrix.outputs.include) }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/kurtosis/setup
         with:

@@ -53,14 +53,14 @@ IMAGES = {
     "l1_cl_image": "sigp/lighthouse:v8.1.3",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.9.0-beta2",
-    "l2_el_bor_image": "0xpolygon/bor:2.8.3",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.6.1-beta",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.10.0",
+    "l2_el_bor_image": "0xpolygon/bor:2.9.0",
+    "l2_el_erigon_image": "0xpolygon/erigon:v3.7.2",
     "l2_cl_queue_image": "rabbitmq:4.2.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
-    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.9.0-beta2",
+    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
@@ -151,7 +151,10 @@ EL_HARD_FORK_BLOCKS = {
     "lisovoPro": 512,
     "giugliano": 576,
     "chicago": 704,  # Simulate activation after Phuket HF on Heimdall.
-    "valencia": 896,  # Newest bor fork; after Chicago + all CL forks (zurich=832) so every fork is active by activation.
+    # Newest bor EL fork; after Chicago + all CL forks (zurich=832) so every
+    # fork is active by activation. Requires bor >= 2.9.0 (older public bor
+    # images ignore the unknown valenciaBlock genesis field).
+    "valencia": 896,
 }
 
 # Heimdall-v2-side hardforks (no bor genesis impact). Activation heights are
