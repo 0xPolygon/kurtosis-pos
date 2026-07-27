@@ -162,13 +162,17 @@ EL_HARD_FORK_BLOCKS = {
 # — see helper/config.go). The stock binary ships 0 ("never active") for
 # every gate below on the default (local devnet) chain; the values here
 # document the schedule activated by pos-e2e's patched image
-# (pos-e2e scripts/pos-e2e/patches/heimdall-default-devnet-cl-forks.patch)
+# (pos-e2e scripts/pos-e2e/patches/heimdall-default-devnet-cl-forks*.patch)
 # and MUST stay in lockstep with it — pos-e2e's patch-constants-star.sh
 # drift-guards this dict against its own CL_FORK_BLOCKS map and fails CI on
 # mismatch. Production activation order is mirrored:
-# phuket < feeWithdrawValidatorGate < zurich.
+# phuket < feeWithdrawValidatorGate < zurich < ithaca.
+# ithaca (heimdall-v2 v0.10.0-beta) gates VEBLOP producer selection changes
+# (empty-candidate fallback, POS-3629 stall rotation); it sits one 64-block
+# step past the valencia EL fork (896) at the top of the devnet ladder.
 CL_HARD_FORK_BLOCKS = {
     "phuket": 640,
     "feeWithdrawValidatorGate": 768,
     "zurich": 832,
+    "ithaca": 960,
 }
