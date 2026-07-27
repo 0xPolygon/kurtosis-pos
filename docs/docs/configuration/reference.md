@@ -212,9 +212,10 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 ### `ethstats_server_params`
 
-| Field |  Type  |                                         Default                                         |               Description                |
-| ----- | ------ | --------------------------------------------------------------------------------------- | ---------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server |
+| Field     | Type   | Default                                                                                 | Description                                                               |
+| --------- | ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| image     | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server                                  |
+| ws_secret | string | sharedsecret                                                                            | Shared secret used to authenticate nodes reporting to the ethstats server |
 
 ### `status_checker_params`
 
