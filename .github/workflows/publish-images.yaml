@@ -79,7 +79,7 @@ jobs:
       # commit SHA fits.
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.POS_CONTRACTS_IMAGE_NAME }}
           tags: |
@@ -97,7 +97,7 @@ jobs:
 
       - name: Build and push docker image
         id: push
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: .
           file: docker/pos-contract-deployer.Dockerfile
@@ -150,7 +150,7 @@ jobs:
       # This ensures reproducible builds tied to a specific contracts version.
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.EL_GENESIS_BUILDER_IMAGE_NAME }}
           tags: |
@@ -158,7 +158,7 @@ jobs:
 
       - name: Build and push docker image
         id: push
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: docker
           file: docker/pos-el-genesis-builder.Dockerfile
@@ -205,7 +205,7 @@ jobs:
       # This ensures reproducible builds tied to a specific Heimdall version.
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.VALIDATOR_CONFIG_IMAGE_NAME }}
           tags: |
@@ -213,7 +213,7 @@ jobs:
 
       - name: Build and push docker image
         id: push
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: docker
           file: docker/pos-validator-config-generator.Dockerfile
