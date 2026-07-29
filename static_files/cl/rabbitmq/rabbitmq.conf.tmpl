@@ -1,5 +1,12 @@
 loopback_users.guest = false
 
+# The heimdall bridge declares non-durable non-exclusive queues. RabbitMQ 4.3.0
+# advanced this deprecated feature from permitted_by_default to denied_by_default,
+# so queue.declare is rejected and no checkpoint ever reaches L1 without this opt-in.
+# The feature is slated for removal in a later major version; the durable fix is
+# for the bridge to declare durable (or transient exclusive) queues instead.
+deprecated_features.permit.transient_nonexcl_queues = true
+
 log.console = true
 log.console.level = {{.log_level}}
 log.console.formatter = {{.log_format}}
