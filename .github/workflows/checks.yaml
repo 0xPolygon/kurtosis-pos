@@ -35,6 +35,12 @@ jobs:
       - name: Run markdown linter
         uses: rvben/rumdl@d4b387e11401873129035f3ed1ade1395ef09632 # v0.2.43
 
+      - name: Install pyyaml
+        run: pip install pyyaml
+
+      - name: Verify external package pins
+        run: python3 scripts/verify-package-pins.py
+
   typos:
     runs-on: ubuntu-latest
     timeout-minutes: 5
