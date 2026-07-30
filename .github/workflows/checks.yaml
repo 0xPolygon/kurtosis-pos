@@ -20,7 +20,7 @@ jobs:
       KURTOSIS_VERSION: 1.18.2
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install kurtosis
         run: |
@@ -33,14 +33,20 @@ jobs:
         run: kurtosis lint .
 
       - name: Run markdown linter
-        uses: rvben/rumdl@d9e57d93efd2c85a2b4efa1f597652fe017e464a # v0.2.0
+        uses: rvben/rumdl@d4b387e11401873129035f3ed1ade1395ef09632 # v0.2.43
+
+      - name: Install pyyaml
+        run: pip install pyyaml
+
+      - name: Verify external package pins
+        run: python3 scripts/verify-package-pins.py
 
   typos:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
-      - uses: crate-ci/typos@7b04f660f4ee4f048d18fd341887cf28dfbedfe2 # v1.46.3
+      - uses: actions/checkout@v7
+      - uses: crate-ci/typos@bee27e3a4fd1ea2111cf90ab89cd076c870fce14 # v1.48.0
 
   unit:
     runs-on: ubuntu-latest
@@ -50,9 +56,9 @@ jobs:
       GO_VERSION: 1.23 # required by kurtosis-test v0.0.6
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -71,9 +77,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version-file: tools/devnet-monitor/go.mod
           cache-dependency-path: tools/devnet-monitor/go.sum
@@ -90,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: mfinelli/setup-shfmt@v4
         with:

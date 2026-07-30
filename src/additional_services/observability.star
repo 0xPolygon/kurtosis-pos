@@ -4,7 +4,7 @@ grafana = import_module("./grafana.star")
 shared = import_module("./shared.star")
 util = import_module("./util.star")
 
-PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star@f5ce159aec728898e3deb827f6b921f8ecfc527f"
+PROMETHEUS_PACKAGE = "github.com/kurtosis-tech/prometheus-package/main.star"  # Version pinned in kurtosis.yml
 
 GRAFANA_DASHBOARDS = "../../static_files/additional_services/grafana/dashboards"
 

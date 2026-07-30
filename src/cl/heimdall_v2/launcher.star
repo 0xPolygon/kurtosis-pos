@@ -16,6 +16,7 @@ def launch(
     cl_node_ids,
     l1_rpc_url,
     el_rpc_url,
+    el_grpc_url,
     amqp_url,
     container_proc_manager_artifact,
     producer_votes_str,
@@ -40,6 +41,7 @@ def launch(
                     # URLs.
                     "amqp_url": amqp_url,
                     "el_rpc_url": el_rpc_url,
+                    "el_grpc_url": el_grpc_url,
                     "l1_rpc_url": l1_rpc_url,
                     # Port numbers.
                     "rest_api_port_number": shared.REST_API_PORT_NUMBER,

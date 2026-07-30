@@ -248,7 +248,7 @@ Focus: state consistency, liveness, and recovery under stress.
 | Memory-pressured bor | `docker update --memory 256m` on a bor container; observe mempool and block production under pressure |
 | Sprint boundary behavior | Monitor block production at every multiple of 16 blocks (devnet sprint; mainnet is also 16 but verify via `EL_SPRINT_DURATION` in `src/config/constants.star`) |
 | Span transition | Monitor validator producer rotation at every multiple of 128 blocks (devnet span = 8 sprints × 16; mainnet span is much larger — always use devnet values from `src/config/constants.star`) |
-| Rio hard fork transition | Observe block production and state around block 256 |
+| Rio hard fork transition | Observe block production and state around block 128 |
 | Heimdall state divergence | Compare `/status` across multiple heimdall validators |
 
 ### Consensus & Finality
