@@ -36,6 +36,7 @@
       "giuglianoBlock": {{.giugliano_fork_block}},
       "chicagoBlock": {{.chicago_fork_block}},
       "valenciaBlock": {{.valencia_fork_block}},
+      "austinBlock": {{.austin_fork_block}},
       "stateSyncConfirmationDelay": {
         "0": 32
       },

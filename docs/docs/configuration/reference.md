@@ -200,6 +200,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | giugliano_fork_block                  | int    | 128                | Block number for Giugliano hard fork activation                                                              |
 | chicago_fork_block                    | int    | 128                | Block number for Chicago hard fork activation                                                                |
 | valencia_fork_block                   | int    | 896                | Block number for Valencia hard fork activation (bor >= 2.9.0)                                                |
+| austin_fork_block                     | int    | 999999999          | Block number for Austin hard fork activation (bor >= 2.10.0). Disabled by default — post-Austin headers drop the TxDependency field, so erigon and bor < 2.10.0 halt at the boundary. Only set it on a single-version bor >= 2.10.0 devnet. |
 
 ### `additional_services`
 

@@ -71,6 +71,7 @@ POLYGON_POS_PARAMS = {
         "giugliano_fork_block",
         "chicago_fork_block",
         "valencia_fork_block",
+        "austin_fork_block",
         # heimdall-v2-side hardforks
         "phuket_fork_block",
     ],

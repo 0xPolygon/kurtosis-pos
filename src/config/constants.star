@@ -155,6 +155,18 @@ EL_HARD_FORK_BLOCKS = {
     # fork is active by activation. Requires bor >= 2.9.0 (older public bor
     # images ignore the unknown valenciaBlock genesis field).
     "valencia": 896,
+    # Austin (bor >= 2.10.0) is DISABLED BY DEFAULT and deliberately kept OFF
+    # the 64-block ladder. It changes the header extra-data wire shape —
+    # post-Austin blocks drop the TxDependency field — so any client without
+    # Austin support (erigon v3.7.2, bor < 2.10.0) hard-rejects every
+    # post-Austin header and halts at the boundary. A mixed-version or
+    # erigon-bearing devnet therefore cannot cross it, and no shared topology
+    # may schedule it. Callers that want Austin set `austin_fork_block`
+    # explicitly in network_params on a single-version bor >= 2.10.0 topology
+    # (see pos-e2e scenarios/pos/austin-statesync-gas/params.yml, which pins
+    # 320). 999999999 is the same "never" sentinel patch-constants-star.sh
+    # writes for version-gated forks.
+    "austin": 999999999,
 }
 
 # Heimdall-v2-side hardforks (no bor genesis impact). Activation heights are
