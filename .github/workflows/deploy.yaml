@@ -102,7 +102,7 @@ jobs:
       # small and representative — every entry adds a row per phase to the
       # PR comment and contributes runner-variance to the baseline. To add
       # one, append its name from .github/configs/ (slash → dash, no .yml).
-      PERF_CONFIGS: heimdall-v2-bor heimdall-v2-mix l1-backends-anvil
+      PERF_CONFIGS: heimdall-v2-bor l1-backends-anvil
     steps:
       - uses: actions/checkout@v7
 
@@ -133,8 +133,6 @@ jobs:
 
       - uses: ./.github/actions/monitor
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
-        with:
-          skip_checkpoints: ${{ contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test/bridge
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
@@ -153,7 +151,7 @@ jobs:
         with:
           args_filename: ${{ matrix.file.name }}
           # Cache is only saved by main branch runs to avoid excessive storage use
-          save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-mix' }}
+          save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-bor' }}
 
   test-e2e:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
