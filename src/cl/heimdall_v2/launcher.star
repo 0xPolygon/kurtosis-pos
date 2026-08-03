@@ -55,21 +55,14 @@ def launch(
     container_proc_manager_artifact,
     producer_votes_str,
 ):
-    # heimdall dials bor over gRPC (the default since #631) ONLY when the paired
-    # EL both speaks bor's gRPC AND speaks the complete version of it:
-    #   * el_type must be bor — erigon implements bor's HTTP RPC but NOT its gRPC
-    #     server, so an erigon-paired heimdall on gRPC would dial an endpoint that
-    #     is never served (refused connections, no block/header/state-sync data).
-    #   * the bor version must be >= BOR_GRPC_MIN_VERSION — older bor lacks
-    #     #2194's GetBlockInfoInBatch + full proto-Header, which stalls span
-    #     rotation (see BOR_GRPC_MIN_VERSION). Unparseable tags default to HTTP.
-    # When gRPC is off, heimdall short-circuits its gRPC init and uses the HTTP
-    # transport (bor_rpc_url), so leave the gRPC URL empty.
-    el_is_bor = participant.get("el_type") == constants.EL_TYPE.bor
+    # heimdall dials bor over gRPC (the default since #631) ONLY when the
+    # paired bor version is >= BOR_GRPC_MIN_VERSION — older bor lacks #2194's
+    # GetBlockInfoInBatch + full proto-Header, which stalls span rotation (see
+    # BOR_GRPC_MIN_VERSION). Unparseable tags default to HTTP. When gRPC is
+    # off, heimdall short-circuits its gRPC init and uses the HTTP transport
+    # (bor_rpc_url), so leave the gRPC URL empty.
     bor_version = _bor_image_version(participant.get("el_image") or "")
-    bor_grpc_supported = (
-        el_is_bor and bor_version != None and bor_version >= BOR_GRPC_MIN_VERSION
-    )
+    bor_grpc_supported = bor_version != None and bor_version >= BOR_GRPC_MIN_VERSION
     bor_grpc_flag = "true" if bor_grpc_supported else "false"
     bor_grpc_url = el_grpc_url if bor_grpc_supported else ""
 

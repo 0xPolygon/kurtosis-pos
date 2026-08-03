@@ -251,14 +251,13 @@ bor_rpc_url = "{{.bor_rpc_url}}"
 
 # GRPC flag for bor chain
 # gRPC transport for heimdall → bor comms (lower extendVote latency vs HTTP).
-# Rendered "true" only when the paired EL is bor AND its version is >= 2.8.3;
-# "false" (HTTP via bor_rpc_url) otherwise. erigon implements bor's HTTP RPC but
-# not its gRPC server, and bor < 2.8.3 lacks #2194's GetBlockInfoInBatch + full
-# proto-Header — either case breaks heimdall's gRPC milestone path and stalls
-# span rotation. See the heimdall_v2 launcher (el_type + bor-version gate).
+# Rendered "true" only when the paired bor version is >= 2.8.3; "false" (HTTP
+# via bor_rpc_url) otherwise — bor < 2.8.3 lacks #2194's GetBlockInfoInBatch +
+# full proto-Header, which breaks heimdall's gRPC milestone path and stalls
+# span rotation. See the heimdall_v2 launcher (bor-version gate).
 bor_grpc_flag = "{{.bor_grpc_flag}}"
 
-# GRPC endpoint for bor chain. Empty when bor_grpc_flag is "false" (erigon EL):
+# GRPC endpoint for bor chain. Empty when bor_grpc_flag is "false":
 # heimdall short-circuits gRPC init when the flag is off, so no endpoint is dialed.
 bor_grpc_url = "{{.bor_grpc_url}}"
 

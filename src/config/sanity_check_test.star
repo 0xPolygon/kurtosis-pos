@@ -7,6 +7,19 @@ def test_sanity_check_valid_config(plan):
     sanity_check.sanity_check_polygon_args(plan, input_parser.POLYGON_POS_PACKAGE_ARGS)
 
 
+def test_sanity_check_with_invalid_el_type(plan):
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": "geth",
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        'Invalid "el_type" attribute: "geth"',
+    )
+
+
 def test_sanity_check_with_invalid_parallel_import(plan):
     participant = input_parser.POLYGON_POS_PARTICIPANT | {
         "el_type": constants.EL_TYPE.bor,
@@ -18,7 +31,7 @@ def test_sanity_check_with_invalid_parallel_import(plan):
     }
     expect.fails(
         lambda: sanity_check.sanity_check_polygon_args(plan, args),
-        'The "el_bor_stateless_parallel_import" parameter can only be enabled with bor EL client and when "el_bor_sync_with_witness" is set to true.',
+        'The "el_bor_stateless_parallel_import" parameter can only be enabled when "el_bor_sync_with_witness" is set to true.',
     )
 
 
@@ -162,26 +175,6 @@ def test_sanity_check_with_bor_extra_args(plan):
         "participants": [participant],
     }
     sanity_check.sanity_check_polygon_args(plan, args)
-
-
-def test_sanity_check_with_bor_extra_args_on_erigon(plan):
-    # A producing bor validator so the network still has a block producer,
-    # plus an erigon rpc that illegally carries el_bor_extra_args.
-    producing_validator = input_parser.POLYGON_POS_PARTICIPANT | {
-        "el_type": constants.EL_TYPE.bor,
-    }
-    erigon = input_parser.POLYGON_POS_PARTICIPANT | {
-        "kind": constants.PARTICIPANT_KIND.rpc,
-        "el_type": constants.EL_TYPE.erigon,
-        "el_bor_extra_args": ["--p2p.nosnap"],
-    }
-    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
-        "participants": [producing_validator, erigon],
-    }
-    expect.fails(
-        lambda: sanity_check.sanity_check_polygon_args(plan, args),
-        'The "el_bor_extra_args" parameter is only valid for the bor EL client.',
-    )
 
 
 def test_sanity_check_with_bor_extra_args_not_a_list(plan):

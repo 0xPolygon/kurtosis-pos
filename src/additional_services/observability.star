@@ -14,7 +14,7 @@ PANOPTICHAIN_CONFIG_FILE_PATH = (
     "../../static_files/additional_services/panoptichain/config.yml"
 )
 
-# Bor / Erigon expose Prometheus metrics here; heimdall-v2 (CometBFT) uses /metrics.
+# Bor exposes Prometheus metrics here; heimdall-v2 (CometBFT) uses /metrics.
 EL_METRICS_PATH = "/debug/metrics/prometheus"
 CL_METRICS_PATH = "/metrics"
 

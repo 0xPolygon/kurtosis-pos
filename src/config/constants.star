@@ -12,7 +12,6 @@ PARTICIPANT_KIND = struct(
 
 EL_TYPE = struct(
     bor="bor",
-    erigon="erigon",
 )
 
 CL_TYPE = struct(
@@ -55,7 +54,6 @@ IMAGES = {
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.10.0",
     "l2_el_bor_image": "0xpolygon/bor:2.9.0",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.7.2",
     "l2_cl_queue_image": "rabbitmq:4.3.4",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
@@ -157,10 +155,9 @@ EL_HARD_FORK_BLOCKS = {
     "valencia": 896,
     # Austin (bor >= 2.10.0) is DISABLED BY DEFAULT and deliberately kept OFF
     # the 64-block ladder. It changes the header extra-data wire shape —
-    # post-Austin blocks drop the TxDependency field — so any client without
-    # Austin support (erigon v3.7.2, bor < 2.10.0) hard-rejects every
-    # post-Austin header and halts at the boundary. A mixed-version or
-    # erigon-bearing devnet therefore cannot cross it, and no shared topology
+    # post-Austin blocks drop the TxDependency field — so any bor < 2.10.0
+    # hard-rejects every post-Austin header and halts at the boundary. A
+    # mixed-version devnet therefore cannot cross it, and no shared topology
     # may schedule it. Callers that want Austin set `austin_fork_block`
     # explicitly in network_params on a single-version bor >= 2.10.0 topology
     # (see pos-e2e scenarios/pos/austin-statesync-gas/params.yml, which pins

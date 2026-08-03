@@ -346,8 +346,6 @@ def _parse_participants(participants, log_level, log_format):
         if el_type and not el_image:
             if el_type == constants.EL_TYPE.bor:
                 p["el_image"] = constants.IMAGES.get("l2_el_bor_image")
-            elif el_type == constants.EL_TYPE.erigon:
-                p["el_image"] = constants.IMAGES.get("l2_el_erigon_image")
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
 
