@@ -18,7 +18,7 @@ def test_sanity_check_with_invalid_parallel_import(plan):
     }
     expect.fails(
         lambda: sanity_check.sanity_check_polygon_args(plan, args),
-        'The "el_bor_stateless_parallel_import" parameter can only be enabled with bor EL client and when "el_bor_sync_with_witness" is set to true.',
+        'The "el_bor_stateless_parallel_import" parameter can only be enabled when "el_bor_sync_with_witness" is set to true.',
     )
 
 
