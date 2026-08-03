@@ -7,6 +7,19 @@ def test_sanity_check_valid_config(plan):
     sanity_check.sanity_check_polygon_args(plan, input_parser.POLYGON_POS_PACKAGE_ARGS)
 
 
+def test_sanity_check_with_invalid_el_type(plan):
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": "geth",
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        'Invalid "el_type" attribute: "geth"',
+    )
+
+
 def test_sanity_check_with_invalid_parallel_import(plan):
     participant = input_parser.POLYGON_POS_PARTICIPANT | {
         "el_type": constants.EL_TYPE.bor,
