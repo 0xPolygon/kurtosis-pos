@@ -10,12 +10,12 @@ inputs:
     description: |
       Unique identifier for this CI job — used as both the artifact name and
       the per-job perf JSON filename. Should be stable across reruns
-      (e.g. "deploy-heimdall-v2-mix", "snapshot-small").
+      (e.g. "deploy-heimdall-v2-bor", "snapshot-small").
     required: true
   flavour:
     description: |
       Optional matrix dimension recorded in the artifact metadata (e.g.
-      "small", "large", "heimdall-v2-mix"). Surfaces in perf-report.yaml.
+      "small", "large", "heimdall-v2-bor"). Surfaces in perf-report.yaml.
     required: false
     default: ''
   perf_dir:
