@@ -31,22 +31,12 @@ Below are some sample configurations to help you get started. Feel free to copy 
 
 ### Heimdall-v2/Bor Devnet
 
-This configuration deploys 4 heimdall-v2/bor validator nodes as well as 2 rpc nodes.
+This configuration deploys 2 heimdall-v2/bor validator nodes as well as 2 rpc nodes.
 
 To deploy this environment:
 
 ```bash
 kurtosis run --enclave pos --args-file .github/configs/heimdall-v2-bor.yml .
-```
-
-### Heimdall-v2/Erigon Devnet
-
-This configuration deploys 4 heimdall-v2/erigon validator nodes as well as 2 rpc nodes.
-
-To deploy this environment:
-
-```bash
-kurtosis run --enclave pos --args-file .github/configs/heimdall-v2-erigon.yml .
 ```
 
 ### Observability

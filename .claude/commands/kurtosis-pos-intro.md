@@ -51,7 +51,7 @@ src/
   l1/                            # L1 launchers (anvil, ethereum-package)
   contracts/                     # MATIC contract deployment (L1 + L2)
   cl/                            # Consensus layer: Heimdall-v2
-  el/                            # Execution layer: Bor, Erigon
+  el/                            # Execution layer: Bor
   el_cl_launcher.star            # Launches all L2 participants — edit when changing node startup
   additional_services/           # Optional services (observability, spammers, etc.)
   wait/wait.star                 # Polling helpers for startup conditions
