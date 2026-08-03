@@ -12,7 +12,6 @@ PARTICIPANT_KIND = struct(
 
 EL_TYPE = struct(
     bor="bor",
-    erigon="erigon",
 )
 
 CL_TYPE = struct(
@@ -55,7 +54,6 @@ IMAGES = {
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.10.0",
     "l2_el_bor_image": "0xpolygon/bor:2.9.0",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.7.2",
     "l2_cl_queue_image": "rabbitmq:4.3.4",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",

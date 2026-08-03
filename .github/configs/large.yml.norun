@@ -14,7 +14,7 @@ polygon_pos_package:
       el_bor_sync_with_witness: true
       count: 2
 
-    # Bor and Erigon RPC nodes (3 rpc nodes, one stateful bor node, one stateless bor node, one stateful erigon node)
+    # Bor RPC nodes (2 rpc nodes: one stateful, one stateless)
     - kind: rpc
       cl_type: heimdall-v2
       el_type: bor
@@ -25,12 +25,6 @@ polygon_pos_package:
       cl_type: heimdall-v2
       el_type: bor
       el_bor_sync_with_witness: true
-      count: 1
-
-    - kind: rpc
-      cl_type: heimdall-v2
-      el_type: erigon
-      el_bor_sync_with_witness: false
       count: 1
 
     # Bor archive node

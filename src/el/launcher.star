@@ -1,14 +1,12 @@
 bor_launcher = import_module("./bor/launcher.star")
 constants = import_module("../config/constants.star")
 context = import_module("./context.star")
-erigon_launcher = import_module("./erigon/launcher.star")
 shared = import_module("./shared.star")
 
 EL_KEYS_GENERATOR_FOLDER_PATH = "../../static_files/el/keys"
 
 LAUNCHERS = {
     constants.EL_TYPE.bor: bor_launcher.launch,
-    constants.EL_TYPE.erigon: erigon_launcher.launch,
 }
 
 
@@ -25,10 +23,9 @@ def launch(
     container_proc_manager_artifact,
     ethstats_server_params,
 ):
-    # cl_api_urls / cl_ws_rpc_urls are lists. EL launchers that support
-    # multi-Heimdall failover (bor) comma-join them; launchers that
-    # don't (erigon) use only the first entry. See
-    # src/el_cl_launcher.star pass-2 for how the lists are built.
+    # cl_api_urls / cl_ws_rpc_urls are lists; bor comma-joins them to
+    # support multi-Heimdall failover. See src/el_cl_launcher.star
+    # pass-2 for how the lists are built.
     el_node_name = generate_name(participant, id)
 
     # Generate keystore, nodekey and password.

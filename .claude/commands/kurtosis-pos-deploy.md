@@ -59,7 +59,7 @@ polygon_pos_package:
   log_format: text                # text | json
   participants:
     - kind: validator             # validator | rpc
-      el_type: bor                # bor | erigon
+      el_type: bor                # only option currently
       cl_type: heimdall-v2        # only option currently
       el_image: 0xpolygon/bor:2.9.0
       cl_image: 0xpolygon/heimdall-v2:0.10.0
@@ -98,7 +98,6 @@ Pre-funded accounts: `src/prefunded_accounts/accounts.star`.
 | File                               | Setup                                         |
 | ---------------------------------- | --------------------------------------------- |
 | `heimdall-v2-bor.yml`              | 2 validators + 2 bor RPCs                     |
-| `heimdall-v2-mix.yml`              | 2 validators + 2 erigon RPCs                  |
 | `all.yml`                          | 1 validator + 1 bor RPC (different chain IDs) |
 | `additional-services.yml`          | All optional services enabled                 |
 | `l1-backends/anvil.yml`            | Lightweight Anvil L1                          |

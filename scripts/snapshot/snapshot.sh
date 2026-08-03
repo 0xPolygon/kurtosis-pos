@@ -417,23 +417,6 @@ add_health_checks() {
             else . end
         )
     ' "$docker_compose_file"
-
-  # Erigon (L2 EL) health check — erigon image has bash but no wget/curl, so probe via /dev/tcp.
-  # This only verifies the JSON-RPC port is listening, not that it returns valid responses.
-  yq --in-place --yaml-output \
-    --arg enclave_name "$enclave_name" '
-        .services |= with_entries(
-            if (.key | test("^" + $enclave_name + "-l2-el-[0-9]+-")) and (.key | test("erigon")) then
-                .value.healthcheck = {
-                    "test": ["CMD-SHELL", "bash -c \"exec 3<>/dev/tcp/localhost/8545 && exec 3>&-\""],
-                    "interval": "5s",
-                    "timeout": "10s",
-                    "retries": 12,
-                    "start_period": "30s"
-                }
-            else . end
-        )
-    ' "$docker_compose_file"
 }
 
 configure_ports() {
@@ -710,7 +693,7 @@ log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract
 
 # Stop containers in dependency order to avoid app/store divergence:
 # 1. L2 CL (heimdall) first — stops block production at consensus layer
-# 2. L2 EL (bor/erigon) second — bor flushes its head-pointer atomically with no new blocks arriving
+# 2. L2 EL (bor) second — bor flushes its head-pointer atomically with no new blocks arriving
 # 3. Everything else last (rabbitmq, L1, vc, init/migration jobs)
 # Within each tier, stop in parallel; wait for the tier to fully drain before moving on.
 stop_tier() {
@@ -740,7 +723,7 @@ for c in "${all_containers[@]}"; do
 done
 
 stop_tier "L2 CL (heimdall)" "${cl_containers[@]}"
-stop_tier "L2 EL (bor/erigon)" "${el_containers[@]}"
+stop_tier "L2 EL (bor)" "${el_containers[@]}"
 stop_tier "remaining containers" "${other_containers[@]}"
 log_info "All containers stopped"
 
