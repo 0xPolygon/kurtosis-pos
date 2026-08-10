@@ -34,6 +34,9 @@ jobs:
     outputs:
       # `continue-on-error` reports the job as successful, so the drift verdict
       # has to travel to the summary as an output rather than a job result.
+      # Empty when an earlier step (pip install, extract-versions.py,
+      # generate-markdown.py) failed and `check` never ran — the summary treats
+      # that as "did not complete" rather than as "up to date".
       outdated: ${{ steps.check.outputs.outdated }}
     steps:
       - uses: actions/checkout@v7
@@ -425,7 +428,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Version matrix: ${{ needs.check-version-matrix.outputs.outdated == 'true' && 'dependencies are outdated 🚨 — regenerate it with `scripts/version-matrix`' || 'up to date ✅' }}"
+                    "text": "Version matrix: ${{ needs.check-version-matrix.outputs.outdated == 'true' && 'dependencies are outdated 🚨 — regenerate it with `scripts/version-matrix`' || needs.check-version-matrix.outputs.outdated == 'false' && 'up to date ✅' || 'check did not complete ⚠️ — the job failed before it could compare the matrix' }}"
                   }
                 }
               ]
