@@ -84,7 +84,7 @@ def find_package_references(repo_root: Path) -> dict:
 
 
 def main() -> int:
-    repo_root = Path(__file__).parent.parent
+    repo_root = Path(__file__).parent.parent.parent
     replace_pins = load_replace_pins(repo_root)
     references = find_package_references(repo_root)
     errors = []

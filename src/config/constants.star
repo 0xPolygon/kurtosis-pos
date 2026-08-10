@@ -63,9 +63,9 @@ IMAGES = {
     # additional services
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
-    "prometheus_image": "prom/prometheus:v3.13.1",
-    "grafana_image": "grafana/grafana:13.1.1",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.0.1",
+    "prometheus_image": "prom/prometheus:v3.13.2",
+    "grafana_image": "grafana/grafana:13.1.3",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.2.0",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 
