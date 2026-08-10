@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
 # Version Matrix
@@ -35,6 +35,10 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | rabbitmq       | [4.3.4](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.4) | [4.3.4](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.4) | ✅ matches stable |
 | status-checker | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | ✅ matches stable |
 
+### Untracked images
+
+Some images are deliberately absent from the table above: the `pos-*` images are [built in this repo](https://github.com/0xPolygon/kurtosis-pos/tree/main/docker) and published by `publish-images.yaml`, and `toolbox` / `ethstats-server` live on Artifact Registry. Neither has an upstream release stream to compare against. The full list is `SKIPPED_IMAGES` in `scripts/version-matrix/extract-versions.py`.
+
 ## Kurtosis packages
 
 External Kurtosis packages the package depends on. Versions are pinned in the [`replace` block of `kurtosis.yml`](https://github.com/0xPolygon/kurtosis-pos/blob/main/kurtosis.yml), which is the single place to bump them.
@@ -43,7 +47,3 @@ External Kurtosis packages the package depends on. Versions are pinned in the [`
 | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [1bd40655ed6c](https://github.com/ethpandaops/ethereum-package/tree/1bd40655ed6c574392a523fc821d8a27b6949d36)     | [HEAD (1bd40655ed6c)](https://github.com/ethpandaops/ethereum-package/tree/1bd40655ed6c) | ✅ matches stable                               |
 | [github.com/kurtosis-tech/prometheus-package](https://github.com/kurtosis-tech/prometheus-package) | [f3402ebad8cf](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | [1.1.0](https://github.com/kurtosis-tech/prometheus-package/releases/tag/1.1.0)          | ⚡️ newer than stable — 2 commits ahead of 1.1.0 |
-
-## Untracked images
-
-Some images are deliberately absent from the table above: the `pos-*` images are [built in this repo](https://github.com/0xPolygon/kurtosis-pos/tree/main/docker) and published by `publish-images.yaml`, and `toolbox` / `ethstats-server` live on Artifact Registry. Neither has an upstream release stream to compare against. The full list is `SKIPPED_IMAGES` in `scripts/version-matrix/extract-versions.py`.

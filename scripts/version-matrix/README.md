@@ -9,7 +9,7 @@ Two kinds of dependency are covered:
 - **External Kurtosis packages** — the `replace` block of `kurtosis.yml`.
 
 Both are compared against their upstream GitHub releases and annotated with a
-status. The output lands in [`docs/docs/appendix/version-matrix.md`](../../docs/docs/appendix/version-matrix.md).
+status. The output lands in [`docs/docs/version-matrix.md`](../../docs/docs/version-matrix.md).
 
 ## Components
 
