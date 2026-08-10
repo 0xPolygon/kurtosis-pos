@@ -47,3 +47,4 @@ Help us improve the package.
 References, troubleshooting, and more.
 
 - [FAQ](./docs/docs/appendix/faq.md)
+- [Version matrix](./docs/docs/appendix/version-matrix.md) — component versions compared against the latest upstream releases
