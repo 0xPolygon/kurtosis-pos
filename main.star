@@ -9,6 +9,9 @@ input_parser = import_module("./src/config/input_parser.star")
 l1_launcher = import_module("./src/l1/launcher.star")
 math = import_module("./src/math/math.star")
 prefunded_accounts_module = import_module("./src/prefunded_accounts/accounts.star")
+reserved_registry_deployer = import_module(
+    "./src/contracts/reserved_registry_deployer.star"
+)
 wallet = import_module("./src/wallet/wallet.star")
 
 
@@ -157,6 +160,19 @@ def run(plan, args):
         admin_address,
         validator_accounts,
         l1_contract_addresses_artifact,
+    )
+
+    # Bootstrap the reserved-blockspace registry (a devnet-only stub — see
+    # src/contracts/reserved_registry_deployer.star). Genesis deploys the
+    # registry's bytecode but it has no constructor, so it starts empty;
+    # without this step the ReservedBlockspace fork stays active-but-dormant
+    # (capacity 0, nothing classified reserved).
+    reserved_registry_deployer.initialize_reserved_registry(
+        plan,
+        polygon_pos_args,
+        l2_rpc_url,
+        admin_private_key,
+        admin_address,
     )
 
     # Deploy additional services.
