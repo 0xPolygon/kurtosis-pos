@@ -100,7 +100,7 @@ func monitorBor(ctx context.Context, svc discover.Service, stimulate bool, minBl
 	defer bor.Close()
 
 	// Retry the baseline pair on transient errors so a node that's still
-	// warming up (e.g. erigon mid-restart after a snapshot restore) gets the
+	// warming up (e.g. mid-restart after a snapshot restore) gets the
 	// same grace as the poll loop below. The probe shares a single timeout
 	// across baseline + poll loop — if neither read ever succeeds, ctx will
 	// fire and we fail.

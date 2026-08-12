@@ -11,10 +11,10 @@ paths. Each added job multiplies the rows in the PR comment and contributes
 runner-variance to the rolling baseline, so this list is intentionally
 small:
 
-| Workflow   | Jobs                                                                          |
-| ---------- | ----------------------------------------------------------------------------- |
-| `deploy`   | `run-without-args`, `heimdall-v2-bor`, `heimdall-v2-mix`, `l1-backends-anvil` |
-| `snapshot` | `small`, `large`                                                              |
+| Workflow   | Jobs                                                       |
+| ---------- | ---------------------------------------------------------- |
+| `deploy`   | `run-without-args`, `heimdall-v2-bor`, `l1-backends-anvil` |
+| `snapshot` | `small`, `large`                                           |
 
 To add a job, append its config name to `PERF_CONFIGS` in `deploy.yaml`'s
 `run-with-args` matrix (or wire `./.github/actions/perf` into a new workflow).

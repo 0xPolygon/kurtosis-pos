@@ -12,7 +12,6 @@ PARTICIPANT_KIND = struct(
 
 EL_TYPE = struct(
     bor="bor",
-    erigon="erigon",
 )
 
 CL_TYPE = struct(
@@ -49,25 +48,24 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.3",
-    "l1_cl_image": "sigp/lighthouse:v8.1.3",
-    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.6.0-rc1",
+    "l1_el_image": "ethereum/client-go:v1.17.5",
+    "l1_cl_image": "sigp/lighthouse:v8.2.1",
+    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.7.1",
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.9.0",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.10.0",
     "l2_el_bor_image": "0xpolygon/bor:2.9.0",
-    "l2_el_erigon_image": "0xpolygon/erigon:v3.7.2",
-    "l2_cl_queue_image": "rabbitmq:4.2.5",
+    "l2_cl_queue_image": "rabbitmq:4.3.4",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
-    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.9.0",
+    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
-    "prometheus_image": "prom/prometheus:v3.11.2",
-    "grafana_image": "grafana/grafana:12.4.2",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v5.2.0",
+    "prometheus_image": "prom/prometheus:v3.13.2",
+    "grafana_image": "grafana/grafana:13.1.3",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.3.1",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 

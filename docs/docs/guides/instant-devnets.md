@@ -11,7 +11,7 @@ This guide will show you how to spin up PoS devnets under 20 seconds using snaps
 We provide two snapshot types:
 
 - **pos-devnet-small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities. It is based on the default configuration of the package.
-- **pos-devnet-large**: the environment contains an L1 chain and an L2 chain with 7 heimdall-v2/bor validators, 3 rpc nodes (one stateless bor node, one stateful bor node, one stateful erigon node) and one archive bor node. Useful for testing in a more realistic environment. It is based on `.github/configs/large.yml.norun`.
+- **pos-devnet-large**: the environment contains an L1 chain and an L2 chain with 5 heimdall-v2/bor validators, 2 rpc nodes (one stateless bor node, one stateful bor node) and one archive bor node. Useful for testing in a more realistic environment. It is based on `.github/configs/large.yml.norun`.
 
 Images are hosted on GHCR. The tags correspond to the kurtosis-pos package versions.
 
@@ -89,7 +89,7 @@ kurtosis run \
 
 ### Snapshot the enclave
 
-The script waits for L2 to reach a certain block height (256, Rio HF activation block), stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
+The script waits for L2 to reach a certain block height (128, Rio HF activation block), stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
 
 ```bash
 ./scripts/snapshot/snapshot.sh pos

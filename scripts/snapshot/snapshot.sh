@@ -417,23 +417,6 @@ add_health_checks() {
             else . end
         )
     ' "$docker_compose_file"
-
-  # Erigon (L2 EL) health check — erigon image has bash but no wget/curl, so probe via /dev/tcp.
-  # This only verifies the JSON-RPC port is listening, not that it returns valid responses.
-  yq --in-place --yaml-output \
-    --arg enclave_name "$enclave_name" '
-        .services |= with_entries(
-            if (.key | test("^" + $enclave_name + "-l2-el-[0-9]+-")) and (.key | test("erigon")) then
-                .value.healthcheck = {
-                    "test": ["CMD-SHELL", "bash -c \"exec 3<>/dev/tcp/localhost/8545 && exec 3>&-\""],
-                    "interval": "5s",
-                    "timeout": "10s",
-                    "retries": 12,
-                    "start_period": "30s"
-                }
-            else . end
-        )
-    ' "$docker_compose_file"
 }
 
 configure_ports() {
@@ -457,6 +440,22 @@ configure_ports() {
             if (.key | test("^" + $enclave_name + "-el-[0-9]+-")) and (.key | test("-l2-") | not) then
                 (.key | capture("^" + $enclave_name + "-el-(?<idx>[0-9]+)-")) as $match |
                 .value.ports = [(($match.idx | tonumber) + 8545 - 1 | tostring) + ":8545"]
+            else . end
+        )
+    ' "$docker_compose_file"
+
+  # L1 EL via `l1_backend: anvil` - the single `anvil` service stands in for
+  # `el-1-geth-lighthouse` and serves the same JSON-RPC on 8545, but its name
+  # carries no `-el-N-` segment so the L1 EL block above skips it, leaving the
+  # published compose with no host binding for anvil. Bind it to host 8545 to
+  # match the geth mapping. anvil and el-1-geth-lighthouse are mutually
+  # exclusive (one L1 backend per enclave), so this is a no-op under the
+  # ethereum-package backend.
+  yq --in-place --yaml-output \
+    --arg enclave_name "$enclave_name" '
+        .services |= with_entries(
+            if .key | test("^" + $enclave_name + "-anvil") then
+                .value.ports = ["8545:8545"]
             else . end
         )
     ' "$docker_compose_file"
@@ -582,7 +581,7 @@ if [[ -z "$enclave_name" ]]; then
 fi
 log_info "Using enclave name: $enclave_name"
 
-target_block=256 # Rio HF activation block
+target_block=128 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"
 wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 
@@ -642,6 +641,36 @@ wait_for_checkpoint_quiescence() {
 log_info "Waiting for heimdall's checkpoint ack_count to catch up with L1"
 wait_for_checkpoint_quiescence "$enclave_name"
 
+# Persist the anvil L1 backend's post-deploy state into the snapshot. anvil
+# boots `--load-state /opt/anvil/genesis.json --dump-state /tmp/state_dump.json`
+# (src/l1/anvil.star): /tmp is not captured, AND anvil writes that dump only on
+# SIGINT (not the SIGTERM the stop sequence below sends) — so without
+# intervention the deployed L1 contracts and checkpoint state are lost on
+# restore and the restored devnet comes up on bare genesis. Capture the live
+# state via the `anvil_dumpState` RPC and bake it into the snapshot IMAGE as
+# /anvil-state.hex (the same image-file bake contractAddresses.json uses — a
+# `docker cp` into the live /opt/anvil files-artifact volume does NOT survive
+# volume capture). restore.sh replays it via `anvil_loadState`. Captured after
+# quiescence so it's consistent with heimdall's acked checkpoints. No-op under
+# the ethereum-package L1 backend, which has no anvil service.
+anvil_state_tmp=""
+anvil_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null || true)
+if [[ -n "$anvil_rpc_url" ]]; then
+  log_info "Capturing anvil L1 state via ${anvil_rpc_url} (anvil_dumpState)"
+  anvil_state_tmp=$(mktemp)
+  # `jq -j` (not -r): emit the hex with NO trailing newline. restore.sh splices
+  # the file contents straight into a JSON string, so a trailing newline would
+  # produce an invalid anvil_loadState request body.
+  curl -fsSL -X POST -H 'Content-Type: application/json' \
+    --data '{"jsonrpc":"2.0","method":"anvil_dumpState","params":[],"id":1}' \
+    "$anvil_rpc_url" | jq -j '.result // empty' > "$anvil_state_tmp"
+  if [[ "$(wc -c < "$anvil_state_tmp")" -lt 100 ]]; then
+    log_error "anvil_dumpState returned an unexpectedly short result ($(wc -c < "$anvil_state_tmp") bytes)"
+    exit 1
+  fi
+  log_info "Captured $(wc -c < "$anvil_state_tmp") bytes of anvil state for /anvil-state.hex"
+fi
+
 # Extract kurtosis file artifacts that post-restore e2e tests need.
 # `kurtosis files inspect` only works on a live enclave, so we have to grab
 # them now and ship them inside the snapshot image alongside the volumes and
@@ -652,7 +681,7 @@ wait_for_checkpoint_quiescence "$enclave_name"
 #     (L2_STATE_RECEIVER_ADDRESS, used by state-sync helpers).
 contract_addresses_tmp=$(mktemp)
 l2_genesis_tmp=$(mktemp)
-trap "rm -f '$contract_addresses_tmp' '$l2_genesis_tmp'" EXIT
+trap "rm -f '$contract_addresses_tmp' '$l2_genesis_tmp' '$anvil_state_tmp'" EXIT
 log_info "Extracting kurtosis file artifacts"
 # kurtosis files inspect prepends a "File contents:" banner. Strip everything
 # before the first '{' and re-format with jq so the output is canonical JSON.
@@ -664,7 +693,7 @@ log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract
 
 # Stop containers in dependency order to avoid app/store divergence:
 # 1. L2 CL (heimdall) first — stops block production at consensus layer
-# 2. L2 EL (bor/erigon) second — bor flushes its head-pointer atomically with no new blocks arriving
+# 2. L2 EL (bor) second — bor flushes its head-pointer atomically with no new blocks arriving
 # 3. Everything else last (rabbitmq, L1, vc, init/migration jobs)
 # Within each tier, stop in parallel; wait for the tier to fully drain before moving on.
 stop_tier() {
@@ -694,7 +723,7 @@ for c in "${all_containers[@]}"; do
 done
 
 stop_tier "L2 CL (heimdall)" "${cl_containers[@]}"
-stop_tier "L2 EL (bor/erigon)" "${el_containers[@]}"
+stop_tier "L2 EL (bor)" "${el_containers[@]}"
 stop_tier "remaining containers" "${other_containers[@]}"
 log_info "All containers stopped"
 
@@ -714,6 +743,10 @@ log_info "Backups completed"
 # Move the previously-extracted file artifacts into the snapshot tree.
 mv "$contract_addresses_tmp" "$tmp_dir/contractAddresses.json"
 mv "$l2_genesis_tmp" "$tmp_dir/l2-genesis.json"
+# Stage the captured anvil state (anvil backend only) for baking into the image.
+if [[ -n "$anvil_state_tmp" ]]; then
+  mv "$anvil_state_tmp" "$tmp_dir/anvil-state.hex"
+fi
 
 log_info "Generating docker-compose"
 docker_compose_file_path="$tmp_dir/docker-compose.yaml"
@@ -732,6 +765,11 @@ COPY docker-compose.yaml /docker-compose.yaml
 COPY contractAddresses.json /contractAddresses.json
 COPY l2-genesis.json /l2-genesis.json
 EOF
+# Bake the captured anvil L1 state (anvil backend only) so restore.sh can
+# replay it; absent under the ethereum-package backend.
+if [[ -f "anvil-state.hex" ]]; then
+  echo "COPY anvil-state.hex /anvil-state.hex" >> "Dockerfile"
+fi
 # Build the docker image
 image_name="pos-devnet"
 docker build --tag "$image_name" .

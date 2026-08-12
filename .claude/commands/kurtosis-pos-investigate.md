@@ -248,7 +248,7 @@ Focus: state consistency, liveness, and recovery under stress.
 | Memory-pressured bor | `docker update --memory 256m` on a bor container; observe mempool and block production under pressure |
 | Sprint boundary behavior | Monitor block production at every multiple of 16 blocks (devnet sprint; mainnet is also 16 but verify via `EL_SPRINT_DURATION` in `src/config/constants.star`) |
 | Span transition | Monitor validator producer rotation at every multiple of 128 blocks (devnet span = 8 sprints × 16; mainnet span is much larger — always use devnet values from `src/config/constants.star`) |
-| Rio hard fork transition | Observe block production and state around block 256 |
+| Rio hard fork transition | Observe block production and state around block 128 |
 | Heimdall state divergence | Compare `/status` across multiple heimdall validators |
 
 ### Consensus & Finality
@@ -261,7 +261,6 @@ Focus: block production correctness, validator coordination, and finality guaran
 | Checkpoint submission delay | Throttle heimdall via Docker CPU/memory limits (see throttling note above); observe how far bor continues without checkpoints |
 | Validator set change propagation | Add or remove a validator via contracts; observe how quickly bor picks up the new span |
 | Finality regression after L1 issue | Restart L1 mid-checkpoint; observe if heimdall resubmits or skips |
-| Mixed client consensus | Use `heimdall-v2-mix.yml` (bor + erigon validators); check state root agreement |
 | CometBFT consensus under validator loss | Stop validators one by one until below 2/3 threshold; observe halt behaviour |
 | Milestone stall under validator loss | Stop enough validators to break 2/3 threshold; observe milestone height freeze while Bor continues producing blocks |
 | Reorg past a milestone | Force a local reorg on a bor node (via `debug_setHead`) past a milestoned block; observe whether it is rejected |

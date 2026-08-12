@@ -60,9 +60,9 @@ ethereum_package:
 |  Field   |  Type  |          Default           |           Description            |
 | -------- | ------ | -------------------------- | -------------------------------- |
 | cl_type  | string | lighthouse                 | Consensus Layer (CL) client type |
-| cl_image | string | sigp/lighthouse:v8.1.3     | Image for the CL client          |
+| cl_image | string | sigp/lighthouse:v8.2.1     | Image for the CL client          |
 | el_type  | string | geth                       | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.17.3 | Image for the EL client          |
+| el_image | string | ethereum/client-go:v1.17.5 | Image for the EL client          |
 
 #### `network_params`
 
@@ -85,12 +85,12 @@ anvil:
   slots_in_epoch: 2
 ```
 
-| Field          | Type   | Default                               | Description                                                                                           |
-| -------------- | ------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.6.0-rc1 | Anvil container image                                                                                 |
-| network_id     | string | 3151908                               | L1 network/chain ID                                                                                   |
-| block_time     | int    | 1                                     | Block time in seconds                                                                                 |
-| slots_in_epoch | int    | 2                                     | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
+| Field          | Type   | Default                           | Description                                                                                           |
+| -------------- | ------ | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.7.1 | Anvil container image                                                                                 |
+| network_id     | string | 3151908                           | L1 network/chain ID                                                                                   |
+| block_time     | int    | 1                                 | Block time in seconds                                                                                 |
+| slots_in_epoch | int    | 2                                 | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
 
 ## L2 Configuration
 
@@ -127,36 +127,36 @@ These global settings apply to all participants unless overridden at the partici
 
 Default: a single validator.
 
-| Field                            | Type   | Default                     | Description                                                                                                                                                                                                                                 |
-| -------------------------------- | ------ | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| kind                             | string | validator                   | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                     |
-| cl_type                          | string | heimdall-v2                 | Consensus Layer (CL) client type                                                                                                                                                                                                            |
-| cl_image                         | string | 0xpolygon/heimdall-v2:0.9.0 | Image for the CL client                                                                                                                                                                                                                     |
-| cl_queue_image                   | string | rabbitmq:4.2.5              | Image for the CL queue                                                                                                                                                                                                                      |
-| cl_log_level                     | string | info                        | Log level for the CL client                                                                                                                                                                                                                 |
-| cl_log_format                    | string | text                        | Log format for the CL client                                                                                                                                                                                                                |
-| cl_min_retain_blocks             | int    | 0                           | Minimal distance from current height to retain height                                                                                                                                                                                       |
-| cl_compact_enabled               | bool   | false                       | Compaction enabling.                                                                                                                                                                                                                        |
-| cl_compaction_interval           | int    | 1000                        | Minimal blocks necessary to run a new compaction routine                                                                                                                                                                                    |
-| cl_storage_pruning_interval      | string | 10m0s                       | Interval between prune routines.                                                                                                                                                                                                            |
-| cl_indexer_pruning_enabled       | bool   | false                       | Pruning enabling.                                                                                                                                                                                                                           |
-| el_type                          | string | bor                         | Execution Layer (EL) client type: `bor` or `erigon`                                                                                                                                                                                         |
-| el_image                         | string | 0xpolygon/bor:2.9.0         | Image for the EL client (bor: `0xpolygon/bor:2.9.0`, erigon: `0xpolygon/erigon:v3.7.2`)                                                                                                                                                     |
-| el_log_level                     | string | info                        | Log level for the EL client                                                                                                                                                                                                                 |
-| el_log_format                    | string | text                        | Log format for the EL client                                                                                                                                                                                                                |
-| el_bor_produce_witness           | bool   | false                       | Allow bor to start producing witnesses                                                                                                                                                                                                      |
-| el_bor_sync_with_witness         | bool   | false                       | Enable bor to sync new blocks using witnesses                                                                                                                                                                                               |
-| el_bor_stateless_parallel_import | bool   | false                       | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)                                                                                                                                                   |
-| el_bor_archive_mode              | bool   | false                       | Run bor with `gcmode=archive` and full history retention. Orthogonal to `kind` — set on a validator or rpc node. Required for `debug_traceTransaction` on past blocks. The default single-node config sets this to `true` on the validator. |
-| count                            | int    | 1                           | Number of nodes to spin up for this participant                                                                                                                                                                                             |
+| Field                            | Type   | Default                      | Description                                                                                                                                                                                                                                 |
+| -------------------------------- | ------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| kind                             | string | validator                    | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                     |
+| cl_type                          | string | heimdall-v2                  | Consensus Layer (CL) client type                                                                                                                                                                                                            |
+| cl_image                         | string | 0xpolygon/heimdall-v2:0.10.0 | Image for the CL client                                                                                                                                                                                                                     |
+| cl_queue_image                   | string | rabbitmq:4.3.4               | Image for the CL queue                                                                                                                                                                                                                      |
+| cl_log_level                     | string | info                         | Log level for the CL client                                                                                                                                                                                                                 |
+| cl_log_format                    | string | text                         | Log format for the CL client                                                                                                                                                                                                                |
+| cl_min_retain_blocks             | int    | 0                            | Minimal distance from current height to retain height                                                                                                                                                                                       |
+| cl_compact_enabled               | bool   | false                        | Compaction enabling.                                                                                                                                                                                                                        |
+| cl_compaction_interval           | int    | 1000                         | Minimal blocks necessary to run a new compaction routine                                                                                                                                                                                    |
+| cl_storage_pruning_interval      | string | 10m0s                        | Interval between prune routines.                                                                                                                                                                                                            |
+| cl_indexer_pruning_enabled       | bool   | false                        | Pruning enabling.                                                                                                                                                                                                                           |
+| el_type                          | string | bor                          | Execution Layer (EL) client type: `bor`                                                                                                                                                                                                     |
+| el_image                         | string | 0xpolygon/bor:2.9.0          | Image for the EL client (bor: `0xpolygon/bor:2.9.0`)                                                                                                                                                                                        |
+| el_log_level                     | string | info                         | Log level for the EL client                                                                                                                                                                                                                 |
+| el_log_format                    | string | text                         | Log format for the EL client                                                                                                                                                                                                                |
+| el_bor_produce_witness           | bool   | false                        | Allow bor to start producing witnesses                                                                                                                                                                                                      |
+| el_bor_sync_with_witness         | bool   | false                        | Enable bor to sync new blocks using witnesses                                                                                                                                                                                               |
+| el_bor_stateless_parallel_import | bool   | false                        | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)                                                                                                                                                   |
+| el_bor_archive_mode              | bool   | false                        | Run bor with `gcmode=archive` and full history retention. Orthogonal to `kind` — set on a validator or rpc node. Required for `debug_traceTransaction` on past blocks. The default single-node config sets this to `true` on the validator. |
+| count                            | int    | 1                            | Number of nodes to spin up for this participant                                                                                                                                                                                             |
 
 ### `setup_images`
 
-| Field                      | Type   | Default                                                | Description                                 |
-| -------------------------- | ------ | ------------------------------------------------------ | ------------------------------------------- |
-| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.4          | Image used to deploy MATIC contracts to L1  |
-| el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd       | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.9.0 | Image used to generate validator configs    |
+| Field                      | Type   | Default                                                 | Description                                 |
+| -------------------------- | ------ | ------------------------------------------------------- | ------------------------------------------- |
+| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.4           | Image used to deploy MATIC contracts to L1  |
+| el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd        | Image used to create the L2 EL genesis file |
+| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0 | Image used to generate validator configs    |
 
 ### `network_params`
 
@@ -212,9 +212,10 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 ### `ethstats_server_params`
 
-| Field |  Type  |                                         Default                                         |               Description                |
-| ----- | ------ | --------------------------------------------------------------------------------------- | ---------------------------------------- |
-| image | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server |
+| Field     | Type   | Default                                                                                 | Description                                                               |
+| --------- | ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| image     | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server                                  |
+| ws_secret | string | sharedsecret                                                                            | Shared secret used to authenticate nodes reporting to the ethstats server |
 
 ### `status_checker_params`
 

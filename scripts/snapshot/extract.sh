@@ -33,6 +33,8 @@ docker cp "$container_id:/volumes/." "$volume_folder_path/"
 docker cp "$container_id:/docker-compose.yaml" "$output_dir/docker-compose.yaml"
 docker cp "$container_id:/contractAddresses.json" "$output_dir/contractAddresses.json"
 docker cp "$container_id:/l2-genesis.json" "$output_dir/l2-genesis.json"
+# Only present for anvil-backend snapshots (see snapshot.sh); tolerate absence.
+docker cp "$container_id:/anvil-state.hex" "$output_dir/anvil-state.hex" 2> /dev/null || true
 log_info "Files downloaded to $output_dir"
 
 docker rm "$container_id" > /dev/null

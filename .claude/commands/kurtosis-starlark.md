@@ -58,7 +58,7 @@ result = import_module(ETHEREUM_PACKAGE).run(plan, args)
 if el_type == "bor": ...
 
 # DO — constants.star
-EL_TYPE = struct(bor="bor", erigon="erigon")
+EL_TYPE = struct(bor="bor")
 PARTICIPANT_KIND = struct(validator="validator", rpc="rpc")
 
 # consumer
@@ -69,12 +69,12 @@ if el_type == constants.EL_TYPE.bor: ...
 
 ```python
 # DON'T — image strings scattered across launchers
-image = "0xpolygon/bor:2.8.3"
+image = "0xpolygon/bor:2.9.0"
 
 # DO — constants.star
 IMAGES = {
-    "l2_el_bor_image":         "0xpolygon/bor:2.8.3",
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.9.0",
+    "l2_el_bor_image":         "0xpolygon/bor:2.9.0",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.10.0",
 }
 
 # launcher
@@ -99,17 +99,20 @@ def new_context(service_name, rpc_http_url):
 
 ### `mod-dispatcher` — Use a `LAUNCHERS` dict + `_get_launcher()` for multi-client dispatch
 
+Only one EL client (`bor`) exists today, but this pattern is what to reach
+for the moment a second one is added — don't let a single client tempt you
+back into an `if`/`elif` chain.
+
 ```python
-# DON'T
+# DON'T — adding a second client means growing this chain forever
 if el_type == "bor":
     bor_launcher.launch(plan, participant)
-elif el_type == "erigon":
-    erigon_launcher.launch(plan, participant)
+elif el_type == "other_client":
+    other_client_launcher.launch(plan, participant)
 
 # DO
 LAUNCHERS = {
-    constants.EL_TYPE.bor:    bor_launcher.launch,
-    constants.EL_TYPE.erigon: erigon_launcher.launch,
+    constants.EL_TYPE.bor: bor_launcher.launch,
 }
 
 def _get_launcher(participant):
@@ -223,7 +226,7 @@ el_rpc_url = "http://{}:{}".format(el_node_name, shared.RPC_PORT_NUMBER)
 
 | Layer               | `MAX_CPU` (milicores) | `MAX_MEM` (MB) |
 | ------------------- | --------------------- | -------------- |
-| L2 EL (bor/erigon)  | 4000                  | 16384          |
+| L2 EL (bor)         | 4000                  | 16384          |
 | L2 CL (heimdall-v2) | 2000                  | 4096           |
 | Additional services | 1000                  | 2048           |
 
