@@ -63,7 +63,7 @@
         "0": "0x0000000000000000000000000000000000000000",
         "{{.rio_fork_block}}": "0x000000000000000000000000000000000000ba5e"
       },
-      "reservedBlockspaceBlock": 8,
+      "reservedBlockspaceBlock": 128,
       "reservedClients": [
         {
           "addresses": ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"],
