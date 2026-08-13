@@ -53,7 +53,7 @@ IMAGES = {
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.7.1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.10.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.9.0",
+    "l2_el_bor_image": "0xpolygon/bor:2.10.0",
     "l2_cl_queue_image": "rabbitmq:4.3.4",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
@@ -65,7 +65,7 @@ IMAGES = {
     # observability
     "prometheus_image": "prom/prometheus:v3.13.2",
     "grafana_image": "grafana/grafana:13.1.3",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.3.1",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.3.2",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
 
@@ -124,8 +124,9 @@ EL_HARD_FORK_BLOCKS = {
     "lisovoPro": 128,
     "giugliano": 128,
     "chicago": 128,
-    # Newest bor EL fork; after chicago. Enabled at 128 like the other
-    # post-rio forks. Requires bor >= 2.9.0 (older public bor images ignore
-    # the unknown valenciaBlock genesis field).
     "valencia": 128,
+    # Newest bor EL fork; after valencia. Enabled at 128 like the other
+    # post-rio forks. Requires bor >= 2.10.0 (older public bor images ignore
+    # the unknown austinBlock genesis field).
+    "austin": 128,
 }

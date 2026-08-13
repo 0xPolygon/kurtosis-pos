@@ -151,6 +151,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         "giugliano_fork_block": constants.EL_HARD_FORK_BLOCKS.get("giugliano"),
         "chicago_fork_block": constants.EL_HARD_FORK_BLOCKS.get("chicago"),
         "valencia_fork_block": constants.EL_HARD_FORK_BLOCKS.get("valencia"),
+        "austin_fork_block": constants.EL_HARD_FORK_BLOCKS.get("austin"),
     },
     "additional_services": [],
 }

@@ -65,6 +65,7 @@ POLYGON_POS_PARAMS = {
         "giugliano_fork_block",
         "chicago_fork_block",
         "valencia_fork_block",
+        "austin_fork_block",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
