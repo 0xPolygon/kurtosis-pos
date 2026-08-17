@@ -196,6 +196,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | giugliano_fork_block                  | int    | 128                | Block number for Giugliano hard fork activation                                                              |
 | chicago_fork_block                    | int    | 128                | Block number for Chicago hard fork activation                                                                |
 | valencia_fork_block                   | int    | 128                | Block number for Valencia hard fork activation (bor >= 2.9.0)                                                |
+| austin_fork_block                     | int    | 128                | Block number for Austin hard fork activation (bor >= 2.10.0)                                                 |
 
 ### `additional_services`
 
