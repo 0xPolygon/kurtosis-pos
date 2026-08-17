@@ -222,8 +222,11 @@ def _single_phase_table(
         (jr, _phase_by_name(jr, phase_name))
         for jr in sorted(current_jobs, key=_env_name)
     ]
-    rows = [(jr, p) for jr, p in rows if p is not None]
-    if not rows:
+    # Skip the table only when NO env recorded this phase (e.g. the deploy
+    # workflow has no snapshot phases). An env missing a phase that its
+    # siblings recorded means its step failed — keep the row so the failure
+    # is visible instead of silently dropping the env.
+    if all(p is None for _, p in rows):
         return []
     header = "| Env | Current | Baseline (min / avg / max) | Δ vs avg |"
     sep = "|---|---|---|---|"
@@ -239,7 +242,14 @@ def _single_phase_table(
         sep,
     ]
     for jr, p in rows:
-        stats = baselines.get((jr.job, p.phase), BaselineStats())
+        stats = baselines.get((jr.job, phase_name), BaselineStats())
+        if p is None:
+            row = f"| `{_env_name(jr)}` | n/a ❌ | {fmt_baseline(stats, 's')} | — |"
+            if compare_to:
+                row += " — |"
+            row += f" {stats.count} |"
+            out.append(row)
+            continue
         row = (
             f"| `{_env_name(jr)}` | {fmt_value(p)} | {fmt_baseline(stats, unit_hint(p))} "
             f"| {fmt_delta(p, stats)} |"
@@ -261,10 +271,10 @@ def _snapshot_table(
     for jr in sorted(current_jobs, key=_env_name):
         build = _phase_by_name(jr, "snapshot-build")
         size = _phase_by_name(jr, "snapshot-image-size")
-        if build is None and size is None:
-            continue
         rows.append((jr, build, size))
-    if not rows:
+    # Same rule as _single_phase_table: only skip when no env has snapshot
+    # phases at all; a single failed env still gets a row.
+    if all(build is None and size is None for _, build, size in rows):
         return []
     out = [
         "### Snapshot",
@@ -273,12 +283,12 @@ def _snapshot_table(
         "|---|---|---|---|---|---|---|",
     ]
     for jr, build, size in rows:
-        build_stats = baselines.get((jr.job, "snapshot-build"), BaselineStats()) if build else BaselineStats()
-        size_stats = baselines.get((jr.job, "snapshot-image-size"), BaselineStats()) if size else BaselineStats()
+        build_stats = baselines.get((jr.job, "snapshot-build"), BaselineStats())
+        size_stats = baselines.get((jr.job, "snapshot-image-size"), BaselineStats())
         out.append(
             f"| `{_env_name(jr)}` "
-            f"| {fmt_value(build) if build else 'n/a'} "
-            f"| {fmt_value(size) if size else 'n/a'} "
+            f"| {fmt_value(build) if build else 'n/a ❌'} "
+            f"| {fmt_value(size) if size else 'n/a ❌'} "
             f"| {fmt_delta(build, build_stats) if build else '—'} "
             f"| {fmt_delta(size, size_stats) if size else '—'} "
             f"| {build_stats.count} "
