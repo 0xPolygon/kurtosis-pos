@@ -148,13 +148,17 @@ jobs:
           echo "number=${pr}" >> "$GITHUB_OUTPUT"
           echo "Resolved PR: ${pr:-<none>}"
 
-      - name: Upsert sticky PR comment
+      - name: Post sticky PR comment
         if: steps.download.outputs.has_artifacts == 'true' && steps.pr.outputs.number != ''
         uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
         with:
           number: ${{ steps.pr.outputs.number }}
           header: ci-perf-report-${{ github.event.workflow_run.name }}
           path: tmp/perf-out/report.md
+          # Delete the previous report and post a fresh comment at the bottom
+          # of the thread, so each run is visible without scrolling back to an
+          # edited comment.
+          recreate: true
 
       - name: Upload rendered report as artifact
         if: steps.download.outputs.has_artifacts == 'true'
