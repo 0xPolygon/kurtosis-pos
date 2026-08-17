@@ -44,6 +44,11 @@ jobs:
           listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" \
             --paginate \
             --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"')
+          # Job reruns upload a same-named artifact once per attempt, and the
+          # run-level listing returns all of them. Keep only the newest
+          # (highest id) per name so a failed attempt's partial upload can't
+          # shadow the rerun's complete one.
+          listing=$(sort -rn <<< "$listing" | awk '!seen[$2]++')
           mapfile -t artifacts <<< "$listing"
           # mapfile on an empty string yields a 1-element array containing "".
           if [[ ${#artifacts[@]} -eq 1 && -z "${artifacts[0]}" ]]; then
@@ -97,6 +102,8 @@ jobs:
             baseline_listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/artifacts" \
               --paginate \
               --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"')
+            # Same rerun dedupe as the current-run download above.
+            baseline_listing=$(sort -rn <<< "$baseline_listing" | awk '!seen[$2]++')
             mapfile -t artifacts <<< "$baseline_listing"
             if [[ ${#artifacts[@]} -eq 1 && -z "${artifacts[0]}" ]]; then
               artifacts=()

@@ -1,9 +1,10 @@
 name: perf-collect
 description: |
   Aggregate per-phase timings recorded by scripts/perf/measure.sh into a
-  single JSON artifact, then upload it. Idempotent: if no results were
-  recorded (e.g. the deploy step failed before any measure.sh end ran), the
-  step succeeds with a warning and uploads nothing.
+  single JSON artifact, then upload it. If no results were recorded (e.g.
+  the deploy step failed before any measure.sh end ran), an artifact with
+  an empty phases list is uploaded so the report can render the job as
+  failed instead of dropping it.
 
 inputs:
   job_id:
@@ -34,8 +35,9 @@ runs:
         PERF_FLAVOUR: ${{ inputs.flavour }}
       run: |
         if [[ ! -f "${PERF_DIR}/results.jsonl" ]]; then
-          echo "::warning::No perf results recorded at ${PERF_DIR}/results.jsonl — skipping aggregation"
-          exit 0
+          echo "::warning::No perf results recorded at ${PERF_DIR}/results.jsonl — emitting an empty artifact so the job still shows as failed in the report"
+          mkdir -p "${PERF_DIR}"
+          : > "${PERF_DIR}/results.jsonl"
         fi
         ./scripts/perf/aggregate.sh --output "${PERF_DIR}/perf-${PERF_JOB}.json"
 
