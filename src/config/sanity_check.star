@@ -65,6 +65,7 @@ POLYGON_POS_PARAMS = {
         "giugliano_fork_block",
         "chicago_fork_block",
         "valencia_fork_block",
+        "austin_fork_block",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
@@ -90,11 +91,10 @@ VALID_PARTICIPANT_KINDS = [
 ]
 
 VALID_CL_CLIENTS = [constants.CL_TYPE.heimdall_v2]
-VALID_EL_CLIENTS = [constants.EL_TYPE.bor, constants.EL_TYPE.erigon]
+VALID_EL_CLIENTS = [constants.EL_TYPE.bor]
 VALID_CLIENT_COMBINATIONS = {
     constants.CL_TYPE.heimdall_v2: [
         constants.EL_TYPE.bor,
-        constants.EL_TYPE.erigon,
     ],
 }
 
@@ -350,16 +350,11 @@ def _validate_participant(p):
     _validate_str(p, "el_log_format", VALID_LOG_FORMATS)
     _validate_strictly_positive_int(p, "count")
 
-    # Validate bor specific parameters.
-    if el_type != constants.EL_TYPE.bor:
-        _fail_if_not_bor_el_type(p, "el_bor_produce_witness")
-        _fail_if_not_bor_el_type(p, "el_bor_sync_with_witness")
-
-    if not (el_type == constants.EL_TYPE.bor and p.get("el_bor_sync_with_witness")):
+    if not p.get("el_bor_sync_with_witness"):
         stateless_parallel_import = p.get("el_bor_stateless_parallel_import")
         if stateless_parallel_import:
             fail(
-                'The "el_bor_stateless_parallel_import" parameter can only be enabled with bor EL client and when "el_bor_sync_with_witness" is set to true.'
+                'The "el_bor_stateless_parallel_import" parameter can only be enabled when "el_bor_sync_with_witness" is set to true.'
             )
 
 
@@ -384,14 +379,6 @@ def _validate_cl_environment(cl_environment):
                     cl_environment, VALID_CL_ENVIRONMENTS
                 )
             )
-
-
-def _fail_if_not_bor_el_type(input, attribute):
-    value = input.get(attribute)
-    if input.get("el_type") != constants.EL_TYPE.bor and value:
-        fail(
-            'The "{}" parameter is only valid for the bor EL client.'.format(attribute)
-        )
 
 
 def _validate_str(input, attribute, allowed_values):

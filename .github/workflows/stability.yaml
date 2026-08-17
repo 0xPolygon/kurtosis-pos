@@ -19,10 +19,11 @@ permissions:
   id-token: write
 
 env:
-  # Per-config run counts and runner sizes. Total = 256, the GitHub matrix cap.
-  #   default / heimdall-v2-bor / heimdall-v2-mix : 80 each on ubuntu-latest
+  # Per-config run counts and runner sizes. Total = 176, well under the
+  # GitHub matrix cap of 256.
+  #   default / heimdall-v2-bor : 80 each on ubuntu-latest
   #     (~±5 pp 95%-CI half-width on observed rates).
-  #   large : 16 on ubuntu-latest-8-cores (heavy runner — 7 validators, 4 RPCs,
+  #   large : 16 on ubuntu-latest-8-cores (heavy runner — 5 validators, 2 RPCs,
   #     1 archive + L1 stack won't fit on a 2-vCPU/7-GB standard runner).
   # large's CI is wider (~±11 pp) by design; 16 keeps the billable-runner cost
   # bounded while still catching catastrophic regressions on the big config.
@@ -30,7 +31,6 @@ env:
     [
       {"config": "default",         "args_file": "",                                        "runner": "ubuntu-latest",         "count": 80},
       {"config": "heimdall-v2-bor", "args_file": ".github/configs/heimdall-v2-bor.yml",     "runner": "ubuntu-latest",         "count": 80},
-      {"config": "heimdall-v2-mix", "args_file": ".github/configs/heimdall-v2-mix.yml",     "runner": "ubuntu-latest",         "count": 80},
       {"config": "large",           "args_file": ".github/configs/large.yml.norun",         "runner": "ubuntu-latest-8-cores", "count": 16}
     ]
   # Kurtosis enclave name. Reused across all jobs — safe because each job runs on
@@ -230,7 +230,7 @@ jobs:
 
           echo "slack_lines=$slack_lines" >> "$GITHUB_OUTPUT"
 
-      - uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+      - uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
         if: always()
         with:
           token: ${{ secrets.SLACK_BOT_TOKEN }}

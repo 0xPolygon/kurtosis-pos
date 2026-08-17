@@ -261,7 +261,6 @@ Focus: block production correctness, validator coordination, and finality guaran
 | Checkpoint submission delay | Throttle heimdall via Docker CPU/memory limits (see throttling note above); observe how far bor continues without checkpoints |
 | Validator set change propagation | Add or remove a validator via contracts; observe how quickly bor picks up the new span |
 | Finality regression after L1 issue | Restart L1 mid-checkpoint; observe if heimdall resubmits or skips |
-| Mixed client consensus | Use `heimdall-v2-mix.yml` (bor + erigon validators); check state root agreement |
 | CometBFT consensus under validator loss | Stop validators one by one until below 2/3 threshold; observe halt behaviour |
 | Milestone stall under validator loss | Stop enough validators to break 2/3 threshold; observe milestone height freeze while Bor continues producing blocks |
 | Reorg past a milestone | Force a local reorg on a bor node (via `debug_setHead`) past a milestoned block; observe whether it is rejected |

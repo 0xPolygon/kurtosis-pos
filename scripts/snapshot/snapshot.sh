@@ -373,7 +373,7 @@ configure_service_dependencies() {
         )
     ' "$docker_compose_file"
 
-  # L2: EL depends on CL with matching index. Bor/erigon talk to heimdall at
+  # L2: EL depends on CL with matching index. Bor talks to heimdall at
   # startup; without this dependency they can hit DNS-misbehaving errors
   # before heimdall registers its alias. Same `service_started` rationale as
   # above — heimdall may transiently flap during first boot, and bor has its
@@ -448,24 +448,6 @@ add_health_checks() {
             if (.key | test("^" + $enclave_name + "-l2-el-[0-9]+-")) and (.key | test("bor")) then
                 .value.healthcheck = {
                     "test": ["CMD-SHELL", "wget --quiet --timeout=5 --post-data=\"{\\\"method\\\":\\\"eth_blockNumber\\\",\\\"params\\\":[],\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\"}\" --header=\"Content-Type: application/json\" --output-document=- http://localhost:8545 | grep -q result"],
-                    "interval": "5s",
-                    "start_interval": "250ms",
-                    "timeout": "10s",
-                    "retries": 12,
-                    "start_period": "30s"
-                }
-            else . end
-        )
-    ' "$docker_compose_file"
-
-  # Erigon (L2 EL) health check — erigon image has bash but no wget/curl, so probe via /dev/tcp.
-  # This only verifies the JSON-RPC port is listening, not that it returns valid responses.
-  yq --in-place --yaml-output \
-    --arg enclave_name "$enclave_name" '
-        .services |= with_entries(
-            if (.key | test("^" + $enclave_name + "-l2-el-[0-9]+-")) and (.key | test("erigon")) then
-                .value.healthcheck = {
-                    "test": ["CMD-SHELL", "bash -c \"exec 3<>/dev/tcp/localhost/8545 && exec 3>&-\""],
                     "interval": "5s",
                     "start_interval": "250ms",
                     "timeout": "10s",
@@ -753,7 +735,7 @@ log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract
 
 # Stop containers in dependency order to avoid app/store divergence:
 # 1. L2 CL (heimdall) first — stops block production at consensus layer
-# 2. L2 EL (bor/erigon) second — bor flushes its head-pointer atomically with no new blocks arriving
+# 2. L2 EL (bor) second — bor flushes its head-pointer atomically with no new blocks arriving
 # 3. Everything else last (rabbitmq, L1, vc, init/migration jobs)
 # Within each tier, stop in parallel; wait for the tier to fully drain before moving on.
 stop_tier() {
@@ -783,7 +765,7 @@ for c in "${all_containers[@]}"; do
 done
 
 stop_tier "L2 CL (heimdall)" "${cl_containers[@]}"
-stop_tier "L2 EL (bor/erigon)" "${el_containers[@]}"
+stop_tier "L2 EL (bor)" "${el_containers[@]}"
 stop_tier "remaining containers" "${other_containers[@]}"
 log_info "All containers stopped"
 

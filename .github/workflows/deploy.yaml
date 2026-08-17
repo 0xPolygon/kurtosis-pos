@@ -23,6 +23,55 @@ env:
   DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
 
 jobs:
+  # Detect dependencies that have fallen behind their upstream releases. An
+  # upstream release is not a failure of this repo, so the job never fails the
+  # workflow — it reports the drift and the nightly summary relays it.
+  check-version-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    outputs:
+      # `continue-on-error` reports the job as successful, so the drift verdict
+      # has to travel to the summary as an output rather than a job result.
+      # Empty when an earlier step (pip install, extract-versions.py,
+      # generate-markdown.py) failed and `check` never ran — the summary treats
+      # that as "did not complete" rather than as "up to date".
+      outdated: ${{ steps.check.outputs.outdated }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: 3.13
+
+      # Includes rumdl, which generate-markdown.py uses to align its tables.
+      - name: Install dependencies
+        run: pip install -r scripts/version-matrix/requirements.txt
+
+      - name: Generate version matrix
+        env:
+          # Only needs to read public releases, so the default token is enough.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/version-matrix/extract-versions.py
+
+      - name: Generate markdown documentation
+        run: python3 scripts/version-matrix/generate-markdown.py
+
+      - name: Check the committed matrix is up to date
+        id: check
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "outdated=true" >> "$GITHUB_OUTPUT"
+            echo "::warning title=version-matrix::Dependencies have moved upstream. Regenerate the matrix with scripts/version-matrix."
+            echo "❌ Version matrix is out of date:"
+            git diff --stat
+            git diff
+            exit 1
+          fi
+          echo "outdated=false" >> "$GITHUB_OUTPUT"
+          echo "✅ Version matrix is up to date"
+
   run-without-args:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -102,7 +151,7 @@ jobs:
       # small and representative — every entry adds a row per phase to the
       # PR comment and contributes runner-variance to the baseline. To add
       # one, append its name from .github/configs/ (slash → dash, no .yml).
-      PERF_CONFIGS: heimdall-v2-bor heimdall-v2-mix l1-backends-anvil
+      PERF_CONFIGS: heimdall-v2-bor l1-backends-anvil
     steps:
       - uses: actions/checkout@v7
 
@@ -133,8 +182,6 @@ jobs:
 
       - uses: ./.github/actions/monitor
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
-        with:
-          skip_checkpoints: ${{ contains(matrix.file.name, 'heimdall-v2-erigon') }} # TODO: Understand why checkpoints are not being created in this case.
 
       - uses: ./.github/actions/test/bridge
         if: ${{ !contains(matrix.file.name, 'additional-services') }}
@@ -153,7 +200,7 @@ jobs:
         with:
           args_filename: ${{ matrix.file.name }}
           # Cache is only saved by main branch runs to avoid excessive storage use
-          save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-mix' }}
+          save_cache: ${{ github.ref == 'refs/heads/main' && matrix.file.name == 'heimdall-v2-bor' }}
 
   test-e2e:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -354,13 +401,14 @@ jobs:
     runs-on: ubuntu-latest
     if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     needs:
+      - check-version-matrix
       - run-without-args
       - run-with-args
       - test-e2e
       - run-with-external-l1
       - run-with-cl-el-genesis
     steps:
-      - uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+      - uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
         with:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           method: chat.postMessage
@@ -373,7 +421,14 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis POS Nightly>: ${{ contains(needs.*.result, 'failure') && 'some tests failed ❌' || (contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')) && 'some tests were skipped ⚠️' || 'all tests passed ✅' }}",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Kurtosis POS Nightly>: ${{ contains(needs.*.result, 'failure') && 'some tests failed ❌' || (contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')) && 'some tests were skipped ⚠️' || 'all tests passed ✅' }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Version matrix: ${{ needs.check-version-matrix.outputs.outdated == 'true' && 'dependencies are outdated 🚨 — regenerate it with `scripts/version-matrix`' || needs.check-version-matrix.outputs.outdated == 'false' && 'up to date ✅' || 'check did not complete ⚠️ — the job failed before it could compare the matrix' }}"
                   }
                 }
               ]

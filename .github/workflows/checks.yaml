@@ -33,20 +33,20 @@ jobs:
         run: kurtosis lint .
 
       - name: Run markdown linter
-        uses: rvben/rumdl@d4b387e11401873129035f3ed1ade1395ef09632 # v0.2.43
+        uses: rvben/rumdl@9faf4696d56c0cff426a2f85b3fd476ebe0d0ec0 # v0.2.52
 
       - name: Install pyyaml
         run: pip install pyyaml
 
       - name: Verify external package pins
-        run: python3 scripts/verify-package-pins.py
+        run: python3 scripts/version-matrix/verify-package-pins.py
 
   typos:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
-      - uses: crate-ci/typos@bee27e3a4fd1ea2111cf90ab89cd076c870fce14 # v1.48.0
+      - uses: crate-ci/typos@8a48f81b6c64dcfea44b3633223084c4be58ac5f # v1.49.0
 
   unit:
     runs-on: ubuntu-latest

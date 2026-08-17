@@ -7,6 +7,21 @@ def test_sanity_check_valid_config(plan):
     sanity_check.sanity_check_polygon_args(plan, input_parser.POLYGON_POS_PACKAGE_ARGS)
 
 
+# Erigon was removed as a supported EL client; pin the rejection so it can't
+# silently creep back into VALID_EL_CLIENTS.
+def test_sanity_check_rejects_erigon_el_type(plan):
+    participant = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_type": "erigon",
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [participant],
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        'Invalid "el_type" attribute: "erigon"',
+    )
+
+
 def test_sanity_check_with_invalid_parallel_import(plan):
     participant = input_parser.POLYGON_POS_PARTICIPANT | {
         "el_type": constants.EL_TYPE.bor,
@@ -18,7 +33,7 @@ def test_sanity_check_with_invalid_parallel_import(plan):
     }
     expect.fails(
         lambda: sanity_check.sanity_check_polygon_args(plan, args),
-        'The "el_bor_stateless_parallel_import" parameter can only be enabled with bor EL client and when "el_bor_sync_with_witness" is set to true.',
+        'The "el_bor_stateless_parallel_import" parameter can only be enabled when "el_bor_sync_with_witness" is set to true.',
     )
 
 

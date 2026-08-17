@@ -67,6 +67,12 @@ ETHEREUM_PACKAGE_ARGS = {
         "deneb_fork_epoch": 1,
         "electra_fork_epoch": 2,
         "fulu_fork_epoch": 3,  # Requires a supernode or perfect PeerDAS to be enabled.
+        # Blob parameter only (BPO) forks bump the blob target/max. They require Fulu, so
+        # every bpo_*_epoch must be >= fulu_fork_epoch. The ethereum package defaults them
+        # to epoch 0, which is before our Fulu activation, so we schedule them explicitly:
+        # both activate with Fulu. BPO 3 to 5 stay disabled, as in the ethereum package defaults.
+        "bpo_1_epoch": 3,
+        "bpo_2_epoch": 3,
     },
     "persistent": True,
 }
@@ -145,6 +151,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         "giugliano_fork_block": constants.EL_HARD_FORK_BLOCKS.get("giugliano"),
         "chicago_fork_block": constants.EL_HARD_FORK_BLOCKS.get("chicago"),
         "valencia_fork_block": constants.EL_HARD_FORK_BLOCKS.get("valencia"),
+        "austin_fork_block": constants.EL_HARD_FORK_BLOCKS.get("austin"),
     },
     "additional_services": [],
 }
@@ -312,8 +319,6 @@ def _parse_participants(participants, log_level, log_format):
         if el_type and not el_image:
             if el_type == constants.EL_TYPE.bor:
                 p["el_image"] = constants.IMAGES.get("l2_el_bor_image")
-            elif el_type == constants.EL_TYPE.erigon:
-                p["el_image"] = constants.IMAGES.get("l2_el_erigon_image")
             else:
                 fail("Invalid EL client type: '{}'.".format(el_type))
 
