@@ -61,8 +61,8 @@ polygon_pos_package:
     - kind: validator             # validator | rpc
       el_type: bor                # only option currently
       cl_type: heimdall-v2        # only option currently
-      el_image: 0xpolygon/bor:2.9.0
-      cl_image: 0xpolygon/heimdall-v2:0.10.0
+      el_image: 0xpolygon/bor:2.10.0
+      cl_image: 0xpolygon/heimdall-v2:0.11.0
       count: 1
       el_bor_archive_mode: false  # true = bor gcmode=archive, appends `-archive` to service name
   additional_services:
@@ -81,8 +81,8 @@ polygon_pos_package:
 | L1 chain ID       | `3151908`                                                            |
 | L2 EL chain ID    | `4927`                                                               |
 | L2 CL chain ID    | `heimdall-4927`                                                      |
-| Bor image         | `0xpolygon/bor:2.9.0`                                                |
-| Heimdall-v2 image | `0xpolygon/heimdall-v2:0.10.0`                                       |
+| Bor image         | `0xpolygon/bor:2.10.0`                                                |
+| Heimdall-v2 image | `0xpolygon/heimdall-v2:0.11.0`                                       |
 | Sprint duration   | 16 blocks                                                            |
 | Rio HF activation | block 128                                                            |
 | Admin address     | `0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9`                         |
