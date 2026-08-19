@@ -54,7 +54,7 @@ IMAGES = {
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.11.0",
     "l2_el_bor_image": "0xpolygon/bor:2.10.0",
-    "l2_cl_queue_image": "rabbitmq:4.3.4",
+    "l2_cl_queue_image": "rabbitmq:4.3.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
@@ -64,7 +64,7 @@ IMAGES = {
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.14.0",
-    "grafana_image": "grafana/grafana:13.1.3",
+    "grafana_image": "grafana/grafana:13.2.0",
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.3.2",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
 }
