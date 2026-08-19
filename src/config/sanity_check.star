@@ -69,6 +69,9 @@ POLYGON_POS_PARAMS = {
         "sequencer_enabled",
         "sequencer_image",
         "sequencer_redpanda_image",
+        "sequencer_redpanda_count",
+        "sequencer_gateway_count",
+        "sequencer_envoy_image",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)

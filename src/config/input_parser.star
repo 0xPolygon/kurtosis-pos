@@ -142,6 +142,9 @@ POLYGON_POS_PACKAGE_ARGS = {
         "sequencer_enabled": False,
         "sequencer_image": "seqstore:local",
         "sequencer_redpanda_image": "redpandadata/redpanda:latest",
+        "sequencer_redpanda_count": 1,
+        "sequencer_gateway_count": 1,
+        "sequencer_envoy_image": "envoyproxy/envoy:v1.31-latest",
         # Polygon PoS hard fork configurations
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),

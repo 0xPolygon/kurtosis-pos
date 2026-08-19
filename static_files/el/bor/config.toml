@@ -235,17 +235,13 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   rebroadcast-batch-size = 200
 
 {{- if .sequencer_enabled }}
-{{/* Sequence-store preconfirmations: validators publish the block
-     lifecycle to the in-enclave store ingress; RPC nodes re-execute the
-     gateway stream and serve preconf receipts. Requires an EL image built
-     from the bor sequencer prototype branch. */}}
+{{/* Sequence-store preconfirmations (publisher v2): validators publish the
+     block lifecycle to the store ingress, RPC nodes follow the gateway
+     stream for preconf receipts — the role derives inside bor from the
+     sealer flag. Requires an EL image built from the publisher v2 branch. */}}
 [sequencer]
-{{- if eq .kind "validator" }}
-  role = "producer"
-  refresh = "100ms"
-  endpoint = "seqstore-ingress:9550"
-{{- else }}
-  role = "consumer"
-  endpoint = "seqstore-gateway:9550"
-{{- end }}
+  enabled = true
+  publisher-endpoint = "seqstore-ingress:9550"
+  consumer-endpoint = "seqstore-gateway:9550"
+  poll = "100ms"
 {{- end }}
