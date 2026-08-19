@@ -27,12 +27,12 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | bor            | [2.10.0](https://github.com/0xPolygon/bor/releases/tag/v2.10.0)          | [2.10.0](https://github.com/0xPolygon/bor/releases/tag/v2.10.0)          | ✅ matches stable |
 | foundry        | [1.7.1](https://github.com/foundry-rs/foundry/releases/tag/v1.7.1)       | [1.7.1](https://github.com/foundry-rs/foundry/releases/tag/v1.7.1)       | ✅ matches stable |
 | geth           | [1.17.5](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.5)   | [1.17.5](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.5)   | ✅ matches stable |
-| grafana        | [13.1.3](https://github.com/grafana/grafana/releases/tag/v13.1.3)        | [13.1.3](https://github.com/grafana/grafana/releases/tag/v13.1.3)        | ✅ matches stable |
-| heimdall-v2    | [0.10.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.10.0)  | [0.10.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.10.0)  | ✅ matches stable |
+| grafana        | [13.2.0](https://github.com/grafana/grafana/releases/tag/v13.2.0)        | [13.2.0](https://github.com/grafana/grafana/releases/tag/v13.2.0)        | ✅ matches stable |
+| heimdall-v2    | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | ✅ matches stable |
 | lighthouse     | [8.2.2](https://github.com/sigp/lighthouse/releases/tag/v8.2.2)          | [8.2.2](https://github.com/sigp/lighthouse/releases/tag/v8.2.2)          | ✅ matches stable |
 | panoptichain   | [6.3.2](https://github.com/0xPolygon/panoptichain/releases/tag/v6.3.2)   | [6.3.2](https://github.com/0xPolygon/panoptichain/releases/tag/v6.3.2)   | ✅ matches stable |
-| prometheus     | [3.13.2](https://github.com/prometheus/prometheus/releases/tag/v3.13.2)  | [3.13.2](https://github.com/prometheus/prometheus/releases/tag/v3.13.2)  | ✅ matches stable |
-| rabbitmq       | [4.3.4](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.4) | [4.3.5](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.5) | 🚨 behind stable  |
+| prometheus     | [3.14.0](https://github.com/prometheus/prometheus/releases/tag/v3.14.0)  | [3.14.0](https://github.com/prometheus/prometheus/releases/tag/v3.14.0)  | ✅ matches stable |
+| rabbitmq       | [4.3.5](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.5) | [4.3.5](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.5) | ✅ matches stable |
 | status-checker | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | ✅ matches stable |
 
 ### Untracked images
