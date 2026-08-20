@@ -148,6 +148,7 @@ Default: a single validator.
 | el_bor_sync_with_witness         | bool   | false                        | Enable bor to sync new blocks using witnesses                                                                                                                                                                                               |
 | el_bor_stateless_parallel_import | bool   | false                        | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)                                                                                                                                                   |
 | el_bor_archive_mode              | bool   | false                        | Run bor with `gcmode=archive` and full history retention. Orthogonal to `kind` — set on a validator or rpc node. Required for `debug_traceTransaction` on past blocks. The default single-node config sets this to `true` on the validator. |
+| el_bor_use_sequence_store        | bool   | false                        | Render bor's `[sequencer]` config section against the enclave sequence store (preconfirmation experiment). Requires an `el_image` built from the bor sequencer branch; setting it on any participant deploys the store (see `sequence_store_params`).       |
 | count                            | int    | 1                            | Number of nodes to spin up for this participant                                                                                                                                                                                             |
 
 ### `setup_images`
@@ -217,6 +218,18 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | --------- | ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | image     | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server                                  |
 | ws_secret | string | sharedsecret                                                                            | Shared secret used to authenticate nodes reporting to the ethstats server |
+
+### `sequence_store_params`
+
+Deployed if and only if at least one participant sets `el_bor_use_sequence_store: true`. One store is shared by the whole devnet: validators publish to the ingress, RPC nodes consume the gateway stream.
+
+| Field          |  Type  |           Default           |                                                Description                                                 |
+| -------------- | ------ | --------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| image          | string | seqstore:local              | Sequence-store image (ingress/gateway/auditor), built locally from the sequence-store repo                 |
+| redpanda_image | string | redpandadata/redpanda:v26.2.1 | Redpanda broker image                                                                                     |
+| redpanda_count | int    | 1                           | Broker count. With more than one, the topic is created at RF=count with majority `min.insync.replicas`     |
+| gateway_count  | int    | 1                           | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name      |
+| envoy_image    | string | envoyproxy/envoy:v1.31.10   | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                             |
 
 ### `status_checker_params`
 

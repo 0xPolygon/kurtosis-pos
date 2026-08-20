@@ -98,6 +98,7 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_sync_with_witness": False,
     "el_bor_stateless_parallel_import": False,
     "el_bor_archive_mode": False,
+    "el_bor_use_sequence_store": False,
 }
 
 POLYGON_POS_PACKAGE_ARGS = {
@@ -134,17 +135,6 @@ POLYGON_POS_PACKAGE_ARGS = {
         #   amoy BP:    pos-ops/roles/deploy-amoy-config/amoy/pos-amoy-london-bp-nvme-01/bor/config.toml#L83
         #   mainnet BP: pos-ops/roles/deploy-mainnet-config/mainnet/anonymous-91/bor/config.toml#L65
         "el_gas_limit": 200000000,
-        # Sequence-store preconfirmation experiment: when enabled, an
-        # in-enclave store (Redpanda + seqstore ingress/gateway/auditor) is
-        # launched and bor's [sequencer] config section is rendered.
-        # Requires an EL image built from the bor sequencer prototype
-        # branch; plain bor ignores the section.
-        "sequencer_enabled": False,
-        "sequencer_image": "seqstore:local",
-        "sequencer_redpanda_image": "redpandadata/redpanda:latest",
-        "sequencer_redpanda_count": 1,
-        "sequencer_gateway_count": 1,
-        "sequencer_envoy_image": "envoyproxy/envoy:v1.31-latest",
         # Polygon PoS hard fork configurations
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),
@@ -165,6 +155,14 @@ POLYGON_POS_PACKAGE_ARGS = {
         "austin_fork_block": constants.EL_HARD_FORK_BLOCKS.get("austin"),
     },
     "additional_services": [],
+}
+
+SEQUENCE_STORE_ARGS = {
+    "image": constants.IMAGES.get("seqstore_image"),
+    "redpanda_image": constants.IMAGES.get("seqstore_redpanda_image"),
+    "redpanda_count": 1,
+    "gateway_count": 1,
+    "envoy_image": constants.IMAGES.get("seqstore_envoy_image"),
 }
 
 STATUS_CHECKER_ARGS = {
@@ -280,6 +278,15 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     ethstats_server_params = polygon_pos_args.get("ethstats_server_params", {})
     result["ethstats_server_params"] = _parse_ethstats_server_params(
         is_ethstats_server_deployed, ethstats_server_params
+    )
+
+    # The sequence store is deployed iff any participant opts into it.
+    is_sequence_store_deployed = any(
+        [p.get("el_bor_use_sequence_store") for p in result["participants"]]
+    )
+    sequence_store_params = polygon_pos_args.get("sequence_store_params", {})
+    result["sequence_store_params"] = _parse_sequence_store_params(
+        is_sequence_store_deployed, sequence_store_params
     )
 
     # Sanity check and return the result.
@@ -403,6 +410,29 @@ def _parse_additional_services(additional_services):
     if len(additional_services) == 0:
         additional_services = POLYGON_POS_PACKAGE_ARGS.get("additional_services", [])
     return additional_services
+
+
+def _parse_sequence_store_params(is_sequence_store_deployed, sequence_store_params):
+    # Store params without a participant opting in would be silently dead
+    # config, most likely a mistake.
+    if not is_sequence_store_deployed:
+        if sequence_store_params:
+            fail(
+                "`sequence_store_params` requires at least one participant with `el_bor_use_sequence_store: true`."
+            )
+        return {}
+
+    # Create a mutable copy of sequence_store_params.
+    if sequence_store_params:
+        sequence_store_params = dict(sequence_store_params)
+    else:
+        sequence_store_params = {}
+
+    for k, v in SEQUENCE_STORE_ARGS.items():
+        sequence_store_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(sequence_store_params)
 
 
 def _parse_status_checker_params(is_status_checker_deployed, status_checker_params):

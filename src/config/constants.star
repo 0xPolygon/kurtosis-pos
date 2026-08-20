@@ -67,7 +67,17 @@ IMAGES = {
     "grafana_image": "grafana/grafana:13.2.0",
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.3.2",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
+    # sequence store (preconfirmation experiment)
+    "seqstore_image": "seqstore:local",  # built locally from the sequence-store repo
+    "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.1",
+    "seqstore_envoy_image": "envoyproxy/envoy:v1.31.10",
 }
+
+# Sequence-store service names and gRPC port, shared between the store
+# launcher and the bor config template (the [sequencer] endpoints).
+SEQSTORE_INGRESS_SERVICE_NAME = "seqstore-ingress"
+SEQSTORE_GATEWAY_SERVICE_NAME = "seqstore-gateway"
+SEQSTORE_GRPC_PORT_NUMBER = 9550
 
 L1_CHAIN_ID = "3151908"  # 0x301824
 

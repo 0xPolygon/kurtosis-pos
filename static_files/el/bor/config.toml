@@ -234,14 +234,14 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # Max transactions to rebroadcast per cycle to limit bandwidth usage (min: 1)
   rebroadcast-batch-size = 200
 
-{{- if .sequencer_enabled }}
+{{- if .use_sequence_store }}
 {{/* Sequence-store preconfirmations (publisher v2): validators publish the
      block lifecycle to the store ingress, RPC nodes follow the gateway
      stream for preconf receipts — the role derives inside bor from the
      sealer flag. Requires an EL image built from the publisher v2 branch. */}}
 [sequencer]
   enabled = true
-  publisher-endpoint = "seqstore-ingress:9550"
-  consumer-endpoint = "seqstore-gateway:9550"
+  publisher-endpoint = "{{ .sequence_store_publisher_endpoint }}"
+  consumer-endpoint = "{{ .sequence_store_consumer_endpoint }}"
   poll = "100ms"
 {{- end }}

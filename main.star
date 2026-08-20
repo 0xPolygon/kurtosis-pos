@@ -139,9 +139,12 @@ def run(plan, args):
         )
     )
     # The sequence store must exist before the bor nodes start: their
-    # [sequencer] endpoints reference its service names.
-    if l2_network_params.get("sequencer_enabled"):
-        sequencer_launcher.launch(plan, l2_network_params)
+    # [sequencer] endpoints reference its service names. It deliberately
+    # bypasses the additional_services mechanism, which launches after the
+    # EL/CL nodes — too late for a service bor dials at startup.
+    sequence_store_params = polygon_pos_args.get("sequence_store_params")
+    if sequence_store_params:
+        sequencer_launcher.launch(plan, sequence_store_params)
 
     l2_context = el_cl_launcher.launch(
         plan,
