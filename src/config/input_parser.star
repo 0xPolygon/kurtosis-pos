@@ -158,7 +158,7 @@ POLYGON_POS_PACKAGE_ARGS = {
 }
 
 SEQUENCE_STORE_ARGS = {
-    "image": constants.IMAGES.get("seqstore_image"),
+    "image": constants.SEQSTORE_DEFAULT_IMAGE,
     "redpanda_image": constants.IMAGES.get("seqstore_redpanda_image"),
     "redpanda_count": 1,
     "gateway_count": 1,
