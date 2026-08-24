@@ -70,6 +70,9 @@ COMPONENT_REPOS = {
     "prometheus_image": ("prometheus", "prometheus/prometheus"),
     "grafana_image": ("grafana", "grafana/grafana"),
     "panoptichain_image": ("panoptichain", "0xPolygon/panoptichain"),
+    # sequence store (preconfirmation experiment)
+    "seqstore_redpanda_image": ("redpanda", "redpanda-data/redpanda"),
+    "seqstore_envoy_image": ("envoy", "envoyproxy/envoy"),
 }
 
 # Images intentionally left out of the matrix, with the reason. Keeping this
