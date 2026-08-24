@@ -25,7 +25,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | Component      | Deployed version                                                         | Latest stable version                                                    | Status            |
 | -------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ----------------- |
 | bor            | [2.10.0](https://github.com/0xPolygon/bor/releases/tag/v2.10.0)          | [2.10.0](https://github.com/0xPolygon/bor/releases/tag/v2.10.0)          | ✅ matches stable |
-| envoy          | [1.31.10](https://github.com/envoyproxy/envoy/releases/tag/v1.31.10)     | [1.39.0](https://github.com/envoyproxy/envoy/releases/tag/v1.39.0)       | 🚨 behind stable  |
+| envoy          | [1.39.0](https://github.com/envoyproxy/envoy/releases/tag/v1.39.0)       | [1.39.0](https://github.com/envoyproxy/envoy/releases/tag/v1.39.0)       | ✅ matches stable |
 | foundry        | [1.7.1](https://github.com/foundry-rs/foundry/releases/tag/v1.7.1)       | [1.7.1](https://github.com/foundry-rs/foundry/releases/tag/v1.7.1)       | ✅ matches stable |
 | geth           | [1.17.5](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.5)   | [1.17.5](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.5)   | ✅ matches stable |
 | grafana        | [13.2.0](https://github.com/grafana/grafana/releases/tag/v13.2.0)        | [13.2.0](https://github.com/grafana/grafana/releases/tag/v13.2.0)        | ✅ matches stable |
@@ -34,7 +34,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | panoptichain   | [6.3.2](https://github.com/0xPolygon/panoptichain/releases/tag/v6.3.2)   | [6.3.2](https://github.com/0xPolygon/panoptichain/releases/tag/v6.3.2)   | ✅ matches stable |
 | prometheus     | [3.14.0](https://github.com/prometheus/prometheus/releases/tag/v3.14.0)  | [3.14.0](https://github.com/prometheus/prometheus/releases/tag/v3.14.0)  | ✅ matches stable |
 | rabbitmq       | [4.3.5](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.5) | [4.3.5](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.5) | ✅ matches stable |
-| redpanda       | [26.2.1](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.1) | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | 🚨 behind stable  |
+| redpanda       | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | ✅ matches stable |
 | status-checker | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | ✅ matches stable |
 
 ### Untracked images
