@@ -52,9 +52,9 @@ IMAGES = {
     "l1_cl_image": "sigp/lighthouse:v8.2.2",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.7.1",
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.10.0",
+    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.11.0",
     "l2_el_bor_image": "0xpolygon/bor:2.10.0",
-    "l2_cl_queue_image": "rabbitmq:4.3.4",
+    "l2_cl_queue_image": "rabbitmq:4.3.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
@@ -63,11 +63,25 @@ IMAGES = {
     # additional services
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
-    "prometheus_image": "prom/prometheus:v3.13.2",
-    "grafana_image": "grafana/grafana:13.1.3",
+    "prometheus_image": "prom/prometheus:v3.14.0",
+    "grafana_image": "grafana/grafana:13.2.0",
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.3.2",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
+    # sequence store (preconfirmation experiment)
+    "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
+    "seqstore_envoy_image": "envoyproxy/envoy:v1.39.0",
 }
+
+# The sequence-store image is built locally from the sequence-store repo.
+# Deliberately not in IMAGES: CI mirrors that dict through the GAR remote
+# registry, and a local-only tag is not pullable from anywhere.
+SEQSTORE_DEFAULT_IMAGE = "seqstore:local"
+
+# Sequence-store service names and gRPC port, shared between the store
+# launcher and the bor config template (the [sequencer] endpoints).
+SEQSTORE_INGRESS_SERVICE_NAME = "seqstore-ingress"
+SEQSTORE_GATEWAY_SERVICE_NAME = "seqstore-gateway"
+SEQSTORE_GRPC_PORT_NUMBER = 9550
 
 L1_CHAIN_ID = "3151908"  # 0x301824
 

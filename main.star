@@ -1,4 +1,5 @@
 additional_services_launcher = import_module("./src/additional_services/launcher.star")
+sequencer_launcher = import_module("./src/sequencer/launcher.star")
 cl_genesis = import_module("./src/cl/genesis.star")
 constants = import_module("./src/config/constants.star")
 contracts = import_module("./src/contracts/contracts.star")
@@ -140,6 +141,14 @@ def run(plan, args):
             participants_count, len(validator_accounts), participants
         )
     )
+    # The sequence store must exist before the bor nodes start: their
+    # [sequencer] endpoints reference its service names. It deliberately
+    # bypasses the additional_services mechanism, which launches after the
+    # EL/CL nodes — too late for a service bor dials at startup.
+    sequence_store_params = polygon_pos_args.get("sequence_store_params")
+    if sequence_store_params:
+        sequencer_launcher.launch(plan, sequence_store_params)
+
     l2_context = el_cl_launcher.launch(
         plan,
         participants,
