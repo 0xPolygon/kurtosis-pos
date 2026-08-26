@@ -8,11 +8,14 @@ on:
     - cron: 0 6 * * * # Run this workflow every day at 6 AM Paris time (UTC).
   workflow_dispatch:
 
-# Permissions required to pull images from GAR
+# Permissions required to pull images from GAR and GHCR.
+# `packages: read` lets the GITHUB_TOKEN pull internal GHCR packages
+# (e.g. ghcr.io/0xpolygon/sequence-store) that grant this repo access.
 permissions:
   contents: read
   actions: write
   id-token: write
+  packages: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
