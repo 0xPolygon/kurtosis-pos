@@ -53,7 +53,7 @@ IMAGES = {
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.7.1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.11.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.10.0",
+    "l2_el_bor_image": "0xpolygon/bor:2.10.1",
     "l2_cl_queue_image": "rabbitmq:4.3.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
