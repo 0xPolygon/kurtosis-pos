@@ -50,10 +50,10 @@ IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.17.5",
     "l1_cl_image": "sigp/lighthouse:v8.2.2",
-    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.7.1",
+    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.0",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.11.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.10.0",
+    "l2_el_bor_image": "0xpolygon/bor:2.10.1",
     "l2_cl_queue_image": "rabbitmq:4.3.5",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
@@ -69,7 +69,7 @@ IMAGES = {
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
     "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
-    "seqstore_envoy_image": "envoyproxy/envoy:v1.39.0",
+    "seqstore_envoy_image": "envoyproxy/envoy:v1.39.1",
 }
 
 # The sequence-store image is built locally from the sequence-store repo.
