@@ -50,7 +50,7 @@ IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.17.5",
     "l1_cl_image": "sigp/lighthouse:v8.2.2",
-    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.0",
+    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.1",
     # layer 2
     "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.11.0",
     "l2_el_bor_image": "0xpolygon/bor:2.10.1",
