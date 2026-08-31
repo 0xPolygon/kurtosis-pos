@@ -143,8 +143,11 @@ def run(plan, args):
     # bypasses the additional_services mechanism, which launches after the
     # EL/CL nodes — too late for a service bor dials at startup.
     sequence_store_params = polygon_pos_args.get("sequence_store_params")
+    sequence_store_metrics_jobs = []
     if sequence_store_params:
-        sequencer_launcher.launch(plan, sequence_store_params)
+        sequence_store_metrics_jobs = sequencer_launcher.launch(
+            plan, sequence_store_params
+        )
 
     l2_context = el_cl_launcher.launch(
         plan,
@@ -177,6 +180,7 @@ def run(plan, args):
         l2_network_params,
         l2_el_genesis_artifact,
         contract_addresses_artifact,
+        sequence_store_metrics_jobs,
     )
 
 

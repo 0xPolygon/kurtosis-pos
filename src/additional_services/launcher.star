@@ -15,6 +15,7 @@ def launch(
     l2_network_params,
     l2_el_genesis_artifact,
     contract_addresses_artifact,
+    sequence_store_metrics_jobs,
 ):
     additional_services = polygon_pos_args.get("additional_services")
     for svc in additional_services:
@@ -34,6 +35,7 @@ def launch(
                 l2_context,
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
+                sequence_store_metrics_jobs,
             )
         elif svc == constants.ADDITIONAL_SERVICES.status_checker:
             status_checker_params = polygon_pos_args.get("status_checker_params")

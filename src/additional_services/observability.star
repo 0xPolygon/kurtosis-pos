@@ -29,6 +29,7 @@ def launch(
     l2_context,
     l2_el_genesis_artifact,
     contract_addresses_artifact,
+    sequence_store_metrics_jobs,
 ):
     panoptichain_url = launch_panoptichain(
         plan,
@@ -38,7 +39,10 @@ def launch(
         contract_addresses_artifact,
     )
     prometheus_url = launch_prometheus(
-        plan, l2_context.all_participants, panoptichain_url
+        plan,
+        l2_context.all_participants,
+        panoptichain_url,
+        sequence_store_metrics_jobs,
     )
     launch_grafana(plan, prometheus_url)
 
@@ -104,8 +108,13 @@ def launch_panoptichain(
     return service.ports["metrics"].url
 
 
-def launch_prometheus(plan, l2_participants, panoptichain_url):
-    metrics_jobs = generate_metrics_jobs(l2_participants, panoptichain_url)
+def launch_prometheus(
+    plan, l2_participants, panoptichain_url, sequence_store_metrics_jobs
+):
+    metrics_jobs = (
+        generate_metrics_jobs(l2_participants, panoptichain_url)
+        + sequence_store_metrics_jobs
+    )
     return import_module(PROMETHEUS_PACKAGE).run(
         plan,
         metrics_jobs,

@@ -16,19 +16,36 @@ SEQSTORE_GRPC_PORT_NUMBER = constants.SEQSTORE_GRPC_PORT_NUMBER
 SEQSTORE_OPS_PORT_NUMBER = 9600
 REDPANDA_KAFKA_PORT_NUMBER = 9092
 REDPANDA_RPC_PORT_NUMBER = 33145
+REDPANDA_ADMIN_PORT_NUMBER = 9644
 ENVOY_ADMIN_PORT_NUMBER = 9901
 ENVOY_TEMPLATE_CONFIG_FILE_PATH = "../../static_files/sequencer/envoy.yaml"
 
 SEQSTORE_TOPIC = "chain"
 
+# Every seqstore role (ingress, gateway, auditor) serves Prometheus metrics
+# on its ops port at this path (see 0xPolygon/sequence-store internal/ops).
+SEQSTORE_METRICS_PATH = "/metrics"
+
+# Redpanda's admin API already binds 0.0.0.0:9644 by default -- no flag
+# needed for Prometheus to reach it, just the port declared below (`rpk
+# redpanda start` has no --admin-addr flag; passing one is rejected by the
+# underlying binary). /public_metrics is Redpanda's recommended,
+# cheaper-to-scrape subset; the legacy /metrics endpoint carries many more
+# internal series.
+REDPANDA_METRICS_PATH = "/public_metrics"
+
+# Envoy's admin interface serves its own Prometheus-format stats here
+# (request/connection counts, health-check state per gateway upstream).
+ENVOY_METRICS_PATH = "/stats/prometheus"
+
 # Resource caps, following the per-service limits every other launcher
 # sets. Redpanda runs --smp=1 but pre-allocates memory aggressively.
 REDPANDA_MAX_CPU = 2000  # in millicores (2 cores)
-REDPANDA_MAX_MEM = 4096  # in megabytes (4 GB)
+REDPANDA_MAX_MEM = 16384  # in megabytes (16 GB)
 SEQSTORE_MAX_CPU = 1000  # in millicores (1 core)
-SEQSTORE_MAX_MEM = 2048  # in megabytes (2 GB)
+SEQSTORE_MAX_MEM = 16384  # in megabytes (16 GB)
 ENVOY_MAX_CPU = 1000  # in millicores (1 core)
-ENVOY_MAX_MEM = 512  # in megabytes (512 MB)
+ENVOY_MAX_MEM = 16384  # in megabytes (16 GB)
 
 
 def launch(plan, store_params):
@@ -40,7 +57,7 @@ def launch(plan, store_params):
         ["{}:{}".format(name, REDPANDA_KAFKA_PORT_NUMBER) for name in broker_names]
     )
 
-    _launch_brokers(plan, store_params, broker_names)
+    metrics_jobs = _launch_brokers(plan, store_params, broker_names)
 
     if redpanda_count > 1:
         # The production replication profile (store design doc: RF=3,
@@ -67,7 +84,7 @@ def launch(plan, store_params):
     # The ingress creates the topic (single-broker case) and reports ready
     # once serving; the gateways and auditor launch after it so the topic
     # always exists by the time they follow the log.
-    plan.add_service(
+    ingress_service = plan.add_service(
         name=SEQSTORE_INGRESS_SERVICE_NAME,
         config=_store_service_config(
             seqstore_image,
@@ -89,6 +106,9 @@ def launch(plan, store_params):
             ],
             with_grpc=True,
         ),
+    )
+    metrics_jobs.append(
+        _seqstore_metrics_job(SEQSTORE_INGRESS_SERVICE_NAME, ingress_service)
     )
 
     gateway_count = store_params.get("gateway_count")
@@ -135,10 +155,22 @@ def launch(plan, store_params):
         with_grpc=False,
     )
 
-    plan.add_services(configs=followers)
+    follower_services = plan.add_services(configs=followers)
+    for name, service in follower_services.items():
+        metrics_jobs.append(_seqstore_metrics_job(name, service))
 
     if gateway_count > 1:
-        _launch_gateway_lb(plan, store_params, gateway_names)
+        metrics_jobs.append(_launch_gateway_lb(plan, store_params, gateway_names))
+
+    return metrics_jobs
+
+
+def _seqstore_metrics_job(name, service):
+    return {
+        "Name": name,
+        "Endpoint": service.ports["ops"].url.removeprefix("http://"),
+        "MetricsPath": SEQSTORE_METRICS_PATH,
+    }
 
 
 def _pool_names(base, count):
@@ -185,6 +217,9 @@ def _launch_brokers(plan, store_params, broker_names):
             image=store_params.get("redpanda_image"),
             ports={
                 "kafka": PortSpec(number=REDPANDA_KAFKA_PORT_NUMBER),
+                "admin": PortSpec(
+                    number=REDPANDA_ADMIN_PORT_NUMBER, application_protocol="http"
+                ),
             },
             cmd=cmd,
             max_cpu=REDPANDA_MAX_CPU,
@@ -204,7 +239,15 @@ def _launch_brokers(plan, store_params, broker_names):
             ),
         )
 
-    plan.add_services(configs=configs)
+    broker_services = plan.add_services(configs=configs)
+    return [
+        {
+            "Name": name,
+            "Endpoint": service.ports["admin"].url.removeprefix("http://"),
+            "MetricsPath": REDPANDA_METRICS_PATH,
+        }
+        for name, service in broker_services.items()
+    ]
 
 
 def _store_service_config(image, cmd, with_grpc):
@@ -254,7 +297,7 @@ def _launch_gateway_lb(plan, store_params, gateway_names):
         },
     )
 
-    plan.add_service(
+    lb_service = plan.add_service(
         name=SEQSTORE_GATEWAY_SERVICE_NAME,
         config=ServiceConfig(
             image=store_params.get("envoy_image"),
@@ -272,3 +315,8 @@ def _launch_gateway_lb(plan, store_params, gateway_names):
             ready_conditions=_http_ready_condition("admin"),
         ),
     )
+    return {
+        "Name": SEQSTORE_GATEWAY_SERVICE_NAME,
+        "Endpoint": lb_service.ports["admin"].url.removeprefix("http://"),
+        "MetricsPath": ENVOY_METRICS_PATH,
+    }

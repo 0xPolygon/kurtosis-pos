@@ -231,6 +231,8 @@ Deployed if and only if at least one participant sets `el_bor_use_sequence_store
 | gateway_count  | int    | 1                             | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name  |
 | envoy_image    | string | envoyproxy/envoy:v1.31.10     | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
 
+When `observability` is also enabled, Prometheus automatically scrapes every seqstore role (ingress, gateway(s), auditor — `/metrics` on their ops port), every Redpanda broker (`/public_metrics` on the admin API port), and, when `gateway_count > 1`, the envoy load balancer (`/stats/prometheus` on its admin port) — so the data shows up in Grafana alongside the rest of the devnet's metrics.
+
 ### `status_checker_params`
 
 | Field |  Type  |                 Default                 |               Description               |

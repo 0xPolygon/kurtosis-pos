@@ -1,0 +1,57 @@
+polygon_pos_package:
+  participants:
+    # 3 active block producers. They seal blocks, produce witnesses for the
+    # 4 non-producing validators below, and publish to the sequence store
+    # ingress. `el_image: bor:local` must be a build from the sequencer
+    # publisher branch -- stock bor renders but ignores the [sequencer]
+    # section, so `el_bor_use_sequence_store` would otherwise be a no-op.
+    - kind: validator
+      el_type: bor
+      cl_type: heimdall-v2
+      el_bor_produce_witness: true
+      el_bor_use_sequence_store: true
+      el_image: bor:local
+      count: 3
+
+    # 4 non-producing validators. Same el_image as the producers -- mixing
+    # bor versions across validators on one chain risks consensus/protocol
+    # drift, so keep the whole validator set on one build. `el_bor_sync_with_witness`
+    # excludes their val IDs from `producer_votes` (src/cl/heimdall_v2/genesis.star),
+    # so once the Rio hard fork activates (default: block 128), VeBlop's
+    # stake-weighted election converges block production onto the 3
+    # producers above. They still hold stake and sign checkpoints -- they
+    # just can't seal blocks (no bor [miner] section), per the
+    # `_validate_participants_have_producing_validator` sanity check.
+    - kind: validator
+      el_type: bor
+      cl_type: heimdall-v2
+      el_image: bor:local
+      el_bor_produce_witness: true
+      el_bor_sync_with_witness: true
+      count: 4
+
+    # 1 bor archive RPC node. Non-validating, full history retained
+    # (`el_bor_archive_mode` adds the `-archive` service suffix). Kept on
+    # bor:local like everything else so the whole network runs one build.
+    - kind: rpc
+      el_type: bor
+      cl_type: heimdall-v2
+      el_image: bor:local
+      el_bor_archive_mode: true
+      count: 1
+
+    # 1 plain bor RPC node (default full-node pruning, no witness flags).
+    - kind: rpc
+      el_type: bor
+      cl_type: heimdall-v2
+      el_image: bor:local
+      count: 1
+
+  additional_services:
+    - observability
+    - status_checker
+
+  sequence_store_params:
+    image: seqstore:local
+    redpanda_count: 3
+    gateway_count: 3

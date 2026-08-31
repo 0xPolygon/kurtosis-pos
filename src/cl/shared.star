@@ -26,4 +26,4 @@ PPROF_PORT_NUMBER = 6060
 
 # CPU and memory limits.
 MAX_CPU = 2000  # in milicores (2 cores)
-MAX_MEM = 4096  # in megabytes (4 GB)
+MAX_MEM = 16384  # in megabytes (16 GB)

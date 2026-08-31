@@ -25,7 +25,7 @@ where `pos` is the name of the enclave.
 Let's store the L2 RPC URL in an environment variable for use with `cast`.
 
 ```bash
-export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator-archive rpc)
+export ETH_RPC_URL=$(kurtosis port print pos l2-el-1-bor-heimdall-v2-validator rpc)
 echo $ETH_RPC_URL
 ```
 
