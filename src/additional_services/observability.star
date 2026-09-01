@@ -30,18 +30,21 @@ PANOPTICHAIN_MAX_CPU = 2000  # in milicores (2 cores)
 
 def launch(
     plan,
+    observability_params,
     l1_context,
     l2_context,
     l2_el_genesis_artifact,
     contract_addresses_artifact,
 ):
-    panoptichain_url = launch_panoptichain(
-        plan,
-        l1_context,
-        l2_context,
-        l2_el_genesis_artifact,
-        contract_addresses_artifact,
-    )
+    panoptichain_url = None
+    if observability_params.get("deploy_panoptichain"):
+        panoptichain_url = launch_panoptichain(
+            plan,
+            l1_context,
+            l2_context,
+            l2_el_genesis_artifact,
+            contract_addresses_artifact,
+        )
     prometheus_url = launch_prometheus(
         plan, l2_context.all_participants, panoptichain_url
     )
@@ -130,13 +133,15 @@ def launch_prometheus(plan, l2_participants, panoptichain_url):
 
 def generate_metrics_jobs(l2_participants, panoptichain_url):
     unique_metrics_jobs = {}
-    metrics_jobs = [
-        {
-            "Name": "panoptichain",
-            "Endpoint": panoptichain_url.removeprefix("http://"),
-            "MetricsPath": PANOPTICHAIN_METRICS_PATH,
-        }
-    ]
+    metrics_jobs = []
+    if panoptichain_url:
+        metrics_jobs.append(
+            {
+                "Name": "panoptichain",
+                "Endpoint": panoptichain_url.removeprefix("http://"),
+                "MetricsPath": PANOPTICHAIN_METRICS_PATH,
+            }
+        )
     for p in l2_participants:
         contexts_and_paths = [
             (p.cl_context, CL_METRICS_PATH),
