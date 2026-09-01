@@ -1,0 +1,403 @@
+<html lang="en"><head><script>(function () {
+  function makeStorage() {
+    var map = new Map();
+    function strKey(k) { return String(k); }
+    return Object.freeze({
+      get length() { return map.size; },
+      key: function (i) {
+        var n = Number(i);
+        if (!isFinite(n) || n < 0 || n >= map.size) return null;
+        var keys = Array.from(map.keys());
+        return keys[Math.floor(n)];
+      },
+      getItem: function (k) {
+        var key = strKey(k);
+        return map.has(key) ? map.get(key) : null;
+      },
+      setItem: function (k, v) { map.set(strKey(k), String(v)); },
+      removeItem: function (k) { map.delete(strKey(k)); },
+      clear: function () { map.clear(); }
+    });
+  }
+  try {
+    Object.defineProperty(window, 'localStorage', {
+      value: makeStorage(),
+      writable: true, configurable: true, enumerable: true
+    });
+    Object.defineProperty(window, 'sessionStorage', {
+      value: makeStorage(),
+      writable: true, configurable: true, enumerable: true
+    });
+  } catch (e) {
+    // Browser refused to replace the descriptor. The artifact is no
+    // worse off than before this polyfill existed.
+  }
+})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sequence Store — Backend Design</title>
+<style>
+  :root {
+    --fg: #1b1f24;
+    --muted: #5b6570;
+    --line: #e3e8ee;
+    --accent: #5a3ec8;
+    --bg-code: #f5f6f8;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --decision: #2f7d4f;
+    --decision-bg: #eef7f1;
+    --tradeoff: #b06b00;
+    --tradeoff-bg: #fbf3e4;
+    --invariant: #5a3ec8;
+    --invariant-bg: #f1edfb;
+    --note: #36506b;
+    --note-bg: #eef3f8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--fg);
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+    background: #fff;
+  }
+  h1 { font-size: 1.95rem; line-height: 1.2; margin: 0 0 .4rem; }
+  h2 { font-size: 1.4rem; margin: 2.6rem 0 .8rem; padding-bottom: .3rem; border-bottom: 2px solid var(--line); }
+  h3 { font-size: 1.12rem; margin: 1.8rem 0 .5rem; }
+  h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: .5rem; }
+  p, li { color: var(--fg); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; background: var(--bg-code); padding: .1em .35em; border-radius: 4px; }
+  pre { background: var(--bg-code); padding: 16px 18px; border-radius: 8px; overflow-x: auto; line-height: 1.4; font-size: .82rem; border: 1px solid var(--line); }
+  /* ── architecture diagram (HTML/CSS components) ── */
+  .arch { background: linear-gradient(180deg,#fbfcfd,#f6f8fa); border: 1px solid var(--line); border-radius: 12px; padding: 26px 22px; margin: 1.4rem 0 .4rem; overflow-x: auto; }
+  .arch-node { width: min(560px, 100%); border: 1px solid var(--line); border-radius: 10px; background: #fff; box-shadow: 0 1px 2px rgba(20,30,45,.05); }
+  .arch-node .nhead { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+  .arch-node .nhead .htag { margin-left: auto; font-weight: 500; font-size: .68rem; text-transform: none; letter-spacing: 0; color: var(--muted); }
+  .arch-node .nbody { padding: 12px 14px; font-size: .9rem; }
+  .arch-node .nbody ul { margin: 0; padding-left: 1.15em; }
+  .arch-node .nbody li { margin: .18rem 0; }
+
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block; }
+  .d-gray { background: #8a94a6; } .d-accent { background: var(--accent); }
+  .d-green { background: #2f7d4f; } .d-teal { background: #0e7c86; } .d-blue { background: #2563eb; }
+
+  .arch-mini { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 999px; background: #fff; padding: 8px 18px; font-weight: 600; font-size: .85rem; box-shadow: 0 1px 2px rgba(20,30,45,.05); }
+
+  .arch-subgrid { display: grid; gap: 10px; }
+  .arch-sub { border: 1px solid var(--line); border-radius: 8px; background: var(--bg-code); padding: 10px 13px; }
+  .arch-sub .shead { font-weight: 700; font-size: .92rem; display: flex; align-items: center; gap: 8px; }
+  .arch-sub ul { margin: .3rem 0 0; padding-left: 1.15em; font-size: .86rem; }
+  .arch-sub li { margin: .14rem 0; }
+  .arch-sub .pill { font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; padding: .18em .55em; border-radius: 999px; background: var(--invariant-bg); color: var(--invariant); }
+
+  .arch-bprow { display: flex; align-items: flex-end; }
+  .arch-bp { flex: none; }
+  .arch-right { display: flex; align-items: center; flex: none; }
+  .arch-right .hline { position: relative; width: 72px; height: 2px; background: #9aa5b1; margin-left: 2px; }
+  .arch-right .hline::after { content: ""; position: absolute; right: -1px; top: -4px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 9px solid #9aa5b1; }
+  .arch-right .hlabel { position: absolute; left: 4px; top: -18px; white-space: nowrap; font-size: .73rem; color: var(--muted); }
+
+  .arch-down { position: relative; height: 50px; }
+  .arch-down::before { content: ""; position: absolute; left: 38px; top: 1px; bottom: 11px; width: 2px; background: #9aa5b1; }
+  .arch-down::after { content: ""; position: absolute; left: 34px; bottom: 1px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 9px solid #9aa5b1; }
+  .arch-down .elabel { position: absolute; left: 58px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .82rem; }
+  @media (max-width: 700px) { .arch-down .elabel { font-size: .76rem; } }
+  .meta { color: var(--muted); font-size: .92rem; margin: 0 0 1.4rem; }
+  .meta strong { color: var(--fg); }
+  .badge { display: inline-block; font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: .2em .6em; border-radius: 999px; background: var(--tradeoff-bg); color: var(--tradeoff); vertical-align: middle; }
+  .tldr { background: var(--note-bg); border: 1px solid var(--line); border-left: 4px solid var(--note); border-radius: 8px; padding: 14px 18px; margin: 1.4rem 0 0; }
+  .tldr p { margin: .4rem 0; }
+  .callout { border-radius: 8px; padding: 12px 16px; margin: 1rem 0; border: 1px solid var(--line); }
+  .callout .label { font-weight: 700; font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; display: block; margin-bottom: .3rem; }
+  .callout p { margin: .3rem 0; }
+  .callout.decision  { background: var(--decision-bg);  border-left: 4px solid var(--decision); }
+  .callout.decision  .label { color: var(--decision); }
+  .callout.tradeoff  { background: var(--tradeoff-bg);  border-left: 4px solid var(--tradeoff); }
+  .callout.tradeoff  .label { color: var(--tradeoff); }
+  .callout.invariant { background: var(--invariant-bg); border-left: 4px solid var(--invariant); }
+  .callout.invariant .label { color: var(--invariant); }
+  table { border-collapse: collapse; width: 100%; margin: 1.1rem 0; font-size: .92rem; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--bg-code); font-weight: 600; }
+  td code { white-space: nowrap; }
+  ul.toc { list-style: none; padding: 0; columns: 2; column-gap: 32px; font-size: .92rem; }
+  ul.toc li { margin: .25rem 0; break-inside: avoid; }
+  .toc .num { color: var(--accent); font-variant-numeric: tabular-nums; display: inline-block; width: 1.6em; }
+  /* ── schema field tables & API endpoint rows ── */
+  .schema { width: min(560px,100%); margin: 1.1rem 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .schema .sname { font-family: var(--mono); font-weight: 700; font-size: .82rem; background: var(--bg-code); padding: 8px 14px; border-bottom: 1px solid var(--line); }
+  .schema table { margin: 0; width: 100%; border: none; font-size: .9rem; }
+  .schema td { border: none; border-top: 1px solid var(--line); padding: 7px 14px; vertical-align: top; }
+  .schema tbody tr:first-child td { border-top: none; }
+  .schema .fn { font-family: var(--mono); font-weight: 600; white-space: nowrap; }
+  .schema .ft { font-family: var(--mono); font-size: .82rem; color: var(--accent); white-space: nowrap; }
+  .schema .fd { color: var(--muted); }
+  .schema .fd code, .ep .ret code { white-space: normal; }
+  .opt { display: inline-block; font-size: .58rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; padding: .1em .4em; border-radius: 4px; background: var(--tradeoff-bg); color: var(--tradeoff); margin-left: 4px; vertical-align: middle; }
+  .api { width: min(680px,100%); margin: 1.1rem 0; border: 1px solid var(--line); border-radius: 8px; padding: 2px 14px; }
+  .ep { padding: 10px 0; border-top: 1px solid var(--line); }
+  .ep:first-child { border-top: none; }
+  .method { display: inline-block; font-family: var(--mono); font-size: .64rem; font-weight: 700; letter-spacing: .05em; padding: .18em .5em; border-radius: 4px; background: var(--invariant-bg); color: var(--invariant); margin-right: 8px; vertical-align: middle; }
+  .ep .path { font-family: var(--mono); font-size: .83rem; font-weight: 600; overflow-wrap: break-word; }
+  .ep .ret { display: block; color: var(--muted); font-size: .83rem; margin-top: 5px; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 2.4rem 0; }
+  footer { color: var(--muted); font-size: .85rem; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .small { font-size: .9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<h1>Sequence Store — Backend Design</h1>
+<p class="sub">The production service behind the preconfirmation pipeline: a fenced single-writer ingress over a Redpanda log, with stateless read gateways (log-layer terms are defined in the §3 glossary). Companion to the protocol design (<code>bor/docs/sequencer.html</code>); the wire contract in <code>github.com/0xPolygon/sequence-store-proto</code> is normative and is not restated here.</p>
+
+<h2 id="scope"><span class="num">§1</span>Scope &amp; requirements</h2>
+<p>This document designs the store service only: what accepts the producer’s publish stream, what makes it durable, and what serves it to consumers. A <em>preconfirmation</em> (preconf) is the early transaction receipt an RPC node serves before the block is announced, backed by the store’s durable ack. The protocol — entry kinds, the commitment chain, supersession, resume semantics, the trust model — is fixed by the contract module and the protocol doc. The store inherits these requirements from it:</p>
+<div class="callout note">
+  <span class="label">Protocol terms used operationally in this document</span>
+  <p>The <strong>fold</strong> is the deterministic function that absorbs each entry into a running 32-byte <strong>head</strong> — the store’s entire notion of position and integrity; the head just after an entry is its <strong>post-fold head</strong>. The chain starts from a pinned <strong>genesis seed</strong>. A block’s entries at one height form a <strong>generation</strong>; a producer re-publishing a height creates a new generation and the old one is <strong>superseded</strong>. A height is <strong>sealed</strong> once its block is complete (its signed header published). An open record whose parent is not the current tip is a <strong>re-anchor</strong> (a <strong>forward jump</strong> when the parent was never in the store, e.g. at bootstrap). <strong>Canonical</strong> means the actual agreed Polygon chain, which always wins over anything the store holds. All of these are specified in the protocol doc; they appear here only as the objects the store transports, indexes, and audits.</p>
+</div>
+<ul>
+  <li><strong>One append-only chain</strong>, guarded by the head check: an entry is appended only if its <code>prefix_commitment</code> equals the store’s current head.</li>
+  <li><strong>The head check must be atomic with the replicated append.</strong> An in-memory check alone is unsound: during an ingress failover overlap, two instances could each read the same head and each durably append.</li>
+  <li><strong>Durable ack before the preconf is valid</strong>: the producer’s ack means the entry survives any single-node failure (the durability boundary beyond that is quantified in §8).</li>
+  <li><strong>Latency budget</strong>: publish→ack in low single-digit milliseconds, against an end-to-end preconf budget of ~40–90&nbsp;ms (rig&nbsp;A below).</li>
+  <li><strong>Resume semantics</strong>: warm resume by post-fold head; cold anchor by block number. Heads age out of the hot window; a block anchor below the <em>retention floor</em> (the earliest offset still retained; §6) returns <code>NOT_FOUND</code> and the consumer re-anchors from its own canonical head (§6).</li>
+  <li><strong>Chain-blind</strong>: no dependency of any kind on Heimdall (the PoS consensus client). Write access is the channel credential; the head check alone arbitrates writers. (Two stale “election check” comments in the contract repo predate this decision and are being removed; the protocol doc, this doc, and the reference implementation all agree.)</li>
+  <li><strong>Retention &amp; audit</strong>: a bounded hot window plus a durable archive of everything, including superseded generations — and an <em>active</em> supersession audit (§7), not just retained bytes.</li>
+  <li><strong>Off the chain’s critical path</strong>: any store outage stops preconfs and nothing else.</li>
+</ul>
+<div class="callout note">
+  <span class="label">Measurement provenance</span>
+  <p>Every number in this document comes from one of three rigs, tagged inline: <strong>(A)</strong> a kurtosis devnet (kurtosis: a local Docker devnet tool) — one Bor block producer publishing to the in-memory reference store (<code>devstore</code>, from the contract repo) and one Bor RPC node consuming and serving preconf receipts, 1&nbsp;s blocks, all on one host; <strong>(B)</strong> a fencing test harness against single-node Redpanda, exercising the failover scenarios of §4 — it ships with this repo as the fencing conformance test; <strong>(C)</strong> Go micro-benchmarks of the commitment fold. Single-host numbers are directional: a 3-node replicated cluster adds ~1–2&nbsp;ms to produce acks.</p>
+</div>
+
+<h2 id="arch"><span class="num">§2</span>Architecture</h2>
+<div class="arch">
+  <div class="arch-node">
+    <div class="nhead"><span class="dot d-accent"></span>Ingress <span class="htag">single fenced writer · active-passive</span></div>
+    <div class="nbody">authenticate writer (mTLS credential) · validate · fold · head check · produce (acks=all) · group commit (§5) · ack</div>
+  </div>
+  <div style="margin:10px 0 10px 24px;color:#8a94a6">↓ transactional produce (epoch-fenced)</div>
+  <div class="arch-node">
+    <div class="nhead"><span class="dot d-teal"></span>Redpanda <span class="htag">3 nodes · topic <code>chain</code> · 1 partition · RF=3</span></div>
+    <div class="nbody">Raft-replicated append-only log · hot retention window · tiered storage → object store (audit archive)</div>
+  </div>
+  <div style="margin:10px 0 10px 24px;color:#8a94a6">↓ consume, <code>read_committed</code></div>
+  <div class="arch-node">
+    <div class="nhead"><span class="dot d-blue"></span>Gateway ×N <span class="htag">stateless · scale-out</span></div>
+    <div class="nbody">fold replay · head→offset index (warm window) · block→generation index · Stream / Range / GetBlock · client auth (JWT/mTLS)</div>
+  </div>
+  <div class="arch-node" style="margin-top:10px;border-style:dashed">
+    <div class="nhead"><span class="dot d-gray"></span>Supersession auditor <span class="htag">background consumer · off the hot path (§7)</span></div>
+    <div class="nbody">diffs re-anchors · classifies revocation vs reorg · exports evidence · emits the SLA metric</div>
+  </div>
+</div>
+<p>Three components, plus one background job (the supersession auditor, §7). The log-layer terms in both diagrams below — edges, nodes, and step labels — are defined in the glossary at the top of §3. The ingress is the only writer and owns the head. Redpanda is the replicated log — entirely internal; nothing outside the store speaks Kafka protocol, so the log engine is replaceable without touching the contract. Gateways derive everything from the log: no coordination, no shared state, killed and replaced freely.</p>
+<p style="margin-top:1.6rem"><strong>The life of one entry</strong> — the same components as above, followed left to right by a single transaction from execution to a served preconfirmation:</p>
+<div class="arch"><svg viewBox="0 0 860 486" width="100%" style="max-width:860px;height:auto;display:block;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Data flow: one entry from producer through ingress, log, gateway, to consumer">
+<defs><marker id="dfah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7a8696"></path></marker></defs>
+<line x1="85" y1="44" x2="85" y2="448" stroke="#cdd5df" stroke-width="1.5" stroke-dasharray="2 5"></line>
+<line x1="255" y1="44" x2="255" y2="448" stroke="#cdd5df" stroke-width="1.5" stroke-dasharray="2 5"></line>
+<line x1="430" y1="44" x2="430" y2="448" stroke="#cdd5df" stroke-width="1.5" stroke-dasharray="2 5"></line>
+<line x1="605" y1="44" x2="605" y2="448" stroke="#cdd5df" stroke-width="1.5" stroke-dasharray="2 5"></line>
+<line x1="775" y1="44" x2="775" y2="448" stroke="#cdd5df" stroke-width="1.5" stroke-dasharray="2 5"></line>
+<rect x="25" y="10" width="120" height="32" rx="8" fill="#fff" stroke="#e3e8ee"></rect><circle cx="42" cy="26" r="4.5" fill="#5a3ec8"></circle><text x="54" y="30" font-size="12" font-weight="700" fill="#1b1f24">Producer</text>
+<rect x="197" y="10" width="116" height="32" rx="8" fill="#fff" stroke="#e3e8ee"></rect><circle cx="214" cy="26" r="4.5" fill="#5a3ec8"></circle><text x="226" y="30" font-size="12" font-weight="700" fill="#1b1f24">Ingress</text>
+<rect x="366" y="10" width="128" height="32" rx="8" fill="#fff" stroke="#e3e8ee"></rect><circle cx="383" cy="26" r="4.5" fill="#0e7c86"></circle><text x="395" y="30" font-size="12" font-weight="700" fill="#1b1f24">Log ×3</text>
+<rect x="547" y="10" width="116" height="32" rx="8" fill="#fff" stroke="#e3e8ee"></rect><circle cx="564" cy="26" r="4.5" fill="#2563eb"></circle><text x="576" y="30" font-size="12" font-weight="700" fill="#1b1f24">Gateway</text>
+<rect x="713" y="10" width="124" height="32" rx="8" fill="#fff" stroke="#e3e8ee"></rect><circle cx="730" cy="26" r="4.5" fill="#2f7d4f"></circle><text x="742" y="30" font-size="12" font-weight="700" fill="#1b1f24">Consumer</text>
+<rect x="10" y="58" width="150" height="34" rx="7" fill="#f5f6f8" stroke="#e3e8ee"></rect><text x="85" y="73" text-anchor="middle" font-size="10" font-weight="700" fill="#1b1f24">tx executes into the</text><text x="85" y="86" text-anchor="middle" font-size="10" font-weight="700" fill="#1b1f24">block being built</text>
+<text x="170" y="108" text-anchor="middle" font-size="10.5" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" fill="#1b1f24">1 · Publish(entry)</text>
+<line x1="85" y1="118" x2="255" y2="118" stroke="#7a8696" stroke-width="1.5" marker-end="url(#dfah)"></line>
+<rect x="170" y="132" width="170" height="34" rx="7" fill="#f5f6f8" stroke="#e3e8ee"></rect><text x="255" y="147" text-anchor="middle" font-size="10" font-weight="700" fill="#1b1f24">2 · validate · head check · fold</text><text x="255" y="160" text-anchor="middle" font-size="9.5" fill="#5b6570">microseconds</text>
+<text x="342" y="184" text-anchor="middle" font-size="10.5" fill="#1b1f24">3 · produce into open transaction</text>
+<line x1="255" y1="194" x2="430" y2="194" stroke="#7a8696" stroke-width="1.5" marker-end="url(#dfah)"></line>
+<rect x="345" y="208" width="170" height="34" rx="7" fill="#f5f6f8" stroke="#e3e8ee"></rect><text x="430" y="223" text-anchor="middle" font-size="10" font-weight="700" fill="#1b1f24">4 · replicate to majority</text><text x="430" y="236" text-anchor="middle" font-size="9.5" fill="#5b6570">acks=all · ~1–2 ms (expected, 3-node)</text>
+<text x="342" y="260" text-anchor="middle" font-size="10.5" fill="#1b1f24">5 · commit window closes (≤2 ms)</text>
+<line x1="255" y1="270" x2="430" y2="270" stroke="#7a8696" stroke-width="1.5" marker-end="url(#dfah)"></line>
+<text x="170" y="294" text-anchor="middle" font-size="10.5" fill="#1b1f24">6 · ack → preconf issuable</text>
+<line x1="255" y1="304" x2="85" y2="304" stroke="#7a8696" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#dfah)"></line>
+<text x="517" y="294" text-anchor="middle" font-size="10.5" fill="#1b1f24">7 · visible at LSO · consume</text>
+<line x1="430" y1="304" x2="605" y2="304" stroke="#7a8696" stroke-width="1.5" marker-end="url(#dfah)"></line>
+<rect x="520" y="318" width="170" height="34" rx="7" fill="#f5f6f8" stroke="#e3e8ee"></rect><text x="605" y="333" text-anchor="middle" font-size="10" font-weight="700" fill="#1b1f24">8 · fold · update indexes</text><text x="605" y="346" text-anchor="middle" font-size="9.5" fill="#5b6570">head→offset · block→generation</text>
+<text x="690" y="372" text-anchor="middle" font-size="10.5" fill="#1b1f24">9 · stream entry</text>
+<line x1="605" y1="382" x2="775" y2="382" stroke="#7a8696" stroke-width="1.5" marker-end="url(#dfah)"></line>
+<rect x="688" y="396" width="164" height="34" rx="7" fill="#f5f6f8" stroke="#e3e8ee"></rect><text x="770" y="411" text-anchor="middle" font-size="10" font-weight="700" fill="#1b1f24">10 · re-execute · serve</text><text x="770" y="424" text-anchor="middle" font-size="9.5" fill="#5b6570">preconf receipt to the user</text>
+<line x1="20" y1="448" x2="840" y2="448" stroke="#e3e8ee"></line>
+<text x="430" y="464" text-anchor="middle" font-size="9.5" fill="#5b6570">Steps 1–6 are the write path (§5); the ack at step 6 means durable and visible together. Steps 7–10 are the read path (§6).</text>
+<text x="430" y="479" text-anchor="middle" font-size="9.5" fill="#5b6570">End to end, a preconf receipt is served tens of milliseconds after step 1 (rig A — measured against the reference store; directional here per §1).</text>
+</svg></div>
+<div class="callout decision">
+  <span class="label">Decision</span>
+  <p>All components share one <strong>state machine</strong> — validation, fold, head, generation tracking — extracted from the reference store (<code>devstore</code>) into a storage-agnostic <code>chainstate</code> package in the public contract repo. The reference store becomes <code>chainstate</code> + an in-memory log; production is <code>chainstate</code> + Redpanda. Conformance is by construction, and the reference test suite is the conformance harness.</p>
+</div>
+
+<h2 id="log"><span class="num">§3</span>Log layer: Redpanda, and the one gap</h2>
+<div class="callout note">
+  <span class="label">Every log-layer term used in this document, from zero</span>
+  <p><strong>Redpanda</strong> is the log service we run. It is a cluster of three server processes called <strong>brokers</strong>; clients connect to any broker, speaking the Kafka wire protocol (which Redpanda implements natively — no Kafka software is involved). Where later prose says “the broker” in the singular, it means the cluster acting as one logical service. A <strong>topic</strong> is a named log inside the cluster; ours has a single <strong>partition</strong>, meaning one totally ordered sequence of <strong>records</strong> (byte payloads, each optionally carrying small named <strong>headers</strong>). Every record has a permanent integer position in that sequence: its <strong>offset</strong>. Replication factor (<strong>RF</strong>)&nbsp;3 means each record is copied to all three brokers via Raft consensus.</p>
+  <p>Writing a record is <strong>producing</strong>; reading is <strong>consuming</strong> — a consumer reads forward from any offset it chooses, and each of our client connections tracks its own position (we use no broker-side position tracking). Broker clients — the log writer inside the ingress, the consumers inside the gateways, and the auditor; <em>never</em> Bor — are <em>leader-aware</em> automatically: the client library fetches the cluster layout (<strong>metadata</strong>) from any broker and sends produces (and fetches) directly to the partition’s current Raft leader, refreshing when leadership moves. <strong><code>acks=all</code></strong> with <strong><code>min.insync.replicas=2</code></strong> means a produce succeeds only once at least two brokers durably hold the record. On disk the log is a series of consecutive files called <strong>segments</strong>; <strong>retention</strong> deletes whole expired segments from the front, and <strong>tiered storage</strong> uploads closed segments (segments the log has moved past — no longer being appended to) to an object store (e.g. S3) before they expire locally.</p>
+  <p>A producing client may group records into a <strong>transaction</strong>: the records are durably written as they are produced, but a reader in <strong><code>read_committed</code></strong> mode cannot see them until the transaction <strong>commits</strong>; if it <strong>aborts</strong>, they stay permanently invisible to such readers (a <strong><code>read_uncommitted</code></strong> reader would see them — we never use that mode; these reader modes are called <strong>isolation levels</strong>). Records are durably replicated when <em>produced</em> — commit adds atomic visibility, not durability. A commit happens in two steps: the broker first durably records the <em>decision</em> (from that instant the transaction completes as committed even if the writer dies mid-call — the basis of §8’s committed-but-un-acked row), then writes a <strong>marker record into the log itself</strong> that lets <code>read_committed</code> readers advance. Markers occupy offsets, so a replayer or indexer will encounter offsets that carry no entry payload and must skip them. A transaction left open longer than <strong><code>transaction.timeout.ms</code></strong> is aborted by the broker. The <strong>LSO</strong> (last stable offset) is the position up to which a <code>read_committed</code> reader may advance; it stalls at the first record of any not-yet-committed transaction. A transactional client registers under a fixed name, its <strong><code>transactional.id</code></strong>; the broker keeps an <strong>epoch</strong> (a counter) per name, and re-registering the name bumps the epoch — from then on the broker rejects every request made under the older epoch with the error <code>INVALID_PRODUCER_EPOCH</code>. That rejection is called <strong>fencing</strong>, and it is the mechanism §4 is built on.</p>
+  <p>Terminology guard, because three words collide: <em>producer</em> always means the Bor block producer (the ingress’s gRPC client) — the Kafka-side writer object inside the ingress is called the <em>log writer</em>. Unqualified <em>transaction</em> outside this glossary means a blockchain transaction (as in §9’s throughput analysis); the log-layer object is always written with its Kafka context (“the open transaction”, <code>transaction.timeout.ms</code>). Unqualified <em>ack</em> means the store’s reply to the producer; the broker-side durability setting is always written <code>acks=all</code>.</p>
+</div>
+<p>Redpanda fits the requirements almost one-to-one: a Raft-replicated log with total order per partition (one chain = one partition), <code>acks=all</code> as the durable-ack primitive, offset-based consumption with retention, tiered storage for the audit archive, single-digit-ms produce latency, and single-binary operations. Throughput is not a concern: the heaviest burst driven so far (~4,700 entries/s at the devnet block-gas ceiling, rig&nbsp;A) is single-digit MB/s against a system built for hundreds.</p>
+<p>Nothing in this recipe is exotic: epoch fencing is the correctness backbone of Kafka’s exactly-once ecosystem (Kafka Streams, Flink’s Kafka sink), and the overall shape — a single-partition topic as source of truth, one elected writer serializing appends, in-memory state rebuilt by replay, followers serving reads — is the architecture Confluent Schema Registry has run in production for a decade. The only custom layer is the chain semantics on top, which is deliberate (§4, division of labor).</p>
+<p>The gap: <strong>Kafka-protocol logs have no conditional append</strong> — no “append only if the current head equals X”. The protocol doc anticipated the alternative: <em>fenced/leased leadership</em>. Exactly one ingress instance can ever write; its in-memory head is authoritative because nobody else can append — and because the ingress itself re-derives it from the log after any write failure (§5). The fence is Kafka-native producer-epoch fencing (§4).</p>
+<table>
+  <thead><tr><th>Alternative</th><th>Head check</th><th>Why not</th></tr></thead>
+  <tbody>
+    <tr><td>NATS JetStream</td><td>native — expected-last-sequence publish is a broker-side conditional append</td><td>The honest runner-up: implements our head check directly. Less operational maturity at this criticality; the fallback if fencing develops ugly edges (§11).</td></tr>
+    <tr><td>Embedded Raft (dragonboat / etcd-raft)</td><td>native — the state machine is the head check</td><td>Cleanest correctness story, but we own storage, snapshots, membership, and all ops tooling — a much larger build.</td></tr>
+    <tr><td>etcd / FDB as CAS + log</td><td>native CAS</td><td>Wrong shape as the log itself (value-size and throughput limits); useful only as a lease coordinator.</td></tr>
+  </tbody>
+</table>
+
+<h2 id="fence"><span class="num">§4</span>The fence</h2>
+<p><strong>Division of labor.</strong> The broker knows nothing about chains, heads, or commitments — it enforces exactly two things: <em>at most one live writer</em> (the epoch fence) and <em>durable, ordered, atomic-per-transaction appends</em>. Every chain-shaped decision — the head comparison, structural validation, the fold, generation tracking — happens in ingress memory via <code>chainstate</code>, and that memory is disposable: it is always reconstructible by replaying the log. There is no broker-side head check anywhere. The per-entry sequence is the §2 lifeline diagram, steps 1–6, detailed in §5; one property is worth stating here: rejections (<code>STALE_COMMITMENT</code>, <code>MALFORMED</code>) never touch the log at all.</p>
+<p><strong>Why an in-memory head check is sound here</strong> — three steps a reader can verify independently:</p>
+<ol>
+  <li>The broker admits produces from at most one epoch of the writer identity, so at most one ingress can ever append (verified behavior, below).</li>
+  <li>A sole appender’s memory and the committed log cannot diverge while its transactions succeed — nobody else writes, and its own writes are exactly what it folded.</li>
+  <li>The moment <em>anything</em> casts doubt — any produce, commit, or abort failure — the memory is discarded and re-derived from the committed log (§5 safety invariant) before another entry is accepted.</li>
+</ol>
+<p>Together these make the in-memory comparison equivalent to a conditional append executed by the log itself — the requirement §1 states.</p>
+<p><strong>Writer identity and takeover.</strong> The ingress produces under one fixed <code>transactional.id</code> (a configuration constant, e.g. <code>seqstore-ingress</code>) shared by the active instance and its standby — it names the <em>role</em>, not the instance. Registrations of this identity are serialized by a single coordinating broker whose epoch counter is itself Raft-replicated, so writer selection is <em>unambiguous</em> at every instant (exactly one current writer, all brokers agreeing) though not deterministic — a simultaneous registration race is decided by arrival order, which is fine because nothing depends on <em>who</em> wins, only that exactly one does. Broker failures move <em>availability</em>, never ambiguity: a single failure stalls registration or produces for a leader-election window (at worst one spurious self-fence on a commit timeout); losing the majority makes selection and writing unavailable together — a clean halt (§8) — and the epoch state is intact when quorum returns. No partition pattern can yield two simultaneous writers, because acceptance is decided broker-side against replicated state, never by a client’s belief about itself. In a Kafka client this means: create a transactional producer with that id; the client’s first transactional operation performs <code>InitProducerId</code> at the broker, which bumps the epoch and thereby fences whichever instance held it before. Takeover is four steps:</p>
+<div class="arch">
+  <div class="arch-subgrid">
+    <div class="arch-sub"><span class="shead"><span class="pill">1</span> Init</span><ul><li>Open the transactional producer → <code>InitProducerId</code> bumps the epoch. From this instant the predecessor’s produces fail with <code>INVALID_PRODUCER_EPOCH</code> and its open transaction is aborted by the broker.</li></ul></div>
+    <div class="arch-sub"><span class="shead"><span class="pill">2</span> Replay</span><ul><li>Consume the topic with <code>read_committed</code> from the latest ingress snapshot’s offset (below), or cold from the earliest retained offset, feeding every entry from the seed point (below) through the same <code>chainstate</code> apply path used at ingest. Aborted leftovers are invisible by isolation level.</li></ul></div>
+    <div class="arch-sub"><span class="shead"><span class="pill">3</span> Rebuild</span><ul><li>Consume to the end of the log (precise end condition in the replay details below). <code>chainstate</code> now holds the head and the open-block state (which height is mid-publication and what has arrived for it — needed to keep accepting that block’s records after takeover).</li></ul></div>
+    <div class="arch-sub"><span class="shead"><span class="pill">4</span> Serve</span><ul><li>Open the first transaction and accept entries. Producers reconnect through the stable address (§5) and resync via <code>STALE_COMMITMENT</code> if they were mid-flight.</li></ul></div>
+  </div>
+</div>
+<p><strong>Replay details a takeover must get right.</strong> <em>Initial head on a cold replay</em>: when no snapshot exists and retention has aged out the chain’s beginning, the earliest retained offset can land mid-block (§6), so the replayer scans forward to the first <code>BlockOpen</code> — the start of the first fully retained block — skips everything before it, and adopts that open’s <code>prefix_commitment</code> as its starting head. The adopted prefix is trustworthy because it was head-checked by the fenced writer when appended; the store trusts its own committed log (mirroring both the consumer-side cold-start seed adoption in the contract and the gateway’s first-complete-block rule, §6). <em>Snapshots</em>: the ingress periodically writes an <code>(offset, serialized chainstate)</code> snapshot to object storage — its own artifact, distinct from the gateway index snapshots of §6; purely an optimization, replay-from-earliest is always correct. <em>End condition</em>: replay is complete when the consumer’s position reaches the LSO and the LSO has caught up to the end of the log — guaranteed to settle promptly, because after the epoch bump no writer can extend the log and the predecessor’s abort marker is written as part of fencing. Producers reconnecting mid-replay are simply refused until step&nbsp;4 — connection retry is their existing behavior.</p>
+<div class="callout note">
+  <span class="label">Verified behavior (rig B)</span>
+  <p>All scenarios pass on Redpanda: a fenced predecessor’s produce is rejected with <code>INVALID_PRODUCER_EPOCH</code>; its in-flight uncommitted transaction is aborted by the successor’s init and its commit refused; the successor’s <code>read_committed</code> replay sees exactly the committed prefix; the final chain contains no fenced-writer material; and a <code>read_uncommitted</code> reader <em>would</em> see the aborted entries. The rig&nbsp;B harness is the runnable reference for the exact client-call sequence (it uses franz-go, a Go Kafka client; any client with transaction support works).</p>
+</div>
+<div class="callout invariant">
+  <span class="label">Hard rule</span>
+  <p>Every store-side consumer — gateways and the auditor alike — consumes <code>read_committed</code>, always. Under any other isolation level a fenced ingress’s aborted entries would be served to consumers as if they were chain content.</p>
+</div>
+<div class="callout tradeoff">
+  <span class="label">Trade-off</span>
+  <p>An ingress that <em>hangs</em> with an open transaction stalls <code>read_committed</code> consumers at the LSO until the transaction is aborted. With the §5 parameters, relief comes in this order: a self-fencing ingress short-circuits everything (~immediately); otherwise the broker’s own abort at <code>transaction.timeout.ms</code> (3&nbsp;s) unblocks <em>readers</em> first, and the lease-driven takeover (≤&nbsp;lease TTL, 5&nbsp;s, plus replay) restores <em>publishing</em>. The timeout is thus the reader-stall bound — set it aggressively, not the 60&nbsp;s default — but not so low that a momentarily slow commit (GC pause, broker leader election) gets broker-aborted, forcing a spurious self-fence.</p>
+</div>
+
+<h2 id="ingress"><span class="num">§5</span>Ingress</h2>
+<p><strong>Serving path.</strong> Per entry: structural validation, head comparison, fold — microseconds (the fold is ~0.7&nbsp;µs, rig&nbsp;C) — then an async produce into the current transaction. The ack is sent <strong>after the transaction commits</strong>: at that point the entry is both durable (majority-replicated) and visible to <code>read_committed</code> gateways, so an acked entry can never disappear or be unseen.</p>
+<div class="arch">
+  <div class="arch-subgrid">
+    <div class="arch-sub"><span class="shead"><span class="pill">entry</span> validate · head check · fold</span><ul><li>speculative head advances in memory; entry joins the open transaction (async produce)</li></ul></div>
+    <div class="arch-sub"><span class="shead"><span class="pill">commit</span> when the queue drains, or every 1–2&nbsp;ms</span><ul><li>one commit closes the window for every entry in it — durable and visible together</li></ul></div>
+    <div class="arch-sub"><span class="shead"><span class="pill">ack</span> per entry, in order, after its window commits</span><ul><li>only now may the producer treat the preconf as issued</li></ul></div>
+  </div>
+</div>
+<p><strong>Group commit.</strong> Sequential one-entry-per-transaction writes measured ~1.1&nbsp;ms each (rig&nbsp;B) — excellent latency, but a ~900/s ceiling. The adaptive window above gives idle traffic per-entry latency and lets bursts amortize hundreds of entries per commit; the cost is that consumers see entries at commit granularity, a few ms inside a ~40–90&nbsp;ms budget. “Queue drains” means no inbound entry is waiting; “adaptive” means exactly that rule — commit immediately on idle, at the window bound under load.</p>
+<p><strong>Serving-path mechanics an implementer must not guess:</strong></p>
+<ul>
+  <li><strong>Every produce is broker-acknowledged before commit.</strong> The ingress awaits all produce results for the window (a flush), and any produce failure dooms the transaction → self-fence (the safety invariant below). Do not rely on the client library to fail the commit on a failed produce — enforce the flush explicitly.</li>
+  <li><strong>Idle holds no broker-side transaction.</strong> A transaction materializes at the broker only when its first record is produced, so an idle ingress with a “begun” but empty window stalls nobody’s LSO. Equivalently: begin on first entry.</li>
+  <li><strong>One apply goroutine.</strong> Any number of producer streams may be connected (per-validator credentials are plural); their entries are serialized into a single validate→head-check→fold→produce loop. Losers of a head race get <code>STALE_COMMITMENT</code> on their own stream; rejection replies are immediate and do not wait for a commit.</li>
+  <li><strong><code>chainstate</code> surface</strong> (extracted per §2): <code>Validate(entry)</code>, <code>Apply(entry)</code> (validate + head check + fold + generation tracking — the one path used at ingest <em>and</em> replay), <code>Head()</code>, <code>Snapshot()/Restore()</code>. An <code>Apply</code> failure during <em>replay</em> of the committed log — at or above the cold-start seed point (§4) — is impossible by construction; if it happens anyway, crash loudly: it means log corruption or a <code>chainstate</code> bug, and no automated recovery is safe.</li>
+</ul>
+
+<div class="callout invariant">
+  <span class="label">Safety invariant — the speculative head never survives a write failure</span>
+  <p>The in-memory head runs ahead of the log between commits. If <em>anything</em> goes wrong with the open transaction — produce error, commit error, abort, timeout — that speculative head may include entries that never reached the log, and continuing from it would fold subsequent entries over phantoms: a permanent discontinuity every consumer would wedge on. So on any transaction failure the ingress <strong>treats itself as fenced</strong>: close its producer streams, discard all speculative state, re-init the writer identity (epoch bump), replay the committed tail, rebuild via <code>chainstate</code>, and only then serve again — the §4 takeover sequence applied to oneself, with reconnect-and-resync as the producer’s single recovery path for both fence flavors. Never abort-and-continue in place. Un-acked entries from the failed window are simply re-published by the producer after its own resync; acked entries are by definition committed and safe.</p>
+</div>
+<p><strong>Failover liveness.</strong> The fence makes writer overlap <em>safe</em>; something else must make takeover <em>happen</em> and prevent init wars (two instances that can each reach the brokers but not each other would otherwise fence one another in a loop):</p>
+<ul>
+  <li><strong>Lease = liveness, fence = safety.</strong> Only the holder of a standard leader lease (e.g., a Kubernetes Lease) may init the writer identity or serve; the lease’s TTL plus a takeover backoff is the flap guard. Even if the lease misbehaves and two instances believe they lead, the fence keeps the log safe. “Who is the current writer?” therefore has a one-line answer: whichever instance most recently registered the identity (§4) — the lease only nominates the candidate. The same pattern arbitrates Bor producers one level up (credential for access, head check per entry): optimistic checks for safety, coordination only for liveness, at both levels.</li>
+  <li><strong>Lease fitness is write health</strong>, not just process health: repeated self-fences (invariant above) or failure to complete a commit within a bound count as loss of fitness, and the holder stops renewing so a standby — possibly with a healthier broker path — can take over. Without this, an ingress with a flapping broker connection would cycle self-fences forever while happily holding the lease.</li>
+  <li><strong>Routing by readiness.</strong> Producers reach the ingress through one stable address (load balancer / VIP); only the serving instance reports ready (holds the lease <em>and</em> finished takeover), so standbys and a mid-replay instance receive no connections. The balancer needs only convergence, not correctness: if it briefly routes to a stale instance, the fence rejects that instance’s writes and it recovers per the safety invariant — beginning by <strong>closing its producer streams</strong> (the contract deliberately has no “fenced” ack status) — and the producer’s reconnect through the same address lands on the active instance, resyncing via <code>STALE_COMMITMENT</code> if needed.</li>
+  <li><strong>The producer is topology-blind by construction</strong>: it holds one publish endpoint (plus the gateway address for resync, §10) and speaks the contract, which carries no leader, broker, or instance concept — there is no message by which the store <em>could</em> expose its internals, so leadership changes are observable to Bor only as an ordinary reconnect. Note the resync path reads the tail <em>through a gateway</em> — recovering a producer requires the read path up, not just the ingress.</li>
+</ul>
+<div class="callout note">
+  <span class="label">Initial parameters (tuning targets, §11)</span>
+  <p><code>transaction.timeout.ms</code> 3&nbsp;s · commit window bound 2&nbsp;ms · commit-completion fitness bound 500&nbsp;ms · consecutive self-fence threshold 3 (reset by a healthy commit; an unfit instance rejoins the standby pool after one takeover backoff) · lease TTL 5&nbsp;s · takeover backoff 10&nbsp;s, applied to <em>repeated</em> takeover attempts only (the flap guard) — a first takeover fires at lease expiry. Net effect: an ingress crash or hang costs a publish gap of roughly the lease TTL plus replay; reader stalls are bounded by the 3&nbsp;s timeout (§4).</p>
+</div>
+
+<h2 id="gateway"><span class="num">§6</span>Gateways</h2>
+<p>Each gateway consumes the topic from its replay start, re-runs the fold (deterministic, ~1&nbsp;µs per entry, rig&nbsp;C), and maintains two indexes: <strong>post-fold head → offset</strong> for warm resume, and <strong>block → latest-generation offsets</strong> for <code>GetBlock</code> and cold anchors. Both derive purely from the log, so any two gateways resolve the same position identically and consumers can reconnect anywhere.</p>
+<ul>
+  <li><strong>Retention floor.</strong> Segment deletion is offset-aligned, so the earliest retained offset can land mid-block. Gateways index from the first <em>complete</em> block at or above the earliest offset and return <code>NOT_FOUND</code> for anything below — per the contract — and the consumer re-anchors from its own canonical head — recent for any consumer that is canonically synced, a precondition for serving preconfs at all; a node returning from a long outage syncs canonically first, then anchors. A consumer paging right at the floor while retention advances gets the same <code>NOT_FOUND</code> + re-anchor, not partial data.</li>
+  <li><strong>Bounded head index.</strong> Warm resume only ever presents a recent head; the index keeps a sliding window (minutes), and anything older falls back to the block anchor.</li>
+  <li><strong>Snapshots.</strong> Periodic (offset, serialized index) snapshots to object storage make restart O(seconds) instead of O(retention window). Snapshots are an optimization only: if the snapshot store is down, a gateway cold-starts by full-window replay — slower, never wrong.</li>
+  <li><strong>Serving.</strong> <code>Stream</code> follows the tail per connection, each tracking its own offset; <code>Range</code> and <code>GetBlock</code> read the indexes. Client auth (JWT / mTLS) terminates here; Redpanda is never exposed.</li>
+  <li><strong>Backpressure</strong> for slow streaming consumers (bounded per-connection buffer, then disconnect — the client resumes by head) is the leading policy proposal; alternatives in §11. The mirror-image guard: a gateway whose own consume lag (its distance behind the end of the log) crosses a threshold disconnects its streams instead of serving a silently stale tail (§8).</li>
+</ul>
+
+<h2 id="data"><span class="num">§7</span>Data layout, retention, audit</h2>
+<ul>
+  <li><strong>Record</strong> = the proto-serialized <code>Entry</code>, exactly as published. A record header carries the post-fold head for observability (never trusted — gateways recompute).</li>
+  <li><strong>Topic</strong>: <code>chain</code>, 1 partition, RF=3, <code>min.insync.replicas=2</code>.</li>
+  <li><strong>Hot retention</strong> sized to the resume window plus operational slack (e.g., 24&nbsp;h) and driven by time/size — <em>never</em> coupled to archive-upload success, so an object-store outage cannot back-pressure the write path into a halt. Upload lag is monitored with disk headroom sized to ride out an outage of hours (§8, §10).</li>
+  <li><strong>Audit archive</strong>: tiered storage ships closed segments to the object store; append-only means superseded generations are never overwritten. At the boundary, the hot path wins: if an object-store outage outlasts the engineered disk headroom, time/size-driven deletion may remove segments that were never archived — accepted, and alerted as an <em>audit-gap incident</em>, rather than letting archive back-pressure halt writes.</li>
+  <li><strong>Supersession auditor</strong> — the protocol requires the store to actively audit re-anchors, not just retain them. A dedicated background consumer replays the log; at each re-anchor it diffs the superseded suffix against the replacement generation, classifies it (same-parent re-anchor of a sealed height = producer revocation; new-canonical-parent = chain-level reorg), flags any dropped or reordered transactions, exports flagged generations as SLA evidence, and emits the revocation-rate metric (§10). It checkpoints its offset alongside its exported evidence in object storage (no broker-side position tracking, per §3; restarts neither re-flag nor skip re-anchors), reads through tiered storage when its lag or a superseded suffix crosses the retention floor (falling behind does not itself lose evidence), and carries its own liveness alert — an auditor outage would otherwise silently flatline the SLA metric. It runs off the hot path; ingress and gateways are unaffected by its lag.</li>
+  <li><strong>Store lifecycle is chain lifecycle</strong>: a wiped-and-restarted store starts again from the genesis seed, and the producer’s first open is a forward jump naming a canonical parent the store never saw. Old resume heads are unknown to the fresh store (<code>NOT_FOUND</code>); consumers re-anchor by block and adopt the new seed cold-start-style. This exact sequence was exercised on a devnet (rig&nbsp;A): store wiped mid-run, producer re-published from the fresh seed, consumers’ stale heads were rejected and they re-anchored with no manual intervention.</li>
+</ul>
+
+<h2 id="failure"><span class="num">§8</span>Failure analysis</h2>
+<table>
+  <thead><tr><th>Failure</th><th>Behavior</th><th>Blast radius</th></tr></thead>
+  <tbody>
+    <tr><td>Ingress crash</td><td>Lease expires; standby fences, replays tail, rebuilds, serves (§4). Producers reconnect and resync.</td><td>Publish gap ≈ lease TTL + replay (seconds with §5 parameters); preconfs pause, chain unaffected.</td></tr>
+    <tr><td>Ingress transaction failure (process alive)</td><td>Self-fence (§5 invariant): discard speculative head, re-init, replay, rebuild, serve. Un-acked entries re-published by the producer.</td><td>Publish gap of ~a second; no discontinuity possible.</td></tr>
+    <tr><td>Ingress hang (wedged, open txn)</td><td>Broker aborts the open transaction at <code>transaction.timeout.ms</code> (readers unblock); lease expires and the standby fences it (publishing restored). Order per the §4 trade-off.</td><td>Reader stall ≤&nbsp;3&nbsp;s; publish gap ≈ lease TTL + replay.</td></tr>
+    <tr><td>Zombie / partitioned ingress</td><td>Broker rejects with <code>INVALID_PRODUCER_EPOCH</code>; uncommitted entries aborted, invisible to <code>read_committed</code> (verified, rig&nbsp;B). Lease + backoff prevents mutual-fencing wars.</td><td>None.</td></tr>
+    <tr><td>Committed but un-acked window (ingress dies between commit and acks)</td><td>Entries are on the chain; no preconfs were issued for them (acks gate preconfs). The producer resyncs by tail; any re-publish is rejected <code>STALE_COMMITMENT</code>, so the chain converges by construction.</td><td>A few unfulfilled preconf opportunities; no inconsistency.</td></tr>
+    <tr><td>Redpanda node loss (1 of 3)</td><td>Raft continues on majority; ack latency blips. A commit in flight during the leader election may time out → one spurious self-fence (§4).</td><td>None, or a publish gap of ~a second.</td></tr>
+    <tr><td>Redpanda loss of 2 of 3 — transient</td><td>Writes halt (<code>min.insync.replicas=2</code> unsatisfiable); ingress stops acking; producer fail-safes.</td><td>Preconfs stop until quorum returns; chain unaffected.</td></tr>
+    <tr><td>Redpanda loss of 2 of 3 — simultaneous permanent</td><td>An acked entry may have existed on exactly the two lost disks: bounded acked-entry loss. Consumers detect the gap (commitment chain) and fall back to canonical; issued preconfs for lost entries are voided at reconciliation, exactly as any superseded preconf is.</td><td>Bounded preconf voiding; the protocol’s canonical-wins rule already prices this.</td></tr>
+    <tr><td>Broker disk full / corrupt (single node)</td><td>Corruption: node drops out, Raft re-replicates from peers. Disk-full is prevented by retention sizing + upload-lag alerting (§7); a single full disk behaves as node loss.</td><td>None if singular.</td></tr>
+    <tr><td>Object store down (archive)</td><td>Hot path unaffected (retention decoupled from upload, §7); segments queue locally; auditor evidence export lags.</td><td>None for hours (disk headroom); past headroom, un-archived segments may be deleted — an alerted audit-gap incident, never a write halt (§7).</td></tr>
+    <tr><td>Object store down (component snapshots)</td><td>Restarting gateways and ingress takeovers cold-start via full-window replay (§4, §6).</td><td>Slower gateway restarts; longer takeover publish gaps. Serving continues on live gateways.</td></tr>
+    <tr><td>Gateway partitioned from brokers (stale-serving)</td><td>Streams stop advancing; the gateway watches its own consume lag and past a threshold disconnects its streams (§6) rather than serving silence. Consumers also carry the protocol’s freshness bound — a stalled stream falls back to baseline regardless.</td><td>Per-gateway staleness, bounded by the lag threshold.</td></tr>
+    <tr><td>Gateway loss</td><td>Consumers reconnect to another gateway and resume by head.</td><td>Per-connection reconnect.</td></tr>
+    <tr><td>Store total outage</td><td>Producer fail-safes (bounded queue, then disabled); consumers keep serving canonical.</td><td>Preconfs stop; the chain never notices — the design’s standing guarantee.</td></tr>
+  </tbody>
+</table>
+
+<h2 id="capacity"><span class="num">§9</span>Performance &amp; capacity</h2>
+<p>Measured so far: publish→ack p50 0.8–1.9&nbsp;ms against the in-memory reference under load (rig&nbsp;A); fenced one-entry transactions p50 1.15&nbsp;ms and plain <code>acks=all</code> produces 0.29&nbsp;ms on single-node Redpanda (rig&nbsp;B — the fence costs ~0.8&nbsp;ms); end-to-end preconf p50 41&nbsp;ms idle, 94&nbsp;ms at ~900&nbsp;tps, 146&nbsp;ms at the ~1,900&nbsp;tps devnet gas ceiling, with zero pipeline failures (rig&nbsp;A). Expect +1–2&nbsp;ms on a 3-node cluster for the replication hop.</p>
+<p>The store path is <strong>O(bytes) plus one keccak per transaction</strong> — it does no EVM work. Scaling:</p>
+<ul>
+  <li><strong>10k&nbsp;tps</strong>: an engineering checklist, not a design question — record coalescing in the publisher (the contract’s per-transaction fold makes batching free by construction), the group commit of §5, and parallel-apply headroom on consumers.</li>
+  <li><strong>100k&nbsp;tps</strong>: ~30&nbsp;MB/s through one partition (attainable; watch MB/s, not records/s — coalescing collapses message counts), a bounded head-index window (a day of heads no longer fits in RAM; minutes do), and retention/tiering sizing. The binding constraint is transaction <em>execution</em> — and re-execution equals import, so any consumer provisioned to keep up with the chain keeps up with the stream. Execution scaling is the chain’s frontier, symmetric on both sides of this design.</li>
+</ul>
+
+<h2 id="security"><span class="num">§10</span>Security &amp; operations</h2>
+<ul>
+  <li><strong>Writer auth</strong>: mutual TLS with per-validator credentials at the ingress. Under the chain-blind trust model, credential issuance/rotation/revocation <em>is</em> writer arbitration — revocation speed is the recourse against a rogue credentialed writer (protocol doc §5). Lifecycle design is an open item shared with the protocol doc.</li>
+  <li><strong>Reader auth</strong>: JWT / mTLS at gateways; per-connection rate and concurrency limits.</li>
+  <li><strong>Isolation</strong>: Redpanda on an internal network only; ingress, gateways, and the auditor are the sole clients.</li>
+  <li><strong>Observability</strong>: publish ack RTT, entries, drops, failures; consumer apply and served counts; commit-window size; LSO lag; fence and self-fence events (with a consecutive self-fence counter driving lease release, §5); lease transitions; auditor lag and liveness; head-index window bounds; per-gateway stream counts; archive upload lag and broker disk headroom; supersession audit: flagged-generation count and revocation rate (the SLA metric).</li>
+  <li><strong>Deployment</strong>: 3 brokers across AZs; ingress active-passive behind one stable address; gateways N≥2 behind a second — the producer’s entire topology knowledge (§5): publish via one, resync-read via the other.
+    <ul>
+      <li><strong>Load balancing</strong>: the two endpoints are the same technology (plain L4 with health checks) in opposite configurations — failover routing to the at-most-one ready ingress (a constraint on the <em>write</em> path only, which serves a handful of credentialed producers, one elected publisher at a time) vs. round-robin across gateways, <em>all</em> of which are ready simultaneously; consumer fan-out scales by adding gateway replicas, never through the ingress.</li>
+      <li><strong>TLS passthrough on the publisher endpoint</strong>: the per-validator mTLS credential is the writer’s identity, so its TLS session terminates at the ingress itself, never at the balancer.</li>
+      <li><strong>Upgrades</strong>: gateways roll freely; ingress upgrades are a deliberate lease handoff (the fence makes overlap harmless); brokers roll one at a time on Raft majority, draining leadership first (maintenance mode) — a drained shutdown skips the election window and its possible spurious self-fence, leaving only the two-broker tail exposure: with one follower gone, every commit waits on the single remaining follower instead of the faster of two, so ack p99 widens while p50 barely moves.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="open"><span class="num">§11</span>Open questions</h2>
+<ul>
+  <li><strong>Backpressure policy</strong> at the gateway: bounded-buffer-then-disconnect is the proposal; evaluate against per-connection rate shaping.</li>
+  <li><strong>Parameter tuning against real traffic and failure traces</strong>: the 1–2&nbsp;ms adaptive commit window vs. observed burst shapes; lease TTL, takeover backoff, the commit-completion bound, and the self-fence threshold (§5 initial values).</li>
+  <li><strong>Fencing on a real cluster</strong>: rig&nbsp;B ran single-node; re-run all scenarios against 3 nodes with induced partitions and broker failovers, as a CI chaos test.</li>
+  <li><strong>Index snapshot cadence</strong> and format; gateway cold-start SLO.</li>
+  <li><strong>Credential lifecycle</strong>: issuance, rotation, revocation latency (shared §11 item with the protocol doc).</li>
+  <li><strong>JetStream fallback trigger</strong>: what cluster-fencing finding, if any, would flip the log layer to native conditional append.</li>
+</ul>
+
+<h2 id="status"><span class="num">§12</span>Status &amp; build order</h2>
+<p>Exists today: the contract module (PR open), the in-memory reference store, the Bor producer/consumer integration (measured end to end, rig&nbsp;A), and the fencing harness (rig&nbsp;B, all scenarios passing). Build order: <strong>(1)</strong> extract <code>chainstate</code> from the reference store; <strong>(2)</strong> ingress skeleton with group commit and the self-fence invariant + gateway skeleton against single-node Redpanda, swapped into the devnet rig in place of the reference binary and re-measured; <strong>(3)</strong> producer tail resync in Bor (required once failover is routine); <strong>(4)</strong> 3-node cluster, lease-based failover, cluster fencing chaos CI, snapshots, tiered storage, the supersession auditor; <strong>(5)</strong> credential lifecycle and gateway hardening.</p>
+
+<p class="small" style="margin-top:3rem;color:var(--muted)">Draft for team review. Companion documents: protocol design (<code>bor/docs/sequencer.html</code>), wire contract (<code>github.com/0xPolygon/sequence-store-proto</code>). Measurement rigs are defined in §1.</p>
+
+
+<script src="/companion/v1.js" defer=""></script></body></html>

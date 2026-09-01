@@ -1,0 +1,105 @@
+Sequence Store — DevOps Implementation Brief (Copy) For the DevOps team · sequence store 
+What we need built, and 
+what it has to satisfy 
+The sequence store is a new backend service that lets Polygon RPC nodes serve transaction receipts a couple of seconds earlier than they can today. It sits beside the chain and nothing on the chain depends on it. This is the short version, aimed at whoever writes the deployment code: components, artifacts, dependencies, health checks, deployment rules, alarms. 
+The 60-second version 
+Four things run. A three-node Redpanda cluster (the storage layer), and three small Go services that all ship as one image: an ingress that writes to it, gateways that read from it, and an auditor that watches for anomalies. One L4 load balancer fronts the gateways; Bor’s block producer talks to the ingress directly. Bor connects from outside. 
+Nothing here can affect the chain. If the whole service is down, Polygon produces blocks exactly as it does today; users simply wait the normal amount of time for receipts. That makes it a low-risk first deployment and means alarms here should never page the chain on-call rotation. 
+Target: Amoy first, then mainnet. Nothing is deployed anywhere yet. A 
+Components 
+Component What it does Ports Count State 
+redpanda Stores the data. Kafka-compatible log, replicated 3 ways. 9092 data 
+9644 admin 3 stateful 
+needs fast local disk 
+seqstore ingress The only writer. Bor's block producer publishes to it. 9550 gRPC 
+9600 ops 1 
+(only ever one) stateless 
+seqstore gateway The read path. Bor RPC nodes stream from it. 9551 gRPC 
+9600 ops 3+ stateless 
+seqstore auditor Background watcher. Serves no traffic; writes evidence files out. 9600 ops 1 stateless 
+publish endpoint A stable name pointing straight at the single ingress. No load balancer. 9550 1 reserved IP + DNS 
+read endpoint L4 passthrough LB in front of the gateways. Round-robins across all ready ones. The only load balancer in the design. 9551 1 reserved IP + DNS 
+Only the read path is load balanced. There is exactly one writer and exactly one producer, so on the publish side there is nothing to balance and no failover for a load balancer to perform — Bor's block producer connects straight to the ingress. That also keeps the certificate story simple: the client certificate is the writer's identity, and a direct connection reaches the ingress process intact by construction. 
+The read endpoint must not terminate TLS. Plain L4 passthrough, not an L7 / HTTPS balancer. We do not authenticate readers today, but we want to keep that option, and it disappears the moment something in the middle re-originates the connection. 
+Redpanda needs no load balancer either. The ingress takes a comma-separated -brokers list; give it all three addresses and it finds the right one itself. It is a Kafka client, so it discovers which broker leads each partition and follows leadership as it moves between them. 
+One thing for us to settle before you write code: the gateway's gRPC port is 9551 in the binary's defaults but 9550 in our own deployment notes. We will confirm the intended number — please don't infer it from the docs. B 
+Where the artifacts come from 
+Short answer: a rolling :dev image exists, a versioned one does not. The build pipeline is working — it publishes on every merge to the default branch, and is confirmed green. What is missing is a release tag, which is what you would actually want to pin a deployment to. 
+Artifact Intended source Status today 
+seqstore One image, three roles selected by the first argument. Built by .github/workflows/docker.yml → ghcr.io/0xPolygon/sequence-store , tagged :dev on develop and :vX.Y.Z on a release tag. :dev only 
+The :dev tag is published and current as of 20 Aug 2026. No versioned release tag has been cut yet, so there is nothing immutable to deploy. 
+redpanda Upstream redpandadata/redpanda . pinned 
+v26.1.16 — the newest patch of the current maintained line. Verified against the fencing conformance suite. 
+What has to happen 
+Us: cut a first release tag so a versioned image exists. The build pipeline works — it just needs a tag to fire on. 
+Us — done: Redpanda is pinned to v26.1.16 across the compose files and CI. 
+You: tell us where you want the image to live. The repo is private , so GHCR packages inherit that and whatever runs the deployment will need pull credentials. If you would rather mirror into Artifact Registry to match how other services are deployed, that is fine by us — we would rather match your existing pattern than invent one. C 
+Dependencies and startup order BOR — OUTSIDE THE SERVICE SEQUENCE STORE block producer writes RPC nodes read read LB L4 · round robin ingress exactly one — see §E gateways ×3+ auditor ×1 redpanda ×3 one per zone · :9092 quorum of 2 required direct · no load balancer producer also reads back here to resync — dashed START IN THIS ORDER 1 brokers healthy 2 topic created 3 ingress ready 4 gateways + auditor 5 point Bor at both Each step waits for the previous one to report healthy. Nothing here talks to Heimdall. The dashed arrow is easy to miss and matters operationally: the block producer recovers by reading back through the read endpoint. So the read path has to be healthy for the write path to recover — never take both down at once. 
+Component Needs If that is unavailable 
+redpanda Nothing. Only each other. Lose 1 of 3: fine. Lose 2 of 3: everything pauses until quorum returns. 
+ingress Brokers; the topic must exist Stops accepting writes; retries on its own. No data loss. 
+gateway Brokers Stops serving; drops its connections so clients go elsewhere. 
+auditor Brokers; a writable path for evidence No user impact at all. Audit coverage gap only. 
+bor producer Publish endpoint and read endpoint Stops publishing after a short buffer. Chain unaffected. 
+bor RPC Read endpoint Falls back to normal receipt latency. No error to users. 
+No dependency on Heimdall, and none on any chain component. The store is deliberately unaware of consensus. The only coupling to Bor is the two network endpoints above. D 
+Health checks 
+All three services expose the same two HTTP endpoints on port 9600 . This is what the read-path load balancer and your orchestration probes should use. 
+Endpoint Role 200 means 503 means 
+GET /ready ingress This instance is the live writer and is serving. Starting up or recovering. Send it no traffic. 
+GET /ready gateway Caught up with the data and safe to read from. Still catching up, or fallen too far behind. Take it out of rotation. 
+GET /ready auditor Running and following. Not running. Alarm on this, do not route on it. 
+GET /metrics all three Prometheus format, same port. 
+Do not wire a restart-on-failure probe to /ready on the ingress. A 503 here means "not currently the writer", which is a normal working state — during startup and catch-up today, and permanently for a standby once that ships. A liveness probe pointed at it would restart healthy instances, and on a catching-up one it would restart it before it ever finishes. Use /ready for routing only. We owe you a separate liveness endpoint; it does not exist yet. 
+For Redpanda itself, use its own health tooling and admin API on 9644 rather than anything we provide. E 
+What a deployment has to satisfy 
+Six rules. Everything else is your call. 
+# Rule Why it matters 
+1 Never take more than one Redpanda node down at a time. Two of three must always be up. Writes need a majority. Two down stops the service until one returns. 
+2 Run exactly one ingress instance. Not two, and not behind a load balancer. Point the publish name at it and let a restart policy handle process failure. Only one instance may write, and until the standby mechanism ships, a second instance does not idle — it competes. See the note below. 
+3 Never restart all gateways at once. One at a time; keep at least two serving. A fresh gateway reads back through the stored data before it can serve — minutes, not seconds. Restart them together and reads are down for that whole time. 
+4 Exactly one auditor. Never two. Two would double-count and produce duplicate reports. 
+5 All three services always run the same image tag. They share internal logic; mixed versions can disagree about the stored data. 
+6 Release order: brokers → gateways → auditor → ingress. Readers before the writer is the safe direction. 
+Why rule 2 says one instance and not two 
+Ingress is the one component where "just run two for redundancy" is the wrong instinct, so it is worth being precise about what enforces what. Three separate things are involved, and only two of them exist today. 
+Mechanism What it decides Where it lives Exists? 
+the fence Whether two instances can both write. They cannot — the broker locks out the older one permanently, mid-sentence. broker yes 
+readiness Whether this instance is currently the writer, which is what your health check reads. /ready yes 
+the lease Which instance should try to become the writer. This is what makes a second instance sit idle instead of competing. — not yet 
+What readiness does on its own 
+The useful property is that readiness is derived, not configured . Nothing is flagged as "the standby" and no operator sets anything: the instance reports ready only while it actually holds the writer role and has finished catching up. It walks this loop by itself, and the health check simply observes where it is. ONE INSTANCE, LEFT ALONE — THE LOOP IT WALKS taking over /ready → 503 · no traffic serving /ready → 200 · takes traffic a write failed /ready → 503 · drops traffic caught up discards what it had, takes over again, replays — no operator involved A PUBLISH THAT REACHES AN INSTANCE THAT IS NOT THE WRITER — THREE THINGS STOP IT 1 · the service refuses the connection 2 · the broker rejects the write 3 · the instance resets and rebuilds independent — layer 2 holds even if the producer is pointed at the wrong host, which is why the endpoint only has to be roughly right The health check reads the top row; the bottom row is why a misdirected publish is survivable rather than dangerous. Data safety never depends on the producer being pointed at the right host. 
+What is missing, and why it changes the rule. Start a second instance today and it does not wait politely — it immediately tries to become the writer, takes the role from the first, and the first takes it back when its next write fails. They trade the role back and forth, and publishing stalls each time. There is also a window where both answer 200: an instance that has just lost the role does not find out until it next tries to write, so until then its health check still says it is fine. 
+Nothing gets corrupted while that happens — layer 3 guarantees only one of them ever actually writes — but it is worse for availability than running a single instance, which is the counter-intuitive part. The lease is the missing piece that makes a second instance genuinely passive , and it is on our side to build. Until it lands: one instance, plus a restart policy. A crashed process recovers on its own in seconds. 
+What each restart costs 
+Restarting User-visible effect 
+one redpanda node none — if you drain its leadership first 
+one gateway none — its clients reconnect elsewhere 
+the auditor none — it serves nobody 
+the ingress brief pause — early receipts stop for seconds; chain unaffected 
+The ingress is the only one with unavoidable downtime , because exactly one instance may write at a time — so an upgrade is a handoff, and during a handoff nobody is writing. Seconds, and only early receipts are affected. Please schedule ingress restarts deliberately rather than letting automation do them unannounced. F 
+Alarms 
+Condition Source Action 
+Ingress not ready for > 1 min /ready page 
+All gateways not ready at once /ready page 
+Fewer than 2 Redpanda nodes healthy redpanda page 
+Broker disk above threshold host page 
+Auditor down > 15 min /ready ticket 
+One gateway lagging while others are fine /metrics ticket 
+Ingress restarting repeatedly /metrics ticket 
+Archive upload falling behind redpanda ticket 
+All of these can be built now. The application metrics behind the bottom half of the table landed on develop on 25 Aug, so /metrics exposes the full seqstore set alongside Go runtime statistics. Rates that have never fired report zero rather than no-data, which means an alarm on a quiet metric can tell "nothing happened" apart from "the process is gone". 
+Routing: these should not page the chain on-call rotation. Nothing in this service can affect block production, and the worst outcome of every alarm above is that early receipts are unavailable. G 
+What we would like to agree on 
+Who owns the deployment code? Our assumption is DevOps, matching every other service, with us owning the application and its release tags. Confirm or push back. 
+Where should the image live? GHCR as the build already produces, or mirrored into Artifact Registry to match your existing pattern? We will follow whatever you already do. 
+Redpanda on VMs or Kubernetes? Our proposal is three dedicated VMs, provisioned like a chain node — it wants fast local disk and predictable CPU. The three Go services are small and stateless and would sit comfortably on the existing Kubernetes platform. Happy to be overruled; you know the estate better. 
+Which project and environment for Amoy first? 
+Certificates. Later phase, flagging now: the publish endpoint will eventually need per-validator client certificates, which means an issuing and rotation story. Not needed for the first internal deployment. 
+Pull credentials for a private registry. The repo is private, so the published image is too — an unauthenticated pull is rejected. Whatever runs the deployment needs credentials, and how you prefer to supply those is your call. 
+Gaps on our side, for transparency 
+None of these block you from starting, but they change how good the operational story is, and they are ours to close: 
+No versioned release tag yet, so nothing immutable to pin a deployment to — :dev exists but moves on every merge blocks first deploy 
+No graceful shutdown on the ingress — makes restarts noisier than they need to be 
+No standby arbitration yet, so losing the ingress host needs someone to start it elsewhere. A process restart recovers on its own in about 0.8 s — measured under load, not estimated 
+No liveness endpoint separate from /ready Short version of the fuller infrastructure and operations document. Revised 25 Aug 2026: the publish path no longer shows a load balancer — a single writer and a single producer connect directly, and the gateway pool is the only load-balanced endpoint. Application metrics have landed on develop. Ports unchanged. 

@@ -1,0 +1,502 @@
+<!doctype html><html><head><!-- frame-runtime --><base href="/_f/1787953005-f8cb/"><script>window.__FRAME_PREAMBLE={"v":1,"capabilities":{"artifact":"artifact.D_F1mx8d.js","assets":"assets.8Gk803W0.js","comments":"comments.GLuHR3zP.js","db":"db.h-3sndFg.js","downloads":"downloads.C3GSvEDP.js","embed":"embed.CxGAyc-v.js","mcp":"mcp.Bvma3qD7.js","network":"network.B5UA9Su4.js","notifications":"notifications.ssU4jy7G.js","permissions":"permissions.BNySkLV5.js","room":"room.BMMoe2BY.js","sample":"sample.BW2Uysoh.js","self":"artifact.D_F1mx8d.js","user":"user.BpKav-Rf.js"},"transforms":"_transforms.DSB5x63f.js","comments":"_comments.DELvYLUh.js","translate":"_translate.5HCW4BJh.js"}</script><script>(function(){"use strict";var te=["light","dark","system"],re=/^[A-Za-z0-9_-]{1,64}$/,$=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,ne=new Set(["class","hidden","value","checked","style","title","alt","placeholder","lang","dir","role","tabindex","disabled","readonly","contenteditable","open","colspan","rowspan"]);function oe(e){const t=e.toLowerCase();return t.startsWith("data-")||t.startsWith("aria-")||ne.has(t)}var Be="http://www.w3.org/1999/xhtml",se="http://www.w3.org/2000/svg",ae=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),ie=new Set(["script","style"]);function ce(e){const t=e.localName.toLowerCase();return e.namespaceURI==="http://www.w3.org/1999/xhtml"?!ae.has(t):e.namespaceURI===se?!ie.has(t):!1}function M(e,t){return e===t||(e===160||e===32)&&(t===160||t===32)}function le(e,t){const r=e.length,n=t.length;let s=0;for(;s<r&&s<n&&M(e.charCodeAt(s),t.charCodeAt(s));)s++;let o=0;for(;o<r-s&&o<n-s&&M(e.charCodeAt(r-1-o),t.charCodeAt(n-1-o));)o++;return{p:s,s:o}}function ue(e,t){const r=e.firstChild;if(e.childNodes.length!==1||r===null||r.nodeType!==Node.TEXT_NODE){e.textContent=t;return}const n=r.data,s=n.length,o=t.length,{p:i,s:c}=le(n,t);i===s&&c===0&&s===o||r.replaceData(i,s-i-c,t.slice(i,o-c));const h=r.data,p=e.ownerDocument.getSelection?.()??null,w=p!==null&&p.rangeCount>0&&(p.anchorNode===r||p.focusNode===r)?{anchor:p.anchorNode,anchorOffset:p.anchorOffset,focus:p.focusNode,focusOffset:p.focusOffset}:null;let m=-1,g=-1;for(let f=0;f<h.length&&f<t.length;f++){const v=h.charCodeAt(f),b=t.charCodeAt(f);v!==b&&M(v,b)&&(m<0&&(m=f),g=f)}const a=m>=0;if(a&&r.replaceData(m,g-m+1,t.slice(m,g+1)),a&&w!==null&&w.anchor!==null&&w.focus!==null)try{p.setBaseAndExtent(w.anchor,w.anchorOffset,w.focus,w.focusOffset)}catch{}}var fe=new Set(["html","head","body","frameset"]);function de(e){return e.namespaceURI==="http://www.w3.org/1999/xhtml"&&fe.has(e.localName)}function pe(e){if(e===null||typeof e!="object")return!1;const t=e;if(typeof t.target!="string"||!re.test(t.target)||t.text!==void 0&&typeof t.text!="string")return!1;if(t.attrsSet!==void 0){if(t.attrsSet===null||typeof t.attrsSet!="object")return!1;for(const[r,n]of Object.entries(t.attrsSet))if(!$.test(r)||typeof n!="string")return!1}if(t.attrsRemoved!==void 0){if(!Array.isArray(t.attrsRemoved))return!1;for(const r of t.attrsRemoved)if(typeof r!="string"||!$.test(r))return!1}return!0}function me(e,t){if(e===null||typeof e!="object")return!1;const{seq:r,elements:n}=e;if(typeof r!="number"||!Number.isSafeInteger(r)||!Array.isArray(n)||n.length===0||n.length>64)return!1;for(let s=0;s<n.length;s++)if(!t(n[s]))return!1;return!0}function he(e){return e===null||typeof e!="object"?!1:me(e.__frame_patch,pe)}function _e(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function ve(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function ye(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const r=t.theme;return typeof r=="string"&&te.includes(r)}var A=/^[\w.-]+\.js$/;function we(e,t,r){return r?"inert":typeof t=="string"&&A.test(t)?e?[t]:"inert":e?"inert":"framed"}function ge(){return{post(e,t){parent.postMessage(e,t)},on(e){const t=r=>{r.source===parent&&e(r.data,r.origin,r.isTrusted)};return addEventListener("message",t),()=>removeEventListener("message",t)}}}function be(){return{post:()=>{},on:()=>()=>{}}}var j="__frame_scroll",Ee=150,Ae=310,Se=160,Te=3e4;function ke(){let e=0,t=!1,r=!1,n=!1,s=0,o=null;const i=l=>{try{sessionStorage.setItem(j,JSON.stringify({y:l}))}catch{}},c=()=>{if(clearTimeout(e),o===null)return;const l=o;o=null,i(l)},h=()=>{if(t){t=!1;return}r=!0,o=scrollY,clearTimeout(e),e=setTimeout(c,Ee)};try{addEventListener("scroll",h,{passive:!0}),addEventListener("pagehide",c)}catch{}const p=()=>{let l;try{l=sessionStorage.getItem(j)}catch{return null}if(l===null)return null;let _;try{_=JSON.parse(l)}catch{_=null}const d=_?.y;if(!(typeof d=="number"&&Number.isFinite(d)&&d>=0)){try{sessionStorage.removeItem(j)}catch{}return null}return d};let w=!1;const m=l=>{try{const _=scrollY;scrollTo({top:l,left:0,behavior:"instant"}),s=l,n=!0,clearTimeout(e),o=null,i(l);const d=scrollY;d!==_&&(t=!0),d!==l&&!w&&(w=!0,addEventListener("load",()=>{try{if(scrollY===d){const T=p();m(T!==null?T:s)}}catch{}},{once:!0}))}catch{}},g=()=>{try{return!!location.hash}catch{return!0}};let a=!1;const f=()=>{try{if(a||innerWidth>Ae||innerHeight>Se)return;a=!0;const l=Date.now(),_=()=>{try{removeEventListener("resize",_)}catch{}if(Date.now()-l>Te||r||g())return;const d=p();m(d!==null?d:s)};addEventListener("resize",_)}catch{}};let v=!1,b=!1;return{restore(){if(v||(v=!0,g()))return;const l=p();l!==null&&(m(l),f())},promoted(){if(b||(b=!0,g()))return;const l=p();l!==null?(m(l),f()):n&&m(s)}}}function Re(e,t,r,n){let s=null;try{s=window.trustedTypes?.createPolicy("frame-runtime",{createScriptURL:h=>h})??null}catch{}const o=window.Worker,i=o?.prototype,c=Object.freeze({Worker:o,workerOn:i?.addEventListener,workerPost:i?.postMessage,workerTerminate:i?.terminate,fetch:window.fetch.bind(window),preventDefault:Event.prototype.preventDefault,policy:s,origins:t});r(e).then(h=>h?.bootTopLevel?h.bootTopLevel(c,n):n.settle()).catch(()=>n.settle())}var De="modulepreload",Ie=function(e){return"/"+e},Ue={},Le=function(t,r,n){let s=Promise.resolve();function o(i){const c=new Event("vite:preloadError",{cancelable:!0});if(c.payload=i,window.dispatchEvent(c),!c.defaultPrevented)throw i}return s.then(i=>{for(const c of i||[])c.status==="rejected"&&o(c.reason);return t().catch(o)})},Oe=window===top,q=Object.getOwnPropertyDescriptor(window,"claude"),k=we(Oe,window.__FRAME_PREAMBLE?.topLevel,q?.writable===!1),N=typeof k=="object"&&k[0],y=N?be():ge();(function(){const e=Object.defineProperty,t=globalThis,r=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let n=0;for(let s=0;s<r.length;s++){const o=r[s];try{e(t,o,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[o]}catch{}try{e(t,o,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[o]=="function"&&n++}if(n&&k==="framed")try{y.post({__frame_rtc_lockdown_failed:n},"*")}catch{}})();var Pe=1e4,Y=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function X(e){for(const t of Y)if(t.endsWith(":*"))try{const r=new URL(e);if(`${r.protocol}//${r.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var R=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),B=window.__FRAME_PREAMBLE?.transforms,D=window.__FRAME_PREAMBLE?.comments,I=window.__FRAME_PREAMBLE?.translate;function S(e){return Le(()=>import("/_runtime/"+e),void 0)}function G(e,t){return{contract:e.contract,changes:new Set(e.changes??[]),flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:new Map,shellOrigin:t,mount:x,hooks:O,pipe:()=>({wrap:(r,n)=>(...s)=>{try{return n(...s)}catch(o){return Promise.reject(o)}}})}}var L=null,E=null;function V(e,t,r){try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var U=!1,O={editBefore:null,edit:null};function Ce(e,t,r=!1){const n=[];let s;if(r)try{O.editBefore?.(e)}catch{}for(const o of e.elements){const i=document.querySelector(`[data-id="${o.target}"]`);if(!i){s=o.target;break}if([...Object.keys(o.attrsSet??{}),...o.attrsRemoved??[]].some(c=>!oe(c))){s=o.target;break}if(o.text!==void 0&&(!ce(i)||de(i))){s=o.target;break}for(const[c,h]of Object.entries(o.attrsSet??{}))if(!J(i,c)){try{i.setAttribute(c,h)}catch{}Z(i,c,h)}for(const c of o.attrsRemoved??[])J(i,c)||(i.removeAttribute(c),Z(i,c,null));typeof o.text=="string"&&ue(i,o.text),n.push(o.target)}if(r)try{O.edit?.(e.seq,n,s)}catch{}if(s!==void 0){y.post({__frame_patch_miss:{seq:e.seq}},t);return}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:e.seq,targets:n}}))}catch{}}function Z(e,t,r){if(!(e instanceof HTMLInputElement))return;const n=t.toLowerCase();n==="checked"?e.checked=r!==null:n==="value"&&e.type!=="file"&&(e.value=r??"")}function J(e,t){const r=t.toLowerCase(),n=e;return r==="data-id"||(r==="value"||r==="checked")&&(n.__artifactSecret===!0||/^(password|hidden|file)$/.test(n.type??"")||/(^|\s)(cc-|one-time-code|current-password|new-password)/i.test(`${e.getAttribute("autocomplete")??""} ${n.autocomplete??""}`))}function Q(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,U=!0):U&&(delete t.dataset.theme,t.style.colorScheme="",U=!1)}var P=new Map;function Me(){let e;const t={u:new Promise(r=>{e=r}),r:r=>{t.done=!0,e(r)},done:!1,nulled:!1};return t}function F(){for(const e of P.values())e.done||(e.nulled=!0,e.r(null))}var je=Object.freeze(Object.assign(Object.create(null),{call:Function.prototype.call,apply:Function.prototype.apply,bind:Function.prototype.bind})),x=(e,t)=>{const r=P.get(e);if(!r||r.done){r?.nulled&&E&&y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:e}},E);return}const n=typeof t=="function"?Object.setPrototypeOf(t,je):Object.assign(Object.create(null),t);typeof n.then=="function"&&delete n.then,r.r(Object.freeze(n))};function ee(){const e=q?.value??{};V(window,"claude",e);for(const t of Object.keys(R)){if(e[t]!==void 0){V(e,t,e[t]);continue}P.set(t,Me())}if(e.use===void 0){const t=r=>{if(typeof r!="string"||!Object.hasOwn(R,r))return Promise.resolve(null);const n=P.get(r);return n?n.u:Promise.resolve(e[r]??null)};try{Object.defineProperty(e,"use",{value:t,writable:!0,configurable:!0,enumerable:!1})}catch{}}}if(k==="framed"){const e=B&&A.test(B)?S(B).catch(()=>{}):Promise.resolve(void 0),t=a=>{if(a.type==="auxclick"&&a.button!==1)return;const f=a.target,v=f&&f.closest?f.closest("a[href],area[href]"):null;if(!v)return;const b=v.getAttribute("href");if(!b)return;let l;try{l=new URL(b,document.baseURI)}catch{return}if((l.protocol==="http:"||l.protocol==="https:")&&l.origin!==location.origin){a.preventDefault();const _=(v.getAttribute("target")??"").toLowerCase(),d=a.type==="auxclick"||a.metaKey||a.ctrlKey||a.shiftKey||a.altKey||!["","_self","_top","_parent"].includes(_);y.post({__frame_nav:!0,url:l.href,newTab:d},"*")}};addEventListener("click",t,!0),addEventListener("auxclick",t,!0);const r={},n=a=>{a.isTrusted&&(r.pointer=!0)},s=a=>{a.isTrusted&&(r.click=!0)};addEventListener("pointermove",n,{capture:!0,passive:!0}),addEventListener("click",s,{capture:!0,passive:!0}),e.then(a=>{a?.wireNav&&(a.wireNav(),removeEventListener("click",t,!0),removeEventListener("auxclick",t,!0),removeEventListener("pointermove",n,!0),removeEventListener("click",s,!0),a.wireEngagement?.(r))});let o=null;try{o=ke()}catch{}ee();let i=null,c=null,h=0;const p=y.on((a,f)=>{X(f)&&_e(a)&&(i=a.__frame_init,E=f,p(),clearTimeout(h),c?.())});y.post({__frame_connect:!0},"*");const w=new Promise(a=>{c=a,h=setTimeout(()=>{p(),a()},Pe)}),m=document.readyState==="loading"?new Promise(a=>document.addEventListener("DOMContentLoaded",()=>a(),{once:!0})):Promise.resolve();m.then(()=>{try{o?.restore()}catch{}});const g={cb:null};y.on((a,f)=>{if(X(f)&&ve(a)){try{o?.promoted()}catch{}g.cb?.()}}),w.then(async()=>{if(!i||!E){F();return}Q(i.theme);const a=E;let f=!1,v=!1;y.on((u,z,C)=>{if(z!==a)return;ye(u)&&Q(u.__frame_theme.theme),he(u)&&Ce(u.__frame_patch,a,C);const H=u?.__fc_mode;H&&typeof H=="object"&&!f&&D&&A.test(D)&&(f=!0,S(D).then(K=>K.install?.(a,H.on===!0)).catch(()=>{}));const W=u?.__ft_cmd;W&&typeof W=="object"&&!v&&I&&A.test(I)&&(v=!0,S(I).then(K=>K.install?.(a,W)).catch(()=>{}))});const b=Object.keys(i.capabilities??{}).filter(u=>Object.hasOwn(R,u)).map(u=>[u,R[u]]).filter(u=>typeof u[1]=="string"&&A.test(u[1])),l=await Promise.allSettled(b.map(([,u])=>S(u))),_=await e,d=E;if(_?.buildBoot||y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},d),_?.buildBoot)try{L=_.buildBoot(i,_.TRANSFORMS??{},{shellOrigin:d,mount:x,hooks:O},u=>y.post({__frame_cap_telemetry:u},d))}catch{y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},d),L=G(i,d)}else L=G(i,d);const T=u=>y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:u}},d),Ne=L;l.forEach((u,z)=>{const C=b[z][0];if(u.status!=="fulfilled"){T(C);return}try{u.value?.install?.(Ne)}catch{T(C)}}),F(),await m,y.post({__frame_ready:!0},E),e.then(u=>u?.installSizeReporter?.(d,g))})}else N&&(ee(),Re(N,Y,S,{settle:F,mount:x}))})();</script><!-- /frame-runtime --><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>Sequence Store — DevOps Implementation Brief (Copy)</title>
+<style>
+  :root {
+    --ground: #edeff2; --surface: #ffffff; --surface-2: #f5f7f9;
+    --ink: #10151c; --ink-2: #4a5666; --ink-3: #78849a;
+    --rule: #d5dae1; --rule-soft: #e4e8ed;
+    --accent: #1d5fa8; --accent-soft: #dbe7f4;
+    --crit: #b3261e; --crit-soft: #f6e3e1;
+    --warn: #8a5a00; --warn-soft: #f7ecd6;
+    --ok: #1b6b4c; --ok-soft: #dff0e7;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --measure: 70ch;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e1116; --surface: #161b22; --surface-2: #1b212a;
+      --ink: #e6eaf0; --ink-2: #a5b1c2; --ink-3: #6e7c8f;
+      --rule: #262e38; --rule-soft: #1f262f;
+      --accent: #5b9bd8; --accent-soft: #17283a;
+      --crit: #e5776c; --crit-soft: #2c1b1a;
+      --warn: #d9a441; --warn-soft: #2b2216;
+      --ok: #58b58a; --ok-soft: #14291f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e1116; --surface: #161b22; --surface-2: #1b212a;
+    --ink: #e6eaf0; --ink-2: #a5b1c2; --ink-3: #6e7c8f;
+    --rule: #262e38; --rule-soft: #1f262f;
+    --accent: #5b9bd8; --accent-soft: #17283a;
+    --crit: #e5776c; --crit-soft: #2c1b1a;
+    --warn: #d9a441; --warn-soft: #2b2216;
+    --ok: #58b58a; --ok-soft: #14291f;
+  }
+
+  body { background: var(--ground); color: var(--ink); font-family: var(--sans);
+    font-size: 16.5px; line-height: 1.6; margin: 0; padding: 0 1.25rem 5rem; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 58rem; margin: 0 auto; }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; padding: 3.25rem 0 1.6rem; border-bottom: 1px solid var(--rule); }
+  .kicker { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-family: var(--mono); font-size: clamp(1.55rem, 3.8vw, 2.2rem); line-height: 1.15;
+    letter-spacing: -0.02em; font-weight: 600; margin: 0; text-wrap: balance; }
+  .standfirst { max-width: var(--measure); color: var(--ink-2); font-size: 1.01rem; margin: 0; }
+
+  section { padding: 2.6rem 0 0; display: flex; flex-direction: column; gap: 1.05rem; }
+  .sect-head { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; border-top: 2px solid var(--accent); padding-top: 0.65rem; }
+  .sect-num { font-family: var(--mono); font-size: 0.82rem; color: var(--accent); font-weight: 600; }
+  h2 { font-family: var(--mono); font-size: 1.22rem; font-weight: 600; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+  h3 { font-family: var(--mono); font-size: 0.93rem; font-weight: 600; margin: 0.5rem 0 -0.4rem; }
+
+  p { margin: 0; max-width: var(--measure); }
+  section > ul, section > ol { margin: 0; padding-left: 1.15rem; max-width: var(--measure); display: flex; flex-direction: column; gap: 0.45rem; }
+  ul.plain { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.95rem; max-width: 66ch; }
+
+  code { font-family: var(--mono); font-size: 0.86em; background: var(--surface-2);
+    border: 1px solid var(--rule-soft); border-radius: 3px; padding: 0.06em 0.32em; word-break: break-word; }
+  a { color: var(--accent); text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  strong { font-weight: 650; }
+
+  .chip { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase;
+    border-radius: 2px; padding: 0.12rem 0.42rem; white-space: nowrap; border: 1px solid; }
+  .chip.ok { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+  .chip.warn { color: var(--warn); border-color: var(--warn); background: var(--warn-soft); }
+  .chip.crit { color: var(--crit); border-color: var(--crit); background: var(--crit-soft); }
+  .chip.none { color: var(--ink-3); border-color: var(--rule); background: var(--surface-2); }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 2px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.62rem 0.85rem; vertical-align: top; border-bottom: 1px solid var(--rule-soft); }
+  thead th { font-family: var(--mono); font-size: 0.67rem; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 500; background: var(--surface-2); border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.m { font-family: var(--mono); font-size: 0.83rem; }
+  td.nw { white-space: nowrap; }
+
+  .note { border-left: 2px solid var(--rule); padding-left: 1rem; color: var(--ink-2); font-size: 0.95rem; max-width: var(--measure); }
+  .note.warn { border-left-color: var(--warn); }
+  .note.crit { border-left-color: var(--crit); }
+  .note.ok { border-left-color: var(--ok); }
+  .callout { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+    border-radius: 2px; padding: 0.95rem 1.1rem; max-width: var(--measure); display: flex; flex-direction: column; gap: 0.5rem; }
+
+  figure { margin: 0; }
+  .figwrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; padding: 1.15rem 1.1rem 0.85rem; }
+  svg { display: block; width: 100%; min-width: 640px; height: auto; }
+  figcaption { font-size: 0.82rem; color: var(--ink-3); padding-top: 0.55rem; max-width: var(--measure); }
+  .s-box { fill: var(--surface-2); stroke: var(--rule); }
+  .s-acc { fill: var(--accent-soft); stroke: var(--accent); }
+  .s-ok { fill: var(--ok-soft); stroke: var(--ok); }
+  .s-warn { fill: var(--warn-soft); stroke: var(--warn); }
+  .s-t { fill: var(--ink); font-family: var(--mono); font-size: 11px; }
+  .s-sm { fill: var(--ink-3); font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.04em; }
+  .s-line { stroke: var(--ink-3); fill: none; }
+  .s-dash { stroke: var(--accent); fill: none; stroke-dasharray: 4 3; }
+  .s-arrow { fill: var(--ink-3); }
+  .s-arrow-a { fill: var(--accent); }
+
+  pre { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 2px;
+    padding: 0.9rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.8rem; line-height: 1.7; color: var(--ink-2); }
+  pre b { color: var(--ink); font-weight: 600; }
+  pre i { color: var(--ink-3); font-style: normal; }
+
+  ol.ask { margin: 0; padding: 0; list-style: none; counter-reset: q; display: flex; flex-direction: column; gap: 0; max-width: var(--measure); }
+  ol.ask li { counter-increment: q; position: relative; padding: 0.65rem 0 0.65rem 2.3rem;
+    border-bottom: 1px solid var(--rule-soft); font-size: 0.95rem; }
+  ol.ask li:last-child { border-bottom: 0; }
+  ol.ask li::before { content: "Q" counter(q); position: absolute; left: 0; top: 0.8rem;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--accent); }
+
+  footer { margin-top: 3rem; padding-top: 1.1rem; border-top: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 0.73rem; color: var(--ink-3); max-width: var(--measure); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="kicker">For the DevOps team · sequence store</div>
+    <h1>What we need built, and<br>what it has to satisfy</h1>
+    <p class="standfirst">The sequence store is a new backend service that lets Polygon RPC nodes serve transaction receipts a couple of seconds earlier than they can today. It sits beside the chain and nothing on the chain depends on it. This is the short version, aimed at whoever writes the deployment code: components, artifacts, dependencies, health checks, deployment rules, alarms.</p>
+  </header>
+
+  <section>
+    <div class="sect-head"><h2>The 60-second version</h2></div>
+    <div class="callout">
+      <p><strong>Four things run.</strong> A three-node Redpanda cluster (the storage layer), and three small Go services that all ship as one image: an <em>ingress</em> that writes to it, <em>gateways</em> that read from it, and an <em>auditor</em> that watches for anomalies. One L4 load balancer fronts the gateways; Bor’s block producer talks to the ingress directly. Bor connects from outside.</p>
+      <p><strong>Nothing here can affect the chain.</strong> If the whole service is down, Polygon produces blocks exactly as it does today; users simply wait the normal amount of time for receipts. That makes it a low-risk first deployment and means alarms here should never page the chain on-call rotation.</p>
+      <p><strong>Target: Amoy first, then mainnet.</strong> Nothing is deployed anywhere yet.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sect-head"><span class="sect-num">A</span><h2>Components</h2></div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Component</th><th>What it does</th><th>Ports</th><th>Count</th><th>State</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="m nw">redpanda</td>
+            <td>Stores the data. Kafka-compatible log, replicated 3 ways.</td>
+            <td class="m nw">9092 data<br>9644 admin</td>
+            <td class="nw">3</td>
+            <td><span class="chip warn">stateful</span><br>needs fast local disk</td>
+          </tr>
+          <tr>
+            <td class="m nw">seqstore ingress</td>
+            <td>The only writer. Bor's block producer publishes to it.</td>
+            <td class="m nw">9550 gRPC<br>9600 ops</td>
+            <td class="nw">1<br>(only ever one)</td>
+            <td><span class="chip ok">stateless</span></td>
+          </tr>
+          <tr>
+            <td class="m nw">seqstore gateway</td>
+            <td>The read path. Bor RPC nodes stream from it.</td>
+            <td class="m nw">9551 gRPC<br>9600 ops</td>
+            <td class="nw">3+</td>
+            <td><span class="chip ok">stateless</span></td>
+          </tr>
+          <tr>
+            <td class="m nw">seqstore auditor</td>
+            <td>Background watcher. Serves no traffic; writes evidence files out.</td>
+            <td class="m nw">9600 ops</td>
+            <td class="nw">1</td>
+            <td><span class="chip ok">stateless</span></td>
+          </tr>
+          <tr>
+            <td class="m nw">publish endpoint</td>
+            <td>A stable name pointing straight at the single ingress. <strong>No load balancer.</strong></td>
+            <td class="m nw">9550</td>
+            <td class="nw">1</td>
+            <td>reserved IP + DNS</td>
+          </tr>
+          <tr>
+            <td class="m nw">read endpoint</td>
+            <td>L4 passthrough LB in front of the gateways. Round-robins across all ready ones. The only load balancer in the design.</td>
+            <td class="m nw">9551</td>
+            <td class="nw">1</td>
+            <td>reserved IP + DNS</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note crit"><strong>Only the read path is load balanced.</strong> There is exactly one writer and exactly one producer, so on the publish side there is nothing to balance and no failover for a load balancer to perform — Bor's block producer connects straight to the ingress. That also keeps the certificate story simple: the client certificate <em>is</em> the writer's identity, and a direct connection reaches the ingress process intact by construction.</p>
+
+    <p class="note crit"><strong>The read endpoint must not terminate TLS.</strong> Plain L4 passthrough, not an L7 / HTTPS balancer. We do not authenticate readers today, but we want to keep that option, and it disappears the moment something in the middle re-originates the connection.</p>
+
+    <p class="note"><strong>Redpanda needs no load balancer either.</strong> The ingress takes a comma-separated <code>-brokers</code> list; give it all three addresses and it finds the right one itself. It is a Kafka client, so it discovers which broker leads each partition and follows leadership as it moves between them.</p>
+
+    <p class="note warn"><strong>One thing for us to settle before you write code:</strong> the gateway's gRPC port is <code>9551</code> in the binary's defaults but <code>9550</code> in our own deployment notes. We will confirm the intended number — please don't infer it from the docs.</p>
+  </section>
+
+  <section>
+    <div class="sect-head"><span class="sect-num">B</span><h2>Where the artifacts come from</h2></div>
+
+    <p><strong>Short answer: a rolling <code>:dev</code> image exists, a versioned one does not.</strong> The build pipeline is working — it publishes on every merge to the default branch, and is confirmed green. What is missing is a release tag, which is what you would actually want to pin a deployment to.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Artifact</th><th>Intended source</th><th>Status today</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="m nw">seqstore</td>
+            <td>One image, three roles selected by the first argument. Built by <code>.github/workflows/docker.yml</code> → <code>ghcr.io/0xPolygon/sequence-store</code>, tagged <code>:dev</code> on develop and <code>:vX.Y.Z</code> on a release tag.</td>
+            <td><span class="chip warn">:dev only</span><br>The <code>:dev</code> tag is published and current as of 20 Aug 2026. No versioned release tag has been cut yet, so there is nothing immutable to deploy.</td>
+          </tr>
+          <tr>
+            <td class="m nw">redpanda</td>
+            <td>Upstream <code>redpandadata/redpanda</code>.</td>
+            <td><span class="chip ok">pinned</span><br><code>v26.1.16</code> — the newest patch of the current maintained line. Verified against the fencing conformance suite.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What has to happen</h3>
+    <ul class="plain">
+      <li><strong>Us:</strong> cut a first release tag so a versioned image exists. The build pipeline works — it just needs a tag to fire on.</li>
+      <li><strong>Us — done:</strong> Redpanda is pinned to <code>v26.1.16</code> across the compose files and CI.</li>
+      <li><strong>You:</strong> tell us where you want the image to live. The repo is <strong>private</strong>, so GHCR packages inherit that and whatever runs the deployment will need pull credentials. If you would rather mirror into Artifact Registry to match how other services are deployed, that is fine by us — we would rather match your existing pattern than invent one.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sect-head"><span class="sect-num">C</span><h2>Dependencies and startup order</h2></div>
+
+    <figure>
+      <div class="figwrap">
+        <svg viewBox="0 0 900 380" role="img" aria-label="Dependency map. Bor's block producer connects directly to the ingress, with no load balancer on that path. Bor RPC nodes connect through the read load balancer to the gateways. The producer also reads back through the read endpoint to resynchronise. Ingress, gateways and auditor all connect to the three Redpanda brokers. Below, the startup order: brokers healthy, then topic exists, then ingress ready, then gateways and auditor, then point Bor at the two endpoints.">
+          <defs>
+            <marker id="dvA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="s-arrow"></path>
+            </marker>
+            <marker id="dvB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="s-arrow-a"></path>
+            </marker>
+          </defs>
+
+          <text x="16" y="24" class="s-sm">BOR — OUTSIDE THE SERVICE</text>
+          <text x="380" y="24" class="s-sm">SEQUENCE STORE</text>
+
+          <rect x="16" y="38" width="150" height="48" rx="3" class="s-box"></rect>
+          <text x="91" y="60" class="s-t" text-anchor="middle">block producer</text>
+          <text x="91" y="76" class="s-sm" text-anchor="middle">writes</text>
+
+          <rect x="16" y="250" width="150" height="48" rx="3" class="s-box"></rect>
+          <text x="91" y="272" class="s-t" text-anchor="middle">RPC nodes</text>
+          <text x="91" y="288" class="s-sm" text-anchor="middle">read</text>
+
+          <rect x="206" y="250" width="140" height="48" rx="3" class="s-ok"></rect>
+          <text x="276" y="272" class="s-t" text-anchor="middle">read LB</text>
+          <text x="276" y="288" class="s-sm" text-anchor="middle">L4 · round robin</text>
+
+          <rect x="386" y="38" width="150" height="48" rx="3" class="s-acc"></rect>
+          <text x="461" y="60" class="s-t" text-anchor="middle">ingress</text>
+          <text x="461" y="76" class="s-sm" text-anchor="middle">exactly one — see §E</text>
+
+          <rect x="386" y="250" width="150" height="48" rx="3" class="s-acc"></rect>
+          <text x="461" y="272" class="s-t" text-anchor="middle">gateways ×3+</text>
+
+          <rect x="386" y="150" width="150" height="44" rx="3" class="s-acc"></rect>
+          <text x="461" y="177" class="s-t" text-anchor="middle">auditor ×1</text>
+
+          <rect x="600" y="130" width="180" height="84" rx="3" class="s-box"></rect>
+          <text x="690" y="160" class="s-t" text-anchor="middle">redpanda ×3</text>
+          <text x="690" y="178" class="s-sm" text-anchor="middle">one per zone · :9092</text>
+          <text x="690" y="196" class="s-sm" text-anchor="middle">quorum of 2 required</text>
+
+          <path d="M 166 62 L 380 62" class="s-line" marker-end="url(#dvA)"></path>
+          <text x="273" y="54" class="s-sm" text-anchor="middle">direct · no load balancer</text>
+          <path d="M 166 274 L 200 274" class="s-line" marker-end="url(#dvA)"></path>
+          <path d="M 346 274 L 380 274" class="s-line" marker-end="url(#dvA)"></path>
+
+          <path d="M 536 62 L 568 62 L 568 146 L 594 146" class="s-line" marker-end="url(#dvA)"></path>
+          <path d="M 536 274 L 568 274 L 568 198 L 594 198" class="s-line" marker-end="url(#dvA)"></path>
+          <path d="M 536 172 L 594 172" class="s-line" marker-end="url(#dvA)"></path>
+
+          <path d="M 91 86 L 91 226 L 250 226 L 250 244" class="s-dash" marker-end="url(#dvB)"></path>
+          <text x="100" y="220" class="s-sm">producer also reads back here to resync — dashed</text>
+
+          <line x1="16" y1="322" x2="884" y2="322" stroke="var(--rule)"></line>
+          <text x="16" y="346" class="s-sm">START IN THIS ORDER</text>
+          <text x="180" y="346" class="s-t">1 brokers healthy</text>
+          <text x="320" y="346" class="s-t">2 topic created</text>
+          <text x="450" y="346" class="s-t">3 ingress ready</text>
+          <text x="580" y="346" class="s-t">4 gateways + auditor</text>
+          <text x="750" y="346" class="s-t">5 point Bor at both</text>
+          <text x="16" y="368" class="s-sm">Each step waits for the previous one to report healthy. Nothing here talks to Heimdall.</text>
+        </svg>
+      </div>
+      <figcaption>The dashed arrow is easy to miss and matters operationally: the block producer recovers by reading back through the <em>read</em> endpoint. So the read path has to be healthy for the write path to recover — never take both down at once.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Component</th><th>Needs</th><th>If that is unavailable</th></tr></thead>
+        <tbody>
+          <tr><td class="m nw">redpanda</td><td>Nothing. Only each other.</td><td>Lose 1 of 3: fine. Lose 2 of 3: everything pauses until quorum returns.</td></tr>
+          <tr><td class="m nw">ingress</td><td>Brokers; the topic must exist</td><td>Stops accepting writes; retries on its own. No data loss.</td></tr>
+          <tr><td class="m nw">gateway</td><td>Brokers</td><td>Stops serving; drops its connections so clients go elsewhere.</td></tr>
+          <tr><td class="m nw">auditor</td><td>Brokers; a writable path for evidence</td><td>No user impact at all. Audit coverage gap only.</td></tr>
+          <tr><td class="m nw">bor producer</td><td>Publish endpoint <em>and</em> read endpoint</td><td>Stops publishing after a short buffer. Chain unaffected.</td></tr>
+          <tr><td class="m nw">bor RPC</td><td>Read endpoint</td><td>Falls back to normal receipt latency. No error to users.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note"><strong>No dependency on Heimdall, and none on any chain component.</strong> The store is deliberately unaware of consensus. The only coupling to Bor is the two network endpoints above.</p>
+  </section>
+
+  <section>
+    <div class="sect-head"><span class="sect-num">D</span><h2>Health checks</h2></div>
+
+    <p>All three services expose the same two HTTP endpoints on port <strong>9600</strong>. This is what the read-path load balancer and your orchestration probes should use.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Endpoint</th><th>Role</th><th>200 means</th><th>503 means</th></tr></thead>
+        <tbody>
+          <tr><td class="m nw">GET /ready</td><td class="nw">ingress</td><td>This instance is the live writer and is serving.</td><td>Starting up or recovering. <strong>Send it no traffic.</strong></td></tr>
+          <tr><td class="m nw">GET /ready</td><td class="nw">gateway</td><td>Caught up with the data and safe to read from.</td><td>Still catching up, or fallen too far behind. Take it out of rotation.</td></tr>
+          <tr><td class="m nw">GET /ready</td><td class="nw">auditor</td><td>Running and following.</td><td>Not running. Alarm on this, do not route on it.</td></tr>
+          <tr><td class="m nw">GET /metrics</td><td class="nw">all three</td><td colspan="2">Prometheus format, same port.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note crit"><strong>Do not wire a restart-on-failure probe to <code>/ready</code> on the ingress.</strong> A 503 here means "not currently the writer", which is a normal working state — during startup and catch-up today, and permanently for a standby once that ships. A liveness probe pointed at it would restart healthy instances, and on a catching-up one it would restart it before it ever finishes. Use <code>/ready</code> for routing only. We owe you a separate liveness endpoint; it does not exist yet.</p>
+
+    <p>For Redpanda itself, use its own health tooling and admin API on <code>9644</code> rather than anything we provide.</p>
+  </section>
+
+  <section>
+    <div class="sect-head"><span class="sect-num">E</span><h2>What a deployment has to satisfy</h2></div>
+
+    <p>Six rules. Everything else is your call.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>#</th><th>Rule</th><th>Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td class="m">1</td><td><strong>Never take more than one Redpanda node down at a time.</strong> Two of three must always be up.</td><td>Writes need a majority. Two down stops the service until one returns.</td></tr>
+          <tr><td class="m">2</td><td><strong>Run exactly one ingress instance.</strong> Not two, and not behind a load balancer. Point the publish name at it and let a restart policy handle process failure.</td><td>Only one instance may write, and until the standby mechanism ships, a second instance does not idle — it competes. See the note below.</td></tr>
+          <tr><td class="m">3</td><td><strong>Never restart all gateways at once.</strong> One at a time; keep at least two serving.</td><td>A fresh gateway reads back through the stored data before it can serve — minutes, not seconds. Restart them together and reads are down for that whole time.</td></tr>
+          <tr><td class="m">4</td><td><strong>Exactly one auditor.</strong> Never two.</td><td>Two would double-count and produce duplicate reports.</td></tr>
+          <tr><td class="m">5</td><td><strong>All three services always run the same image tag.</strong></td><td>They share internal logic; mixed versions can disagree about the stored data.</td></tr>
+          <tr><td class="m">6</td><td><strong>Release order:</strong> brokers → gateways → auditor → ingress.</td><td>Readers before the writer is the safe direction.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Why rule 2 says one instance and not two</h3>
+
+    <p>Ingress is the one component where "just run two for redundancy" is the wrong instinct, so it is worth being precise about what enforces what. Three separate things are involved, and only two of them exist today.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Mechanism</th><th>What it decides</th><th>Where it lives</th><th>Exists?</th></tr></thead>
+        <tbody>
+          <tr><td class="nw">the fence</td><td>Whether two instances can both write. They cannot — the broker locks out the older one permanently, mid-sentence.</td><td class="nw">broker</td><td><span class="chip ok">yes</span></td></tr>
+          <tr><td class="nw">readiness</td><td>Whether <em>this</em> instance is currently the writer, which is what your health check reads.</td><td class="nw">/ready</td><td><span class="chip ok">yes</span></td></tr>
+          <tr><td class="nw">the lease</td><td>Which instance should <em>try</em> to become the writer. This is what makes a second instance sit idle instead of competing.</td><td class="nw">—</td><td><span class="chip crit">not yet</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What readiness does on its own</h3>
+
+    <p>The useful property is that <strong>readiness is derived, not configured</strong>. Nothing is flagged as "the standby" and no operator sets anything: the instance reports ready only while it actually holds the writer role and has finished catching up. It walks this loop by itself, and the health check simply observes where it is.</p>
+
+    <figure>
+      <div class="figwrap">
+        <svg viewBox="0 0 900 320" role="img" aria-label="Two-part diagram. Top: the ingress loops through three states — taking over (reports 503), serving (reports 200), and write failed (reports 503, returning to taking over). Bottom: three independent layers that each stop a publish sent to an instance that is not the writer — the service refusing the connection, the broker rejecting the write, and the instance discarding its state and rebuilding.">
+          <defs>
+            <marker id="opsB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="s-arrow"></path>
+            </marker>
+          </defs>
+
+          <text x="20" y="20" class="s-sm">ONE INSTANCE, LEFT ALONE — THE LOOP IT WALKS</text>
+
+          <rect x="40" y="42" width="212" height="56" rx="3" class="s-box"></rect>
+          <text x="146" y="66" class="s-t" text-anchor="middle">taking over</text>
+          <text x="146" y="84" class="s-sm" text-anchor="middle">/ready → 503 · no traffic</text>
+
+          <rect x="336" y="42" width="212" height="56" rx="3" class="s-ok"></rect>
+          <text x="442" y="66" class="s-t" text-anchor="middle">serving</text>
+          <text x="442" y="84" class="s-sm" text-anchor="middle">/ready → 200 · takes traffic</text>
+
+          <rect x="632" y="42" width="212" height="56" rx="3" class="s-warn"></rect>
+          <text x="738" y="66" class="s-t" text-anchor="middle">a write failed</text>
+          <text x="738" y="84" class="s-sm" text-anchor="middle">/ready → 503 · drops traffic</text>
+
+          <path d="M 252 70 L 330 70" class="s-line" marker-end="url(#opsB)"></path>
+          <text x="291" y="62" class="s-sm" text-anchor="middle">caught up</text>
+
+          <path d="M 548 70 L 626 70" class="s-line" marker-end="url(#opsB)"></path>
+
+          <path d="M 738 98 L 738 128 L 146 128 L 146 104" class="s-line" marker-end="url(#opsB)"></path>
+          <text x="442" y="144" class="s-sm" text-anchor="middle">discards what it had, takes over again, replays — no operator involved</text>
+
+          <line x1="20" y1="176" x2="880" y2="176" stroke="var(--rule)"></line>
+          <text x="20" y="200" class="s-sm">A PUBLISH THAT REACHES AN INSTANCE THAT IS NOT THE WRITER — THREE THINGS STOP IT</text>
+
+          <rect x="20" y="216" width="270" height="58" rx="3" class="s-box"></rect>
+          <text x="155" y="240" class="s-t" text-anchor="middle">1 · the service</text>
+          <text x="155" y="258" class="s-sm" text-anchor="middle">refuses the connection</text>
+
+          <rect x="315" y="216" width="270" height="58" rx="3" class="s-box"></rect>
+          <text x="450" y="240" class="s-t" text-anchor="middle">2 · the broker</text>
+          <text x="450" y="258" class="s-sm" text-anchor="middle">rejects the write</text>
+
+          <rect x="610" y="216" width="270" height="58" rx="3" class="s-box"></rect>
+          <text x="745" y="240" class="s-t" text-anchor="middle">3 · the instance</text>
+          <text x="745" y="258" class="s-sm" text-anchor="middle">resets and rebuilds</text>
+
+          <path d="M 290 245 L 309 245" class="s-line" marker-end="url(#opsB)"></path>
+          <path d="M 585 245 L 604 245" class="s-line" marker-end="url(#opsB)"></path>
+
+          <text x="20" y="298" class="s-sm">independent — layer 2 holds even if the producer is pointed at the wrong host, which is why the endpoint only has to be roughly right</text>
+        </svg>
+      </div>
+      <figcaption>The health check reads the top row; the bottom row is why a misdirected publish is survivable rather than dangerous. Data safety never depends on the producer being pointed at the right host.</figcaption>
+    </figure>
+
+    <p class="note crit"><strong>What is missing, and why it changes the rule.</strong> Start a second instance today and it does not wait politely — it immediately tries to become the writer, takes the role from the first, and the first takes it back when its next write fails. They trade the role back and forth, and publishing stalls each time. There is also a window where both answer 200: an instance that has just lost the role does not find out until it next tries to write, so until then its health check still says it is fine.</p>
+
+    <p>Nothing gets corrupted while that happens — layer 3 guarantees only one of them ever actually writes — but it is worse for availability than running a single instance, which is the counter-intuitive part. <strong>The lease is the missing piece that makes a second instance genuinely passive</strong>, and it is on our side to build. Until it lands: one instance, plus a restart policy. A crashed process recovers on its own in seconds.</p>
+
+    <h3>What each restart costs</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Restarting</th><th>User-visible effect</th></tr></thead>
+        <tbody>
+          <tr><td class="nw">one redpanda node</td><td><span class="chip ok">none</span> — if you drain its leadership first</td></tr>
+          <tr><td class="nw">one gateway</td><td><span class="chip ok">none</span> — its clients reconnect elsewhere</td></tr>
+          <tr><td class="nw">the auditor</td><td><span class="chip none">none</span> — it serves nobody</td></tr>
+          <tr><td class="nw">the ingress</td><td><span class="chip warn">brief pause</span> — early receipts stop for seconds; chain unaffected</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note warn"><strong>The ingress is the only one with unavoidable downtime</strong>, because exactly one instance may write at a time — so an upgrade is a handoff, and during a handoff nobody is writing. Seconds, and only early receipts are affected. Please schedule ingress restarts deliberately rather than letting automation do them unannounced.</p>
+  </section>
+
+  <section>
+    <div class="sect-head"><span class="sect-num">F</span><h2>Alarms</h2></div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Condition</th><th>Source</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Ingress not ready for &gt; 1 min</td><td class="m">/ready</td><td><span class="chip crit">page</span></td></tr>
+          <tr><td>All gateways not ready at once</td><td class="m">/ready</td><td><span class="chip crit">page</span></td></tr>
+          <tr><td>Fewer than 2 Redpanda nodes healthy</td><td class="m">redpanda</td><td><span class="chip crit">page</span></td></tr>
+          <tr><td>Broker disk above threshold</td><td class="m">host</td><td><span class="chip crit">page</span></td></tr>
+          <tr><td>Auditor down &gt; 15 min</td><td class="m">/ready</td><td><span class="chip warn">ticket</span></td></tr>
+          <tr><td>One gateway lagging while others are fine</td><td class="m">/metrics</td><td><span class="chip warn">ticket</span></td></tr>
+          <tr><td>Ingress restarting repeatedly</td><td class="m">/metrics</td><td><span class="chip warn">ticket</span></td></tr>
+          <tr><td>Archive upload falling behind</td><td class="m">redpanda</td><td><span class="chip warn">ticket</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note ok"><strong>All of these can be built now.</strong> The application metrics behind the bottom half of the table landed on <code>develop</code> on 25 Aug, so <code>/metrics</code> exposes the full <code>seqstore</code> set alongside Go runtime statistics. Rates that have never fired report zero rather than no-data, which means an alarm on a quiet metric can tell "nothing happened" apart from "the process is gone".</p>
+
+    <p class="note ok"><strong>Routing:</strong> these should not page the chain on-call rotation. Nothing in this service can affect block production, and the worst outcome of every alarm above is that early receipts are unavailable.</p>
+  </section>
+
+  <section>
+    <div class="sect-head"><span class="sect-num">G</span><h2>What we would like to agree on</h2></div>
+
+    <ol class="ask">
+      <li><strong>Who owns the deployment code?</strong> Our assumption is DevOps, matching every other service, with us owning the application and its release tags. Confirm or push back.</li>
+      <li><strong>Where should the image live?</strong> GHCR as the build already produces, or mirrored into Artifact Registry to match your existing pattern? We will follow whatever you already do.</li>
+      <li><strong>Redpanda on VMs or Kubernetes?</strong> Our proposal is three dedicated VMs, provisioned like a chain node — it wants fast local disk and predictable CPU. The three Go services are small and stateless and would sit comfortably on the existing Kubernetes platform. Happy to be overruled; you know the estate better.</li>
+      <li><strong>Which project and environment for Amoy first?</strong></li>
+      <li><strong>Certificates.</strong> Later phase, flagging now: the publish endpoint will eventually need per-validator client certificates, which means an issuing and rotation story. Not needed for the first internal deployment.</li>
+      <li><strong>Pull credentials for a private registry.</strong> The repo is private, so the published image is too — an unauthenticated pull is rejected. Whatever runs the deployment needs credentials, and how you prefer to supply those is your call.</li>
+    </ol>
+
+    <h3>Gaps on our side, for transparency</h3>
+    <p>None of these block you from starting, but they change how good the operational story is, and they are ours to close:</p>
+    <ul class="plain">
+      <li>No versioned release tag yet, so nothing immutable to pin a deployment to — <code>:dev</code> exists but moves on every merge <span class="chip crit">blocks first deploy</span></li>
+      <li>No graceful shutdown on the ingress — makes restarts noisier than they need to be</li>
+      <li>No standby arbitration yet, so losing the ingress <em>host</em> needs someone to start it elsewhere. A process restart recovers on its own in about 0.8 s — measured under load, not estimated</li>
+      <li>No liveness endpoint separate from <code>/ready</code></li>
+    </ul>
+  </section>
+
+  <footer>
+    Short version of the fuller infrastructure and operations document. Revised 25 Aug 2026: the publish path no longer shows a load balancer — a single writer and a single producer connect directly, and the gateway pool is the only load-balanced endpoint. Application metrics have landed on develop. Ports unchanged.
+  </footer>
+
+</div>
+
+</body></html>

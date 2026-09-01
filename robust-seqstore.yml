@@ -50,7 +50,12 @@ polygon_pos_package:
   additional_services:
     - observability
 
+  # Skip panoptichain: this devnet only needs the seqstore/bor/heimdall
+  # metrics, and panoptichain's L1/L2 RPC polling is just extra load.
+  observability_params:
+    deploy_panoptichain: false
+
   sequence_store_params:
-    image: seqstore:392f5e6
+    image: seqstore:31a227ee
     redpanda_count: 3
     gateway_count: 3
