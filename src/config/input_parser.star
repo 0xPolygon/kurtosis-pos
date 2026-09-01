@@ -163,6 +163,9 @@ SEQUENCE_STORE_ARGS = {
     "redpanda_count": 1,
     "gateway_count": 1,
     "envoy_image": constants.IMAGES.get("seqstore_envoy_image"),
+    # Log level of the seqstore services (ingress, gateways, auditor):
+    # debug, info, warn, or error.
+    "log_level": constants.LOG_LEVEL.debug,
 }
 
 STATUS_CHECKER_ARGS = {

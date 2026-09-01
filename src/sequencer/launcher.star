@@ -42,6 +42,13 @@ ENVOY_METRICS_PATH = "/stats/prometheus"
 # sets. Redpanda runs --smp=1 but pre-allocates memory aggressively.
 REDPANDA_MAX_CPU = 2000  # in millicores (2 cores)
 REDPANDA_MAX_MEM = 16384  # in megabytes (16 GB)
+
+# Seastar heap size. --memory covers only the heap, not total RSS (page
+# tables, file pages, the rpk supervisor), and dev-container mode zeroes
+# the OS reserve — so without this flag the heap defaults to the whole
+# cgroup limit and the broker risks an OOM kill under sustained load.
+# ~90% of REDPANDA_MAX_MEM, matching the Redpanda Helm chart's headroom.
+REDPANDA_SEASTAR_MEM = "14G"
 SEQSTORE_MAX_CPU = 1000  # in millicores (1 core)
 SEQSTORE_MAX_MEM = 16384  # in megabytes (16 GB)
 ENVOY_MAX_CPU = 1000  # in millicores (1 core)
@@ -51,6 +58,7 @@ ENVOY_MAX_MEM = 16384  # in megabytes (16 GB)
 def launch(plan, store_params):
     seqstore_image = store_params.get("image")
     redpanda_count = store_params.get("redpanda_count")
+    log_level = store_params.get("log_level")
 
     broker_names = _pool_names(REDPANDA_SERVICE_NAME, redpanda_count)
     brokers = ",".join(
@@ -103,6 +111,8 @@ def launch(plan, store_params):
                 "-create-topic",
                 "-txn-timeout",
                 "3s",
+                "-log-level",
+                log_level,
             ],
             with_grpc=True,
         ),
@@ -135,6 +145,8 @@ def launch(plan, store_params):
                 brokers,
                 "-topic",
                 SEQSTORE_TOPIC,
+                "-log-level",
+                log_level,
             ],
             with_grpc=True,
         )
@@ -151,6 +163,8 @@ def launch(plan, store_params):
             SEQSTORE_TOPIC,
             "-evidence",
             "/tmp/supersessions.jsonl",
+            "-log-level",
+            log_level,
         ],
         with_grpc=False,
     )
@@ -198,6 +212,18 @@ def _launch_brokers(plan, store_params, broker_names):
             "start",
             "--mode=dev-container",
             "--smp=1",
+            "--memory={}".format(REDPANDA_SEASTAR_MEM),
+            # Relax the background fsync cadence (defaults: 256KiB / 100ms).
+            # With write caching on (dev-container mode), acks never wait for
+            # fsync, but the frequent background flushes still stall raft
+            # appends behind them on the devnet's shared, contended disk —
+            # measured as a 20-30ms produce p99 against a sub-ms p50. The
+            # crash-loss window this widens is irrelevant here: every enclave
+            # starts a fresh chain and the store is rebuilt on takeover.
+            "--set",
+            "redpanda.raft_replica_max_pending_flush_bytes=33554432",
+            "--set",
+            "redpanda.raft_replica_max_flush_delay_ms=5000",
             "--kafka-addr=internal://0.0.0.0:{}".format(REDPANDA_KAFKA_PORT_NUMBER),
             "--advertise-kafka-addr=internal://{}:{}".format(
                 name, REDPANDA_KAFKA_PORT_NUMBER

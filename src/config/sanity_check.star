@@ -78,6 +78,7 @@ POLYGON_POS_PARAMS = {
         "redpanda_count",
         "gateway_count",
         "envoy_image",
+        "log_level",
     ],
     "status_checker_params": [
         "image",
@@ -118,6 +119,15 @@ VALID_LOG_LEVELS = [
     constants.LOG_LEVEL.info,
     constants.LOG_LEVEL.debug,
     constants.LOG_LEVEL.trace,
+]
+
+# The seqstore binary parses its -log-level with Go's slog, which has no
+# trace level.
+VALID_SEQSTORE_LOG_LEVELS = [
+    constants.LOG_LEVEL.error,
+    constants.LOG_LEVEL.warn,
+    constants.LOG_LEVEL.info,
+    constants.LOG_LEVEL.debug,
 ]
 
 VALID_LOG_FORMATS = [
@@ -180,6 +190,7 @@ def sanity_check_polygon_args(plan, input_args):
     if sequence_store_params:
         _validate_strictly_positive_int(sequence_store_params, "redpanda_count")
         _validate_strictly_positive_int(sequence_store_params, "gateway_count")
+        _validate_str(sequence_store_params, "log_level", VALID_SEQSTORE_LOG_LEVELS)
 
     # Make sure status checker params are defined only if the status checker is deployed.
     additional_services = input_args.get("additional_services", [])
