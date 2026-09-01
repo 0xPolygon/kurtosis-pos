@@ -29,8 +29,10 @@ def launch(
             ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
             ethstats_server.launch(plan, ethstats_server_params)
         elif svc == constants.ADDITIONAL_SERVICES.observability:
+            observability_params = polygon_pos_args.get("observability_params")
             observability.launch(
                 plan,
+                observability_params,
                 l1_context,
                 l2_context,
                 l2_el_genesis_artifact,

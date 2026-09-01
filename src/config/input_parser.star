@@ -172,6 +172,11 @@ STATUS_CHECKER_ARGS = {
     "image": constants.IMAGES.get("status_checker_image"),
 }
 
+OBSERVABILITY_ARGS = {
+    # Deploy panoptichain alongside prometheus and grafana.
+    "deploy_panoptichain": True,
+}
+
 ETHSTATS_SERVER_ARGS = {
     "image": constants.IMAGES.get("ethstats_server_image"),
     "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
@@ -281,6 +286,14 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     ethstats_server_params = polygon_pos_args.get("ethstats_server_params", {})
     result["ethstats_server_params"] = _parse_ethstats_server_params(
         is_ethstats_server_deployed, ethstats_server_params
+    )
+
+    is_observability_deployed = (
+        constants.ADDITIONAL_SERVICES.observability in result["additional_services"]
+    )
+    observability_params = polygon_pos_args.get("observability_params", {})
+    result["observability_params"] = _parse_observability_params(
+        is_observability_deployed, observability_params
     )
 
     # The sequence store is deployed iff any participant opts into it.
@@ -478,6 +491,21 @@ def _parse_ethstats_server_params(is_ethstats_server_deployed, ethstats_server_p
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(ethstats_server_params)
+
+
+def _parse_observability_params(is_observability_deployed, observability_params):
+    # If the observability stack is not deployed, return an empty dict.
+    if not is_observability_deployed:
+        return {}
+
+    # Create a mutable copy of observability_params.
+    observability_params = dict(observability_params) if observability_params else {}
+
+    for k, v in OBSERVABILITY_ARGS.items():
+        observability_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(observability_params)
 
 
 def _sort_dict_by_values(d):

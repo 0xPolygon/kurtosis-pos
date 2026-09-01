@@ -208,7 +208,7 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                             |
 | `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                          |
 | `ethstats_server` | Visual interface for tracking network status                                                                 |
-| `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) |
+| `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`) |
 | `status_checker`  | Perform regular status checks to track and monitor the health of the network                                 |
 | `tx_spammer`      | Send transactions to the network to simulate load                                                            |
 
@@ -218,6 +218,14 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | --------- | ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | image     | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server                                  |
 | ws_secret | string | sharedsecret                                                                            | Shared secret used to authenticate nodes reporting to the ethstats server |
+
+### `observability_params`
+
+Only allowed when `observability` is listed in `additional_services`.
+
+| Field               | Type | Default | Description                                                                            |
+| ------------------- | ---- | ------- | -------------------------------------------------------------------------------------- |
+| deploy_panoptichain | bool | true    | Deploy [Panoptichain](https://github.com/0xPolygon/panoptichain) alongside Prometheus and Grafana. Set to `false` to skip it |
 
 ### `sequence_store_params`
 
