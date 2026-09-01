@@ -26,7 +26,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | -------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ----------------- |
 | bor            | [2.10.1](https://github.com/0xPolygon/bor/releases/tag/v2.10.1)          | [2.10.1](https://github.com/0xPolygon/bor/releases/tag/v2.10.1)          | ✅ matches stable |
 | envoy          | [1.39.1](https://github.com/envoyproxy/envoy/releases/tag/v1.39.1)       | [1.39.1](https://github.com/envoyproxy/envoy/releases/tag/v1.39.1)       | ✅ matches stable |
-| foundry        | [1.8.0](https://github.com/foundry-rs/foundry/releases/tag/v1.8.0)       | [1.8.0](https://github.com/foundry-rs/foundry/releases/tag/v1.8.0)       | ✅ matches stable |
+| foundry        | [1.8.1](https://github.com/foundry-rs/foundry/releases/tag/v1.8.1)       | [1.8.1](https://github.com/foundry-rs/foundry/releases/tag/v1.8.1)       | ✅ matches stable |
 | geth           | [1.17.5](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.5)   | [1.17.5](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.5)   | ✅ matches stable |
 | grafana        | [13.2.0](https://github.com/grafana/grafana/releases/tag/v13.2.0)        | [13.2.0](https://github.com/grafana/grafana/releases/tag/v13.2.0)        | ✅ matches stable |
 | heimdall-v2    | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | ✅ matches stable |
