@@ -2,6 +2,7 @@ blockscout = import_module("./blockscout.star")
 bridge_spammer = import_module("./bridge_spammer.star")
 constants = import_module("../config/constants.star")
 ethstats_server = import_module("./ethstats_server.star")
+nginx = import_module("./nginx.star")
 observability = import_module("./observability.star")
 status_checker = import_module("./status_checker.star")
 tx_spammer = import_module("./tx_spammer.star")
@@ -27,6 +28,9 @@ def launch(
         elif svc == constants.ADDITIONAL_SERVICES.ethstats_server:
             ethstats_server_params = polygon_pos_args.get("ethstats_server_params")
             ethstats_server.launch(plan, ethstats_server_params)
+        elif svc == constants.ADDITIONAL_SERVICES.nginx:
+            nginx_params = polygon_pos_args.get("nginx_params")
+            nginx.launch(plan, nginx_params, l2_context)
         elif svc == constants.ADDITIONAL_SERVICES.observability:
             observability_params = polygon_pos_args.get("observability_params")
             observability.launch(

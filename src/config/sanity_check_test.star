@@ -115,3 +115,28 @@ def test_sanity_check_with_ethstats_server(plan):
             "image": constants.IMAGES.get("ethstats_server_image"),
         },
     }
+
+
+def test_sanity_check_with_nginx_missing_image(plan):
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "additional_services": [
+            constants.ADDITIONAL_SERVICES.nginx,
+        ],
+        "nginx_params": {},
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        '`nginx_params` must include the "image" field when nginx is deployed.',
+    )
+
+
+def test_sanity_check_with_nginx_params_but_nginx_not_deployed(plan):
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "nginx_params": {
+            "image": constants.IMAGES.get("nginx_image"),
+        },
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        "`nginx_params` must be empty when nginx is not deployed.",
+    )
