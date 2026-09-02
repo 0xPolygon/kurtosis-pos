@@ -42,7 +42,31 @@ cast send --chain-id 4927 --gas-limit 21000 --nonce $nonce --gas-price 50gwei --
 * Sync Testing
 
 #+begin_src bash
-polycli loadtest --rpc-url "$(kurtosis port print pos l2-el-9-bor-heimdall-v2-rpc rpc)" --mode t --rate-limit 1 --requests 10 --sync-txs --verbosity 700 --gas-price 30gwei --priority-gas-price 30gwei --private-key "$private_key"
+private_key=0x1f6068ae546af14713f9a1e84b2e3147ffeef6e3f0e260b04c3ff693ac4c45d9
+rpc_url=$(kurtosis port print pos l2-el-9-bor-heimdall-v2-rpc rpc)
+evm_stress_address=0x863134579e4812F9d78081e9f519fAE9D01F2a10
+address_tester_address=0x9Dfd20c9B4C90cd77B4b17A1B475B2A8a581FE9B
+counter_address=0xa0046D0D5b3091394CfCb2D3257F026Ac93FFED0
+
+# simple valiation
+polycli loadtest --send-only --rpc-url "$(kurtosis port print pos l2-el-9-bor-heimdall-v2-rpc rpc)" --mode cc --rate-limit 1 --requests 10 --sync-txs --verbosity 700 --contract-address "$counter_address" --calldata 0x --gas-price 30gwei --priority-gas-price 30gwei --private-key "$private_key" --pretty-logs=false 2>&1 | jq -c 'select(.txHash != null) | {"tx": .txHash, "dur": .durationMs, "idx": .receipt.logs[0].topics[0], "bh": .receipt.blockHash}'
+
+polycli loadtest \
+--send-only \
+--rpc-url "$(kurtosis port print pos l2-el-9-bor-heimdall-v2-rpc rpc)" \
+--mode cc \
+--rate-limit 100 \
+--concurrency 100 \
+--requests 100 \
+--sync-txs \
+--verbosity 700 \
+--contract-address "$counter_address" \
+--calldata 0x \
+--gas-price 30gwei \
+--priority-gas-price 30gwei \
+--sending-accounts-file "private-keys.txt" \
+--pretty-logs=false 2>&1 | \
+jq -c 'select(.txHash != null) | {"tx": .txHash, "dur": .durationMs, "idx": .receipt.logs[0].topics[0], "bh": .receipt.blockHash}' | tee -a preconfs.txt
 #+end_src
 
 * Findings
