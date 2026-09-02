@@ -9,6 +9,8 @@ private_key="0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea"
 
 date -u -In
 polycli loadtest --gas-price 30gwei --rpc-url "$rpc_url" --private-key "$private_key" --verbosity 600 --requests 10000000 --rate-limit 125 --concurrency 50 --mode contract-call --contract-address 0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9 --calldata $(head -c 32768 /dev/urandom | xxd -p | tr -d "\n")
+
+polycli loadtest --sync-txs --gas-price 30gwei --rpc-url "$rpc_url" --private-key "$private_key" --verbosity 600 --requests 10000000 --rate-limit 10 --concurrency 50 --mode contract-call --contract-address 0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9 --calldata $(head -c 32768 /dev/urandom | xxd -p | tr -d "\n")
 #+end_src
 
 #+begin_src bash
@@ -35,14 +37,18 @@ cast send --gas-price 50gwei --priority-gas-price 50gwei --rpc-url "$rpc_url" --
 nonce=$(cast nonce --rpc-url $rpc_url $eth_address)
 mitmproxy -p 8341 --mode reverse:$rpc_url
 cast send --chain-id 4927 --gas-limit 21000 --nonce $nonce --gas-price 50gwei --priority-gas-price 50gwei --rpc-url "http://127.0.0.1:8341" --private-key "$private_key" --value 1 "$eth_address"
-
 #+end_src
 
+* Sync Testing
 
+#+begin_src bash
+polycli loadtest --rpc-url "$(kurtosis port print pos l2-el-9-bor-heimdall-v2-rpc rpc)" --mode t --rate-limit 1 --requests 10 --sync-txs --verbosity 700 --gas-price 30gwei --priority-gas-price 30gwei --private-key "$private_key"
+#+end_src
 
 * Findings
 - https://primer-polygon.up.railway.app/d/01a057aa-322e-75e7-a481-a133dcada955
 - https://primer-polygon.up.railway.app/d/01a05861-12af-721b-b071-e08cd4b6241e
 - https://primer-polygon.up.railway.app/d/01a05d96-c351-719b-a1f8-0a4e9c50a3e7
-- https://primer-polygon.up.railway.app/d/01a05e2d-26aa-746e-b98c-72939e338e77 — seal-barrier refusals stall block production ~2–3s under load (3s block gaps)
-- https://primer-polygon.up.railway.app/d/01a05e5b-908d-74fd-8b93-983281c31443 — 2s block at 491: seal-gate latency (ingress ack backlog) tips bor's minBlockBuildTime clamp; no refusal involved
+- https://primer-polygon.up.railway.app/d/01a05e2d-26aa-746e-b98c-72939e338e77
+- https://primer-polygon.up.railway.app/d/01a05e5b-908d-74fd-8b93-983281c31443
+- https://primer-polygon.up.railway.app/d/01a0623d-a299-717d-885b-deedef6fb4ca

@@ -2,7 +2,7 @@ polygon_pos_package:
   participants:
     # 3 active block producers. They seal blocks, produce witnesses for the
     # 4 non-producing validators below, and publish to the sequence store
-    # ingress. `el_image: bor:7e5f88430` must be a build from the sequencer
+    # ingress. `el_image: bor:5e3ba2fe2` must be a build from the sequencer
     # publisher branch -- stock bor renders but ignores the [sequencer]
     # section, so `el_bor_use_sequence_store` would otherwise be a no-op.
     - kind: validator
@@ -10,7 +10,7 @@ polygon_pos_package:
       cl_type: heimdall-v2
       el_bor_produce_witness: true
       el_bor_use_sequence_store: true
-      el_image: bor:7e5f88430
+      el_image: bor:5e3ba2fe2
       count: 3
 
     # 4 non-producing validators. Same el_image as the producers -- mixing
@@ -25,18 +25,18 @@ polygon_pos_package:
     - kind: validator
       el_type: bor
       cl_type: heimdall-v2
-      el_image: bor:7e5f88430
+      el_image: bor:5e3ba2fe2
       el_bor_produce_witness: true
       el_bor_sync_with_witness: true
       count: 4
 
     # 1 bor archive RPC node. Non-validating, full history retained
     # (`el_bor_archive_mode` adds the `-archive` service suffix). Kept on
-    # bor:7e5f88430 like everything else so the whole network runs one build.
+    # bor:5e3ba2fe2 like everything else so the whole network runs one build.
     - kind: rpc
       el_type: bor
       cl_type: heimdall-v2
-      el_image: bor:7e5f88430
+      el_image: bor:5e3ba2fe2
       el_bor_archive_mode: true
       count: 1
 
@@ -44,7 +44,7 @@ polygon_pos_package:
     - kind: rpc
       el_type: bor
       cl_type: heimdall-v2
-      el_image: bor:7e5f88430
+      el_image: bor:5e3ba2fe2
       count: 1
 
   additional_services:
@@ -56,6 +56,6 @@ polygon_pos_package:
     deploy_panoptichain: false
 
   sequence_store_params:
-    image: seqstore:31a227ee
+    image: seqstore:b99793e8
     redpanda_count: 3
     gateway_count: 3
