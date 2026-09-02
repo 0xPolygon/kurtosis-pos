@@ -93,6 +93,9 @@ POLYGON_POS_PARAMS = {
     "erpc_params": [
         "image",
     ],
+    "nginx_params": [
+        "image",
+    ],
 }
 
 VALID_L1_BACKENDS = [
@@ -239,6 +242,19 @@ def sanity_check_polygon_args(plan, input_args):
         erpc_params = input_args.get("erpc_params", {})
         if erpc_params:
             fail("`erpc_params` must be empty when erpc is not deployed.")
+
+    # Make sure nginx params are defined only if nginx is deployed.
+    if constants.ADDITIONAL_SERVICES.nginx in additional_services:
+        _validate_dict(input_args, "nginx_params")
+        nginx_params = input_args.get("nginx_params")
+        if not "image" in nginx_params:
+            fail(
+                '`nginx_params` must include the "image" field when nginx is deployed.'
+            )
+    else:
+        nginx_params = input_args.get("nginx_params", {})
+        if nginx_params:
+            fail("`nginx_params` must be empty when nginx is not deployed.")
 
     # Make sure observability params are defined only if the observability stack is deployed.
     if constants.ADDITIONAL_SERVICES.observability in additional_services:

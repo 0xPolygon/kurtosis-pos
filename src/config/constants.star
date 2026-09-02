@@ -41,6 +41,7 @@ ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
     bridge_spammer="bridge_spammer",
     erpc="erpc",
+    nginx="nginx",
     observability="observability",
     tx_spammer="tx_spammer",
     status_checker="status_checker",
@@ -63,6 +64,7 @@ IMAGES = {
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
     "erpc_image": "ghcr.io/erpc/erpc:0.2.0",
+    "nginx_image": "nginx:1.29-alpine",
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.14.0",
