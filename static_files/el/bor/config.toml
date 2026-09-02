@@ -244,4 +244,6 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   publisher-endpoint = "{{ .sequence_store_publisher_endpoint }}"
   consumer-endpoint = "{{ .sequence_store_consumer_endpoint }}"
   poll = "100ms"
+[relay]
+  enable-preconfs = true
 {{- end }}
