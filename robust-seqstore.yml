@@ -28,6 +28,7 @@ polygon_pos_package:
       el_image: bor:5e3ba2fe2
       el_bor_produce_witness: true
       el_bor_sync_with_witness: true
+      el_bor_use_sequence_store: true
       count: 4
 
     # 1 bor archive RPC node. Non-validating, full history retained
@@ -38,6 +39,7 @@ polygon_pos_package:
       cl_type: heimdall-v2
       el_image: bor:5e3ba2fe2
       el_bor_archive_mode: true
+      el_bor_use_sequence_store: true
       count: 1
 
     # 1 plain bor RPC node (default full-node pruning, no witness flags).
@@ -45,6 +47,7 @@ polygon_pos_package:
       el_type: bor
       cl_type: heimdall-v2
       el_image: bor:5e3ba2fe2
+      el_bor_use_sequence_store: true
       count: 1
 
   additional_services:
