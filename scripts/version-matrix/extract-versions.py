@@ -65,6 +65,7 @@ COMPONENT_REPOS = {
     "l2_el_bor_image": ("bor", "0xPolygon/bor"),
     "l2_cl_queue_image": ("rabbitmq", "rabbitmq/rabbitmq-server"),
     # additional services
+    "erpc_image": ("erpc", "erpc/erpc"),
     "status_checker_image": ("status-checker", "0xPolygon/status-checker"),
     # observability
     "prometheus_image": ("prometheus", "prometheus/prometheus"),

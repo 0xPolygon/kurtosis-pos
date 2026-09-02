@@ -1,0 +1,26 @@
+# erpc front for all bor (L2 EL) nodes: one JSON-RPC endpoint that spreads
+# requests across every upstream with scored selection (latency/error rate),
+# retries, and failover -- not plain round-robin. Reach it at
+# /main/evm/<chain-id> on the rpc port. No `database` section on purpose:
+# response caching stays disabled so a devnet always serves fresh state.
+logLevel: info
+server:
+  httpHostV4: "0.0.0.0"
+  httpPortV4: {{ .RpcPort }}
+metrics:
+  enabled: true
+  hostV4: "0.0.0.0"
+  port: {{ .MetricsPort }}
+projects:
+  - id: main
+    networks:
+      - architecture: evm
+        evm:
+          chainId: {{ .ChainId }}
+    upstreams:
+      {{- range $name, $url := .Upstreams }}
+      - id: {{ $name }}
+        endpoint: {{ $url }}
+        evm:
+          chainId: {{ $.ChainId }}
+      {{- end }}

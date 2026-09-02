@@ -11,6 +11,7 @@ def test_parse_additional_services(plan):
         "additional_services": [
             constants.ADDITIONAL_SERVICES.blockscout,
             constants.ADDITIONAL_SERVICES.bridge_spammer,
+            constants.ADDITIONAL_SERVICES.erpc,
             constants.ADDITIONAL_SERVICES.ethstats_server,
             constants.ADDITIONAL_SERVICES.observability,
             constants.ADDITIONAL_SERVICES.status_checker,

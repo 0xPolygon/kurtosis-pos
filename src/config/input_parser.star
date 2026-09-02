@@ -182,6 +182,10 @@ ETHSTATS_SERVER_ARGS = {
     "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
 }
 
+ERPC_ARGS = {
+    "image": constants.IMAGES.get("erpc_image"),
+}
+
 
 def input_parser(plan, input_args):
     plan.print("Parsing the dev input args")
@@ -295,6 +299,12 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     result["observability_params"] = _parse_observability_params(
         is_observability_deployed, observability_params
     )
+
+    is_erpc_deployed = (
+        constants.ADDITIONAL_SERVICES.erpc in result["additional_services"]
+    )
+    erpc_params = polygon_pos_args.get("erpc_params", {})
+    result["erpc_params"] = _parse_erpc_params(is_erpc_deployed, erpc_params)
 
     # The sequence store is deployed iff any participant opts into it.
     is_sequence_store_deployed = any(
@@ -491,6 +501,21 @@ def _parse_ethstats_server_params(is_ethstats_server_deployed, ethstats_server_p
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(ethstats_server_params)
+
+
+def _parse_erpc_params(is_erpc_deployed, erpc_params):
+    # If erpc is not deployed, return an empty dict.
+    if not is_erpc_deployed:
+        return {}
+
+    # Create a mutable copy of erpc_params.
+    erpc_params = dict(erpc_params) if erpc_params else {}
+
+    for k, v in ERPC_ARGS.items():
+        erpc_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(erpc_params)
 
 
 def _parse_observability_params(is_observability_deployed, observability_params):

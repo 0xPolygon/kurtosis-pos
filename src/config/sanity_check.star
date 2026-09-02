@@ -90,6 +90,9 @@ POLYGON_POS_PARAMS = {
     "observability_params": [
         "deploy_panoptichain",
     ],
+    "erpc_params": [
+        "image",
+    ],
 }
 
 VALID_L1_BACKENDS = [
@@ -225,6 +228,17 @@ def sanity_check_polygon_args(plan, input_args):
             fail(
                 "`ethstats_server_params` must be empty when the status checker is not deployed."
             )
+
+    # Make sure erpc params are defined only if erpc is deployed.
+    if constants.ADDITIONAL_SERVICES.erpc in additional_services:
+        _validate_dict(input_args, "erpc_params")
+        erpc_params = input_args.get("erpc_params")
+        if not "image" in erpc_params:
+            fail('`erpc_params` must include the "image" field when erpc is deployed.')
+    else:
+        erpc_params = input_args.get("erpc_params", {})
+        if erpc_params:
+            fail("`erpc_params` must be empty when erpc is not deployed.")
 
     # Make sure observability params are defined only if the observability stack is deployed.
     if constants.ADDITIONAL_SERVICES.observability in additional_services:

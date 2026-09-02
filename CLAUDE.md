@@ -35,6 +35,7 @@ tools/devnet-monitor/devnet-monitor checkpoints --enclave pos      # verify chec
 | L1 EL (geth)          | `el-1-geth-lighthouse`                  |
 | L1 CL (lighthouse)    | `cl-1-lighthouse-geth`                  |
 | Observability         | `prometheus`, `grafana`, `panoptichain` |
+| RPC load balancer     | `erpc` (fronts all bor nodes)           |
 
 Nodes with `el_bor_archive_mode: true` get a `-archive` suffix (e.g. `l2-el-1-bor-heimdall-v2-validator-archive`). The default single-node config enables it on the validator.
 

@@ -115,3 +115,28 @@ def test_sanity_check_with_ethstats_server(plan):
             "image": constants.IMAGES.get("ethstats_server_image"),
         },
     }
+
+
+def test_sanity_check_with_erpc_missing_image(plan):
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "additional_services": [
+            constants.ADDITIONAL_SERVICES.erpc,
+        ],
+        "erpc_params": {},
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        '`erpc_params` must include the "image" field when erpc is deployed.',
+    )
+
+
+def test_sanity_check_with_erpc_params_but_erpc_not_deployed(plan):
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "erpc_params": {
+            "image": constants.IMAGES.get("erpc_image"),
+        },
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        "`erpc_params` must be empty when erpc is not deployed.",
+    )

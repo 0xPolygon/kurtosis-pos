@@ -203,14 +203,30 @@ You can check the admin private key and mnemonic default values at `src/config/i
 
 The `additional_services` array lets you enable optional tools and utilities alongside your devnet. These are not configuration options themselves, but rather extra services you can include by listing their names in the array.
 
-|      Service      |                                                 Description                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                             |
-| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                          |
-| `ethstats_server` | Visual interface for tracking network status                                                                 |
+| Service           | Description                                                                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                                                          |
+| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                                                       |
+| `erpc`            | [erpc](https://github.com/erpc/erpc) RPC load balancer in front of all bor nodes (see `erpc_params`)                                      |
+| `ethstats_server` | Visual interface for tracking network status                                                                                              |
 | `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`) |
-| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                 |
-| `tx_spammer`      | Send transactions to the network to simulate load                                                            |
+| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                              |
+| `tx_spammer`      | Send transactions to the network to simulate load                                                                                         |
+
+### `erpc_params`
+
+Only allowed when `erpc` is listed in `additional_services`.
+
+The `erpc` service deploys [erpc](https://github.com/erpc/erpc) with every bor node (validators, rpc, and archive alike) registered as an upstream. It exposes one JSON-RPC endpoint that spreads requests across all upstreams with scored selection (latency/error rate), retries, and automatic failover — note that this is smarter than plain round-robin. Response caching is disabled so the devnet always serves fresh state. Prometheus metrics are served on the `metrics` port at `/metrics` and are scraped automatically when `observability` is also enabled.
+
+```bash
+# The JSON-RPC endpoint is served under /main/evm/<l2-chain-id>.
+cast block-number --rpc-url "$(kurtosis port print pos erpc rpc)/main/evm/4927"
+```
+
+| Field | Type   | Default                 | Description               |
+| ----- | ------ | ----------------------- | ------------------------- |
+| image | string | ghcr.io/erpc/erpc:0.2.0 | Image used to deploy erpc |
 
 ### `ethstats_server_params`
 
@@ -223,8 +239,8 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 Only allowed when `observability` is listed in `additional_services`.
 
-| Field               | Type | Default | Description                                                                            |
-| ------------------- | ---- | ------- | -------------------------------------------------------------------------------------- |
+| Field               | Type | Default | Description                                                                                                                  |
+| ------------------- | ---- | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | deploy_panoptichain | bool | true    | Deploy [Panoptichain](https://github.com/0xPolygon/panoptichain) alongside Prometheus and Grafana. Set to `false` to skip it |
 
 ### `sequence_store_params`

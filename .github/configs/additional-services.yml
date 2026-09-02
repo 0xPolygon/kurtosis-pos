@@ -12,6 +12,7 @@ polygon_pos_package:
   additional_services:
     # - blockscout
     - bridge_spammer
+    - erpc
     - ethstats_server
     - observability
     - status_checker

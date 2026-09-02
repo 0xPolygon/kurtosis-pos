@@ -51,6 +51,9 @@ polygon_pos_package:
       count: 1
 
   additional_services:
+    # erpc load-balances JSON-RPC across all 9 bor nodes above; reach it at
+    # $(kurtosis port print pos erpc rpc)/main/evm/4927
+    - erpc
     - observability
 
   # Skip panoptichain: this devnet only needs the seqstore/bor/heimdall
