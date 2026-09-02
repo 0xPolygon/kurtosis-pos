@@ -130,6 +130,13 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
     vhosts = ["*"]
     # List of cross-origin domains from which to accept requests
     corsdomain = ["*"]
+    # Maximum size of workers in the rpc execution pool (default: 40). Every
+    # RPC call holds a pool slot for its whole execution; eth_sendRawTransactionSync
+    # (EIP-7966) parks a slot until the receipt lands (~a full block), so the
+    # default 40 caps sync-tx load tests at ~40 tx/block and lets 40 slow calls
+    # starve all other RPC traffic on the transport. Devnets exist to generate
+    # load, so run with a large pool (each slot is just a parked goroutine).
+    ep-size = 16384
   [jsonrpc.ws]
     # Enable the WS-RPC server (default: false)
     enabled = true
@@ -141,6 +148,9 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
     api = ["admin", "eth", "net", "web3", "txpool", "bor", "debug"]
     # Origins from which to accept websockets requests (default: localhost)
     origins = ["*"]
+    # Maximum size of workers in the rpc execution pool (default: 40). See the
+    # matching [jsonrpc.http] ep-size comment; the WS transport has its own pool.
+    ep-size = 16384
 
 [log]
   # Format logs with JSON (default: false)
