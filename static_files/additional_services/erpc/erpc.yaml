@@ -1,4 +1,6 @@
-# erpc front for all bor (L2 EL) nodes: one JSON-RPC endpoint that spreads
+# erpc front for all bor (L2 EL) nodes except stateless-sync ones (their
+# txpool is disabled, so they can't accept transactions): one JSON-RPC
+# endpoint that spreads
 # requests across every upstream with scored selection (latency/error rate),
 # retries, and failover -- not plain round-robin. Reach it at
 # /main/evm/<chain-id> on the rpc port. No `database` section on purpose:

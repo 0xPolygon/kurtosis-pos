@@ -207,9 +207,9 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                                                          |
 | `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                                                       |
-| `erpc`            | [erpc](https://github.com/erpc/erpc) RPC load balancer in front of all bor nodes (see `erpc_params`)                                      |
+| `erpc`            | [erpc](https://github.com/erpc/erpc) RPC load balancer in front of all non-stateless bor nodes (see `erpc_params`)                        |
 | `ethstats_server` | Visual interface for tracking network status                                                                                              |
-| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all bor nodes (see `nginx_params`)                             |
+| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`)               |
 | `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`) |
 | `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                              |
 | `tx_spammer`      | Send transactions to the network to simulate load                                                                                         |
@@ -218,7 +218,7 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 Only allowed when `erpc` is listed in `additional_services`.
 
-The `erpc` service deploys [erpc](https://github.com/erpc/erpc) with every bor node (validators, rpc, and archive alike) registered as an upstream. It exposes one JSON-RPC endpoint that spreads requests across all upstreams with scored selection (latency/error rate), retries, and automatic failover — note that this is smarter than plain round-robin. Response caching is disabled so the devnet always serves fresh state. Prometheus metrics are served on the `metrics` port at `/metrics` and are scraped automatically when `observability` is also enabled.
+The `erpc` service deploys [erpc](https://github.com/erpc/erpc) with every bor node (validators, rpc, and archive alike) registered as an upstream, except stateless-sync nodes (`el_bor_sync_with_witness: true`), whose disabled txpool means they cannot accept transactions. It exposes one JSON-RPC endpoint that spreads requests across all upstreams with scored selection (latency/error rate), retries, and automatic failover — note that this is smarter than plain round-robin. Response caching is disabled so the devnet always serves fresh state. Prometheus metrics are served on the `metrics` port at `/metrics` and are scraped automatically when `observability` is also enabled.
 
 ```bash
 # The JSON-RPC endpoint is served under /main/evm/<l2-chain-id>.
@@ -233,7 +233,7 @@ cast block-number --rpc-url "$(kurtosis port print pos erpc rpc)/main/evm/4927"
 
 Only allowed when `nginx` is listed in `additional_services`.
 
-The `nginx` service deploys [nginx](https://nginx.org) with every bor node (validators, rpc, and archive alike) as an upstream, balanced with `least_conn` (each request goes to the upstream with the fewest active connections). Compared to `erpc`, which scores upstreams and concentrates traffic on a single sticky primary until it degrades, nginx actively spreads concurrent requests across all nodes — the better fit for load tests, particularly with long-held calls like `eth_sendRawTransactionSync` that occupy a bor RPC execution-pool slot until the receipt lands. There is no caching, retry logic (beyond connection-error failover), or method awareness.
+The `nginx` service deploys [nginx](https://nginx.org) with every bor node (validators, rpc, and archive alike) as an upstream — except stateless-sync nodes (`el_bor_sync_with_witness: true`), whose disabled txpool means they cannot accept transactions — balanced with `least_conn` (each request goes to the upstream with the fewest active connections). Compared to `erpc`, which scores upstreams and concentrates traffic on a single sticky primary until it degrades, nginx actively spreads concurrent requests across all nodes — the better fit for load tests, particularly with long-held calls like `eth_sendRawTransactionSync` that occupy a bor RPC execution-pool slot until the receipt lands. There is no caching, retry logic (beyond connection-error failover), or method awareness.
 
 ```bash
 # The JSON-RPC endpoint is served at the root path.
