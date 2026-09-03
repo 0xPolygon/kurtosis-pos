@@ -10,9 +10,15 @@ def l1_rpcs(l1_context):
 
 
 def l2_el_rpc_urls(l2_context):
+    # Stateless-sync nodes (syncmode "stateless") run with the txpool
+    # disabled and can't serve eth_sendRawTransaction, so keep them out of
+    # the load-balancer upstream pools (nginx and erpc are the only
+    # consumers). Never empty: the sanity check requires at least one
+    # non-stateless validator.
     return {
         p.el_context.service_name: p.el_context.rpc_http_url
         for p in l2_context.all_participants
+        if not p.el_stateless
     }
 
 

@@ -215,7 +215,7 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                             |
 | `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                          |
 | `ethstats_server` | Visual interface for tracking network status                                                                 |
-| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all bor nodes (see `nginx_params`) |
+| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`) |
 | `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`) |
 | `status_checker`  | Perform regular status checks to track and monitor the health of the network                                 |
 | `tx_spammer`      | Send transactions to the network to simulate load                                                            |
@@ -224,7 +224,7 @@ The `additional_services` array lets you enable optional tools and utilities alo
 
 Only allowed when `nginx` is listed in `additional_services`.
 
-The `nginx` service deploys [nginx](https://nginx.org) with every bor node (validators, rpc, and archive alike) as an upstream, balanced with `least_conn` (each request goes to the upstream with the fewest active connections), which spreads concurrent requests across all nodes — a good fit for load tests, particularly with long-held calls like `eth_sendRawTransactionSync` that occupy a bor RPC execution-pool slot until the receipt lands. There is no caching, retry logic (beyond connection-error failover), or method awareness.
+The `nginx` service deploys [nginx](https://nginx.org) with every bor node (validators, rpc, and archive alike) as an upstream — except stateless-sync nodes (`el_bor_sync_with_witness: true`), whose disabled txpool means they cannot accept transactions — balanced with `least_conn` (each request goes to the upstream with the fewest active connections), which spreads concurrent requests across all nodes — a good fit for load tests, particularly with long-held calls like `eth_sendRawTransactionSync` that occupy a bor RPC execution-pool slot until the receipt lands. There is no caching, retry logic (beyond connection-error failover), or method awareness.
 
 ```bash
 # The JSON-RPC endpoint is served at the root path.

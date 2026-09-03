@@ -156,6 +156,7 @@ def launch(
                 el_type=participant.get("el_type"),
                 cl_context=slot.cl_context,
                 el_context=el_context,
+                el_stateless=participant.get("el_bor_sync_with_witness"),
             )
         )
 
