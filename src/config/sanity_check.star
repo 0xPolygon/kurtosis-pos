@@ -161,6 +161,7 @@ def sanity_check_polygon_args(plan, input_args):
     _validate_participants_count(participants)
     _validate_participants_have_validator(participants)
     _validate_participants_have_producing_validator(participants)
+    _validate_participants_have_sequence_store_producer(participants)
     for p in participants:
         _validate_participant(p)
 
@@ -327,6 +328,23 @@ def _validate_participants_have_producing_validator(participants):
             return
     fail(
         "At least one validator participant must have `el_bor_sync_with_witness: false` so the network has a block producer."
+    )
+
+
+def _validate_participants_have_sequence_store_producer(participants):
+    if not any([p.get("el_bor_use_sequence_store") for p in participants]):
+        return
+
+    for p in participants:
+        if (
+            p.get("kind") == constants.PARTICIPANT_KIND.validator
+            and p.get("count", 0) > 0
+            and p.get("el_bor_use_sequence_store")
+            and not p.get("el_bor_sync_with_witness")
+        ):
+            return
+    fail(
+        "Sequence-store consumers require at least one producing validator with `el_bor_use_sequence_store: true`."
     )
 
 

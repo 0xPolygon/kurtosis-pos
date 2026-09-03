@@ -22,6 +22,7 @@ def launch(
     cl_ws_rpc_urls,
     el_account,
     el_static_nodes,
+    sequence_store_producer_rpc_endpoints,
     container_proc_manager_artifact,
     ethstats_server_params,
 ):
@@ -77,6 +78,9 @@ def launch(
                     "sequence_store_consumer_endpoint": "{}:{}".format(
                         constants.SEQSTORE_GATEWAY_SERVICE_NAME,
                         constants.SEQSTORE_GRPC_PORT_NUMBER,
+                    ),
+                    "sequence_store_producer_rpc_endpoints": str(
+                        sequence_store_producer_rpc_endpoints
                     ),
                     "ethstats_server_secret": ethstats_server_secret,
                     # ports

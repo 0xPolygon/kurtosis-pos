@@ -69,6 +69,37 @@ def test_sanity_check_fails_without_producing_validator(plan):
     )
 
 
+def test_sanity_check_fails_without_sequence_store_producer(plan):
+    producer = input_parser.POLYGON_POS_PARTICIPANT
+    consumer = input_parser.POLYGON_POS_PARTICIPANT | {
+        "kind": constants.PARTICIPANT_KIND.rpc,
+        "el_bor_use_sequence_store": True,
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [producer, consumer],
+        "sequence_store_params": input_parser.SEQUENCE_STORE_ARGS,
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        "Sequence-store consumers require at least one producing validator with `el_bor_use_sequence_store: true`.",
+    )
+
+
+def test_sanity_check_with_sequence_store_producer_and_consumer(plan):
+    producer = input_parser.POLYGON_POS_PARTICIPANT | {
+        "el_bor_use_sequence_store": True,
+    }
+    consumer = input_parser.POLYGON_POS_PARTICIPANT | {
+        "kind": constants.PARTICIPANT_KIND.rpc,
+        "el_bor_use_sequence_store": True,
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "participants": [producer, consumer],
+        "sequence_store_params": input_parser.SEQUENCE_STORE_ARGS,
+    }
+    sanity_check.sanity_check_polygon_args(plan, args)
+
+
 def test_sanity_check_with_status_checker_missing_image(plan):
     args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
         "additional_services": [

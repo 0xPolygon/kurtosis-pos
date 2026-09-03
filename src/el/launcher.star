@@ -20,6 +20,7 @@ def launch(
     cl_ws_rpc_urls,
     el_account,
     el_static_nodes,
+    sequence_store_producer_rpc_endpoints,
     container_proc_manager_artifact,
     ethstats_server_params,
 ):
@@ -47,6 +48,7 @@ def launch(
         cl_ws_rpc_urls,
         el_account,
         el_static_nodes,
+        sequence_store_producer_rpc_endpoints,
         container_proc_manager_artifact,
         ethstats_server_params,
     )

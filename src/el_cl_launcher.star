@@ -115,8 +115,37 @@ def launch(
     all_cl_api_urls = [s.cl_context.api_url for s in slots]
     all_cl_ws_rpc_urls = [s.cl_context.ws_rpc_url for s in slots]
 
-    all_participants = []
-    for slot_index, slot in enumerate(slots):
+    sequence_store_producers = [
+        slot for slot in slots if _is_sequence_store_producer(slot.participant)
+    ]
+    sequence_store_consumers = [
+        slot for slot in slots if _is_sequence_store_relay_consumer(slot.participant)
+    ]
+    sequence_store_producer_rpc_endpoints = [
+        "http://{}:{}".format(
+            _generate_el_node_name(slot.participant, slot.participant_index + 1),
+            el_shared.RPC_PORT_NUMBER,
+        )
+        for slot in sequence_store_producers
+    ]
+
+    # The relay checks producer RPCs only when it starts. Launch and wait for
+    # opted-in producers before starting any sequence-store relay consumer.
+    launch_slots = sequence_store_producers + [
+        slot for slot in slots if not _is_sequence_store_producer(slot.participant)
+    ]
+
+    participants_by_index = {}
+    for launch_index, slot in enumerate(launch_slots):
+        if launch_index == len(sequence_store_producers) and sequence_store_consumers:
+            for producer in sequence_store_producers:
+                el_launcher.wait_for_node_startup(
+                    plan,
+                    _generate_el_node_name(
+                        producer.participant, producer.participant_index + 1
+                    ),
+                )
+
         participant = slot.participant
         plan.print(
             "Launching EL for participant {} with config: {}".format(
@@ -128,10 +157,10 @@ def launch(
         # matters: bor probes the primary, then fails over to the next
         # entry on error. See bor's eth/ethconfig/config.go.
         cl_api_urls = [slot.cl_context.api_url] + [
-            u for i, u in enumerate(all_cl_api_urls) if i != slot_index
+            u for i, u in enumerate(all_cl_api_urls) if i != slot.participant_index
         ]
         cl_ws_rpc_urls = [slot.cl_context.ws_rpc_url] + [
-            u for i, u in enumerate(all_cl_ws_rpc_urls) if i != slot_index
+            u for i, u in enumerate(all_cl_ws_rpc_urls) if i != slot.participant_index
         ]
 
         el_account = prefunded_accounts.PREFUNDED_ACCOUNTS[slot.participant_index]
@@ -145,19 +174,22 @@ def launch(
             cl_ws_rpc_urls,
             el_account,
             network_data.el_static_nodes,
+            sequence_store_producer_rpc_endpoints,
             container_proc_manager_artifact,
             ethstats_server_params,
         )
 
-        all_participants.append(
-            participant_module.new_participant(
-                kind=participant.get("kind"),
-                cl_type=participant.get("cl_type"),
-                el_type=participant.get("el_type"),
-                cl_context=slot.cl_context,
-                el_context=el_context,
-            )
+        participants_by_index[
+            slot.participant_index
+        ] = participant_module.new_participant(
+            kind=participant.get("kind"),
+            cl_type=participant.get("cl_type"),
+            el_type=participant.get("el_type"),
+            cl_context=slot.cl_context,
+            el_context=el_context,
         )
+
+    all_participants = [participants_by_index[slot.participant_index] for slot in slots]
 
     # Make sure that the RPC of all the participants can be reached.
     for participant in all_participants:
@@ -320,3 +352,17 @@ def _generate_cl_node_name(participant, id):
 
 def _generate_el_node_name(participant, id):
     return el_launcher.generate_name(participant, id)
+
+
+def _is_sequence_store_producer(participant):
+    return (
+        participant.get("kind") == constants.PARTICIPANT_KIND.validator
+        and participant.get("el_bor_use_sequence_store")
+        and not participant.get("el_bor_sync_with_witness")
+    )
+
+
+def _is_sequence_store_relay_consumer(participant):
+    return participant.get(
+        "kind"
+    ) == constants.PARTICIPANT_KIND.rpc and participant.get("el_bor_use_sequence_store")

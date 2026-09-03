@@ -117,6 +117,10 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   allow-unprotected-txs = true
   # Filename for IPC socket/pipe within the datadir (explicit paths escape it)
   ipcpath = "{{.data_folder_path}}/bor.ipc"
+{{- if and .use_sequence_store (eq .kind "validator") (not .sync_with_witness) }}
+  # Accept relay submissions on sequence-store block producers.
+  accept-preconf-tx = true
+{{- end }}
   [jsonrpc.http]
     # Enable the HTTP-RPC server (default: false)
     enabled = true
@@ -233,6 +237,12 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   rebroadcast-max-age = "1m"
   # Max transactions to rebroadcast per cycle to limit bandwidth usage (min: 1)
   rebroadcast-batch-size = 200
+
+{{- if and .use_sequence_store (eq .kind "rpc") }}
+[relay]
+  enable-preconfs = true
+  bp-rpc-endpoints = {{ .sequence_store_producer_rpc_endpoints }}
+{{- end }}
 
 {{- if .use_sequence_store }}
 {{/* Sequence-store preconfirmations (publisher v2): validators publish the

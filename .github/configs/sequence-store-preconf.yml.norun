@@ -1,0 +1,24 @@
+dev:
+  l1_backend: anvil
+
+polygon_pos_package:
+  participants:
+    - kind: validator
+      el_type: bor
+      cl_type: heimdall-v2
+      el_image: bor:local
+      el_bor_use_sequence_store: true
+      count: 1
+    - kind: rpc
+      el_type: bor
+      cl_type: heimdall-v2
+      el_image: bor:local
+      el_bor_use_sequence_store: true
+      count: 1
+  network_params:
+    el_block_interval_seconds: 1
+    rio_fork_block: 0
+  sequence_store_params:
+    image: seqstore:local
+    redpanda_count: 1
+    gateway_count: 1
