@@ -109,7 +109,9 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
 
 [jsonrpc]
   # Sets a cap on transaction fee (in ether) that can be sent via the RPC APIs (0 = no cap) (default: 1)
-  txfeecap = 0.4194304
+  # Raised well above the bor default for devnet load testing: high-gas-price
+  # spam runs shouldn't bounce off the fee cap.
+  txfeecap = 10.0
   # Allow non-EIP-155 (chain-id-less) transactions. The L2 genesis sets
   # eip155Block: 0, so legacy unprotected txs are normally rejected. Devnet
   # tooling sometimes broadcasts pre-EIP-155 raw txs (e.g. EIP-2470 deployer
