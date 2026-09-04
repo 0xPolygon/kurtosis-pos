@@ -18,9 +18,14 @@ PANOPTICHAIN_CONFIG_FILE_PATH = (
 EL_METRICS_PATH = "/debug/metrics/prometheus"
 CL_METRICS_PATH = "/metrics"
 
-# Local devnet: scrape EL/CL on every block. Panoptichain polls L1 RPCs on its
-# own 15s cadence so no point scraping it any faster.
+# Local devnet: scrape EL/CL on every block. Panoptichain runs its own polling
+# loop, so scraping it faster than that loop only resamples stale values.
 EL_CL_SCRAPE_INTERVAL = "1s"
+
+# Panoptichain replays every block between two polls through per-transaction
+# observers, so under load it needs more than the 1 core the other additional
+# services get.
+PANOPTICHAIN_MAX_CPU = 2000  # in milicores (2 cores)
 
 
 def launch(
@@ -97,7 +102,7 @@ def launch_panoptichain(
                 ),
             },
             files={"/etc/panoptichain": panoptichain_config_artifact},
-            max_cpu=shared.MAX_CPU,
+            max_cpu=PANOPTICHAIN_MAX_CPU,
             max_memory=shared.MAX_MEM,
         ),
     )
