@@ -5,6 +5,13 @@ http:
   address: "0.0.0.0"
   path: {{.panoptichain_metrics_path}}
 
+# Every block between two polls is fetched one by one and replayed through the
+# per-transaction observers. The upstream 30s default is tuned for mainnet's 2s
+# blocks; here blocks are 1s, so it would leave 30 full blocks to catch up on
+# each tick and panoptichain falls behind under load.
+runner:
+  interval: 5s
+
 providers:
   system:
     interval: 15s
@@ -14,6 +21,9 @@ providers:
     - name: "L1"
       url: "{{$url}}"
       label: "{{$label}}"
+      # L1 is a low-traffic devnet chain and its contracts only move on
+      # checkpoints, so it does not need the L2 cadence.
+      interval: 30s
       contracts:
         state_sync_sender_address: "{{$.state_sync_sender_address}}"
         checkpoint_address: "{{$.checkpoint_address}}"
@@ -23,6 +33,10 @@ providers:
     - name: "L2"
       url: "{{$urls.rpc}}"
       label: "{{$label}}"
+      interval: 5s
+      # Only backfill logs from the last minute of blocks on the first poll;
+      # the 1000-block default replays history nobody looks at on a fresh chain.
+      block_look_back: 60
       contracts:
         state_sync_receiver_address: "{{$.state_sync_receiver_address}}"
     {{end}}

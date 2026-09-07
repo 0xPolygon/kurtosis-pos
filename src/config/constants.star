@@ -64,8 +64,8 @@ IMAGES = {
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.14.0",
-    "grafana_image": "grafana/grafana:13.2.0",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v6.3.2",
+    "grafana_image": "grafana/grafana:13.2.1",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v7.0.0",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
     "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
