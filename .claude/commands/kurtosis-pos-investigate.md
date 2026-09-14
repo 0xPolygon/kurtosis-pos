@@ -7,6 +7,8 @@ compatibility: Requires kurtosis CLI with a running engine and Docker.
 
 ## Related skills
 
+- **kurtosis-pos-chaos** — tartarus fault campaigns against a running enclave, with the reusable oracle harness and expected outcomes
+
 - **kurtosis-pos-deploy** — snapshot create/restore, full deploy
 - **kurtosis-pos-interact** — service inspection, logs, shells, cast
 - **kurtosis-pos-test** — chaos testing, spammers, bridge flows

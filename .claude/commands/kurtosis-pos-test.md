@@ -7,6 +7,8 @@ compatibility: Requires a running kurtosis-pos enclave for e2e and chaos tests.
 
 ## Related skills
 
+- **kurtosis-pos-chaos** — tartarus fault campaigns against a running enclave, with the reusable oracle harness and expected outcomes
+
 - **kurtosis-pos-deploy** — deploy a devnet before running e2e or chaos tests
 - **kurtosis-pos-interact** — monitor scripts, chain interaction
 - **kurtosis-pos-intro** — kurtosis-test install, dev workflow

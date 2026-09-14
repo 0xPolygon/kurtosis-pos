@@ -8,3 +8,7 @@ extend-exclude = [
   "static_files/additional_services/grafana/dashboards/bor.json",
   "static_files/additional_services/grafana/dashboards/heimdall.json",
 ]
+
+[default.extend-words]
+# verbatim bor log line quoted in seq-store-testing/campaign/HEIMDALL-MATRIX.md
+whitlisted = "whitlisted"

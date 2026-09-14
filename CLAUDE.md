@@ -77,3 +77,4 @@ Type `/kurtosis-pos` for the full index. Quick links:
 - `/kurtosis-pos-quality` — CI, formatting, typos, docs, publish-images
 - `/kurtosis-starlark` — writing or reviewing `.star` files
 - `/kurtosis-pos-investigate` — autonomous bug finding in bor and heimdall-v2
+- `/kurtosis-pos-chaos` — tartarus fault campaigns: topology facts, harness, episode catalog, expected outcomes
