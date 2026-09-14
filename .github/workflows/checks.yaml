@@ -33,7 +33,7 @@ jobs:
         run: kurtosis lint .
 
       - name: Run markdown linter
-        uses: rvben/rumdl@706079630a7b0524f2313d5cb992f565f803c260 # v0.2.65
+        uses: rvben/rumdl@3ca6b92ade1173330acbadd3e1070fa452158564 # v0.2.73
 
       - name: Install pyyaml
         run: pip install pyyaml
