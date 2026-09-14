@@ -1,0 +1,275 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "p16-kill-l1",
+    "format_version": 2,
+    "kind": "kill",
+    "state": "completed",
+    "started_at": "2026-09-11T00:06:02.102806577Z",
+    "applied_at": "2026-09-11T00:06:02.984480179Z",
+    "verified_at": "2026-09-11T00:06:03.002250126Z",
+    "stopped_at": "2026-09-11T00:08:03.453241929Z",
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 1
+    },
+    "params": {
+      "node": "el-1-geth-lighthouse"
+    },
+    "observed": {
+      "node": "el-1-geth-lighthouse",
+      "signal": "KILL",
+      "status": "exited",
+      "verified": true
+    },
+    "instances": [
+      {
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-11T00:06:02.984283056Z",
+        "recovered_at": "2026-09-11T00:08:03.441531988Z",
+        "restored": {
+          "container_id": "84c3adac0ec428507d53729624aba238fa3f620da76ff4842dce71babcf332f0",
+          "node": "el-1-geth-lighthouse",
+          "status": "running"
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "el-1-geth-lighthouse",
+        "container_id": "84c3adac0ec428507d53729624aba238fa3f620da76ff4842dce71babcf332f0",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.11",
+            "mac": "86:1f:0e:5e:8f:01"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 8545,
+            "host_ip": "0.0.0.0",
+            "host_port": 36087
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8545,
+            "host_ip": "::",
+            "host_port": 36087
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8546,
+            "host_ip": "0.0.0.0",
+            "host_port": 36088
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8546,
+            "host_ip": "::",
+            "host_port": 36088
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8551,
+            "host_ip": "0.0.0.0",
+            "host_port": 36089
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8551,
+            "host_ip": "::",
+            "host_port": 36089
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9001,
+            "host_ip": "0.0.0.0",
+            "host_port": 36090
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9001,
+            "host_ip": "::",
+            "host_port": 36090
+          },
+          {
+            "proto": "tcp",
+            "container_port": 30303,
+            "host_ip": "0.0.0.0",
+            "host_port": 36091
+          },
+          {
+            "proto": "tcp",
+            "container_port": 30303,
+            "host_ip": "::",
+            "host_port": 36091
+          }
+        ],
+        "captured_at": "2026-09-11T00:06:02.092792758Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "el-1-geth-lighthouse",
+        "container_id": "84c3adac0ec428507d53729624aba238fa3f620da76ff4842dce71babcf332f0",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.11",
+            "mac": "96:4e:a3:3d:17:6f"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 8545,
+            "host_ip": "0.0.0.0",
+            "host_port": 36334
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8545,
+            "host_ip": "::",
+            "host_port": 36334
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8546,
+            "host_ip": "0.0.0.0",
+            "host_port": 36335
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8546,
+            "host_ip": "::",
+            "host_port": 36335
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8551,
+            "host_ip": "0.0.0.0",
+            "host_port": 36336
+          },
+          {
+            "proto": "tcp",
+            "container_port": 8551,
+            "host_ip": "::",
+            "host_port": 36336
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9001,
+            "host_ip": "0.0.0.0",
+            "host_port": 36337
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9001,
+            "host_ip": "::",
+            "host_port": 36337
+          },
+          {
+            "proto": "tcp",
+            "container_port": 30303,
+            "host_ip": "0.0.0.0",
+            "host_port": 36338
+          },
+          {
+            "proto": "tcp",
+            "container_port": 30303,
+            "host_ip": "::",
+            "host_port": 36338
+          }
+        ],
+        "captured_at": "2026-09-11T00:08:03.441537932Z"
+      }
+    ],
+    "endpoint_changes": [
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "30303/tcp -\u003e 0.0.0.0:36091",
+        "after": "30303/tcp -\u003e 0.0.0.0:36338"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "30303/tcp -\u003e :::36091",
+        "after": "30303/tcp -\u003e :::36338"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "8545/tcp -\u003e 0.0.0.0:36087",
+        "after": "8545/tcp -\u003e 0.0.0.0:36334"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "8545/tcp -\u003e :::36087",
+        "after": "8545/tcp -\u003e :::36334"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "8546/tcp -\u003e 0.0.0.0:36088",
+        "after": "8546/tcp -\u003e 0.0.0.0:36335"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "8546/tcp -\u003e :::36088",
+        "after": "8546/tcp -\u003e :::36335"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "8551/tcp -\u003e 0.0.0.0:36089",
+        "after": "8551/tcp -\u003e 0.0.0.0:36336"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "8551/tcp -\u003e :::36089",
+        "after": "8551/tcp -\u003e :::36336"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "9001/tcp -\u003e 0.0.0.0:36090",
+        "after": "9001/tcp -\u003e 0.0.0.0:36337"
+      },
+      {
+        "node": "el-1-geth-lighthouse",
+        "change": "port_changed",
+        "before": "9001/tcp -\u003e :::36090",
+        "after": "9001/tcp -\u003e :::36337"
+      }
+    ]
+  },
+  "error": null,
+  "warnings": [
+    "endpoint changed: el-1-geth-lighthouse: port_changed 30303/tcp -\u003e 0.0.0.0:36091 -\u003e 30303/tcp -\u003e 0.0.0.0:36338",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 30303/tcp -\u003e :::36091 -\u003e 30303/tcp -\u003e :::36338",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 8545/tcp -\u003e 0.0.0.0:36087 -\u003e 8545/tcp -\u003e 0.0.0.0:36334",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 8545/tcp -\u003e :::36087 -\u003e 8545/tcp -\u003e :::36334",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 8546/tcp -\u003e 0.0.0.0:36088 -\u003e 8546/tcp -\u003e 0.0.0.0:36335",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 8546/tcp -\u003e :::36088 -\u003e 8546/tcp -\u003e :::36335",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 8551/tcp -\u003e 0.0.0.0:36089 -\u003e 8551/tcp -\u003e 0.0.0.0:36336",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 8551/tcp -\u003e :::36089 -\u003e 8551/tcp -\u003e :::36336",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 9001/tcp -\u003e 0.0.0.0:36090 -\u003e 9001/tcp -\u003e 0.0.0.0:36337",
+    "endpoint changed: el-1-geth-lighthouse: port_changed 9001/tcp -\u003e :::36090 -\u003e 9001/tcp -\u003e :::36337"
+  ]
+}

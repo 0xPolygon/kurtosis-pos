@@ -1,0 +1,290 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "h10-throttle-own-cl",
+    "format_version": 2,
+    "kind": "throttle",
+    "note": "h10: in-turn producer's heimdall CPU-starved (0.05 cores); realistic overloaded-heimdall failure mode; failover or slow?",
+    "state": "completed",
+    "started_at": "2026-09-14T23:11:27.106200304Z",
+    "started_at_unix": 1789427487,
+    "applied_at": "2026-09-14T23:11:27.160742288Z",
+    "applied_at_unix": 1789427487,
+    "verified_at": "2026-09-14T23:11:28.060417886Z",
+    "verified_at_unix": 1789427488,
+    "stopped_at": "2026-09-14T23:12:58.180258641Z",
+    "stopped_at_unix": 1789427578,
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 1
+    },
+    "targets": [
+      "l2-cl-2-heimdall-v2-bor-validator"
+    ],
+    "params": {
+      "node": "l2-cl-2-heimdall-v2-bor-validator",
+      "cpus": 0.05
+    },
+    "details": {
+      "container_id": "631eb48a8cca",
+      "mode": "nano_cpus",
+      "original_nano_cpus": 2000000000,
+      "original_cpu_quota": 0,
+      "original_cpu_period": 0,
+      "applied_nano_cpus": 50000000,
+      "coverage": "CFS CPU quota on the container's cgroup (docker update --cpus): the process runs on a fraction of a core; memory, network, and disk are untouched"
+    },
+    "observed": {
+      "container_id": "631eb48a8cca",
+      "coverage": "CFS CPU quota on the container's cgroup (docker update --cpus): the process runs on a fraction of a core; memory, network, and disk are untouched",
+      "cpu_max": "5000 100000",
+      "cpu_period": 0,
+      "cpu_quota": 0,
+      "cpus": 0.05,
+      "mode": "nano_cpus",
+      "nano_cpus": 50000000,
+      "node": "l2-cl-2-heimdall-v2-bor-validator",
+      "want_cpus": 0.05
+    },
+    "instances": [
+      {
+        "target": "l2-cl-2-heimdall-v2-bor-validator",
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-14T23:11:27.16046879Z",
+        "recovered_at": "2026-09-14T23:12:58.170038082Z",
+        "restored": {
+          "container_id": "631eb48a8cca",
+          "cpu_max": "200000 100000",
+          "cpu_period": 0,
+          "cpu_quota": 0,
+          "cpus": 2,
+          "mode": "nano_cpus",
+          "nano_cpus": 2000000000,
+          "want_cores": 2
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "l2-cl-2-heimdall-v2-bor-validator",
+        "container_id": "631eb48a8cca1cf45f36320aec2886fb4864581572791e0f45b23cf01d495121",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.43",
+            "mac": "16:70:9b:f3:be:22"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "0.0.0.0",
+            "host_port": 36466
+          },
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "::",
+            "host_port": 36466
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "0.0.0.0",
+            "host_port": 36467
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "::",
+            "host_port": 36467
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "0.0.0.0",
+            "host_port": 36468
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "::",
+            "host_port": 36468
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "0.0.0.0",
+            "host_port": 36469
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "::",
+            "host_port": 36469
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "0.0.0.0",
+            "host_port": 36470
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "::",
+            "host_port": 36470
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "0.0.0.0",
+            "host_port": 36471
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "::",
+            "host_port": 36471
+          }
+        ],
+        "captured_at": "2026-09-14T23:11:27.094639831Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "l2-cl-2-heimdall-v2-bor-validator",
+        "container_id": "631eb48a8cca1cf45f36320aec2886fb4864581572791e0f45b23cf01d495121",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.43",
+            "mac": "16:70:9b:f3:be:22"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "0.0.0.0",
+            "host_port": 36466
+          },
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "::",
+            "host_port": 36466
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "0.0.0.0",
+            "host_port": 36467
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "::",
+            "host_port": 36467
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "0.0.0.0",
+            "host_port": 36468
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "::",
+            "host_port": 36468
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "0.0.0.0",
+            "host_port": 36469
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "::",
+            "host_port": 36469
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "0.0.0.0",
+            "host_port": 36470
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "::",
+            "host_port": 36470
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "0.0.0.0",
+            "host_port": 36471
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "::",
+            "host_port": 36471
+          }
+        ],
+        "captured_at": "2026-09-14T23:12:58.170049669Z"
+      }
+    ],
+    "observations": [
+      {
+        "at": "2026-09-14T23:11:58.086931982Z",
+        "at_unix": 1789427518,
+        "observed": {
+          "container_id": "631eb48a8cca",
+          "coverage": "CFS CPU quota on the container's cgroup (docker update --cpus): the process runs on a fraction of a core; memory, network, and disk are untouched",
+          "cpu_max": "5000 100000",
+          "cpu_period": 0,
+          "cpu_quota": 0,
+          "cpus": 0.05,
+          "mode": "nano_cpus",
+          "nano_cpus": 50000000,
+          "node": "l2-cl-2-heimdall-v2-bor-validator",
+          "want_cpus": 0.05
+        }
+      },
+      {
+        "at": "2026-09-14T23:12:28.060713959Z",
+        "at_unix": 1789427548,
+        "observed": {
+          "container_id": "631eb48a8cca",
+          "coverage": "CFS CPU quota on the container's cgroup (docker update --cpus): the process runs on a fraction of a core; memory, network, and disk are untouched",
+          "cpu_max": "5000 100000",
+          "cpu_period": 0,
+          "cpu_quota": 0,
+          "cpus": 0.05,
+          "mode": "nano_cpus",
+          "nano_cpus": 50000000,
+          "node": "l2-cl-2-heimdall-v2-bor-validator",
+          "want_cpus": 0.05
+        }
+      }
+    ]
+  },
+  "error": null,
+  "warnings": []
+}

@@ -1,0 +1,404 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "s08-part-ingress-rp",
+    "format_version": 2,
+    "kind": "partition",
+    "state": "completed",
+    "started_at": "2026-09-10T22:39:07.141878056Z",
+    "applied_at": "2026-09-10T22:39:07.293313842Z",
+    "verified_at": "2026-09-10T22:39:07.394770436Z",
+    "stopped_at": "2026-09-10T22:40:07.72818131Z",
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 4
+    },
+    "params": {
+      "groups": [
+        [
+          "seqstore-ingress"
+        ],
+        [
+          "seqstore-redpanda-0",
+          "seqstore-redpanda-1",
+          "seqstore-redpanda-2"
+        ]
+      ]
+    },
+    "details": {
+      "groups": [
+        [
+          "seqstore-ingress"
+        ],
+        [
+          "seqstore-redpanda-0",
+          "seqstore-redpanda-1",
+          "seqstore-redpanda-2"
+        ]
+      ],
+      "ips": {
+        "seqstore-ingress": "172.16.0.32",
+        "seqstore-redpanda-0": "172.16.0.29",
+        "seqstore-redpanda-1": "172.16.0.30",
+        "seqstore-redpanda-2": "172.16.0.31"
+      },
+      "chain": "tartarus-s08-part-ingress-rp",
+      "network": "kt-pos",
+      "algorithm": "explicit groups",
+      "coverage": "IPv4 between the named containers across the docker bridge (iptables FORWARD, requires br_netfilter); IPv6 and non-bridged paths are not cut"
+    },
+    "observed": {
+      "chain": "tartarus-s08-part-ingress-rp",
+      "coverage": "IPv4 between the named containers across the docker bridge (iptables FORWARD, requires br_netfilter); IPv6 and non-bridged paths are not cut",
+      "dropped_packets": 1,
+      "expected_rules": 6,
+      "forward_jump": true,
+      "network": "kt-pos",
+      "rules": 6
+    },
+    "instances": [
+      {
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-10T22:39:07.292903024Z",
+        "recovered_at": "2026-09-10T22:40:07.6402513Z",
+        "restored": {
+          "chain": "tartarus-s08-part-ingress-rp",
+          "chain_present": false,
+          "forward_jump": false
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "seqstore-ingress",
+        "container_id": "549b5bc82d208b30f4a357e5af365416e6f52885b56f77b53d34b557daaf8728",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.32",
+            "mac": "d2:b6:fc:ce:7f:23"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36233
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36233
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36235
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36235
+          }
+        ],
+        "captured_at": "2026-09-10T22:39:07.079738337Z"
+      },
+      {
+        "node": "seqstore-redpanda-0",
+        "container_id": "8404ea408901ad7986b960be0ca4429a6ec146ff6362ac66ffb923159767b8f9",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.29",
+            "mac": "22:86:f7:11:8b:7f"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "0.0.0.0",
+            "host_port": 36242
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "::",
+            "host_port": 36242
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "0.0.0.0",
+            "host_port": 36243
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "::",
+            "host_port": 36243
+          }
+        ],
+        "captured_at": "2026-09-10T22:39:07.079738337Z"
+      },
+      {
+        "node": "seqstore-redpanda-1",
+        "container_id": "d8bda7b782bb660a6a8d8913350c815d610345fe8a6275ea2d4bf1a2e79d0fe5",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.30",
+            "mac": "72:df:f8:db:a6:6c"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "0.0.0.0",
+            "host_port": 36239
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "::",
+            "host_port": 36239
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "0.0.0.0",
+            "host_port": 36241
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "::",
+            "host_port": 36241
+          }
+        ],
+        "captured_at": "2026-09-10T22:39:07.079738337Z"
+      },
+      {
+        "node": "seqstore-redpanda-2",
+        "container_id": "22644fc26fe66a75217413f5101d2079fc30bb7fb04b53794595b63cc1a1ffe2",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.31",
+            "mac": "4a:d2:b5:54:2e:32"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "0.0.0.0",
+            "host_port": 36096
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "::",
+            "host_port": 36096
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "0.0.0.0",
+            "host_port": 36097
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "::",
+            "host_port": 36097
+          }
+        ],
+        "captured_at": "2026-09-10T22:39:07.079738337Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "seqstore-ingress",
+        "container_id": "549b5bc82d208b30f4a357e5af365416e6f52885b56f77b53d34b557daaf8728",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.32",
+            "mac": "d2:b6:fc:ce:7f:23"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36233
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36233
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36235
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36235
+          }
+        ],
+        "captured_at": "2026-09-10T22:40:07.640291873Z"
+      },
+      {
+        "node": "seqstore-redpanda-0",
+        "container_id": "8404ea408901ad7986b960be0ca4429a6ec146ff6362ac66ffb923159767b8f9",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.29",
+            "mac": "22:86:f7:11:8b:7f"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "0.0.0.0",
+            "host_port": 36242
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "::",
+            "host_port": 36242
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "0.0.0.0",
+            "host_port": 36243
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "::",
+            "host_port": 36243
+          }
+        ],
+        "captured_at": "2026-09-10T22:40:07.640291873Z"
+      },
+      {
+        "node": "seqstore-redpanda-1",
+        "container_id": "d8bda7b782bb660a6a8d8913350c815d610345fe8a6275ea2d4bf1a2e79d0fe5",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.30",
+            "mac": "72:df:f8:db:a6:6c"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "0.0.0.0",
+            "host_port": 36239
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "::",
+            "host_port": 36239
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "0.0.0.0",
+            "host_port": 36241
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "::",
+            "host_port": 36241
+          }
+        ],
+        "captured_at": "2026-09-10T22:40:07.640291873Z"
+      },
+      {
+        "node": "seqstore-redpanda-2",
+        "container_id": "22644fc26fe66a75217413f5101d2079fc30bb7fb04b53794595b63cc1a1ffe2",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.31",
+            "mac": "4a:d2:b5:54:2e:32"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "0.0.0.0",
+            "host_port": 36096
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9092,
+            "host_ip": "::",
+            "host_port": 36096
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "0.0.0.0",
+            "host_port": 36097
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9644,
+            "host_ip": "::",
+            "host_port": 36097
+          }
+        ],
+        "captured_at": "2026-09-10T22:40:07.640291873Z"
+      }
+    ]
+  },
+  "error": null,
+  "warnings": []
+}

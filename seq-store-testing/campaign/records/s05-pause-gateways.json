@@ -1,0 +1,325 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "s05-pause-gateways",
+    "format_version": 2,
+    "kind": "pause",
+    "state": "completed",
+    "started_at": "2026-09-10T22:28:52.693366242Z",
+    "applied_at": "2026-09-10T22:28:52.843831043Z",
+    "verified_at": "2026-09-10T22:28:52.88815684Z",
+    "stopped_at": "2026-09-10T22:29:53.141528805Z",
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 3
+    },
+    "targets": [
+      "seqstore-gateway-0",
+      "seqstore-gateway-1",
+      "seqstore-gateway-2"
+    ],
+    "params": {
+      "node": ""
+    },
+    "observed": {
+      "seqstore-gateway-0": {
+        "node": "seqstore-gateway-0",
+        "status": "paused"
+      },
+      "seqstore-gateway-1": {
+        "node": "seqstore-gateway-1",
+        "status": "paused"
+      },
+      "seqstore-gateway-2": {
+        "node": "seqstore-gateway-2",
+        "status": "paused"
+      }
+    },
+    "instances": [
+      {
+        "target": "seqstore-gateway-0",
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-10T22:28:52.754624459Z",
+        "recovered_at": "2026-09-10T22:29:53.112854777Z",
+        "restored": {
+          "node": "seqstore-gateway-0",
+          "status": "running"
+        }
+      },
+      {
+        "target": "seqstore-gateway-1",
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-10T22:28:52.810307952Z",
+        "recovered_at": "2026-09-10T22:29:53.062634261Z",
+        "restored": {
+          "node": "seqstore-gateway-1",
+          "status": "running"
+        }
+      },
+      {
+        "target": "seqstore-gateway-2",
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-10T22:28:52.84367813Z",
+        "recovered_at": "2026-09-10T22:29:52.999396687Z",
+        "restored": {
+          "node": "seqstore-gateway-2",
+          "status": "running"
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "seqstore-gateway-0",
+        "container_id": "24e12a3c9571bdf35437f1bf8b669472809b2cb43e1298d2b7ee82bc2611cb61",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.36",
+            "mac": "52:de:b9:35:98:e3"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36108
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36108
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36109
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36109
+          }
+        ],
+        "captured_at": "2026-09-10T22:28:52.65794435Z"
+      },
+      {
+        "node": "seqstore-gateway-1",
+        "container_id": "4315b669878237e86e806149d66bdc00c560ab13c08cc542c007c301b45ff0bc",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.33",
+            "mac": "ee:48:33:b7:7e:09"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36110
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36110
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36111
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36111
+          }
+        ],
+        "captured_at": "2026-09-10T22:28:52.65794435Z"
+      },
+      {
+        "node": "seqstore-gateway-2",
+        "container_id": "f018d22ae39edfb9ceec17f13495f5f539a466de43bfdc47ab2c077640999d20",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.34",
+            "mac": "12:e8:bf:25:d2:71"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36105
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36105
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36106
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36106
+          }
+        ],
+        "captured_at": "2026-09-10T22:28:52.65794435Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "seqstore-gateway-0",
+        "container_id": "24e12a3c9571bdf35437f1bf8b669472809b2cb43e1298d2b7ee82bc2611cb61",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.36",
+            "mac": "52:de:b9:35:98:e3"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36108
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36108
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36109
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36109
+          }
+        ],
+        "captured_at": "2026-09-10T22:29:53.112859375Z"
+      },
+      {
+        "node": "seqstore-gateway-1",
+        "container_id": "4315b669878237e86e806149d66bdc00c560ab13c08cc542c007c301b45ff0bc",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.33",
+            "mac": "ee:48:33:b7:7e:09"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36110
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36110
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36111
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36111
+          }
+        ],
+        "captured_at": "2026-09-10T22:29:53.112859375Z"
+      },
+      {
+        "node": "seqstore-gateway-2",
+        "container_id": "f018d22ae39edfb9ceec17f13495f5f539a466de43bfdc47ab2c077640999d20",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.34",
+            "mac": "12:e8:bf:25:d2:71"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36105
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36105
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36106
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36106
+          }
+        ],
+        "captured_at": "2026-09-10T22:29:53.112859375Z"
+      }
+    ]
+  },
+  "error": null,
+  "warnings": []
+}

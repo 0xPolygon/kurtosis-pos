@@ -1,0 +1,274 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "h02-pause-own-cl",
+    "format_version": 2,
+    "kind": "pause",
+    "note": "h02: in-turn producer's heimdall frozen (timeouts); compare with p08 kill (instant failover) and h01 partition",
+    "state": "completed",
+    "started_at": "2026-09-14T22:17:07.553618764Z",
+    "started_at_unix": 1789424227,
+    "applied_at": "2026-09-14T22:17:07.594527039Z",
+    "applied_at_unix": 1789424227,
+    "verified_at": "2026-09-14T22:17:07.606058286Z",
+    "verified_at_unix": 1789424227,
+    "stopped_at": "2026-09-14T22:18:37.682394113Z",
+    "stopped_at_unix": 1789424317,
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 1
+    },
+    "targets": [
+      "l2-cl-3-heimdall-v2-bor-validator"
+    ],
+    "params": {
+      "node": "l2-cl-3-heimdall-v2-bor-validator"
+    },
+    "observed": {
+      "node": "l2-cl-3-heimdall-v2-bor-validator",
+      "status": "paused"
+    },
+    "instances": [
+      {
+        "target": "l2-cl-3-heimdall-v2-bor-validator",
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-14T22:17:07.594310316Z",
+        "recovered_at": "2026-09-14T22:18:37.671672067Z",
+        "restored": {
+          "node": "l2-cl-3-heimdall-v2-bor-validator",
+          "status": "running"
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "container_id": "03bcf91b3afbb51e1bdd776841dc8e3fa4ca3bcaeb6947e9bed8044d8e76dba8",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.45",
+            "mac": "96:b6:4b:fe:95:8a"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "0.0.0.0",
+            "host_port": 36339
+          },
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "::",
+            "host_port": 36339
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "0.0.0.0",
+            "host_port": 36341
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "::",
+            "host_port": 36341
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "0.0.0.0",
+            "host_port": 36343
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "::",
+            "host_port": 36343
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "0.0.0.0",
+            "host_port": 36344
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "::",
+            "host_port": 36344
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "0.0.0.0",
+            "host_port": 36345
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "::",
+            "host_port": 36345
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "0.0.0.0",
+            "host_port": 36346
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "::",
+            "host_port": 36346
+          }
+        ],
+        "captured_at": "2026-09-14T22:17:07.543353907Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "container_id": "03bcf91b3afbb51e1bdd776841dc8e3fa4ca3bcaeb6947e9bed8044d8e76dba8",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.45",
+            "mac": "96:b6:4b:fe:95:8a"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "0.0.0.0",
+            "host_port": 36339
+          },
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "::",
+            "host_port": 36339
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "0.0.0.0",
+            "host_port": 36341
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "::",
+            "host_port": 36341
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "0.0.0.0",
+            "host_port": 36343
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "::",
+            "host_port": 36343
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "0.0.0.0",
+            "host_port": 36344
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "::",
+            "host_port": 36344
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "0.0.0.0",
+            "host_port": 36345
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "::",
+            "host_port": 36345
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "0.0.0.0",
+            "host_port": 36346
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "::",
+            "host_port": 36346
+          }
+        ],
+        "captured_at": "2026-09-14T22:18:37.671678306Z"
+      }
+    ],
+    "observations": [
+      {
+        "at": "2026-09-14T22:17:22.618514827Z",
+        "at_unix": 1789424242,
+        "observed": {
+          "node": "l2-cl-3-heimdall-v2-bor-validator",
+          "status": "paused"
+        }
+      },
+      {
+        "at": "2026-09-14T22:17:37.621023302Z",
+        "at_unix": 1789424257,
+        "observed": {
+          "node": "l2-cl-3-heimdall-v2-bor-validator",
+          "status": "paused"
+        }
+      },
+      {
+        "at": "2026-09-14T22:17:52.618516555Z",
+        "at_unix": 1789424272,
+        "observed": {
+          "node": "l2-cl-3-heimdall-v2-bor-validator",
+          "status": "paused"
+        }
+      },
+      {
+        "at": "2026-09-14T22:18:07.606692844Z",
+        "at_unix": 1789424287,
+        "observed": {
+          "node": "l2-cl-3-heimdall-v2-bor-validator",
+          "status": "paused"
+        }
+      },
+      {
+        "at": "2026-09-14T22:18:22.618513583Z",
+        "at_unix": 1789424302,
+        "observed": {
+          "node": "l2-cl-3-heimdall-v2-bor-validator",
+          "status": "paused"
+        }
+      }
+    ]
+  },
+  "error": null,
+  "warnings": []
+}

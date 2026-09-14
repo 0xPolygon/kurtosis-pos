@@ -1,0 +1,161 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "s06-kill-envoy",
+    "format_version": 2,
+    "kind": "kill",
+    "state": "completed",
+    "started_at": "2026-09-10T22:32:25.129993173Z",
+    "applied_at": "2026-09-10T22:32:25.662004078Z",
+    "verified_at": "2026-09-10T22:32:25.680007112Z",
+    "stopped_at": "2026-09-10T22:33:11.107959391Z",
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 1
+    },
+    "params": {
+      "node": "seqstore-gateway"
+    },
+    "observed": {
+      "node": "seqstore-gateway",
+      "signal": "KILL",
+      "status": "exited",
+      "verified": true
+    },
+    "instances": [
+      {
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-10T22:32:25.661849278Z",
+        "recovered_at": "2026-09-10T22:33:11.097386534Z",
+        "restored": {
+          "container_id": "626b2774c1e7acf676a9c7d6fd6f8bf7f7da8b78ed4b8891524b72beeb4accbf",
+          "node": "seqstore-gateway",
+          "status": "running"
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "seqstore-gateway",
+        "container_id": "626b2774c1e7acf676a9c7d6fd6f8bf7f7da8b78ed4b8891524b72beeb4accbf",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.37",
+            "mac": "e2:98:a6:59:18:ad"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36112
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36112
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9901,
+            "host_ip": "0.0.0.0",
+            "host_port": 36113
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9901,
+            "host_ip": "::",
+            "host_port": 36113
+          }
+        ],
+        "captured_at": "2026-09-10T22:32:25.120004047Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "seqstore-gateway",
+        "container_id": "626b2774c1e7acf676a9c7d6fd6f8bf7f7da8b78ed4b8891524b72beeb4accbf",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.37",
+            "mac": "a2:40:ce:12:eb:ef"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36244
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36244
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9901,
+            "host_ip": "0.0.0.0",
+            "host_port": 36245
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9901,
+            "host_ip": "::",
+            "host_port": 36245
+          }
+        ],
+        "captured_at": "2026-09-10T22:33:11.097392612Z"
+      }
+    ],
+    "endpoint_changes": [
+      {
+        "node": "seqstore-gateway",
+        "change": "port_changed",
+        "before": "9550/tcp -\u003e 0.0.0.0:36112",
+        "after": "9550/tcp -\u003e 0.0.0.0:36244"
+      },
+      {
+        "node": "seqstore-gateway",
+        "change": "port_changed",
+        "before": "9550/tcp -\u003e :::36112",
+        "after": "9550/tcp -\u003e :::36244"
+      },
+      {
+        "node": "seqstore-gateway",
+        "change": "port_changed",
+        "before": "9901/tcp -\u003e 0.0.0.0:36113",
+        "after": "9901/tcp -\u003e 0.0.0.0:36245"
+      },
+      {
+        "node": "seqstore-gateway",
+        "change": "port_changed",
+        "before": "9901/tcp -\u003e :::36113",
+        "after": "9901/tcp -\u003e :::36245"
+      }
+    ]
+  },
+  "error": null,
+  "warnings": [
+    "endpoint changed: seqstore-gateway: port_changed 9550/tcp -\u003e 0.0.0.0:36112 -\u003e 9550/tcp -\u003e 0.0.0.0:36244",
+    "endpoint changed: seqstore-gateway: port_changed 9550/tcp -\u003e :::36112 -\u003e 9550/tcp -\u003e :::36244",
+    "endpoint changed: seqstore-gateway: port_changed 9901/tcp -\u003e 0.0.0.0:36113 -\u003e 9901/tcp -\u003e 0.0.0.0:36245",
+    "endpoint changed: seqstore-gateway: port_changed 9901/tcp -\u003e :::36113 -\u003e 9901/tcp -\u003e :::36245"
+  ]
+}

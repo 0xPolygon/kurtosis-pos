@@ -1,0 +1,144 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "s11-netem-gateway",
+    "format_version": 2,
+    "kind": "netem-latency",
+    "state": "completed",
+    "started_at": "2026-09-10T22:47:07.948977391Z",
+    "applied_at": "2026-09-10T22:47:08.031648419Z",
+    "verified_at": "2026-09-10T22:47:08.037598956Z",
+    "stopped_at": "2026-09-10T22:48:38.116780518Z",
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 1
+    },
+    "params": {
+      "node": "seqstore-gateway",
+      "delay": "400ms",
+      "jitter": "50ms"
+    },
+    "details": {
+      "veth": "veth575ee38",
+      "ifindex": 16927,
+      "handle": "f71b:",
+      "iface": "eth0",
+      "network": "kt-pos",
+      "coverage": "host-side veth egress: delays traffic toward the container; the container's own outbound traffic is not shaped"
+    },
+    "observed": {
+      "coverage": "host-side veth egress: delays traffic toward the container; the container's own outbound traffic is not shaped",
+      "delay": "400ms",
+      "handle": "f71b:",
+      "jitter": "50ms",
+      "loss_percent": 0,
+      "node": "seqstore-gateway",
+      "qdisc": "qdisc netem f71b: root refcnt 33 limit 1000 delay 400ms  50ms seed 3994189164462299793",
+      "veth": "veth575ee38"
+    },
+    "instances": [
+      {
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-10T22:47:08.030868066Z",
+        "recovered_at": "2026-09-10T22:48:38.096707383Z",
+        "restored": {
+          "handle": "f71b:",
+          "qdisc": "qdisc noqueue 0: root refcnt 2",
+          "veth": "veth575ee38"
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "seqstore-gateway",
+        "container_id": "626b2774c1e7acf676a9c7d6fd6f8bf7f7da8b78ed4b8891524b72beeb4accbf",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.37",
+            "mac": "a2:40:ce:12:eb:ef"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36244
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36244
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9901,
+            "host_ip": "0.0.0.0",
+            "host_port": 36245
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9901,
+            "host_ip": "::",
+            "host_port": 36245
+          }
+        ],
+        "captured_at": "2026-09-10T22:47:07.913368208Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "seqstore-gateway",
+        "container_id": "626b2774c1e7acf676a9c7d6fd6f8bf7f7da8b78ed4b8891524b72beeb4accbf",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.37",
+            "mac": "a2:40:ce:12:eb:ef"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "0.0.0.0",
+            "host_port": 36244
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9550,
+            "host_ip": "::",
+            "host_port": 36244
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9901,
+            "host_ip": "0.0.0.0",
+            "host_port": 36245
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9901,
+            "host_ip": "::",
+            "host_port": 36245
+          }
+        ],
+        "captured_at": "2026-09-10T22:48:38.096734722Z"
+      }
+    ]
+  },
+  "error": null,
+  "warnings": []
+}

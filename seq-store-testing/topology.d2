@@ -1,0 +1,310 @@
+# Topology of the `pos` enclave as deployed from robust-seqstore.yml.
+# Boxes are roles with multiplicity, not one box per container. Arrows are
+# labeled with the protocol and the port the target listens on inside the
+# enclave. Render:  ./render-topology.sh   (uses the terrastruct/d2 image,
+# writes topology.svg and topology.png)
+
+direction: down
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 0
+  }
+}
+
+classes: {
+  tier: {
+    style: {
+      stroke-dash: 3
+      stroke: "#8a8f98"
+      fill: "#fbfbfc"
+      font-size: 20
+      bold: true
+    }
+  }
+  role: {
+    style: {
+      stroke: "#5b6270"
+      fill: "#ffffff"
+      border-radius: 6
+      font-size: 14
+    }
+  }
+  bor: {
+    style: {
+      fill: "#e9f2ff"
+      stroke: "#3b6fb6"
+      border-radius: 6
+      font-size: 14
+    }
+  }
+  heimdall: {
+    style: {
+      fill: "#eaf7ec"
+      stroke: "#3f8f4e"
+      border-radius: 6
+      font-size: 14
+    }
+  }
+  seq: {
+    style: {
+      fill: "#fff3e3"
+      stroke: "#c4791c"
+      border-radius: 6
+      font-size: 14
+    }
+  }
+  edge: {
+    style: {
+      fill: "#f3eaff"
+      stroke: "#7a4bb8"
+      border-radius: 6
+      font-size: 14
+    }
+  }
+  obs: {
+    style: {
+      fill: "#f1f1f1"
+      stroke: "#777777"
+      border-radius: 6
+      font-size: 14
+    }
+  }
+  external: {
+    style: {
+      fill: "#ffffff"
+      stroke: "#333333"
+      stroke-dash: 5
+      border-radius: 6
+      font-size: 14
+    }
+  }
+  p2p: {
+    style: {
+      stroke: "#5b6270"
+      stroke-dash: 4
+      font-size: 12
+    }
+  }
+  scrape: {
+    style: {
+      stroke: "#999999"
+      stroke-dash: 2
+      font-size: 12
+    }
+  }
+  flow: {
+    style: {
+      stroke: "#c4791c"
+      stroke-width: 2
+      font-size: 12
+    }
+  }
+  ctl: {
+    style: {
+      stroke: "#3f8f4e"
+      font-size: 12
+    }
+  }
+  rpc: {
+    style: {
+      stroke: "#7a4bb8"
+      font-size: 12
+    }
+  }
+}
+
+title: |md
+  # kurtosis enclave `pos` -- robust-seqstore.yml
+  3 block producers, 4 witness-sync validators, 2 RPC nodes, 3-broker sequence store
+| {
+  near: top-center
+}
+
+operator: {
+  class: external
+  label: "operator\ncast / polycli / bootstrap.sh\n(host, via kurtosis port mappings)"
+}
+
+l1: {
+  class: tier
+  label: "L1  Ethereum devnet  (chain 3151908)"
+  geth: {
+    class: role
+    label: "el-1-geth-lighthouse\n[geth]\nrpc 8545 / engine 8551"
+  }
+  lighthouse: {
+    class: role
+    label: "cl-1-lighthouse-geth\n[lighthouse beacon]"
+  }
+  vc: {
+    class: role
+    label: "vc-1-geth-lighthouse\n[lighthouse validator client]"
+  }
+  lighthouse -> geth: "engine API 8551" {class: ctl}
+  vc -> lighthouse: "beacon API 4000" {class: ctl}
+}
+
+l2: {
+  class: tier
+  label: "L2  Polygon PoS  (bor 4927 / heimdall-4927)   image bor:b56ff74a4, heimdall-v2:0.11.0"
+
+  producers: {
+    class: role
+    label: "block producers  x3\nl2-el-{1,2,3}-bor-heimdall-v2-validator\nl2-cl-{1,2,3}-heimdall-v2-bor-validator"
+    style.multiple: true
+    bor: {
+      class: bor
+      label: "bor\n[miner]  full sync\nproduce_witness\n[sequencer] publisher"
+    }
+    heimdall: {
+      class: heimdall
+      label: "heimdall-v2\nvalidator, in producer_votes"
+    }
+    rabbitmq: {
+      class: role
+      label: "rabbitmq\namqp 5672"
+    }
+    heimdall <-> bor: "spans, milestones, checkpoints\ngRPC 3131 / HTTP 8545  <->  HTTP 1317 / WS 26657" {class: ctl}
+    heimdall -> rabbitmq: "AMQP (bridge queue)" {class: ctl}
+  }
+
+  witness: {
+    class: role
+    label: "witness-sync validators  x4\nl2-el-{4..7}-bor-heimdall-v2-validator\nl2-cl-{4..7}-heimdall-v2-bor-validator"
+    style.multiple: true
+    bor: {
+      class: bor
+      label: "bor\nsyncmode stateless\nsyncwithwitnesses, no miner\nno txpool, no [sequencer]"
+    }
+    heimdall: {
+      class: heimdall
+      label: "heimdall-v2\nvalidator, NOT in producer_votes\nstakes + signs checkpoints"
+    }
+    rabbitmq: {
+      class: role
+      label: "rabbitmq\namqp 5672"
+    }
+    heimdall <-> bor: "gRPC 3131 / HTTP 8545  <->  HTTP 1317 / WS 26657" {class: ctl}
+    heimdall -> rabbitmq: "AMQP" {class: ctl}
+  }
+
+  rpc_archive: {
+    class: role
+    label: "archive RPC  x1\nl2-el-8-bor-heimdall-v2-rpc-archive\nl2-cl-8-heimdall-v2-bor-rpc-archive"
+    bor: {
+      class: bor
+      label: "bor\narchive, full history\n[sequencer] consumer\n[relay] enable-preconfs"
+    }
+    heimdall: {
+      class: heimdall
+      label: "heimdall-v2\nnon-validating"
+    }
+    heimdall <-> bor: "gRPC 3131 / HTTP 8545  <->  HTTP 1317 / WS 26657" {class: ctl}
+  }
+
+  rpc: {
+    class: role
+    label: "RPC  x1\nl2-el-9-bor-heimdall-v2-rpc\nl2-cl-9-heimdall-v2-bor-rpc"
+    bor: {
+      class: bor
+      label: "bor\nfull node, pruned\n[sequencer] consumer\n[relay] enable-preconfs"
+    }
+    heimdall: {
+      class: heimdall
+      label: "heimdall-v2\nnon-validating"
+    }
+    heimdall <-> bor: "gRPC 3131 / HTTP 8545  <->  HTTP 1317 / WS 26657" {class: ctl}
+  }
+
+  producers.bor <-> witness.bor: "devp2p 30303\nblocks + witnesses" {class: p2p}
+  producers.heimdall <-> witness.heimdall: "CometBFT p2p 26656" {class: p2p}
+
+  p2p_note: |md
+    **peering (most edges omitted)**
+
+    - every bor peers with every bor, devp2p 30303
+    - every heimdall with every heimdall, CometBFT 26656
+    - only producer <-> witness is drawn
+  |
+}
+
+seqstore: {
+  class: tier
+  label: "sequence store   image seqstore:a49a7dc"
+
+  ingress: {
+    class: seq
+    label: "seqstore-ingress\ngRPC 9550 / ops 9600\ntransactional producer"
+  }
+  redpanda: {
+    class: seq
+    label: "seqstore-redpanda-{0,1,2}\n[redpanda v26.2.2]\nkafka 9092, rf=3, min.insync=2"
+    style.multiple: true
+  }
+  gateway_lb: {
+    class: seq
+    label: "seqstore-gateway\n[envoy v1.39.1]\ngRPC 9550, per-stream LB\nhealth: gateway /ready"
+  }
+  gateways: {
+    class: seq
+    label: "seqstore-gateway-{0,1,2}\ngRPC 9550 / ops 9600\nindependent followers"
+    style.multiple: true
+  }
+  auditor: {
+    class: seq
+    label: "seqstore-auditor\nops 9600\nsupersession evidence"
+  }
+
+  ingress -> redpanda: "Kafka produce\n(txn, 3s timeout)" {class: flow}
+  redpanda -> gateways: "Kafka consume" {class: flow}
+  redpanda -> auditor: "Kafka consume" {class: flow}
+  gateway_lb -> gateways: "gRPC 9550" {class: flow}
+}
+
+edge: {
+  class: tier
+  label: "RPC edge"
+  nginx: {
+    class: edge
+    label: "nginx\nHTTP 8545, least_conn\nupstreams: non-stateless bor only\n(el-1,2,3,8,9)"
+  }
+}
+
+observability: {
+  class: tier
+  label: "observability"
+  prometheus: {
+    class: obs
+    label: "prometheus\n9090, 1s scrape"
+  }
+  grafana: {
+    class: obs
+    label: "grafana\n3000"
+  }
+  grafana -> prometheus: "PromQL" {class: scrape}
+  scrape_note: |md
+    **prometheus scrapes (edges omitted), 1s**
+
+    - bor 7071, heimdall 26660
+    - seqstore ops 9600, redpanda 9644, envoy 9901
+  |
+}
+
+# --- cross-tier flows -------------------------------------------------------
+
+l2.producers.bor -> seqstore.ingress: "publish block lifecycle\ngRPC 9550" {class: flow}
+seqstore.gateway_lb -> l2.rpc_archive.bor: "Stream (long-lived)\ngRPC 9550" {class: flow}
+seqstore.gateway_lb -> l2.rpc.bor: "Stream (long-lived)\ngRPC 9550" {class: flow}
+
+l1.geth <- l2.producers.heimdall: "checkpoints, state-sync events\nHTTP 8545" {class: ctl}
+l1.geth <- l2.witness.heimdall: "checkpoint sigs, events\nHTTP 8545" {class: ctl}
+
+edge.nginx -> l2.producers.bor: "HTTP 8545" {class: rpc}
+edge.nginx -> l2.rpc_archive.bor: "HTTP 8545" {class: rpc}
+edge.nginx -> l2.rpc.bor: "HTTP 8545" {class: rpc}
+
+operator -> edge.nginx: "load tests\nJSON-RPC" {class: rpc}
+operator -> l2.rpc_archive.bor: "bootstrap.sh, preconf tests\nJSON-RPC (single node)" {class: rpc}
+

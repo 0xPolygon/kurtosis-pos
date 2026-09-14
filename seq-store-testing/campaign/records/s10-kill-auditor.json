@@ -1,0 +1,123 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "s10-kill-auditor",
+    "format_version": 2,
+    "kind": "kill",
+    "state": "completed",
+    "started_at": "2026-09-10T22:45:12.073930587Z",
+    "applied_at": "2026-09-10T22:45:12.587847761Z",
+    "verified_at": "2026-09-10T22:45:12.617450488Z",
+    "stopped_at": "2026-09-10T22:45:58.09029063Z",
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 1
+    },
+    "params": {
+      "node": "seqstore-auditor"
+    },
+    "observed": {
+      "node": "seqstore-auditor",
+      "signal": "KILL",
+      "status": "exited",
+      "verified": true
+    },
+    "instances": [
+      {
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-10T22:45:12.587551183Z",
+        "recovered_at": "2026-09-10T22:45:58.078763134Z",
+        "restored": {
+          "container_id": "0808ab13dc6c604bb32f3c321bc4cc6074637264c4e9b96546fe8739a10732de",
+          "node": "seqstore-auditor",
+          "status": "running"
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "seqstore-auditor",
+        "container_id": "0808ab13dc6c604bb32f3c321bc4cc6074637264c4e9b96546fe8739a10732de",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.35",
+            "mac": "a6:41:bc:85:c5:91"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36107
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36107
+          }
+        ],
+        "captured_at": "2026-09-10T22:45:12.065183963Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "seqstore-auditor",
+        "container_id": "0808ab13dc6c604bb32f3c321bc4cc6074637264c4e9b96546fe8739a10732de",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.35",
+            "mac": "76:1e:1d:44:6b:db"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "0.0.0.0",
+            "host_port": 36246
+          },
+          {
+            "proto": "tcp",
+            "container_port": 9600,
+            "host_ip": "::",
+            "host_port": 36246
+          }
+        ],
+        "captured_at": "2026-09-10T22:45:58.078770859Z"
+      }
+    ],
+    "endpoint_changes": [
+      {
+        "node": "seqstore-auditor",
+        "change": "port_changed",
+        "before": "9600/tcp -\u003e 0.0.0.0:36107",
+        "after": "9600/tcp -\u003e 0.0.0.0:36246"
+      },
+      {
+        "node": "seqstore-auditor",
+        "change": "port_changed",
+        "before": "9600/tcp -\u003e :::36107",
+        "after": "9600/tcp -\u003e :::36246"
+      }
+    ]
+  },
+  "error": null,
+  "warnings": [
+    "endpoint changed: seqstore-auditor: port_changed 9600/tcp -\u003e 0.0.0.0:36107 -\u003e 9600/tcp -\u003e 0.0.0.0:36246",
+    "endpoint changed: seqstore-auditor: port_changed 9600/tcp -\u003e :::36107 -\u003e 9600/tcp -\u003e :::36246"
+  ]
+}

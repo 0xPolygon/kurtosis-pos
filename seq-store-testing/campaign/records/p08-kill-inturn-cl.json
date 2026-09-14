@@ -1,0 +1,313 @@
+{
+  "schema_version": "tartarus.cli/v1",
+  "command": "fault.run",
+  "ok": true,
+  "data": {
+    "id": "p08-kill-inturn-cl",
+    "format_version": 2,
+    "kind": "kill",
+    "state": "completed",
+    "started_at": "2026-09-10T23:20:48.706850102Z",
+    "applied_at": "2026-09-10T23:20:49.859160281Z",
+    "verified_at": "2026-09-10T23:20:49.883440812Z",
+    "stopped_at": "2026-09-10T23:21:50.370722398Z",
+    "seed": 0,
+    "cluster": {
+      "kind": "kurtosis",
+      "enclave": "pos",
+      "enclave_uuid": "dc502af3dae74b078f0a9512d61c3c35",
+      "node_count": 1
+    },
+    "params": {
+      "node": "l2-cl-3-heimdall-v2-bor-validator"
+    },
+    "observed": {
+      "node": "l2-cl-3-heimdall-v2-bor-validator",
+      "signal": "KILL",
+      "status": "exited",
+      "verified": true
+    },
+    "instances": [
+      {
+        "apply": "applied",
+        "recovery": "recovered",
+        "applied_at": "2026-09-10T23:20:49.858901708Z",
+        "recovered_at": "2026-09-10T23:21:50.358349911Z",
+        "restored": {
+          "container_id": "03bcf91b3afbb51e1bdd776841dc8e3fa4ca3bcaeb6947e9bed8044d8e76dba8",
+          "node": "l2-cl-3-heimdall-v2-bor-validator",
+          "status": "running"
+        }
+      }
+    ],
+    "targets_before": [
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "container_id": "03bcf91b3afbb51e1bdd776841dc8e3fa4ca3bcaeb6947e9bed8044d8e76dba8",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.45",
+            "mac": "82:ef:f6:0a:d6:a4"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "0.0.0.0",
+            "host_port": 36129
+          },
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "::",
+            "host_port": 36129
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "0.0.0.0",
+            "host_port": 36130
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "::",
+            "host_port": 36130
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "0.0.0.0",
+            "host_port": 36131
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "::",
+            "host_port": 36131
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "0.0.0.0",
+            "host_port": 36132
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "::",
+            "host_port": 36132
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "0.0.0.0",
+            "host_port": 36133
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "::",
+            "host_port": 36133
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "0.0.0.0",
+            "host_port": 36134
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "::",
+            "host_port": 36134
+          }
+        ],
+        "captured_at": "2026-09-10T23:20:48.697822548Z"
+      }
+    ],
+    "targets_after": [
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "container_id": "03bcf91b3afbb51e1bdd776841dc8e3fa4ca3bcaeb6947e9bed8044d8e76dba8",
+        "status": "running",
+        "networks": [
+          {
+            "name": "kt-pos",
+            "id": "357f877f2764c85d01bed9ce2093dccb9c44f8957666ea04c43050c940da724d",
+            "ipv4": "172.16.0.45",
+            "mac": "d2:f0:2b:c4:55:83"
+          }
+        ],
+        "ports": [
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "0.0.0.0",
+            "host_port": 36293
+          },
+          {
+            "proto": "tcp",
+            "container_port": 1317,
+            "host_ip": "::",
+            "host_port": 36293
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "0.0.0.0",
+            "host_port": 36294
+          },
+          {
+            "proto": "tcp",
+            "container_port": 3132,
+            "host_ip": "::",
+            "host_port": 36294
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "0.0.0.0",
+            "host_port": 36295
+          },
+          {
+            "proto": "tcp",
+            "container_port": 6060,
+            "host_ip": "::",
+            "host_port": 36295
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "0.0.0.0",
+            "host_port": 36296
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26656,
+            "host_ip": "::",
+            "host_port": 36296
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "0.0.0.0",
+            "host_port": 36297
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26657,
+            "host_ip": "::",
+            "host_port": 36297
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "0.0.0.0",
+            "host_port": 36298
+          },
+          {
+            "proto": "tcp",
+            "container_port": 26660,
+            "host_ip": "::",
+            "host_port": 36298
+          }
+        ],
+        "captured_at": "2026-09-10T23:21:50.358354383Z"
+      }
+    ],
+    "endpoint_changes": [
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "1317/tcp -\u003e 0.0.0.0:36129",
+        "after": "1317/tcp -\u003e 0.0.0.0:36293"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "1317/tcp -\u003e :::36129",
+        "after": "1317/tcp -\u003e :::36293"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "26656/tcp -\u003e 0.0.0.0:36132",
+        "after": "26656/tcp -\u003e 0.0.0.0:36296"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "26656/tcp -\u003e :::36132",
+        "after": "26656/tcp -\u003e :::36296"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "26657/tcp -\u003e 0.0.0.0:36133",
+        "after": "26657/tcp -\u003e 0.0.0.0:36297"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "26657/tcp -\u003e :::36133",
+        "after": "26657/tcp -\u003e :::36297"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "26660/tcp -\u003e 0.0.0.0:36134",
+        "after": "26660/tcp -\u003e 0.0.0.0:36298"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "26660/tcp -\u003e :::36134",
+        "after": "26660/tcp -\u003e :::36298"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "3132/tcp -\u003e 0.0.0.0:36130",
+        "after": "3132/tcp -\u003e 0.0.0.0:36294"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "3132/tcp -\u003e :::36130",
+        "after": "3132/tcp -\u003e :::36294"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "6060/tcp -\u003e 0.0.0.0:36131",
+        "after": "6060/tcp -\u003e 0.0.0.0:36295"
+      },
+      {
+        "node": "l2-cl-3-heimdall-v2-bor-validator",
+        "change": "port_changed",
+        "before": "6060/tcp -\u003e :::36131",
+        "after": "6060/tcp -\u003e :::36295"
+      }
+    ]
+  },
+  "error": null,
+  "warnings": [
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 1317/tcp -\u003e 0.0.0.0:36129 -\u003e 1317/tcp -\u003e 0.0.0.0:36293",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 1317/tcp -\u003e :::36129 -\u003e 1317/tcp -\u003e :::36293",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 26656/tcp -\u003e 0.0.0.0:36132 -\u003e 26656/tcp -\u003e 0.0.0.0:36296",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 26656/tcp -\u003e :::36132 -\u003e 26656/tcp -\u003e :::36296",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 26657/tcp -\u003e 0.0.0.0:36133 -\u003e 26657/tcp -\u003e 0.0.0.0:36297",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 26657/tcp -\u003e :::36133 -\u003e 26657/tcp -\u003e :::36297",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 26660/tcp -\u003e 0.0.0.0:36134 -\u003e 26660/tcp -\u003e 0.0.0.0:36298",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 26660/tcp -\u003e :::36134 -\u003e 26660/tcp -\u003e :::36298",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 3132/tcp -\u003e 0.0.0.0:36130 -\u003e 3132/tcp -\u003e 0.0.0.0:36294",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 3132/tcp -\u003e :::36130 -\u003e 3132/tcp -\u003e :::36294",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 6060/tcp -\u003e 0.0.0.0:36131 -\u003e 6060/tcp -\u003e 0.0.0.0:36295",
+    "endpoint changed: l2-cl-3-heimdall-v2-bor-validator: port_changed 6060/tcp -\u003e :::36131 -\u003e 6060/tcp -\u003e :::36295"
+  ]
+}
