@@ -71,7 +71,7 @@ Tartarus after the 2026-09-14 update (check `tartarus fault kinds`): kinds are `
 Rules learned the hard way:
 
 - tartarus ids are `[A-Za-z0-9_-]`, **max 64 chars** (was 19); the wrapper refuses longer ones.
-- A `kill`/`stop` of `l2-cl-8-heimdall-v2-bor-rpc-archive` or `l2-cl-9-heimdall-v2-bor-rpc` leaves them dead: their container command re-runs `heimdalld init` and exits on "genesis.json file already exists" (finding H5 in `seq-store-testing/campaign/HEIMDALL-MATRIX.md`). Validator heimdalls restart fine. Until the launcher is fixed, do not include cl-8/cl-9 in restart faults, and point REST probes (`hport` in `lib.sh`) at a validator heimdall.
+- Enclaves deployed before 2026-09-14: a `kill`/`stop` of `l2-cl-8-heimdall-v2-bor-rpc-archive` or `l2-cl-9-heimdall-v2-bor-rpc` left them dead (their command re-ran `heimdalld init`; finding H5 in `seq-store-testing/campaign/HEIMDALL-MATRIX.md`). Fixed in `src/cl/heimdall_v2/launcher.star` and verified; on older enclaves keep cl-8/cl-9 out of restart faults and point REST probes (`hport` in `lib.sh`) at a validator heimdall.
 - A producer partitioned from heimdall during its turn wedges (H2); plan a recorded restart (`--kind stop --for 5s`) after such episodes and check `eth_syncing`/`whitelist-no-remote` before the next one.
 - Wait for the right point in the span: `head` vs `(head/128+1)*128` decides whether a hold crosses a boundary; the h04/h05 episodes show the wait loop.
 - Re-read ports after any kill (Kurtosis republishes on restart); the probe does so every 15 s.

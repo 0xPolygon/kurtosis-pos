@@ -119,14 +119,15 @@ def launch(
                     "cp /opt/data/genesis/genesis.json {}/config/".format(
                         shared.CONFIG_FOLDER_PATH
                     ),
-                    # Auto-generate node keys (no pre-generated validator keys for rpc/archive nodes).
-                    "heimdalld init {} --home /tmp/init-data".format(cl_node_name),
-                    "cp /tmp/init-data/config/node_key.json /tmp/init-data/config/priv_validator_key.json {}/config/".format(
-                        shared.CONFIG_FOLDER_PATH
-                    ),
                     "mkdir -p {}/data".format(shared.CONFIG_FOLDER_PATH),
-                    "cp /tmp/init-data/data/priv_validator_state.json {}/data/priv_validator_state.json".format(
-                        shared.CONFIG_FOLDER_PATH
+                    # Auto-generate node keys (no pre-generated validator keys for rpc/archive nodes).
+                    # Guarded so a container restart reuses the keys generated on first start:
+                    # `heimdalld init` refuses to run when /tmp/init-data already holds a genesis
+                    # ("genesis.json file already exists") and would abort the whole chain before
+                    # `heimdalld start`, leaving the node dead after any restart. The guard also
+                    # keeps the node id stable and never overwrites priv_validator_state.json.
+                    "(test -f {cfg}/config/node_key.json || (heimdalld init {name} --home /tmp/init-data && cp /tmp/init-data/config/node_key.json /tmp/init-data/config/priv_validator_key.json {cfg}/config/ && cp /tmp/init-data/data/priv_validator_state.json {cfg}/data/priv_validator_state.json))".format(
+                        cfg=shared.CONFIG_FOLDER_PATH, name=cl_node_name
                     ),
                     # Heimdall-v2 requires that the `round` property of priv_validator_state.json be of type int32.
                     'sed -i \'s/"round": "\\([0-9]*\\)"/"round": \\1/\' {}/data/priv_validator_state.json'.format(
