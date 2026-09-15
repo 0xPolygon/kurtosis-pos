@@ -33,7 +33,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | lighthouse     | [8.2.2](https://github.com/sigp/lighthouse/releases/tag/v8.2.2)          | [8.2.2](https://github.com/sigp/lighthouse/releases/tag/v8.2.2)          | ✅ matches stable |
 | panoptichain   | [7.0.1](https://github.com/0xPolygon/panoptichain/releases/tag/v7.0.1)   | [7.0.1](https://github.com/0xPolygon/panoptichain/releases/tag/v7.0.1)   | ✅ matches stable |
 | prometheus     | [3.14.0](https://github.com/prometheus/prometheus/releases/tag/v3.14.0)  | [3.14.0](https://github.com/prometheus/prometheus/releases/tag/v3.14.0)  | ✅ matches stable |
-| rabbitmq       | [4.3.5](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.5) | [4.3.5](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.5) | ✅ matches stable |
+| rabbitmq       | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6) | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6) | ✅ matches stable |
 | redpanda       | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | ✅ matches stable |
 | status-checker | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | ✅ matches stable |
 
