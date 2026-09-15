@@ -1,0 +1,72 @@
+# Envoy front for the sequence-store gateway pool. gRPC-aware: each HTTP/2
+# stream (one gRPC call) is balanced independently, so unary reads round-robin
+# across the pool while long-lived streams pin to the gateway they landed on.
+# Health checks probe each gateway's ops-port /ready (false while replaying at
+# boot or when the lag guard trips), and STRICT_DNS re-resolves the pool so a
+# restarted gateway rejoins under its new IP. Stream and route timeouts are
+# disabled: the consumer's Stream RPC is long-lived by design.
+admin:
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: {{ .AdminPort }}
+static_resources:
+  listeners:
+    - name: grpc
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: {{ .GrpcPort }}
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: seqstore_gateway
+                codec_type: AUTO
+                stream_idle_timeout: 0s
+                route_config:
+                  name: gateways
+                  virtual_hosts:
+                    - name: gateways
+                      domains: ["*"]
+                      routes:
+                        - match:
+                            prefix: "/"
+                          route:
+                            cluster: gateways
+                            timeout: 0s
+                            idle_timeout: 0s
+                http_filters:
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+  clusters:
+    - name: gateways
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      typed_extension_protocol_options:
+        envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+          "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+          explicit_http_config:
+            http2_protocol_options: {}
+      health_checks:
+        - timeout: 2s
+          interval: 2s
+          unhealthy_threshold: 2
+          healthy_threshold: 1
+          http_health_check:
+            path: "/ready"
+      load_assignment:
+        cluster_name: gateways
+        endpoints:
+          - lb_endpoints:
+              {{- range .Gateways }}
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: {{ . }}
+                      port_value: {{ $.GrpcPort }}
+                  health_check_config:
+                    port_value: {{ $.OpsPort }}
+              {{- end }}

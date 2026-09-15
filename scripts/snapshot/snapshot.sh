@@ -326,17 +326,33 @@ add_network_aliases() {
 configure_service_dependencies() {
   local docker_compose_file="$1"
 
-  # L2: CL (validator) depends on its paired RabbitMQ.
-  # L2: CL (rpc/archive) depends on a validator CL — forces RPCs to start AFTER validators
-  # are healthy, so Docker's embedded DNS has registered every l2-cl-* alias by the time
-  # cometBFT on the RPC tries to resolve persistent_peers. Without this, RPC nodes hit
-  # "server misbehaving" DNS errors at startup, never retry, and stay peerless forever.
+  # L2: CL (validator) does NOT depend on its paired RabbitMQ.
+  # Heimdall's bridge connector panics with a SIGSEGV if the AMQP endpoint is
+  # not yet reachable (bridge/queue.NewQueueConnector nil-deref). With
+  # `restart: unless-stopped` (set by add_restart_policy below), heimdall
+  # crashes once at startup, restarts ~2s later, and rabbit is up by then.
+  # This race-start saves ~6s that the old `depends_on: service_healthy`
+  # chain spent waiting on rabbit's start_period.
+  #
+  # L2: CL (rpc/archive) DOES depend on a validator CL — forces RPCs to start
+  # AFTER the validator's container is up, so Docker's embedded DNS has
+  # registered every l2-cl-* alias by the time cometBFT on the RPC tries to
+  # resolve persistent_peers. Without this, RPC nodes hit "server
+  # misbehaving" DNS errors at startup, never retry, and stay peerless
+  # forever.
+  #
+  # We use `service_started` rather than `service_healthy` here: heimdall's
+  # first-boot panic (nil-deref in cometbft buildLastCommitInfoFromStore)
+  # makes the validator transiently `unhealthy` even though
+  # `restart: unless-stopped` heals it within a second or two. With
+  # `service_healthy`, `docker compose up` itself aborts the moment the
+  # validator goes unhealthy. `service_started` only blocks until the
+  # validator container exists; restore.sh's poll loop handles the rest.
   yq --in-place --yaml-output \
     --arg enclave_name "$enclave_name" '
         (.services | keys) as $all_services |
-        # Find a reference validator CL (the one paired with rabbitmq-1 if available, else any with a rabbitmq)
+        # Find a reference validator CL (any with a rabbitmq sibling)
         ([$all_services[] | select(test("^" + $enclave_name + "-l2-cl-[0-9]+-") and (test("rabbitmq") | not))
-          | . as $cl
           | (capture("^" + $enclave_name + "-l2-cl-(?<idx>[0-9]+)-")) as $m
           | select($all_services | index($enclave_name + "-l2-cl-" + $m.idx + "-rabbitmq"))
          ] | .[0]) as $ref_validator_cl |
@@ -345,15 +361,23 @@ configure_service_dependencies() {
                 (.key | capture("^" + $enclave_name + "-l2-cl-(?<idx>[0-9]+)-")) as $match |
                 ($enclave_name + "-l2-cl-" + $match.idx + "-rabbitmq") as $rmq |
                 if ($all_services | index($rmq)) then
-                    .value.depends_on = {($rmq): {"condition": "service_healthy"}}
+                    # Has its own rabbitmq → this is a validator. No depends_on,
+                    # rely on restart: unless-stopped to recover from the race.
+                    del(.value.depends_on)
                 elif $ref_validator_cl != null and .key != $ref_validator_cl then
-                    .value.depends_on = {($ref_validator_cl): {"condition": "service_healthy"}}
+                    # No rabbitmq sibling → this is rpc/archive. Keep the
+                    # dependency on a validator-CL for DNS warm-up.
+                    .value.depends_on = {($ref_validator_cl): {"condition": "service_started"}}
                 else . end
             else . end
         )
     ' "$docker_compose_file"
 
-  # L2: EL depends on CL with matching index
+  # L2: EL depends on CL with matching index. Bor talks to heimdall at
+  # startup; without this dependency they can hit DNS-misbehaving errors
+  # before heimdall registers its alias. Same `service_started` rationale as
+  # above — heimdall may transiently flap during first boot, and bor has its
+  # own retry loop for heimdall RPC anyway.
   yq --in-place --yaml-output \
     --arg enclave_name "$enclave_name" '
         (.services | keys) as $all_services |
@@ -361,7 +385,7 @@ configure_service_dependencies() {
             if .key | test("^" + $enclave_name + "-l2-el-[0-9]+-") then
                 (.key | capture("^" + $enclave_name + "-l2-el-(?<idx>[0-9]+)-")) as $match |
                 ($all_services[] | select((test("^" + $enclave_name + "-l2-cl-" + $match.idx + "-")) and (test("rabbitmq") | not))) as $cl_service |
-                .value.depends_on = {($cl_service): {"condition": "service_healthy"}}
+                .value.depends_on = {($cl_service): {"condition": "service_started"}}
             else . end
         )
     ' "$docker_compose_file"
@@ -370,14 +394,28 @@ configure_service_dependencies() {
 add_health_checks() {
   local docker_compose_file="$1"
 
-  # RabbitMQ health check
+  # All probes use start_interval=250ms (Docker 25+) so the first probe fires
+  # ~250ms after container start instead of waiting for `interval`. This is
+  # the dominant lever for restore time — without it each `depends_on:
+  # service_healthy` link in the chain rabbitmq → heimdall → bor burns ~5s
+  # of slack on top of actual service boot. 250ms is the sweet spot: fast
+  # enough that no link burns measurable slack, slow enough that we don't
+  # hammer the JSON-RPC probes on bor during start_period.
+  #
+  # `interval` is the steady-state probe cadence after the container is
+  # already healthy — it does not affect restore. Keep it at 5s for cheap
+  # long-running devnets.
+
+  # RabbitMQ health check — /dev/tcp probe (1ms) instead of `rabbitmqctl
+  # status` which spins up an Erlang VM each call (~0.9s).
   yq --in-place --yaml-output \
     --arg enclave_name "$enclave_name" '
         .services |= with_entries(
             if .key | test("^" + $enclave_name + "-l2-cl-[0-9]+-rabbitmq") then
                 .value.healthcheck = {
-                    "test": ["CMD", "rabbitmqctl", "status"],
+                    "test": ["CMD-SHELL", "bash -c \"exec 3<>/dev/tcp/localhost/5672 && exec 3>&-\""],
                     "interval": "5s",
+                    "start_interval": "250ms",
                     "timeout": "10s",
                     "retries": 5,
                     "start_period": "10s"
@@ -394,6 +432,7 @@ add_health_checks() {
                 .value.healthcheck = {
                     "test": ["CMD", "wget", "--spider", "-q", "-T", "5", "http://localhost:1317/bor/spans/latest"],
                     "interval": "5s",
+                    "start_interval": "250ms",
                     "timeout": "10s",
                     "retries": 10,
                     "start_period": "20s"
@@ -410,6 +449,7 @@ add_health_checks() {
                 .value.healthcheck = {
                     "test": ["CMD-SHELL", "wget --quiet --timeout=5 --post-data=\"{\\\"method\\\":\\\"eth_blockNumber\\\",\\\"params\\\":[],\\\"id\\\":1,\\\"jsonrpc\\\":\\\"2.0\\\"}\" --header=\"Content-Type: application/json\" --output-document=- http://localhost:8545 | grep -q result"],
                     "interval": "5s",
+                    "start_interval": "250ms",
                     "timeout": "10s",
                     "retries": 12,
                     "start_period": "30s"
@@ -440,6 +480,22 @@ configure_ports() {
             if (.key | test("^" + $enclave_name + "-el-[0-9]+-")) and (.key | test("-l2-") | not) then
                 (.key | capture("^" + $enclave_name + "-el-(?<idx>[0-9]+)-")) as $match |
                 .value.ports = [(($match.idx | tonumber) + 8545 - 1 | tostring) + ":8545"]
+            else . end
+        )
+    ' "$docker_compose_file"
+
+  # L1 EL via `l1_backend: anvil` - the single `anvil` service stands in for
+  # `el-1-geth-lighthouse` and serves the same JSON-RPC on 8545, but its name
+  # carries no `-el-N-` segment so the L1 EL block above skips it, leaving the
+  # published compose with no host binding for anvil. Bind it to host 8545 to
+  # match the geth mapping. anvil and el-1-geth-lighthouse are mutually
+  # exclusive (one L1 backend per enclave), so this is a no-op under the
+  # ethereum-package backend.
+  yq --in-place --yaml-output \
+    --arg enclave_name "$enclave_name" '
+        .services |= with_entries(
+            if .key | test("^" + $enclave_name + "-anvil") then
+                .value.ports = ["8545:8545"]
             else . end
         )
     ' "$docker_compose_file"
@@ -498,12 +554,14 @@ make_heimdall_commands_idempotent() {
     ' "$docker_compose_file"
 }
 
-# Add restart: on-failure to all services so transient startup races (Docker DNS not yet
-# warmed, dependency container still booting) recover automatically instead of leaving
-# a dead container that needs manual intervention.
+# Add restart: unless-stopped to all services. Heimdall validator panics with a
+# nil-deref when it can't reach rabbitmq AMQP at startup, and container-proc-manager
+# swallows the panic to exit code 0 — so `on-failure` (which only restarts on
+# non-zero exits) wouldn't fire. `unless-stopped` restarts on any exit and lets
+# the validator self-heal once rabbit is up.
 add_restart_policy() {
   local docker_compose_file="$1"
-  yq --in-place --yaml-output '.services[] |= (.restart = "on-failure")' "$docker_compose_file"
+  yq --in-place --yaml-output '.services[] |= (.restart = "unless-stopped")' "$docker_compose_file"
 }
 
 # Strip the Polygon-private GAR cache prefix from image references.
@@ -625,6 +683,36 @@ wait_for_checkpoint_quiescence() {
 log_info "Waiting for heimdall's checkpoint ack_count to catch up with L1"
 wait_for_checkpoint_quiescence "$enclave_name"
 
+# Persist the anvil L1 backend's post-deploy state into the snapshot. anvil
+# boots `--load-state /opt/anvil/genesis.json --dump-state /tmp/state_dump.json`
+# (src/l1/anvil.star): /tmp is not captured, AND anvil writes that dump only on
+# SIGINT (not the SIGTERM the stop sequence below sends) — so without
+# intervention the deployed L1 contracts and checkpoint state are lost on
+# restore and the restored devnet comes up on bare genesis. Capture the live
+# state via the `anvil_dumpState` RPC and bake it into the snapshot IMAGE as
+# /anvil-state.hex (the same image-file bake contractAddresses.json uses — a
+# `docker cp` into the live /opt/anvil files-artifact volume does NOT survive
+# volume capture). restore.sh replays it via `anvil_loadState`. Captured after
+# quiescence so it's consistent with heimdall's acked checkpoints. No-op under
+# the ethereum-package L1 backend, which has no anvil service.
+anvil_state_tmp=""
+anvil_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null || true)
+if [[ -n "$anvil_rpc_url" ]]; then
+  log_info "Capturing anvil L1 state via ${anvil_rpc_url} (anvil_dumpState)"
+  anvil_state_tmp=$(mktemp)
+  # `jq -j` (not -r): emit the hex with NO trailing newline. restore.sh splices
+  # the file contents straight into a JSON string, so a trailing newline would
+  # produce an invalid anvil_loadState request body.
+  curl -fsSL -X POST -H 'Content-Type: application/json' \
+    --data '{"jsonrpc":"2.0","method":"anvil_dumpState","params":[],"id":1}' \
+    "$anvil_rpc_url" | jq -j '.result // empty' > "$anvil_state_tmp"
+  if [[ "$(wc -c < "$anvil_state_tmp")" -lt 100 ]]; then
+    log_error "anvil_dumpState returned an unexpectedly short result ($(wc -c < "$anvil_state_tmp") bytes)"
+    exit 1
+  fi
+  log_info "Captured $(wc -c < "$anvil_state_tmp") bytes of anvil state for /anvil-state.hex"
+fi
+
 # Extract kurtosis file artifacts that post-restore e2e tests need.
 # `kurtosis files inspect` only works on a live enclave, so we have to grab
 # them now and ship them inside the snapshot image alongside the volumes and
@@ -635,7 +723,7 @@ wait_for_checkpoint_quiescence "$enclave_name"
 #     (L2_STATE_RECEIVER_ADDRESS, used by state-sync helpers).
 contract_addresses_tmp=$(mktemp)
 l2_genesis_tmp=$(mktemp)
-trap "rm -f '$contract_addresses_tmp' '$l2_genesis_tmp'" EXIT
+trap "rm -f '$contract_addresses_tmp' '$l2_genesis_tmp' '$anvil_state_tmp'" EXIT
 log_info "Extracting kurtosis file artifacts"
 # kurtosis files inspect prepends a "File contents:" banner. Strip everything
 # before the first '{' and re-format with jq so the output is canonical JSON.
@@ -697,6 +785,10 @@ log_info "Backups completed"
 # Move the previously-extracted file artifacts into the snapshot tree.
 mv "$contract_addresses_tmp" "$tmp_dir/contractAddresses.json"
 mv "$l2_genesis_tmp" "$tmp_dir/l2-genesis.json"
+# Stage the captured anvil state (anvil backend only) for baking into the image.
+if [[ -n "$anvil_state_tmp" ]]; then
+  mv "$anvil_state_tmp" "$tmp_dir/anvil-state.hex"
+fi
 
 log_info "Generating docker-compose"
 docker_compose_file_path="$tmp_dir/docker-compose.yaml"
@@ -715,6 +807,11 @@ COPY docker-compose.yaml /docker-compose.yaml
 COPY contractAddresses.json /contractAddresses.json
 COPY l2-genesis.json /l2-genesis.json
 EOF
+# Bake the captured anvil L1 state (anvil backend only) so restore.sh can
+# replay it; absent under the ethereum-package backend.
+if [[ -f "anvil-state.hex" ]]; then
+  echo "COPY anvil-state.hex /anvil-state.hex" >> "Dockerfile"
+fi
 # Build the docker image
 image_name="pos-devnet"
 docker build --tag "$image_name" .

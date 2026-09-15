@@ -106,6 +106,15 @@ def launch(
                     "el_block_interval_seconds": network_params.get(
                         "el_block_interval_seconds"
                     ),
+                    "use_sequence_store": participant.get("el_bor_use_sequence_store"),
+                    "sequence_store_publisher_endpoint": "{}:{}".format(
+                        constants.SEQSTORE_INGRESS_SERVICE_NAME,
+                        constants.SEQSTORE_GRPC_PORT_NUMBER,
+                    ),
+                    "sequence_store_consumer_endpoint": "{}:{}".format(
+                        constants.SEQSTORE_GATEWAY_SERVICE_NAME,
+                        constants.SEQSTORE_GRPC_PORT_NUMBER,
+                    ),
                     "ethstats_server_secret": ethstats_server_secret,
                     # relay (private tx)
                     "accept_private_tx": accept_private_tx,

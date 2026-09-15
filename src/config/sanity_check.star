@@ -32,6 +32,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_extra_args",  # Escape hatch: extra bor CLI flags appended to `bor server` (override config.toml).
         "cl_failover",  # Pass every CL endpoint to bor's [heimdall].url so MultiHeimdallClient cascades on failure.
         "cl_bor_rpc_urls",  # Comma-separated bor RPC URL list for heimdall app.toml bor_rpc_url (>= 2 = #605 failover). Empty = single default endpoint.
+        "el_bor_use_sequence_store",  # Render bor's [sequencer] section against the enclave sequence store.
         "count",
     ],
     "setup_images": [
@@ -78,6 +79,13 @@ POLYGON_POS_PARAMS = {
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
         for field in dir(constants.ADDITIONAL_SERVICES)
+    ],
+    "sequence_store_params": [
+        "image",
+        "redpanda_image",
+        "redpanda_count",
+        "gateway_count",
+        "envoy_image",
     ],
     "status_checker_params": [
         "image",
@@ -173,6 +181,13 @@ def sanity_check_polygon_args(plan, input_args):
 
     cl_environment = network_params.get("cl_environment")
     _validate_cl_environment(cl_environment)
+
+    # The parser already rejects store params without an opted-in participant;
+    # here we validate the counts themselves.
+    sequence_store_params = input_args.get("sequence_store_params", {})
+    if sequence_store_params:
+        _validate_strictly_positive_int(sequence_store_params, "redpanda_count")
+        _validate_strictly_positive_int(sequence_store_params, "gateway_count")
 
     # Make sure status checker params are defined only if the status checker is deployed.
     additional_services = input_args.get("additional_services", [])
@@ -430,7 +445,15 @@ def _validate_str(input, attribute, allowed_values):
 
 def _validate_strictly_positive_int(input, attribute):
     value = input.get(attribute)
-    if value == 0:
+    if value == None:
+        return
+    if type(value) != "int":
+        fail(
+            'Invalid "{}": must be an integer, got {}: {}.'.format(
+                attribute, type(value), repr(value)
+            )
+        )
+    if value <= 0:
         fail(
             'Invalid "{}": must be strictly positive, got: {}.'.format(attribute, value)
         )

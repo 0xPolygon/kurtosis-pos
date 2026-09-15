@@ -1,12 +1,12 @@
 participants:
   - count: 1
     cl_type: lighthouse
-    cl_image: sigp/lighthouse:v8.1.3
+    cl_image: sigp/lighthouse:v8.2.2
     el_type: geth
-    el_image: ethereum/client-go:v1.17.3
+    el_image: ethereum/client-go:v1.17.5
     use_separate_vc: true
     vc_type: lighthouse
-    vc_image: sigp/lighthouse:v8.1.3
+    vc_image: sigp/lighthouse:v8.2.2
     supernode: True
 
 network_params:

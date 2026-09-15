@@ -1,4 +1,14 @@
 polygon_pos_package:
+  # Opt the validator into the sequence store so CI exercises the store stack
+  # (redpanda, ingress, gateway, auditor) and bor's rendered [sequencer]
+  # section. Stock bor ignores that section; actual publishing/consuming needs
+  # an EL image built from bor's sequencer publisher branch.
+  participants:
+    - kind: validator
+      # Parity with the default single-node config, which enables archive
+      # mode on the validator.
+      el_bor_archive_mode: true
+      el_bor_use_sequence_store: true
   additional_services:
     # - blockscout
     - bridge_spammer
@@ -6,3 +16,8 @@ polygon_pos_package:
     - observability
     - status_checker
     - tx_spammer
+  sequence_store_params:
+    # No release tags exist yet on 0xPolygon/sequence-store, so pin to the
+    # develop-branch tag. The GHCR package is internal: CI can pull it only
+    # if the package grants this repository read access.
+    image: ghcr.io/0xpolygon/sequence-store:dev

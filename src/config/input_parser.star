@@ -68,6 +68,12 @@ ETHEREUM_PACKAGE_ARGS = {
         "deneb_fork_epoch": 1,
         "electra_fork_epoch": 2,
         "fulu_fork_epoch": 3,  # Requires a supernode or perfect PeerDAS to be enabled.
+        # Blob parameter only (BPO) forks bump the blob target/max. They require Fulu, so
+        # every bpo_*_epoch must be >= fulu_fork_epoch. The ethereum package defaults them
+        # to epoch 0, which is before our Fulu activation, so we schedule them explicitly:
+        # both activate with Fulu. BPO 3 to 5 stay disabled, as in the ethereum package defaults.
+        "bpo_1_epoch": 3,
+        "bpo_2_epoch": 3,
     },
     "persistent": True,
 }
@@ -122,6 +128,7 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     # bor's MultiHeimdallClient cascades when the primary fails. See
     # src/el_cl_launcher.star pass 2.
     "cl_failover": False,
+    "el_bor_use_sequence_store": False,
 }
 
 POLYGON_POS_PACKAGE_ARGS = {
@@ -181,6 +188,14 @@ POLYGON_POS_PACKAGE_ARGS = {
         "phuket_fork_block": constants.CL_HARD_FORK_BLOCKS.get("phuket"),
     },
     "additional_services": [],
+}
+
+SEQUENCE_STORE_ARGS = {
+    "image": constants.SEQSTORE_DEFAULT_IMAGE,
+    "redpanda_image": constants.IMAGES.get("seqstore_redpanda_image"),
+    "redpanda_count": 1,
+    "gateway_count": 1,
+    "envoy_image": constants.IMAGES.get("seqstore_envoy_image"),
 }
 
 STATUS_CHECKER_ARGS = {
@@ -296,6 +311,15 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     ethstats_server_params = polygon_pos_args.get("ethstats_server_params", {})
     result["ethstats_server_params"] = _parse_ethstats_server_params(
         is_ethstats_server_deployed, ethstats_server_params
+    )
+
+    # The sequence store is deployed iff any participant opts into it.
+    is_sequence_store_deployed = any(
+        [p.get("el_bor_use_sequence_store") for p in result["participants"]]
+    )
+    sequence_store_params = polygon_pos_args.get("sequence_store_params", {})
+    result["sequence_store_params"] = _parse_sequence_store_params(
+        is_sequence_store_deployed, sequence_store_params
     )
 
     # Sanity check and return the result.
@@ -419,6 +443,29 @@ def _parse_additional_services(additional_services):
     if len(additional_services) == 0:
         additional_services = POLYGON_POS_PACKAGE_ARGS.get("additional_services", [])
     return additional_services
+
+
+def _parse_sequence_store_params(is_sequence_store_deployed, sequence_store_params):
+    # Store params without a participant opting in would be silently dead
+    # config, most likely a mistake.
+    if not is_sequence_store_deployed:
+        if sequence_store_params:
+            fail(
+                "`sequence_store_params` requires at least one participant with `el_bor_use_sequence_store: true`."
+            )
+        return {}
+
+    # Create a mutable copy of sequence_store_params.
+    if sequence_store_params:
+        sequence_store_params = dict(sequence_store_params)
+    else:
+        sequence_store_params = {}
+
+    for k, v in SEQUENCE_STORE_ARGS.items():
+        sequence_store_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(sequence_store_params)
 
 
 def _parse_status_checker_params(is_status_checker_deployed, status_checker_params):

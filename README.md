@@ -34,6 +34,10 @@ Step-by-step guides for working with devnets in Kurtosis.
 - [Run bridge tests](./docs/docs/guides/run-bridge-tests.md)
 - [Partial devnet redeploy](./docs/docs/guides/partial-devnet-redeploy.md)
 
+### [Version Matrix](./docs/docs/version-matrix.md)
+
+The versions of every component the package deploys, compared against the latest upstream releases.
+
 ### [Architecture](./docs/docs/configuration/overview.md)
 
 This section will give you an overview of how the package works.

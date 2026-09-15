@@ -107,6 +107,18 @@ For each `(job, phase)` pair, the report shows:
 Sample count is shown so a new phase or a fresh repo (few main runs) is
 visibly under-baselined rather than silently noisy.
 
+## Failure semantics
+
+- A job that fails mid-run still uploads whatever phases it completed
+  (the perf action runs `if: always()`); a job that fails before any phase
+  completes uploads an artifact with an empty phases list. Either way the
+  env shows up in the report as `n/a ❌` for the missing phases instead of
+  being dropped from the tables.
+- Job reruns upload a same-named artifact once per attempt, and the GitHub
+  run-level artifact listing returns all of them. `perf-report.yaml` keeps
+  only the newest (highest artifact id) per name so a failed attempt's
+  partial upload can't shadow the rerun's complete one.
+
 ## Why not Datadog?
 
 The artifact-based path is self-contained: no secret rotation, no API key,

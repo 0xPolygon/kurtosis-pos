@@ -5,9 +5,7 @@ prefunded_accounts_module = import_module("../prefunded_accounts/accounts.star")
 wait = import_module("../wait/wait.star")
 
 
-ETHEREUM_PACKAGE = (
-    "github.com/ethpandaops/ethereum-package/main.star@6.1.0"  # 2026-04-02
-)
+ETHEREUM_PACKAGE = "github.com/ethpandaops/ethereum-package/main.star"  # Version pinned in kurtosis.yml
 
 # Canonical EIP-2470 / arachnid CREATE2 deployer. Pre-allocated on L1 for the
 # same reason it's pre-allocated on L2 Bor (see static_files/el/genesis/builder.sh):

@@ -257,3 +257,14 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   # el_bor_private_tx_bp_endpoints on the participant.
   bp-rpc-endpoints = {{ .bp_rpc_endpoints_toml }}
 {{- end }}
+{{- if .use_sequence_store }}
+{{/* Sequence-store preconfirmations (publisher v2): validators publish the
+     block lifecycle to the store ingress, RPC nodes follow the gateway
+     stream for preconf receipts — the role derives inside bor from the
+     sealer flag. Requires an EL image built from the publisher v2 branch. */}}
+[sequencer]
+  enabled = true
+  publisher-endpoint = "{{ .sequence_store_publisher_endpoint }}"
+  consumer-endpoint = "{{ .sequence_store_consumer_endpoint }}"
+  poll = "100ms"
+{{- end }}
