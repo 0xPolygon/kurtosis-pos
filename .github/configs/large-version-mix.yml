@@ -45,8 +45,9 @@ polygon_pos_package:
       el_image: 0xpolygon/bor:2.6.0
 
     # Bor archive node
-    - kind: archive
+    - kind: rpc
       count: 1
+      el_bor_archive_mode: true
       cl_type: heimdall-v2
       el_type: bor
       el_image: 0xpolygon/bor:2.6.3

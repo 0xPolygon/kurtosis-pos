@@ -30,8 +30,9 @@
 
 polygon_pos_package:
   participants:
-    - kind: archive
+    - kind: rpc
       count: 1
+      el_bor_archive_mode: true
       cl_type: heimdall-v2
       el_type: bor
       el_image: 0xpolygon/bor:2.7.0-beta
@@ -66,14 +67,18 @@ dev:
       cl_type: heimdall-v2
       el_type: bor
       el_image: 0xpolygon/bor:2.7.0-beta
+    # Formerly an erigon RPC node. Erigon EL support was removed, but the slot
+    # is kept (now bor) so every participant after it keeps its original index
+    # and P2P identity, per the note above.
     - kind: rpc
       count: 1
       el_bor_sync_with_witness: false
       cl_type: heimdall-v2
-      el_type: erigon
-      el_image: 0xpolygon/erigon:v3.5.0-beta2
-    - kind: archive
+      el_type: bor
+      el_image: 0xpolygon/bor:2.7.0-beta
+    - kind: rpc
       count: 1
+      el_bor_archive_mode: true
       cl_type: heimdall-v2
       el_type: bor
       el_image: 0xpolygon/bor:2.7.0-beta
