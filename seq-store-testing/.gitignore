@@ -20,6 +20,8 @@ topology.png
 # campaign write-ups and fault evidence stay local (internal findings)
 campaign/CAMPAIGN.md
 campaign/HEIMDALL-MATRIX.md
+campaign/PRECONF-CAMPAIGN.md
 campaign/tartarus-feedback.md
 campaign/*summary-table.md
 campaign/records/
+campaign/keys-*.txt

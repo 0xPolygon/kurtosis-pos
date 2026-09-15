@@ -194,6 +194,28 @@ Any result materially worse than these is a regression; any result better on s05
 
 ---
 
+## Transaction-level preconf oracle, cold start, flapping (2026-09-15, `campaign/PRECONF-CAMPAIGN.md`)
+
+The chain-level oracle cannot see whether a *preconfirmation* was honored. `campaign/preconf-oracle.sh <label> <rate> <conc> [rpc-service]` sends counter() calls with `--wait-for-receipt` so the first receipt the consumer serves (preconf: `blockHash` null, `preconfirmation: true`) is recorded with its counter log topic and block; `campaign/preconf-check.py <jsonl> [--since --until]` classifies every tx against el-8 as ok / moved / mismatch / mismatch-nologs (polycli timeout, no receipt) / missing. `campaign/shadow-el9.sh <src jsonl> <label>` polls el-9 for hashes that entered at another node (what a consumer client saw) and `campaign/shadow-check.py` joins them. `pc_episode` in `lib.sh` = `episode` + a preconf check of the window. Baseline at 20 tx/s: 97 % of receipts are preconfs, p50 ~100 ms, 0 problems. Use disjoint key files when two senders run (`campaign/keys-oracle.txt` / `keys-heavy.txt`, first/last 5000 of `private-keys.txt`); polycli logs its JSON on **stderr**.
+
+Results to regress against:
+
+| test | outcome |
+| --- | --- |
+| ingress paused 60 s (c01), gateways paused 60 s (c04), gateway-0 flapped 30x (f01), ingress flapped 20x (f02) | 0 wrong receipts; preconf share drops to 50-80 % for the duration; no goroutine/fd growth on ingress, gateways, producers, consumers; envoy re-homes consumer streams |
+| in-turn producer partitioned from bor peers, load entering at el-9 only (c02) | 0 wrong receipts, but the fork carried no tx: the partition cuts gossip, so this test proves nothing about fork transactions |
+| same with 10 tx/s entering at the isolated producer (c02b) | **P1**: el-9 served 90 preconfs from the fork whose receipts differed from what sealed (fallback re-included the txs in a different order); 0 dropped |
+| all heimdalls paused 60 s early in a span (c03b) | **P2**: producer sealed 11 orphan blocks after the freeze; el-9 imported 10 over p2p and rewound; 148 el-9 receipts invalidated (126 store preconfs, 22 sealed) |
+| same but freeze landing in the last blocks of the span (c03) | clean: nothing orphaned. Timing relative to the span boundary decides the outcome; wait for span start + 10 before this fault |
+| cold start (k01, k02b-cold) | ingress replays ~370k entries/s, ready in ~1 s; gateway ready in ~2 s and evicts during replay |
+| gateway memory (k02, k02b) | window capped by `-window-bytes` (256 MB default), eviction drops whole generations to a ~78 % low-water mark identically on all gateways; RSS ~3x window bytes (~800 MB at the default cap); window time coverage = cap / ingest rate |
+
+Growing the store fast needs bytes, not tx count: use `HEAVY_CALLDATA_BYTES=4096 campaign/k02b.sh 200 20` (gas must cover EIP-7623 floor data gas, 40000 + 45/byte). `campaign/flap.sh <svc> <label> <cycles> <down> <gap>` runs a flapping loop with one tartarus record per cycle; `campaign/leakmon.sh <label>` samples goroutines/fds/RSS every 10 s (bor via `pidof bor` inside the container, not PID 1); `campaign/coldstart.sh <svc> <label>` times a restart to `*_ready=1`.
+
+Harness rules added: never `pkill -f` / `pgrep -f` a pattern that also appears in your own command line (use `pgrep -x`, PID files, or `/proc/<pid>/cmdline` checks); kill/launch in separate commands.
+
+---
+
 ## Bor <-> heimdall connectivity matrix (2026-09-14, `campaign/HEIMDALL-MATRIX.md`)
 
 What decides the outcome is the failure *mode*, not the component:

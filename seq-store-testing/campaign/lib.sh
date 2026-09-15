@@ -121,3 +121,15 @@ episode() {
   done
   echo "--- active faults: $(tartarus fault list | jq -c '[.data.records[].id]')"
 }
+
+# pc_episode ID [episode args...] -- <tartarus args>
+#   episode + preconf verification of the window [started_at-30s, now] against el-8.
+pc_episode() {
+  local id="$1"
+  episode "$@"
+  local started; started=$(jq -r '.data.started_at // empty' "$CAMPAIGN_DIR/records/$id.json")
+  [[ -n "$started" ]] || return 0
+  local since; since=$(date -u -d "$(date -u -d "$started" +%s | awk '{print $1-30}' | xargs -I{} date -u -d @{} +%FT%TZ)" +%FT%TZ)
+  echo "--- preconf check window since $since (file: ${PRECONF_FILE:-campaign/probes/preconfs-base.jsonl})"
+  python3 "$CAMPAIGN_DIR/preconf-check.py" "${PRECONF_FILE:-$CAMPAIGN_DIR/probes/preconfs-base.jsonl}" --since "$since" || true
+}
