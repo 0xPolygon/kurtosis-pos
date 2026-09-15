@@ -17,3 +17,9 @@ campaign/__pycache__/
 campaign/records/*.stderr
 # regenerate with ./render-topology.sh
 topology.png
+# campaign write-ups and fault evidence stay local (internal findings)
+campaign/CAMPAIGN.md
+campaign/HEIMDALL-MATRIX.md
+campaign/tartarus-feedback.md
+campaign/*summary-table.md
+campaign/records/
