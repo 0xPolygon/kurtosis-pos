@@ -32,7 +32,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | heimdall-v2    | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | ✅ matches stable |
 | lighthouse     | [8.2.2](https://github.com/sigp/lighthouse/releases/tag/v8.2.2)          | [8.2.2](https://github.com/sigp/lighthouse/releases/tag/v8.2.2)          | ✅ matches stable |
 | panoptichain   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | ✅ matches stable |
-| prometheus     | [3.14.0](https://github.com/prometheus/prometheus/releases/tag/v3.14.0)  | [3.14.0](https://github.com/prometheus/prometheus/releases/tag/v3.14.0)  | ✅ matches stable |
+| prometheus     | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)  | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)  | ✅ matches stable |
 | rabbitmq       | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6) | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6) | ✅ matches stable |
 | redpanda       | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | ✅ matches stable |
 | status-checker | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | ✅ matches stable |
