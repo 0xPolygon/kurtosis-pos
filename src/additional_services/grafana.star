@@ -61,6 +61,10 @@ def run(
         ),
     }
 
+    # Grafana logs an error at startup for every missing provisioning directory.
+    empty_provisioning_file = struct(template="apiVersion: 1\n", data={})
+    grafana_render_templates_config["plugins/plugins.yml"] = empty_provisioning_file
+    grafana_render_templates_config["alerting/alerting.yml"] = empty_provisioning_file
     if grafana_alerting_template != "":
         grafana_render_templates_config["alerting/alerting.yml"] = struct(
             template=read_file(grafana_alerting_template),
