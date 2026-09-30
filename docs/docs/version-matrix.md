@@ -24,7 +24,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 
 | Component      | Deployed version                                                         | Latest stable version                                                    | Status            |
 | -------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ----------------- |
-| bor            | [2.10.1](https://github.com/0xPolygon/bor/releases/tag/v2.10.1)          | [2.10.1](https://github.com/0xPolygon/bor/releases/tag/v2.10.1)          | ✅ matches stable |
+| bor            | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)          | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)          | ✅ matches stable |
 | envoy          | [1.39.1](https://github.com/envoyproxy/envoy/releases/tag/v1.39.1)       | [1.39.1](https://github.com/envoyproxy/envoy/releases/tag/v1.39.1)       | ✅ matches stable |
 | foundry        | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)       | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)       | ✅ matches stable |
 | geth           | [1.17.6](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.6)   | [1.17.6](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.6)   | ✅ matches stable |
