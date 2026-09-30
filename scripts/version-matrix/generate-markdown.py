@@ -3,7 +3,8 @@
 Render matrix.json into the version matrix documentation page.
 
 Produces docs/docs/version-matrix.md: one table for the container
-images we deploy, one for the external Kurtosis packages we pin, each with a
+images we deploy, one for the tools CI installs, one for the external Kurtosis
+packages we pin, each with a
 status indicator and links to the deployed and latest upstream versions.
 """
 
@@ -70,6 +71,13 @@ class MarkdownMatrixGenerator:
         md += "upstream release stream to compare against. The full list is "
         md += "`SKIPPED_IMAGES` in `scripts/version-matrix/extract-versions.py`.\n"
 
+        tools = data.get("tools", {})
+        if tools:
+            md += "\n## CI tools\n\n"
+            md += "Tools installed by CI, pinned as input defaults in "
+            md += f"[`.github/actions/kurtosis/setup/action.yml`]({REPO_URL}/blob/main/.github/actions/kurtosis/setup/action.yml).\n\n"
+            md += self._generate_image_table(tools, "Tool", "Pinned version")
+
         packages = data.get("packages", {})
         if packages:
             md += "\n## Kurtosis packages\n\n"
@@ -80,9 +88,10 @@ class MarkdownMatrixGenerator:
 
         return md
 
-    def _generate_image_table(self, images: Dict) -> str:
-        table = "| Component | Deployed version | Latest stable version | Status |\n"
-        table += "| --------- | ---------------- | --------------------- | ------ |\n"
+    def _generate_image_table(self, images: Dict, name_header: str = "Component",
+                              version_header: str = "Deployed version") -> str:
+        table = f"| {name_header} | {version_header} | Latest stable version | Status |\n"
+        table += "| --- | --- | --- | --- |\n"
 
         for name, component in sorted(images.items()):
             version = component.get("version")

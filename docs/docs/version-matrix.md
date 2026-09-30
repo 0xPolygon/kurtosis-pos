@@ -41,6 +41,15 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 
 Some images are deliberately absent from the table above: the `pos-*` images are [built in this repo](https://github.com/0xPolygon/kurtosis-pos/tree/main/docker) and published by `publish-images.yaml`, and `toolbox` / `ethstats-server` live on Artifact Registry. Neither has an upstream release stream to compare against. The full list is `SKIPPED_IMAGES` in `scripts/version-matrix/extract-versions.py`.
 
+## CI tools
+
+Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/setup/action.yml`](https://github.com/0xPolygon/kurtosis-pos/blob/main/.github/actions/kurtosis/setup/action.yml).
+
+| Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
+| -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
+| foundry  | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)      | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)      | ✅ matches stable |
+| kurtosis | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | ✅ matches stable |
+
 ## Kurtosis packages
 
 External Kurtosis packages the package depends on. Versions are pinned in the [`replace` block of `kurtosis.yml`](https://github.com/0xPolygon/kurtosis-pos/blob/main/kurtosis.yml), which is the single place to bump them.
