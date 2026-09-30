@@ -6,11 +6,11 @@ inputs:
   kurtosis_version:
     description: The version of Kurtosis to install
     required: false
-    default: 1.18.2
+    default: 1.20.0
   foundry_version:
     description: The version of Foundry to install
     required: false
-    default: v1.8.0
+    default: v1.8.3
   python_version:
     description: The version of Python to install
     required: false

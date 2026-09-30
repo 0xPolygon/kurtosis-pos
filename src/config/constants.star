@@ -48,12 +48,12 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.6",
+    "l1_el_image": "ethereum/client-go:v1.17.7",
     "l1_cl_image": "sigp/lighthouse:v8.2.2",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.3",
     # layer 2
-    "l2_cl_heimdall_v2_image": "0xpolygon/heimdall-v2:0.11.0",
-    "l2_el_bor_image": "0xpolygon/bor:2.10.1",
+    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.11.0",
+    "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.2",
     "l2_cl_queue_image": "rabbitmq:4.3.6",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
@@ -64,7 +64,7 @@ IMAGES = {
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.15.0",
-    "grafana_image": "grafana/grafana:13.2.2",
+    "grafana_image": "grafana/grafana:13.2.3",
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.1.0",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)

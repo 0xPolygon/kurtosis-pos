@@ -31,13 +31,25 @@ inputs:
 runs:
   using: composite
   steps:
+    # A second setup-go in the same job restores its module cache over the
+    # read-only files of the first one and fails with "Cannot open: File exists".
+    - name: Check for an existing devnet-monitor build
+      id: build
+      shell: bash
+      run: |
+        if [[ -x tools/devnet-monitor/devnet-monitor ]]; then
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Set up Go
+      if: steps.build.outputs.exists != 'true'
       uses: actions/setup-go@v6
       with:
         go-version-file: tools/devnet-monitor/go.mod
         cache-dependency-path: tools/devnet-monitor/go.sum
 
     - name: Build devnet-monitor
+      if: steps.build.outputs.exists != 'true'
       shell: bash
       working-directory: tools/devnet-monitor
       run: go build -o devnet-monitor .

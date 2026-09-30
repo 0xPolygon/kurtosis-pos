@@ -5,8 +5,9 @@ Automated version matrix extraction tool for Kurtosis PoS.
 Extracts version information from:
 1. `IMAGES` in src/config/constants.star — the container images we deploy.
 2. The `replace` block of kurtosis.yml — the external Kurtosis packages we pin.
+3. Input defaults of .github/actions/kurtosis/setup/action.yml — the tools CI installs.
 
-Both are compared against their upstream GitHub releases (or branch HEAD, for
+All are compared against their upstream GitHub releases (or branch HEAD, for
 packages that ship faster than they tag) and annotated with a status. The result
 is written to matrix.json, which generate-markdown.py renders into the docs.
 """
@@ -33,6 +34,16 @@ class ComponentVersion:
     latest_version_source_url: Optional[str] = None
     status: Optional[str] = None
     pin_reason: Optional[str] = None
+
+
+@dataclass
+class ToolVersion:
+    """A tool version installed by CI, and how it compares to upstream."""
+    version: str
+    latest_version: Optional[str] = None
+    version_source_url: Optional[str] = None
+    latest_version_source_url: Optional[str] = None
+    status: Optional[str] = None
 
 
 @dataclass
@@ -91,6 +102,14 @@ SKIPPED_IMAGES = {
     "ethstats_server_image": "internal image on Artifact Registry",
 }
 
+# Tools installed by CI, keyed by input name in the setup action, with the
+# tool name shown in the matrix, its upstream repo and its release tag prefix.
+# python_version is left out: it follows a language line, not a GitHub release.
+CI_TOOL_REPOS = {
+    "kurtosis_version": ("kurtosis", "kurtosis-tech/kurtosis", ""),
+    "foundry_version": ("foundry", "foundry-rs/foundry", "v"),
+}
+
 # Components deliberately held back from the latest stable release, keyed by
 # component name. These render as "pinned" instead of "behind stable" so that
 # genuine regressions stay visible in the matrix.
@@ -134,6 +153,8 @@ class VersionMatrixExtractor:
         self.repo_root = repo_root
         self.constants_path = repo_root / "src" / "config" / "constants.star"
         self.kurtosis_yaml_path = repo_root / "kurtosis.yml"
+        self.setup_action_path = (
+            repo_root / ".github" / "actions" / "kurtosis" / "setup" / "action.yml")
 
     # --- images ------------------------------------------------------------
 
@@ -204,13 +225,14 @@ class VersionMatrixExtractor:
         return tag.lstrip("v")
 
     @staticmethod
-    def _release_url(repo: str, version: Optional[str]) -> Optional[str]:
+    def _release_url(repo: str, version: Optional[str],
+                     tag_prefix: str = "v") -> Optional[str]:
         """Build a browsable release URL for a component version."""
         if not version:
             return None
         if version in ("latest", "main", "master"):
             return f"https://github.com/{repo}/releases/latest"
-        return f"https://github.com/{repo}/releases/tag/v{version.lstrip('v')}"
+        return f"https://github.com/{repo}/releases/tag/{tag_prefix}{version.lstrip('v')}"
 
     @staticmethod
     def _is_prerelease(tag_name: str) -> bool:
@@ -275,6 +297,31 @@ class VersionMatrixExtractor:
         while len(numbers) < 3:
             numbers.append(0)
         return tuple(numbers)
+
+    # --- ci tools ----------------------------------------------------------
+
+    def extract_tools(self) -> Dict[str, ToolVersion]:
+        """Extract tool versions from the input defaults of the setup action."""
+        tools: Dict[str, ToolVersion] = {}
+
+        action = yaml.safe_load(self.setup_action_path.read_text()) or {}
+        inputs = action.get("inputs") or {}
+        for key, (name, repo, tag_prefix) in CI_TOOL_REPOS.items():
+            default = (inputs.get(key) or {}).get("default")
+            if not default:
+                raise ValueError(f"No default for input {key} in {self.setup_action_path}")
+
+            version = str(default).lstrip("v")
+            latest_version = self._get_latest_version(repo)
+            tools[name] = ToolVersion(
+                version=version,
+                latest_version=latest_version,
+                version_source_url=self._release_url(repo, version, tag_prefix),
+                latest_version_source_url=self._release_url(repo, latest_version, tag_prefix),
+                status=self._determine_status(version, latest_version),
+            )
+
+        return tools
 
     # --- packages ----------------------------------------------------------
 
@@ -530,15 +577,20 @@ class VersionMatrixExtractor:
         print("Extracting images...")
         images, unknown_keys = self.extract_images()
 
+        print("Extracting CI tools...")
+        tools = self.extract_tools()
+
         print("Extracting external Kurtosis packages...")
         packages = self.extract_packages()
 
         matrix = {
             "generated_at": datetime.now().isoformat(),
             "images": {name: asdict(component) for name, component in images.items()},
+            "tools": {name: asdict(tool) for name, tool in tools.items()},
             "packages": {name: asdict(package) for name, package in packages.items()},
             "summary": {
                 "total_images": len(images),
+                "total_tools": len(tools),
                 "total_packages": len(packages),
                 "skipped_images": len(SKIPPED_IMAGES),
             },
@@ -575,6 +627,7 @@ def main():
     print("\n=== Version Matrix Summary ===")
     print(f"Images tracked: {summary['total_images']}")
     print(f"Images skipped: {summary['skipped_images']}")
+    print(f"CI tools tracked: {summary['total_tools']}")
     print(f"Packages tracked: {summary['total_packages']}")
 
     # An image in neither COMPONENT_REPOS nor SKIPPED_IMAGES is a gap: it was

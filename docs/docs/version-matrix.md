@@ -24,11 +24,11 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 
 | Component      | Deployed version                                                         | Latest stable version                                                    | Status            |
 | -------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ----------------- |
-| bor            | [2.10.1](https://github.com/0xPolygon/bor/releases/tag/v2.10.1)          | [2.10.1](https://github.com/0xPolygon/bor/releases/tag/v2.10.1)          | ✅ matches stable |
+| bor            | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)          | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)          | ✅ matches stable |
 | envoy          | [1.39.1](https://github.com/envoyproxy/envoy/releases/tag/v1.39.1)       | [1.39.1](https://github.com/envoyproxy/envoy/releases/tag/v1.39.1)       | ✅ matches stable |
 | foundry        | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)       | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)       | ✅ matches stable |
-| geth           | [1.17.6](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.6)   | [1.17.6](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.6)   | ✅ matches stable |
-| grafana        | [13.2.2](https://github.com/grafana/grafana/releases/tag/v13.2.2)        | [13.2.2](https://github.com/grafana/grafana/releases/tag/v13.2.2)        | ✅ matches stable |
+| geth           | [1.17.7](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.7)   | [1.17.7](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.7)   | ✅ matches stable |
+| grafana        | [13.2.3](https://github.com/grafana/grafana/releases/tag/v13.2.3)        | [13.2.3](https://github.com/grafana/grafana/releases/tag/v13.2.3)        | ✅ matches stable |
 | heimdall-v2    | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | ✅ matches stable |
 | lighthouse     | [8.2.2](https://github.com/sigp/lighthouse/releases/tag/v8.2.2)          | [8.2.2](https://github.com/sigp/lighthouse/releases/tag/v8.2.2)          | ✅ matches stable |
 | panoptichain   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | ✅ matches stable |
@@ -40,6 +40,15 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 ### Untracked images
 
 Some images are deliberately absent from the table above: the `pos-*` images are [built in this repo](https://github.com/0xPolygon/kurtosis-pos/tree/main/docker) and published by `publish-images.yaml`, and `toolbox` / `ethstats-server` live on Artifact Registry. Neither has an upstream release stream to compare against. The full list is `SKIPPED_IMAGES` in `scripts/version-matrix/extract-versions.py`.
+
+## CI tools
+
+Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/setup/action.yml`](https://github.com/0xPolygon/kurtosis-pos/blob/main/.github/actions/kurtosis/setup/action.yml).
+
+| Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
+| -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
+| foundry  | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)      | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)      | ✅ matches stable |
+| kurtosis | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | ✅ matches stable |
 
 ## Kurtosis packages
 

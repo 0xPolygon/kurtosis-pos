@@ -3,26 +3,29 @@
 Tracks whether the versions this package deploys are still current, and surfaces
 the answer as documentation instead of a thing someone has to remember to check.
 
-Two kinds of dependency are covered:
+Three kinds of dependency are covered:
 
 - **Container images** — the `IMAGES` dict in `src/config/constants.star`.
+- **CI tools** — the input defaults of `.github/actions/kurtosis/setup/action.yml`
+  listed in `CI_TOOL_REPOS` (kurtosis, foundry).
 - **External Kurtosis packages** — the `replace` block of `kurtosis.yml`.
 
-Both are compared against their upstream GitHub releases and annotated with a
+All are compared against their upstream GitHub releases and annotated with a
 status. The output lands in [`docs/docs/version-matrix.md`](../../docs/docs/version-matrix.md).
 
 ## Components
 
-| Script                   | Role                                                                                    | Needs a token |
-| ------------------------ | --------------------------------------------------------------------------------------- | ------------- |
-| `extract-versions.py`    | Reads `constants.star` and `kurtosis.yml`, queries the GitHub API, writes `matrix.json` | yes           |
-| `generate-markdown.py`   | Renders `matrix.json` into the docs page                                                | no            |
-| `verify-package-pins.py` | Checks the `replace` block is the single source of truth for package versions           | no            |
+| Script                   | Role                                                                                                      | Needs a token |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- | ------------- |
+| `extract-versions.py`    | Reads `constants.star`, `kurtosis.yml` and the setup action, queries the GitHub API, writes `matrix.json` | yes           |
+| `generate-markdown.py`   | Renders `matrix.json` into the docs page                                                                  | no            |
+| `verify-package-pins.py` | Checks the `replace` block is the single source of truth for package versions                             | no            |
 
 ```text
 constants.star ──┐
                  ├─► extract-versions.py ──► matrix.json ──► generate-markdown.py ──► version-matrix.md
 kurtosis.yml ────┤
+action.yml ──────┤
                  │
 GitHub API ──────┘
 ```
