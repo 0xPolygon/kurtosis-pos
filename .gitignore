@@ -4,3 +4,5 @@ params.yml
 *.DS_Store
 # Built binaries from tools/
 tools/devnet-monitor/devnet-monitor
+# Python bytecode
+__pycache__/
