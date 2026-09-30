@@ -26,9 +26,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+
+SCHEMA = "kurtosis-pos.perf.v1"
+
+# Identifiers that are rendered verbatim into the Markdown PR comment
+# (metadata.job, metadata.flavour, phases[].phase). The artifacts are the
+# least-trusted input this script consumes — they come from whichever run
+# triggered perf-report.yaml — so anything outside this charset (backticks,
+# pipes, newlines, HTML) is rejected rather than risk breaking out of a
+# table cell and injecting content into a bot-authored comment.
+_IDENT_RE = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
 
 # Known numeric extras and their display unit. Order matters: the first key
 # present in a phase's extras is the one shown in the table.
@@ -85,26 +96,68 @@ class BaselineStats:
         return sum(self.samples) / len(self.samples) if self.samples else None
 
 
+def _ident(value: object, what: str) -> str:
+    if not isinstance(value, str) or not _IDENT_RE.match(value):
+        raise ValueError(f"{what} {value!r} is not a valid identifier")
+    return value
+
+
+def _parse_run_file(data: object) -> JobReport:
+    """Validate one perf-*.json document and build its JobReport.
+
+    Raises ValueError on any structural or identifier problem so the caller
+    can skip the whole file — a partially-trusted record is worse than none.
+    """
+    if not isinstance(data, dict):
+        raise ValueError("top-level value is not an object")
+    if data.get("schema") != SCHEMA:
+        raise ValueError(f"schema {data.get('schema')!r} != {SCHEMA!r}")
+    meta = data.get("metadata", {})
+    if not isinstance(meta, dict):
+        raise ValueError("metadata is not an object")
+    job = _ident(meta.get("job", "unknown"), "metadata.job")
+    flavour = meta.get("flavour")
+    if flavour is not None:
+        flavour = _ident(flavour, "metadata.flavour")
+    raw_phases = data.get("phases", [])
+    if not isinstance(raw_phases, list):
+        raise ValueError("phases is not a list")
+    phases = []
+    for p in raw_phases:
+        if not isinstance(p, dict):
+            raise ValueError("phase entry is not an object")
+        extras = p.get("extras", {})
+        if not isinstance(extras, dict):
+            raise ValueError("phase extras is not an object")
+        try:
+            duration_s = float(p.get("duration_s", 0))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"phase duration_s {p.get('duration_s')!r}: {e}") from e
+        phases.append(
+            PhaseRecord(
+                phase=_ident(p.get("phase"), "phase"),
+                duration_s=duration_s,
+                extras=extras,
+            )
+        )
+    return JobReport(job=job, flavour=flavour, phases=phases)
+
+
 def load_run(run_dir: Path) -> list[JobReport]:
-    """Load every perf-*.json under run_dir and return one JobReport per file."""
+    """Load every perf-*.json under run_dir and return one JobReport per file.
+
+    Files that fail to parse or validate are skipped with a warning on stderr
+    rather than aborting the whole report.
+    """
     out = []
     for f in sorted(run_dir.rglob("perf-*.json")):
         try:
             with f.open() as fh:
                 data = json.load(fh)
-        except (OSError, json.JSONDecodeError) as e:
+            out.append(_parse_run_file(data))
+        except (OSError, json.JSONDecodeError, ValueError) as e:
             print(f"warning: skipping {f}: {e}", file=sys.stderr)
             continue
-        meta = data.get("metadata", {})
-        phases = [
-            PhaseRecord(
-                phase=p["phase"],
-                duration_s=float(p.get("duration_s", 0)),
-                extras=p.get("extras", {}),
-            )
-            for p in data.get("phases", [])
-        ]
-        out.append(JobReport(job=meta.get("job", "unknown"), flavour=meta.get("flavour"), phases=phases))
     return out
 
 

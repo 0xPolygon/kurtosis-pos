@@ -66,6 +66,12 @@ Each job uploads a single `perf-<job>.json`:
   in `extras` (e.g. `bytes` for image size).
 - `extras.bytes`, `extras.size_bytes`, `extras.block_height`, `extras.blocks`
   are coerced to numbers by `aggregate.sh`; everything else stays a string.
+- `report.py` skips (with a warning) any file whose `schema` is not
+  `kurtosis-pos.perf.v1`, or whose `metadata.job`, `metadata.flavour` or any
+  `phases[].phase` is not a short identifier (`[A-Za-z0-9._-]`, at most 64
+  chars). Those strings are rendered verbatim into the PR comment and the
+  artifacts are the least-trusted input the workflow consumes, so they are
+  validated rather than escaped.
 
 ## Components
 
