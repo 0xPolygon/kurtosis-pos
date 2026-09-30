@@ -19,13 +19,21 @@ jobs:
   report:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # workflow_run triggers from forks have no access to secrets and can't
-    # comment on PRs. Skip those — we'll still render a report from the main
-    # repo when the fork PR's checks finish under the upstream runner.
-    if: ${{ github.event.workflow_run.repository.full_name == github.repository }}
+    # workflow_run always executes here in the base repo, with this repo's
+    # workflow file and a pull-requests:write token — even when the upstream
+    # `deploy` run was a fork PR executing the fork's copy of deploy.yaml.
+    # Such a run can upload arbitrary kurtosis-pos-perf-* artifacts, so skip
+    # it: `head_repository` is the repo the upstream run's code came from.
+    # (`workflow_run.repository` is always this repo, so comparing it to
+    # github.repository is a no-op.) Fork PRs therefore get no perf comment.
+    if: ${{ github.event.workflow_run.head_repository.full_name == github.repository }}
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Nothing in this workflow pushes. Keep GITHUB_TOKEN out of
+          # .git/config so a bug in the artifact parsing below can't reach it.
+          persist-credentials: false
 
       # Download artifacts from the upstream workflow_run. The built-in
       # actions/download-artifact does not support cross-workflow downloads,
