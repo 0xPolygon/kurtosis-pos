@@ -101,7 +101,6 @@ def run(
             env_vars={
                 "GF_PATHS_PROVISIONING": CONFIG_DIR_PATH,
                 "GF_AUTH_ANONYMOUS_ENABLED": "true",
-                "GF_AUTH_ANONYMOUS_ORG_ROLE": "Admin",
                 "GF_AUTH_ANONYMOUS_ORG_NAME": "Main Org.",
                 "GF_DASHBOARDS_MIN_REFRESH_INTERVAL": min_refresh_interval,
             },
