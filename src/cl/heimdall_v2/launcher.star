@@ -58,7 +58,7 @@ def launch(
     # heimdall dials bor over gRPC (the default since #631) ONLY when the
     # paired bor version is >= BOR_GRPC_MIN_VERSION — older bor lacks #2194's
     # GetBlockInfoInBatch + full proto-Header, which stalls span rotation (see
-    # BOR_GRPC_MIN_VERSION). Unparseable tags default to HTTP. When gRPC is
+    # BOR_GRPC_MIN_VERSION). Unparsable tags default to HTTP. When gRPC is
     # off, heimdall short-circuits its gRPC init and uses the HTTP transport
     # (bor_rpc_url), so leave the gRPC URL empty.
     bor_version = _bor_image_version(participant.get("el_image") or "")
