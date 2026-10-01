@@ -3,6 +3,11 @@ extend-ignore-re = [
   "\".*=\",", # cometbft private keys
 ]
 
+[default.extend-identifiers]
+# City name used as the heimdall-v2 v0.12.1 hardfork. Not a typo.
+Lugano = "Lugano"
+lugano = "lugano"
+
 [files]
 extend-exclude = [
   "static_files/additional_services/grafana/dashboards/bor.json",

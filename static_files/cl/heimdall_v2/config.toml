@@ -406,6 +406,14 @@ chunk_fetchers = "4"
 #   1) "v0" - the default block sync implementation
 version = "v0"
 
+# heimdall-v2 v0.12.1 adds serving_rate, serving_burst, serving_subnet_rate,
+# peer_byte_quota, peer_byte_quota_period, and exempt_peer_ids. They are
+# omitted here on purpose. CometBFT ParseConfig unmarshals into
+# DefaultBlockSyncConfig(), and mapstructure leaves absent keys at those
+# defaults (32MiB/s, 64MiB burst, 8MiB/s subnet, 512MiB/hour quota). Writing
+# 0 disables the layer. Older binaries may refuse unknown keys, so do not add
+# the keys to this shared template.
+
 #######################################################
 ###         Consensus Configuration Options         ###
 #######################################################
