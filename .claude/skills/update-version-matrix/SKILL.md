@@ -53,9 +53,9 @@ git diff --stat
 and nothing else flipped. If another dep drifted
 since the nightly, bump it too rather than leaving a 🚨 row.
 
-## 4. Checks (local only)
+## 4. Checks
 
-Skip in CI: the PR's own CI runs them.
+In CI, only `kurtosis lint .`: the PR's own CI runs the rest.
 
 `kurtosis lint .` when a `.star` file changed, `rumdl check` on the changed docs,
 `typos .`. The PR's CI deploys a devnet.
