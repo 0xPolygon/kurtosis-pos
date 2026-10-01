@@ -3,8 +3,9 @@
 
 Absent keys keep CometBFT DefaultBlockSyncConfig (non-zero budgets). An
 explicit 0 disables the layer for every peer. Older heimdall images share
-this template, so the keys must stay absent rather than be set to the new
-defaults (unknown keys can refuse startup).
+this template and ignore keys they do not know, so the keys must stay absent
+rather than be pinned to one release's defaults: an explicit value here would
+freeze a serving policy that should track each binary's own defaults.
 """
 
 from pathlib import Path

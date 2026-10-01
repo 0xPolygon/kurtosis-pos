@@ -411,8 +411,10 @@ version = "v0"
 # omitted here on purpose. CometBFT ParseConfig unmarshals into
 # DefaultBlockSyncConfig(), and mapstructure leaves absent keys at those
 # defaults (32MiB/s, 64MiB burst, 8MiB/s subnet, 512MiB/hour quota). Writing
-# 0 disables the layer. Older binaries may refuse unknown keys, so do not add
-# the keys to this shared template.
+# 0 disables the layer. Older images share this template and ignore keys
+# they do not know (viper.Unmarshal), so adding them would not break those
+# images, but it would pin a serving policy here that should track each
+# binary's own defaults. Do not add the keys to this shared template.
 
 #######################################################
 ###         Consensus Configuration Options         ###
