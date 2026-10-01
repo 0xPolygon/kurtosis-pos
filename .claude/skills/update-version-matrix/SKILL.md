@@ -55,6 +55,8 @@ since the nightly, bump it too rather than leaving a 🚨 row.
 
 ## 4. Checks (local only)
 
+Skip in CI: the PR's own CI runs them.
+
 `kurtosis lint .` when a `.star` file changed, `rumdl check` on the changed docs,
 `typos .`. The PR's CI deploys a devnet.
 
