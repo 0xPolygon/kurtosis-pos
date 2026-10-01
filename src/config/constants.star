@@ -182,30 +182,10 @@ EL_HARD_FORK_BLOCKS = {
     "austin": 999999999,
 }
 
-# Heimdall-v2-side hardforks (no bor genesis impact). Activation heights are
-# hardcoded in the heimdall-v2 binary per chain (mainnet/mumbai/amoy/default
-# — see helper/config.go). The stock binary ships 0 ("never active") for
-# every gate below on the default (local devnet) chain; the values here
-# document the schedule activated by pos-e2e's patched image
-# (pos-e2e scripts/pos-e2e/patches/heimdall-default-devnet-cl-forks*.patch)
-# and MUST stay in lockstep with it — pos-e2e's patch-constants-star.sh
-# drift-guards this dict against its own CL_FORK_BLOCKS map and fails CI on
-# mismatch. Production activation order is mirrored:
-# phuket < feeWithdrawValidatorGate < zurich < ithaca < kyoto < lugano.
-# ithaca (heimdall-v2 v0.10.0-beta) gates VEBLOP producer selection changes
-# (empty-candidate fallback, POS-3629 stall rotation); it sits one 64-block
-# step past the valencia EL fork (896). kyoto (heimdall-v2 v0.11.0) gates the
-# tx-nesting depth guard and the fee-coins cap. lugano (heimdall-v2
-# v0.12.1-priv) gates contract-address normalization, fixed-width event-record
-# hashes, the descriptor-driven nesting walk, and the checkpoint window bound.
-# It sits one 64-block step past kyoto. Stock local config sets luganoHeight = 1;
-# the pos-e2e patch moves it here so the Kyoto-to-Lugano window stays real.
-# Heights MUST stay in lockstep with pos-e2e CL_FORK_BLOCKS.
-CL_HARD_FORK_BLOCKS = {
-    "phuket": 640,
-    "feeWithdrawValidatorGate": 768,
-    "zurich": 832,
-    "ithaca": 960,
-    "kyoto": 1024,
-    "lugano": 1088,
-}
+# CL (heimdall-v2) hardfork heights are NOT configured here. The heimdall-v2
+# binary hardcodes its local-devnet fork heights in helper/config.go and reads
+# nothing from this package for them, so a dict here could only ever be
+# documentation. The staggered devnet CL schedule that crosses those forks
+# mid-chain in production order is owned by pos-e2e (its patched heimdall-v2
+# image and scripts/pos-e2e/patch-constants-star.sh), which is also where it
+# is drift-guarded.
