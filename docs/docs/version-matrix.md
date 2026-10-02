@@ -26,10 +26,10 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | -------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ----------------- |
 | bor            | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)          | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)          | ✅ matches stable |
 | envoy          | [1.39.1](https://github.com/envoyproxy/envoy/releases/tag/v1.39.1)       | [1.39.1](https://github.com/envoyproxy/envoy/releases/tag/v1.39.1)       | ✅ matches stable |
-| foundry        | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)       | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)       | ✅ matches stable |
+| foundry        | [1.8.4](https://github.com/foundry-rs/foundry/releases/tag/v1.8.4)       | [1.8.4](https://github.com/foundry-rs/foundry/releases/tag/v1.8.4)       | ✅ matches stable |
 | geth           | [1.17.7](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.7)   | [1.17.7](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.7)   | ✅ matches stable |
 | grafana        | [13.2.3](https://github.com/grafana/grafana/releases/tag/v13.2.3)        | [13.2.3](https://github.com/grafana/grafana/releases/tag/v13.2.3)        | ✅ matches stable |
-| heimdall-v2    | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | [0.11.0](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.11.0)  | ✅ matches stable |
+| heimdall-v2    | [0.12.1](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.1)  | [0.12.1](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.1)  | ✅ matches stable |
 | lighthouse     | [8.2.3](https://github.com/sigp/lighthouse/releases/tag/v8.2.3)          | [8.2.3](https://github.com/sigp/lighthouse/releases/tag/v8.2.3)          | ✅ matches stable |
 | panoptichain   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | ✅ matches stable |
 | prometheus     | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)  | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)  | ✅ matches stable |
@@ -47,7 +47,7 @@ Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/se
 
 | Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
 | -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
-| foundry  | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)      | [1.8.3](https://github.com/foundry-rs/foundry/releases/tag/v1.8.3)      | ✅ matches stable |
+| foundry  | [1.8.4](https://github.com/foundry-rs/foundry/releases/tag/v1.8.4)      | [1.8.4](https://github.com/foundry-rs/foundry/releases/tag/v1.8.4)      | ✅ matches stable |
 | kurtosis | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | ✅ matches stable |
 
 ## Kurtosis packages
