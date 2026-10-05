@@ -33,7 +33,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   && curl --location --proto "=https" https://foundry.paradigm.xyz --output /tmp/foundry-install.sh \
   && bash /tmp/foundry-install.sh \
-  && bash /root/.foundry/bin/foundryup --install ${FOUNDRY_VERSION} \
+  && /root/.foundry/bin/foundryup --install ${FOUNDRY_VERSION} \
   && cp /root/.foundry/bin/* /usr/local/bin \
   && rm /tmp/foundry-install.sh
 
