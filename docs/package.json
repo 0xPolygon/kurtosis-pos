@@ -46,5 +46,11 @@
   },
   "engines": {
     "node": ">=18.0"
+  },
+  "overrides": {
+    "http-cache-semantics": "^4.3.0",
+    "qs": "^6.16.0",
+    "serialize-javascript": "^7.0.5",
+    "uuid": "^11.1.1"
   }
 }
