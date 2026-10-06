@@ -653,8 +653,10 @@ log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract
 # submission may be in flight). If L1 records ack #N while heimdall misses it,
 # the restored listener never replays the event and checkpoints stall forever.
 # While bor keeps producing blocks, the buffer is only empty for a few seconds
-# after each ack, so poll every second and take the first idle reading. An ack
-# landing after that reading is caught by the post-dump check below.
+# after each ack, so poll every second and take the first idle reading. On
+# anvil, an ack landing after that reading is caught by the post-dump check
+# below; on ethereum-package, L1 is stopped right after, before a new
+# checkpoint can go from proposal to L1 inclusion.
 wait_for_checkpoint_quiescence() {
   local enclave_name="$1"
 
