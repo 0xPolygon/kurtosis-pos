@@ -71,7 +71,6 @@ dependency, so the nightly diff stays empty.
 | newer than stable | ⚡️   | Ahead of the latest release — a prerelease or a patched build  |
 | behind stable     | 🚨   | An upstream release is available and should be picked up       |
 | pinned            | 📌   | Deliberately held back — see the reason in the matrix          |
-| tracking head     | ⚠️   | Head-tracked package drifting from upstream, but not yet stale |
 
 ## Adding an image
 
@@ -139,36 +138,16 @@ package locator, using the same short reason form as `PINNED_VERSIONS`.
 
 ### Release-tracked vs head-tracked packages
 
-Not every package releases often enough for "latest release" to mean anything.
-`ethereum-package` keeps shipping daily well after its last tag, so comparing
-our pin against that tag reports `⚡️ newer than stable` permanently — true,
-useless, and hiding months of real drift.
+What "latest" means follows from how a package is pinned in `kurtosis.yml`:
 
-`PACKAGE_TRACKING_MODE` sets what "latest" means per package:
+- A **tag** pin (`@v2.0.0`) is release-tracked: compared against the latest
+  release or tag.
+- A **commit** pin (`@6dd3f26…`) is head-tracked: compared against the default
+  branch tip, and the matrix labels the column `HEAD (<sha>)` so a sha is never
+  presented as a stable version. We pin commits when upstream ships faster than
+  it tags, so the latest tag would report `⚡️ newer than stable` forever.
 
-```python
-PACKAGE_TRACKING_MODE = {
-    "github.com/ethpandaops/ethereum-package": "head",
-}
-```
-
-- `release` (the default) compares the pin against the latest release or tag.
-- `head` compares it against the default branch tip, and the matrix labels the
-  column `HEAD (<sha>)` so a sha is never presented as a stable version.
-
-Two kinds of package belong in `head`: those that ship faster than they tag, and
-those that have never tagged at all. Without an entry, the latter falls back to
-comparing a repo against its own branch tip and always looks up to date; the
-extractor prints a hint when it finds a package with no releases *and* no tags.
-
-For a head-tracked package, being behind HEAD is the normal steady state, so
-distance alone cannot be the alarm. Age is: the pin reports `⚠️ tracking head`
-with its commit distance until the pinned commit is older than
-`HEAD_TRACKING_STALE_AFTER_DAYS` (14 days — these packages ship most days, so
-two weeks is already a meaningful gap), at which point it escalates to
-`🚨 behind stable`. If the compare API is unavailable, the age check still
-applies on its own rather than reporting nothing.
-
-Age is only consulted when the pin has actually fallen behind: a pin that still
-equals HEAD reports `✅ matches stable` however old it is, so a dormant upstream
-never raises a false alarm.
+A head-tracked pin reports `🚨 behind stable` with its commit distance as soon as
+HEAD moves past it, so the nightly bump PR follows the branch tip: one refreshed
+PR per upstream change rather than a pin drifting unnoticed. A pin ahead of HEAD
+(an unmerged or rewritten commit) reports `⚡️ newer than stable`.
