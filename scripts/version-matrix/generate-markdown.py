@@ -19,7 +19,6 @@ STATUS_EMOJI = {
     "newer than stable": "⚡️",
     "behind stable": "🚨",
     "pinned": "📌",
-    "tracking head": "⚠️",
 }
 
 REPO_URL = "https://github.com/0xPolygon/kurtosis-pos"
@@ -55,8 +54,7 @@ class MarkdownMatrixGenerator:
         md += "| ✅ matches stable | Running the latest upstream release. |\n"
         md += "| ⚡️ newer than stable | Ahead of the latest release — a prerelease or a patched build. |\n"
         md += "| 🚨 behind stable | An upstream release is available and should be picked up. |\n"
-        md += "| 📌 pinned | Deliberately held back — the reason is shown inline. |\n"
-        md += "| ⚠️ tracking head | Head-tracked package drifting from upstream, but not yet stale. |\n\n"
+        md += "| 📌 pinned | Deliberately held back — the reason is shown inline. |\n\n"
 
         md += "## Images\n\n"
         md += "Container images deployed by the package, pinned in "
@@ -122,7 +120,7 @@ class MarkdownMatrixGenerator:
             # than presenting a bare sha as a "stable version".
             latest_label = latest_version
             if latest_version and package.get("tracking_mode") == "head":
-                latest_label = f"HEAD ({latest_version})"
+                latest_label = f"HEAD ({latest_version[:12]})"
 
             table += (
                 f"| [{name}](https://{name})"
