@@ -109,8 +109,8 @@ jobs:
           job_id: snapshot-${{ matrix.devnet_type }}
           flavour: ${{ matrix.devnet_type }}
 
-      # Only one of the two dumps applies: the kurtosis enclave is removed
-      # before the devnet is restored with docker compose.
+      # Each dump is a no-op when its devnet is absent: the kurtosis enclave is
+      # removed before the devnet is restored with docker compose.
       - uses: ./.github/actions/kurtosis/cleanup
         if: failure()
         with:

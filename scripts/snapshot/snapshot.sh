@@ -683,9 +683,9 @@ wait_for_checkpoint_quiescence() {
     # `currentHeaderBlock()` returns the next-slot id (multiples of
     # ChildChainBlockInterval=10000); divide to get the count of acks on L1.
     local l1_header_block l1_acks heimdall_acks buffered_end_block
-    l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | head -n 1 | awk '{print $1}')
+    l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | head -n 1 | awk '{print $1}' || true)
     l1_acks=$((${l1_header_block:-0} / 10000))
-    heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2> /dev/null | jq -r '.ack_count // 0')
+    heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2> /dev/null | jq -r '.ack_count // 0' || echo 0)
     # An empty buffer is returned as a zero-value checkpoint.
     buffered_end_block=$(curl -sf "$cl_api_url/checkpoints/buffer" 2> /dev/null | jq -r '.checkpoint.end_block // "0"' || echo "unknown")
 
@@ -699,6 +699,7 @@ wait_for_checkpoint_quiescence() {
       previous_l1_acks="${l1_acks}"
       if [[ "${idle_streak}" -ge 2 ]]; then
         log_info "Checkpoint flow is quiescent (L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}, empty buffer)"
+        quiescent_l1_acks="${l1_acks}"
         return 0
       fi
     else
@@ -741,6 +742,14 @@ if [[ -n "$anvil_rpc_url" ]]; then
     exit 1
   fi
   log_info "Captured $(wc -c < "$anvil_state_tmp") bytes of anvil state for /anvil-state.hex"
+  # The dump, not the container stop, freezes the restored L1: an ack mined
+  # since quiescence would reach heimdall but be missing from the dump.
+  root_chain_proxy=$(jq -r '.root.RootChainProxy' "$contract_addresses_tmp")
+  l1_header_block_after_dump=$(cast call --rpc-url "$anvil_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" | awk '{print $1}')
+  if [[ "$((l1_header_block_after_dump / 10000))" != "$quiescent_l1_acks" ]]; then
+    log_error "A checkpoint ack landed on L1 during the anvil state dump (acks: ${quiescent_l1_acks} -> $((l1_header_block_after_dump / 10000)))"
+    exit 1
+  fi
 fi
 
 # Stop containers in dependency order to avoid app/store divergence:
