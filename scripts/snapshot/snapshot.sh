@@ -684,7 +684,15 @@ wait_for_checkpoint_quiescence() {
     # ChildChainBlockInterval=10000); divide to get the count of acks on L1.
     local l1_header_block l1_acks heimdall_acks buffered_end_block
     l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | head -n 1 | awk '{print $1}' || true)
-    l1_acks=$((${l1_header_block:-0} / 10000))
+    # A failed read must not pass for "0 acks", which would look idle.
+    if [[ -z "$l1_header_block" ]]; then
+      log_info "Checkpoint quiescence check ${step}/${num_steps}: L1 read failed, retrying"
+      idle_streak=0
+      previous_l1_acks=""
+      sleep 5
+      continue
+    fi
+    l1_acks=$((l1_header_block / 10000))
     heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2> /dev/null | jq -r '.ack_count // 0' || echo 0)
     # An empty buffer is returned as a zero-value checkpoint.
     buffered_end_block=$(curl -sf "$cl_api_url/checkpoints/buffer" 2> /dev/null | jq -r '.checkpoint.end_block // "0"' || echo "unknown")
