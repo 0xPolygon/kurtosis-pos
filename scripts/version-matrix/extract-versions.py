@@ -121,18 +121,6 @@ PINNED_VERSIONS: Dict[str, str] = {}
 # Same convention as PINNED_VERSIONS.
 PINNED_PACKAGES: Dict[str, str] = {}
 
-# What "latest" means for each package, keyed by package locator.
-#
-# - "release" (default): compare the pin against the latest release/tag. Right
-#   for packages that tag every change worth consuming.
-# - "head": compare the pin against the default branch HEAD. Right for packages
-#   that release rarely and expect consumers to pin commits — ethereum-package
-#   keeps shipping daily well after its last tag, so measuring against that tag
-#   reports "newer than stable" forever and hides real drift.
-PACKAGE_TRACKING_MODE = {
-    "github.com/ethpandaops/ethereum-package": "head",
-}
-
 STATUS_MATCHES = "matches stable"
 STATUS_BEHIND = "behind stable"
 STATUS_NEWER = "newer than stable"
@@ -345,7 +333,9 @@ class VersionMatrixExtractor:
 
             pin = pin or "HEAD"
             pin_date = self._get_ref_date(repo, pin)
-            tracking_mode = PACKAGE_TRACKING_MODE.get(package_locator, "release")
+            # A commit pin means upstream ships faster than it tags: follow its HEAD.
+            tracking_mode = ("head" if pin == "HEAD" or self._is_commit_sha(pin)
+                             else "release")
 
             if tracking_mode == "head":
                 latest_version, latest_version_date = self._get_head_version(repo)
@@ -410,12 +400,7 @@ class VersionMatrixExtractor:
         return None
 
     def _get_latest_package_version(self, repo: str) -> tuple:
-        """Return (version, date) of the newest release, falling back to tags.
-
-        A repo with neither is not release-tracked at all; add it to
-        PACKAGE_TRACKING_MODE as "head" rather than silently comparing it
-        against its own branch tip, which would always look up to date.
-        """
+        """Return (version, date) of the newest release, falling back to tags."""
         # A 404 here just means the repo has never published a release.
         release = self._github_get(f"repos/{repo}/releases/latest",
                                    allow_missing=True)
@@ -428,8 +413,7 @@ class VersionMatrixExtractor:
             if tag_name:
                 return tag_name, self._get_ref_date(repo, tag_name)
 
-        print(f"No releases or tags found for {repo}; consider tracking it by "
-              f"head in PACKAGE_TRACKING_MODE.")
+        print(f"No releases or tags found for {repo}.")
         return None, None
 
     def _get_head_version(self, repo: str) -> tuple:
