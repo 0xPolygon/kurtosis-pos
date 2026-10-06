@@ -109,6 +109,20 @@ jobs:
           job_id: snapshot-${{ matrix.devnet_type }}
           flavour: ${{ matrix.devnet_type }}
 
+      # Each dump is a no-op when its devnet is absent: the kurtosis enclave is
+      # removed before the devnet is restored with docker compose.
+      - uses: ./.github/actions/kurtosis/cleanup
+        if: failure()
+        with:
+          enclave_name: ${{ env.ENCLAVE_NAME }}
+          args_filename: snapshot-${{ matrix.devnet_type }}
+
+      - uses: ./.github/actions/compose/dump
+        if: failure()
+        with:
+          compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
+          archive_suffix: snapshot-${{ matrix.devnet_type }}-restored
+
       - name: Push snapshot image
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         run: |
