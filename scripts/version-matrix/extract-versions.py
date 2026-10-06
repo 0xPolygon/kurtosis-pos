@@ -445,6 +445,7 @@ class VersionMatrixExtractor:
                 return STATUS_NEWER, (
                     f"{comparison['ahead_by']} commits ahead of HEAD")
 
+        # Compare API unavailable: the pin differs from HEAD, and bumping to HEAD is safe.
         return STATUS_BEHIND, None
 
     def _package_source_url(self, repo: str, ref: str) -> Optional[str]:
