@@ -1,0 +1,46 @@
+name: compose-dump
+description: |
+  Dump a docker-compose devnet (restored from a snapshot) and upload it, in the
+  same layout as `kurtosis enclave dump`: one folder per service holding its
+  logs (output.log) and container spec (spec.json).
+
+inputs:
+  compose_file:
+    description: Path to the docker-compose.yaml of the devnet.
+    required: true
+  archive_suffix:
+    description: Suffix appended to the artifact name, to keep matrix jobs apart.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Dump compose services
+      id: dump
+      shell: bash
+      run: |
+        compose_file="${{ inputs.compose_file }}"
+        if [[ ! -f "$compose_file" ]]; then
+          echo "No compose file at $compose_file, nothing to dump."
+          exit 0
+        fi
+
+        mkdir -p ./compose-dump
+        docker compose --file "$compose_file" ps --all > ./compose-dump/services.txt
+        cat ./compose-dump/services.txt
+
+        for service in $(docker compose --file "$compose_file" config --services); do
+          cid=$(docker compose --file "$compose_file" ps --all --quiet "$service")
+          [[ -z "$cid" ]] && continue
+          mkdir -p "./compose-dump/$service"
+          docker logs --timestamps "$cid" > "./compose-dump/$service/output.log" 2>&1
+          docker inspect "$cid" > "./compose-dump/$service/spec.json"
+        done
+        echo "dumped=true" >> "$GITHUB_OUTPUT"
+
+    - name: Upload compose dump
+      if: steps.dump.outputs.dumped == 'true'
+      uses: actions/upload-artifact@v7
+      with:
+        name: kurtosis-pos-dump-${{ github.run_id }}-${{ inputs.archive_suffix }}
+        path: ./compose-dump

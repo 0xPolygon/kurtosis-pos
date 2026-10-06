@@ -627,13 +627,33 @@ target_block=128 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"
 wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 
-# Wait for heimdall's view of L1 checkpoint acks to catch up with L1's
-# actual `currentHeaderBlock`. There's a race window where L1 has emitted
-# `NewHeaderBlock(N)` but heimdall's bridge listener hasn't yet polled the
-# emitting block, so heimdall's `ack_count` lags L1 by one. Snapshotting
-# in that window leaves the restored chain unable to ever observe ack #N
-# (the listener resumes from past the emission block and never replays
-# old events), permanently breaking checkpoint progression.
+# Extract kurtosis file artifacts that post-restore e2e tests need.
+# `kurtosis files inspect` only works on a live enclave, so we have to grab
+# them now and ship them inside the snapshot image alongside the volumes and
+# compose. Two artifacts are needed:
+#   - pos-contract-addresses/contractAddresses.json: every L1/L2 bridge,
+#     predicate, and dummy-token address (used by every bridge/withdraw test).
+#   - l2-el-genesis/genesis.json: contains config.bor.stateReceiverContract
+#     (L2_STATE_RECEIVER_ADDRESS, used by state-sync helpers).
+contract_addresses_tmp=$(mktemp)
+l2_genesis_tmp=$(mktemp)
+anvil_state_tmp=""
+trap 'rm -f "$contract_addresses_tmp" "$l2_genesis_tmp" "$anvil_state_tmp"' EXIT
+log_info "Extracting kurtosis file artifacts"
+# kurtosis files inspect prepends a "File contents:" banner. Strip everything
+# before the first '{' and re-format with jq so the output is canonical JSON.
+kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json |
+  sed -n '/^{/,$p' | jq . > "$contract_addresses_tmp"
+kurtosis files inspect "$enclave_name" l2-el-genesis genesis.json |
+  sed -n '/^{/,$p' | jq . > "$l2_genesis_tmp"
+log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract_addresses_tmp") bytes, l2-genesis.json: $(wc -c < "$l2_genesis_tmp") bytes)"
+
+# Wait until the checkpoint flow is idle: heimdall has observed every ack L1
+# emitted AND no checkpoint is buffered (a buffered checkpoint means an L1
+# submission may be in flight). If L1 records ack #N while heimdall misses it,
+# the restored listener never replays the event and checkpoints stall forever.
+# The state must hold on two consecutive polls, one heimdall poll interval
+# apart, so an ack landing between the two reads is caught.
 wait_for_checkpoint_quiescence() {
   local enclave_name="$1"
 
@@ -655,32 +675,43 @@ wait_for_checkpoint_quiescence() {
   # given enclave.
   l1_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null ||
     kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
-  root_chain_proxy=$(kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json |
-    sed -n '/^{/,$p' | jq -r '.root.RootChainProxy')
+  root_chain_proxy=$(jq -r '.root.RootChainProxy' "$contract_addresses_tmp")
 
-  local num_steps=60
+  local num_steps=120
+  local idle_streak=0 previous_l1_acks=""
   for step in $(seq 1 "$num_steps"); do
     # `currentHeaderBlock()` returns the next-slot id (multiples of
     # ChildChainBlockInterval=10000); divide to get the count of acks on L1.
-    local l1_header_block l1_acks heimdall_acks
+    local l1_header_block l1_acks heimdall_acks buffered_end_block
     l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | head -n 1 | awk '{print $1}')
-    l1_acks=$((l1_header_block / 10000))
+    l1_acks=$((${l1_header_block:-0} / 10000))
     heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2> /dev/null | jq -r '.ack_count // 0')
+    # An empty buffer is returned as a zero-value checkpoint.
+    buffered_end_block=$(curl -sf "$cl_api_url/checkpoints/buffer" 2> /dev/null | jq -r '.checkpoint.end_block // "0"' || echo "unknown")
 
-    log_info "Checkpoint quiescence check ${step}/${num_steps}: L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}"
-    # The L1 contract counter advances *before* heimdall sees the ack;
-    # quiescent means heimdall has caught up to the L1 truth.
-    if [[ "${heimdall_acks}" -ge 1 && "${heimdall_acks}" -ge "${l1_acks}" ]]; then
-      log_info "Checkpoint flow is quiescent (L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks})"
-      return 0
+    log_info "Checkpoint quiescence check ${step}/${num_steps}: L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}, buffered end_block=${buffered_end_block}"
+    if [[ "${heimdall_acks}" -ge 1 && "${heimdall_acks}" -ge "${l1_acks}" && "${buffered_end_block}" == "0" ]]; then
+      if [[ "${l1_acks}" == "${previous_l1_acks}" ]]; then
+        idle_streak=$((idle_streak + 1))
+      else
+        idle_streak=1
+      fi
+      previous_l1_acks="${l1_acks}"
+      if [[ "${idle_streak}" -ge 2 ]]; then
+        log_info "Checkpoint flow is quiescent (L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}, empty buffer)"
+        return 0
+      fi
+    else
+      idle_streak=0
+      previous_l1_acks=""
     fi
-    sleep 10
+    sleep 5
   done
   log_error "Checkpoint flow did not reach quiescence within $num_steps steps"
   return 1
 }
 
-log_info "Waiting for heimdall's checkpoint ack_count to catch up with L1"
+log_info "Waiting for the checkpoint flow to be idle"
 wait_for_checkpoint_quiescence "$enclave_name"
 
 # Persist the anvil L1 backend's post-deploy state into the snapshot. anvil
@@ -695,7 +726,6 @@ wait_for_checkpoint_quiescence "$enclave_name"
 # volume capture). restore.sh replays it via `anvil_loadState`. Captured after
 # quiescence so it's consistent with heimdall's acked checkpoints. No-op under
 # the ethereum-package L1 backend, which has no anvil service.
-anvil_state_tmp=""
 anvil_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null || true)
 if [[ -n "$anvil_rpc_url" ]]; then
   log_info "Capturing anvil L1 state via ${anvil_rpc_url} (anvil_dumpState)"
@@ -713,30 +743,12 @@ if [[ -n "$anvil_rpc_url" ]]; then
   log_info "Captured $(wc -c < "$anvil_state_tmp") bytes of anvil state for /anvil-state.hex"
 fi
 
-# Extract kurtosis file artifacts that post-restore e2e tests need.
-# `kurtosis files inspect` only works on a live enclave, so we have to grab
-# them now and ship them inside the snapshot image alongside the volumes and
-# compose. Two artifacts are needed:
-#   - pos-contract-addresses/contractAddresses.json: every L1/L2 bridge,
-#     predicate, and dummy-token address (used by every bridge/withdraw test).
-#   - l2-el-genesis/genesis.json: contains config.bor.stateReceiverContract
-#     (L2_STATE_RECEIVER_ADDRESS, used by state-sync helpers).
-contract_addresses_tmp=$(mktemp)
-l2_genesis_tmp=$(mktemp)
-trap "rm -f '$contract_addresses_tmp' '$l2_genesis_tmp' '$anvil_state_tmp'" EXIT
-log_info "Extracting kurtosis file artifacts"
-# kurtosis files inspect prepends a "File contents:" banner. Strip everything
-# before the first '{' and re-format with jq so the output is canonical JSON.
-kurtosis files inspect "$enclave_name" pos-contract-addresses contractAddresses.json |
-  sed -n '/^{/,$p' | jq . > "$contract_addresses_tmp"
-kurtosis files inspect "$enclave_name" l2-el-genesis genesis.json |
-  sed -n '/^{/,$p' | jq . > "$l2_genesis_tmp"
-log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract_addresses_tmp") bytes, l2-genesis.json: $(wc -c < "$l2_genesis_tmp") bytes)"
-
 # Stop containers in dependency order to avoid app/store divergence:
-# 1. L2 CL (heimdall) first — stops block production at consensus layer
-# 2. L2 EL (bor) second — bor flushes its head-pointer atomically with no new blocks arriving
-# 3. Everything else last (rabbitmq, L1, vc, init/migration jobs)
+# 1. L1 first, right after quiescence — no checkpoint ack can land on L1 while
+#    heimdall is down and miss it
+# 2. L2 CL (heimdall) — stops block production at consensus layer
+# 3. L2 EL (bor) — bor flushes its head-pointer atomically with no new blocks arriving
+# 4. Everything else last (rabbitmq, init/migration jobs)
 # Within each tier, stop in parallel; wait for the tier to fully drain before moving on.
 stop_tier() {
   local tier_name="$1"
@@ -753,17 +765,20 @@ stop_tier() {
 
 mapfile -t all_containers < <(get_enclave_containers "$enclave_name")
 
+l1_containers=()
 cl_containers=()
 el_containers=()
 other_containers=()
 for c in "${all_containers[@]}"; do
   case "$c" in
+    anvil--* | el-[0-9]*-* | cl-[0-9]*-* | vc-[0-9]*-*) l1_containers+=("$c") ;;
     *l2-cl-*heimdall*) cl_containers+=("$c") ;;
     *l2-el-*) el_containers+=("$c") ;;
     *) other_containers+=("$c") ;;
   esac
 done
 
+stop_tier "L1" "${l1_containers[@]}"
 stop_tier "L2 CL (heimdall)" "${cl_containers[@]}"
 stop_tier "L2 EL (bor)" "${el_containers[@]}"
 stop_tier "remaining containers" "${other_containers[@]}"
