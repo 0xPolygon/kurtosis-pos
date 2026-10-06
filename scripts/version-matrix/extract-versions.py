@@ -133,17 +133,10 @@ PACKAGE_TRACKING_MODE = {
     "github.com/ethpandaops/ethereum-package": "head",
 }
 
-# A head-tracked pin is always behind HEAD on an active upstream, so distance
-# alone is not a signal. Alarm once the pin is old enough that we are plausibly
-# missing fixes: these packages ship most days, so two weeks is already a
-# meaningful gap.
-HEAD_TRACKING_STALE_AFTER_DAYS = 14
-
 STATUS_MATCHES = "matches stable"
 STATUS_BEHIND = "behind stable"
 STATUS_NEWER = "newer than stable"
 STATUS_PINNED = "pinned"
-STATUS_TRACKING_HEAD = "tracking head"
 
 
 class VersionMatrixExtractor:
@@ -357,7 +350,7 @@ class VersionMatrixExtractor:
             if tracking_mode == "head":
                 latest_version, latest_version_date = self._get_head_version(repo)
                 status, commit_distance = self._determine_head_tracked_status(
-                    repo, pin, pin_date, latest_version)
+                    repo, pin, latest_version)
             else:
                 latest_version, latest_version_date = self._get_latest_package_version(repo)
                 status, commit_distance = self._determine_package_status(
@@ -449,14 +442,9 @@ class VersionMatrixExtractor:
         return None, None
 
     def _determine_head_tracked_status(self, repo: str, pin: str,
-                                       pin_date: Optional[str],
                                        head_version: Optional[str]) -> tuple:
-        """Judge a pin that tracks HEAD rather than releases.
-
-        Being behind HEAD is the normal steady state for these packages, so
-        distance alone is not a signal. What matters is age: a pin only becomes
-        a problem once it is old enough that we are plausibly missing fixes.
-        """
+        """Judge a pin that tracks HEAD rather than releases: any pin short of
+        the branch tip is behind, so the nightly bump follows HEAD."""
         if not head_version:
             return None, None
 
@@ -464,34 +452,16 @@ class VersionMatrixExtractor:
             return STATUS_MATCHES, None
 
         comparison = self._github_get(f"repos/{repo}/compare/{head_version}...{pin}")
-        distance = None
         if comparison:
             behind_by = comparison.get("behind_by", 0)
             if behind_by > 0:
-                distance = f"{behind_by} commits behind HEAD"
-            elif comparison.get("ahead_by", 0) > 0:
+                return STATUS_BEHIND, f"{behind_by} commits behind HEAD"
+            if comparison.get("ahead_by", 0) > 0:
                 # Pinned to an unmerged or since-rewritten commit.
                 return STATUS_NEWER, (
                     f"{comparison['ahead_by']} commits ahead of HEAD")
 
-        age_days = self._days_since(pin_date)
-        if age_days is not None and age_days > HEAD_TRACKING_STALE_AFTER_DAYS:
-            age_note = f"pinned commit is {age_days} days old"
-            return STATUS_BEHIND, (
-                f"{distance}, {age_note}" if distance else age_note)
-
-        # Recent enough to be deliberate: report the drift without alarming.
-        return STATUS_TRACKING_HEAD, distance
-
-    @staticmethod
-    def _days_since(date: Optional[str]) -> Optional[int]:
-        """Whole days between an ISO date (YYYY-MM-DD) and today."""
-        if not date:
-            return None
-        try:
-            return (datetime.now() - datetime.strptime(date, "%Y-%m-%d")).days
-        except ValueError:
-            return None
+        return STATUS_BEHIND, None
 
     def _package_source_url(self, repo: str, ref: str) -> Optional[str]:
         """Build a browsable URL for a package ref."""

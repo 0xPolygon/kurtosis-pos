@@ -71,7 +71,6 @@ dependency, so the nightly diff stays empty.
 | newer than stable | ⚡️   | Ahead of the latest release — a prerelease or a patched build  |
 | behind stable     | 🚨   | An upstream release is available and should be picked up       |
 | pinned            | 📌   | Deliberately held back — see the reason in the matrix          |
-| tracking head     | ⚠️   | Head-tracked package drifting from upstream, but not yet stale |
 
 ## Adding an image
 
@@ -161,14 +160,7 @@ those that have never tagged at all. Without an entry, the latter falls back to
 comparing a repo against its own branch tip and always looks up to date; the
 extractor prints a hint when it finds a package with no releases *and* no tags.
 
-For a head-tracked package, being behind HEAD is the normal steady state, so
-distance alone cannot be the alarm. Age is: the pin reports `⚠️ tracking head`
-with its commit distance until the pinned commit is older than
-`HEAD_TRACKING_STALE_AFTER_DAYS` (14 days — these packages ship most days, so
-two weeks is already a meaningful gap), at which point it escalates to
-`🚨 behind stable`. If the compare API is unavailable, the age check still
-applies on its own rather than reporting nothing.
-
-Age is only consulted when the pin has actually fallen behind: a pin that still
-equals HEAD reports `✅ matches stable` however old it is, so a dormant upstream
-never raises a false alarm.
+A head-tracked pin reports `🚨 behind stable` with its commit distance as soon as
+HEAD moves past it, so the nightly bump PR follows the branch tip: one refreshed
+PR per upstream change rather than a pin drifting unnoticed. A pin ahead of HEAD
+(an unmerged or rewritten commit) reports `⚡️ newer than stable`.

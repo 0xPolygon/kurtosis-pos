@@ -10,13 +10,12 @@ Versions of every component the package deploys, compared against the latest ups
 
 ## Status
 
-| Status               | Meaning                                                         |
-| -------------------- | --------------------------------------------------------------- |
-| ✅ matches stable    | Running the latest upstream release.                            |
-| ⚡️ newer than stable | Ahead of the latest release — a prerelease or a patched build.  |
-| 🚨 behind stable     | An upstream release is available and should be picked up.       |
-| 📌 pinned            | Deliberately held back — the reason is shown inline.            |
-| ⚠️ tracking head     | Head-tracked package drifting from upstream, but not yet stale. |
+| Status               | Meaning                                                        |
+| -------------------- | -------------------------------------------------------------- |
+| ✅ matches stable    | Running the latest upstream release.                           |
+| ⚡️ newer than stable | Ahead of the latest release — a prerelease or a patched build. |
+| 🚨 behind stable     | An upstream release is available and should be picked up.      |
+| 📌 pinned            | Deliberately held back — the reason is shown inline.           |
 
 ## Images
 
@@ -56,5 +55,5 @@ External Kurtosis packages the package depends on. Versions are pinned in the [`
 
 | Package                                                                                            | Pinned version                                                                                                    | Latest stable version                                                                    | Status                                          |
 | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [6dd3f2613d1f](https://github.com/ethpandaops/ethereum-package/tree/6dd3f2613d1f9d1a9274864083c692726146c9db)     | [HEAD (72851c6de9ac)](https://github.com/ethpandaops/ethereum-package/tree/72851c6de9ac) | ⚠️ tracking head — 3 commits behind HEAD        |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [6dd3f2613d1f](https://github.com/ethpandaops/ethereum-package/tree/6dd3f2613d1f9d1a9274864083c692726146c9db)     | [HEAD (72851c6de9ac)](https://github.com/ethpandaops/ethereum-package/tree/72851c6de9ac) | 🚨 behind stable — 3 commits behind HEAD        |
 | [github.com/kurtosis-tech/prometheus-package](https://github.com/kurtosis-tech/prometheus-package) | [f3402ebad8cf](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | [1.1.0](https://github.com/kurtosis-tech/prometheus-package/releases/tag/1.1.0)          | ⚡️ newer than stable — 2 commits ahead of 1.1.0 |
