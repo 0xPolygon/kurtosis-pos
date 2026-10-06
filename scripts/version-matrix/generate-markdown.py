@@ -120,7 +120,7 @@ class MarkdownMatrixGenerator:
             # than presenting a bare sha as a "stable version".
             latest_label = latest_version
             if latest_version and package.get("tracking_mode") == "head":
-                latest_label = f"HEAD ({latest_version})"
+                latest_label = f"HEAD ({latest_version[:12]})"
 
             table += (
                 f"| [{name}](https://{name})"
