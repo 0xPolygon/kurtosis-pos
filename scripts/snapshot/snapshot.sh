@@ -652,8 +652,9 @@ log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract
 # emitted AND no checkpoint is buffered (a buffered checkpoint means an L1
 # submission may be in flight). If L1 records ack #N while heimdall misses it,
 # the restored listener never replays the event and checkpoints stall forever.
-# The state must hold on two consecutive polls, one heimdall poll interval
-# apart, so an ack landing between the two reads is caught.
+# While bor keeps producing blocks, the buffer is only empty for a few seconds
+# after each ack, so poll every second and take the first idle reading. An ack
+# landing after that reading is caught by the post-dump check below.
 wait_for_checkpoint_quiescence() {
   local enclave_name="$1"
 
@@ -677,19 +678,16 @@ wait_for_checkpoint_quiescence() {
     kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
   root_chain_proxy=$(jq -r '.root.RootChainProxy' "$contract_addresses_tmp")
 
-  local num_steps=120
-  local idle_streak=0 previous_l1_acks=""
+  local num_steps=600 previous_state=""
   for step in $(seq 1 "$num_steps"); do
     # `currentHeaderBlock()` returns the next-slot id (multiples of
     # ChildChainBlockInterval=10000); divide to get the count of acks on L1.
-    local l1_header_block l1_acks heimdall_acks buffered_end_block
+    local l1_header_block l1_acks heimdall_acks buffered_end_block state
     l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | head -n 1 | awk '{print $1}' || true)
     # A failed read must not pass for "0 acks", which would look idle.
     if [[ -z "$l1_header_block" ]]; then
       log_info "Checkpoint quiescence check ${step}/${num_steps}: L1 read failed, retrying"
-      idle_streak=0
-      previous_l1_acks=""
-      sleep 5
+      sleep 1
       continue
     fi
     l1_acks=$((l1_header_block / 10000))
@@ -697,24 +695,17 @@ wait_for_checkpoint_quiescence() {
     # An empty buffer is returned as a zero-value checkpoint.
     buffered_end_block=$(curl -sf "$cl_api_url/checkpoints/buffer" 2> /dev/null | jq -r '.checkpoint.end_block // "0"' || echo "unknown")
 
-    log_info "Checkpoint quiescence check ${step}/${num_steps}: L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}, buffered end_block=${buffered_end_block}"
-    if [[ "${heimdall_acks}" -ge 1 && "${heimdall_acks}" -ge "${l1_acks}" && "${buffered_end_block}" == "0" ]]; then
-      if [[ "${l1_acks}" == "${previous_l1_acks}" ]]; then
-        idle_streak=$((idle_streak + 1))
-      else
-        idle_streak=1
-      fi
-      previous_l1_acks="${l1_acks}"
-      if [[ "${idle_streak}" -ge 2 ]]; then
-        log_info "Checkpoint flow is quiescent (L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}, empty buffer)"
-        quiescent_l1_acks="${l1_acks}"
-        return 0
-      fi
-    else
-      idle_streak=0
-      previous_l1_acks=""
+    state="L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}, buffered end_block=${buffered_end_block}"
+    if [[ "$state" != "$previous_state" ]]; then
+      log_info "Checkpoint quiescence check ${step}/${num_steps}: ${state}"
+      previous_state="$state"
     fi
-    sleep 5
+    if [[ "${heimdall_acks}" -ge 1 && "${heimdall_acks}" -ge "${l1_acks}" && "${buffered_end_block}" == "0" ]]; then
+      log_info "Checkpoint flow is quiescent (${state})"
+      quiescent_l1_acks="${l1_acks}"
+      return 0
+    fi
+    sleep 1
   done
   log_error "Checkpoint flow did not reach quiescence within $num_steps steps"
   return 1
