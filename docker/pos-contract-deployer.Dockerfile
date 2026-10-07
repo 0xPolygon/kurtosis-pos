@@ -90,6 +90,7 @@ WORKDIR /opt/spol-contracts
 RUN git clone --branch ${SPOL_CONTRACTS_BRANCH} https://github.com/0xPolygon/spol-contracts . \
   && git checkout ${SPOL_CONTRACTS_TAG_OR_COMMIT_SHA} \
   && rm -rf .git
+COPY static_files/contracts/l1/scripts/deployPerChain.s.sol /opt/spol-contracts/script/deployPerChain.s.sol
 RUN forge soldeer install \
   && forge build
 

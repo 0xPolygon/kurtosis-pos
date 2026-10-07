@@ -101,15 +101,20 @@ jq -n \
     }
   }' > script/input.json
 
-# Deploy sPOL contracts L1 then L2 via the existing run(string) entrypoint.
-# Forge runs against L1_RPC_URL as primary; the script reaches L2 internally
-# via vm.createSelectFork(L2_RPC_URL) on a per-tx basis. L2_RPC_URL and
-# L2_CHAIN_ID are read from the input.json scenario above, not from the forge
-# CLI here. --non-interactive suppresses the multi-chain broadcast confirmation
-# prompt that forge shows when vm.createSelectFork() is used in the script.
-forge_l1 script script/Deploy.s.sol:Deploy \
-  --sig 'run(string)' 'ethereum-polygon' \
-  --rpc-url "${L1_RPC_URL}" --broadcast --legacy --non-interactive
+# Deploy sPOL contracts on L1, then L2, in separate forge runs so that only the
+# L1 run simulates with Amsterdam gas pricing. Each run writes
+# script/deployment.json with the other chain's addresses zeroed, so keep both.
+forge_l1 script script/deployPerChain.s.sol:DeployPerChain \
+  --sig 'runL1(string)' 'ethereum-polygon' \
+  --rpc-url "${L1_RPC_URL}" --broadcast --legacy
+mv script/deployment.json script/deployment-l1.json
+SPOL_MESSENGER_PROXY=$(jq -re '.sPOL_L1.sPOLMessengerProxy' script/deployment-l1.json)
+forge script script/deployPerChain.s.sol:DeployPerChain \
+  --sig 'runL2(string,address)' 'ethereum-polygon' "${SPOL_MESSENGER_PROXY}" \
+  --rpc-url "${L2_RPC_URL}" --broadcast --legacy
+jq -s '{sPOL_L1: .[0].sPOL_L1, sPOL_L2: .[1].sPOL_L2}' \
+  script/deployment-l1.json script/deployment.json > script/deployment-merged.json
+mv script/deployment-merged.json script/deployment.json
 
 # Merge LST addresses into the accumulated contractAddresses.json so a single
 # artifact carries plasma + matic-to-pol + pos-bridge + spol. Upstream's
@@ -160,8 +165,8 @@ fi
 # sequential validator ids (1..VALIDATOR_COUNT) rather than the mainnet/testnet
 # ids (188, 92) it hardcodes. Inlined here in bash to keep all kurtosis-specific
 # orchestration in one place — the upstream forge scripts in script/ are only
-# used when a forge multi-step deploy genuinely needs Solidity (e.g. CREATE2 +
-# vm.createSelectFork in Deploy.s.sol).
+# used when a forge multi-step deploy genuinely needs Solidity (e.g. the CREATE2
+# deploys in Deploy.s.sol).
 for v in VALIDATOR_COUNT INITIAL_DEPOSIT_WEI ADMIN_ADDRESS; do
   if [[ -z "${!v:-}" ]]; then
     echo "Error: ${v} is not set"
