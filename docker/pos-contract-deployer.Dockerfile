@@ -23,7 +23,8 @@ ARG POS_PORTAL_TAG_OR_COMMIT_SHA="3402faa"
 ARG SPOL_CONTRACTS_BRANCH="main"
 ARG SPOL_CONTRACTS_TAG_OR_COMMIT_SHA="3c4bdf6c"
 
-ENV FOUNDRY_VERSION="stable"
+# v1.8.5+ is required to simulate scripts with Amsterdam gas pricing (FOUNDRY_HARDFORK).
+ENV FOUNDRY_VERSION="v1.8.5"
 # Baked at image-build time. Custom chain IDs are NOT supported — redeploy with a
 # different default here if you genuinely need another L2 chain id.
 ENV EL_CHAIN_ID="4927"

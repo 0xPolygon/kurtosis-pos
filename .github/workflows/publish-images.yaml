@@ -25,7 +25,7 @@ env:
 
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
-  POS_CONTRACT_DEPLOYER_VERSION: 0.0.4
+  POS_CONTRACT_DEPLOYER_VERSION: 0.0.5
   # pos-contracts (anvil-pos) - 2025-08-01 — bridge contracts, MATIC→POL migration
   POS_CONTRACTS_ANVIL_POS_BRANCH: anvil-pos
   POS_CONTRACTS_ANVIL_POS_COMMIT_SHA: d96d5929

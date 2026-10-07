@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+# shellcheck source=../forge-l1.sh
+source /opt/data/forge-l1.sh
+
 # Migrate MATIC to POL on L1. Mirrors the mainnet UpgradeStake_DepositManager_Mainnet
 # batch (pos-contracts scripts/deployers/pol-upgrade/...) — steps 2/8 (impl upgrades)
 # are skipped because d96d5929 already ships the POL-aware StakeManager and DepositManager.
@@ -22,7 +25,7 @@ cp /opt/data/addresses/contractAddresses.json ./contractAddresses.json
 
 echo "Deploying POL token and PolygonMigration..."
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
-forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
+forge_l1 script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
   scripts/deployment-scripts/deployPolAndMigration.s.sol:DeployPolAndMigrationScript
 
 # Parse deployed addresses from the broadcast JSON.

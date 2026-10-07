@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+# shellcheck source=../forge-l1.sh
+source /opt/data/forge-l1.sh
+
 # Deploy sPOL/LST contracts to L1 and L2 using the kurtosis PoS devnet addresses.
 # Runs inside the pos-contract-deployer image, which bundles the spol-contracts
 # source, soldeer deps, and a warm forge cache at /opt/spol-contracts
@@ -104,7 +107,7 @@ jq -n \
 # L2_CHAIN_ID are read from the input.json scenario above, not from the forge
 # CLI here. --non-interactive suppresses the multi-chain broadcast confirmation
 # prompt that forge shows when vm.createSelectFork() is used in the script.
-forge script script/Deploy.s.sol:Deploy \
+forge_l1 script script/Deploy.s.sol:Deploy \
   --sig 'run(string)' 'ethereum-polygon' \
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy --non-interactive
 

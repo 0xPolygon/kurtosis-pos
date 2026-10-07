@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+# shellcheck source=../forge-l1.sh
+source /opt/data/forge-l1.sh
+
 # Deploy MATIC contracts to L2 and synchronize state on L1.
 # For reference: https://github.com/0xPolygon/pos-contracts/tree/arya/matic-cli/pos-1869
 
@@ -34,7 +37,7 @@ forge script -vvvv --rpc-url "${L2_RPC_URL}" --broadcast --legacy \
   scripts/deployment-scripts/childContractDeployment.s.sol:ChildContractDeploymentScript
 
 echo "Mapping L2 contracts to the registry on L1..."
-forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast --legacy \
+forge_l1 script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast --legacy \
   scripts/deployment-scripts/syncChildStateToRoot.s.sol:SyncChildStateToRootScript
 
 mkdir -p /opt/contracts

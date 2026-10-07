@@ -56,7 +56,7 @@ IMAGES = {
     "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.2",
     "l2_cl_queue_image": "rabbitmq:4.3.6",
     # utilities
-    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.4",
+    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.5",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
