@@ -73,6 +73,8 @@ ETHEREUM_PACKAGE_ARGS = {
         # both activate with Fulu. BPO 3 to 5 stay disabled, as in the ethereum package defaults.
         "bpo_1_epoch": 3,
         "bpo_2_epoch": 3,
+        # Glamsterdam: Gloas (CL) + Amsterdam (EL).
+        "gloas_fork_epoch": 4,
     },
     "persistent": True,
 }

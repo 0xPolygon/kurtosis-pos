@@ -57,12 +57,12 @@ ethereum_package:
 
 #### `participants`
 
-|  Field   |  Type  |          Default           |           Description            |
-| -------- | ------ | -------------------------- | -------------------------------- |
-| cl_type  | string | lighthouse                 | Consensus Layer (CL) client type |
-| cl_image | string | sigp/lighthouse:v8.2.3     | Image for the CL client          |
-| el_type  | string | geth                       | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.17.7 | Image for the EL client          |
+| Field    | Type   | Default                     | Description                      |
+| -------- | ------ | --------------------------- | -------------------------------- |
+| cl_type  | string | lighthouse                  | Consensus Layer (CL) client type |
+| cl_image | string | sigp/lighthouse:v8.3.0-rc.0 | Image for the CL client          |
+| el_type  | string | geth                        | Execution Layer (EL) client type |
+| el_image | string | ethereum/client-go:v1.17.7  | Image for the EL client          |
 
 #### `network_params`
 
