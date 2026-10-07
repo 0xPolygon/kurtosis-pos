@@ -194,10 +194,17 @@ generate_docker_compose() {
 configure_networks() {
   local docker_compose_file="$1"
 
-  # Replace networks section with single network named after enclave
+  # Replace networks section with single network named after enclave, on a
+  # fixed subnet so every service can be pinned to a static address (see
+  # add_network_aliases).
   yq --in-place --yaml-output \
     --arg new_network "$enclave_name" \
-    '.networks = {($new_network): {name: $new_network}}' "$docker_compose_file"
+    --arg prefix "$subnet_prefix" '
+        .networks = {($new_network): {
+            name: $new_network,
+            ipam: {config: [{subnet: ($prefix + ".0/24"), gateway: ($prefix + ".1")}]}
+        }}
+    ' "$docker_compose_file"
 
   # Update all service network references to use enclave name
   yq --in-place --yaml-output \
@@ -310,16 +317,24 @@ rename_data_volumes() {
 add_network_aliases() {
   local docker_compose_file="$1"
 
+  # Static addresses: heimdall validators crash-restart at startup (see
+  # configure_service_dependencies), and a restarted container would otherwise
+  # get a new IP. cometBFT resolves persistent_peers once and keeps redialing
+  # the old IP, so an RPC node that started earlier ends up peerless forever.
   yq --in-place --yaml-output \
     --arg new_network "$enclave_name" \
-    --arg enclave_prefix "${enclave_name}-" '
-        .services |= with_entries(
+    --arg enclave_prefix "${enclave_name}-" \
+    --arg prefix "$subnet_prefix" '
+        if (.services | length) > 240 then error("too many services for a /24 subnet") else . end |
+        .services |= (to_entries | sort_by(.key) | to_entries | map(
+            .key as $i | .value |
             .value.networks = {
                 ($new_network): {
-                    aliases: [.key | sub("^" + $enclave_prefix; "")]
+                    aliases: [.key | sub("^" + $enclave_prefix; "")],
+                    ipv4_address: ($prefix + "." + (($i + 10) | tostring))
                 }
             }
-        )
+        ) | from_entries)
     ' "$docker_compose_file"
 }
 
@@ -424,13 +439,14 @@ add_health_checks() {
         )
     ' "$docker_compose_file"
 
-  # Heimdall health check
+  # Heimdall health check. The spans endpoint is served from local state, so
+  # also require cometBFT to have left blocksync: a peerless node never does.
   yq --in-place --yaml-output \
     --arg enclave_name "$enclave_name" '
         .services |= with_entries(
             if .key | test("^" + $enclave_name + "-l2-cl-[0-9]+-heimdall") then
                 .value.healthcheck = {
-                    "test": ["CMD", "wget", "--spider", "-q", "-T", "5", "http://localhost:1317/bor/spans/latest"],
+                    "test": ["CMD-SHELL", "wget --spider -q -T 5 http://localhost:1317/bor/spans/latest && wget -q -T 5 -O - http://localhost:26657/status | grep -Eq \"\\\"catching_up\\\": ?false\""],
                     "interval": "5s",
                     "start_interval": "250ms",
                     "timeout": "10s",
@@ -622,6 +638,11 @@ if [[ -z "$enclave_name" ]]; then
   exit 1
 fi
 log_info "Using enclave name: $enclave_name"
+
+# Left as a compose variable so a restore can move the /24 if it overlaps a
+# local network: POS_DEVNET_SUBNET_PREFIX=10.99.7 ./scripts/snapshot/restore.sh
+# shellcheck disable=SC2016
+subnet_prefix='${POS_DEVNET_SUBNET_PREFIX:-10.86.42}'
 
 target_block=128 # Rio HF activation block
 log_info "Waiting for L2 to reach block $target_block"

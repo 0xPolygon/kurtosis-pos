@@ -8,10 +8,15 @@ on:
   workflow_dispatch:
   push:
     tags: ['v*']
+  pull_request:
+    paths:
+      - .github/actions/compose/**
+      - .github/workflows/snapshot.yaml
+      - scripts/snapshot/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   ENCLAVE_NAME: pos
@@ -20,12 +25,13 @@ jobs:
   snapshot:
     runs-on: ${{ matrix.devnet_type == 'large' && 'ubuntu-latest-8-cores' || 'ubuntu-latest' }}
     # Hard-pin to the canonical org so a fork of this public repo can never
-    # schedule a job on `0xPolygon`'s billable larger runners. The trigger
-    # set above already excludes `pull_request` from forks, but this guards
-    # against a future trigger addition that would otherwise expose the
-    # larger runner (and its docker/gcp secrets) to attacker-controlled
-    # workflow files.
-    if: github.repository == '0xPolygon/kurtosis-pos'
+    # schedule a job on `0xPolygon`'s billable larger runners, and skip fork
+    # PRs: `github.repository` is the base repo for those, so the first check
+    # alone would run attacker-controlled workflow files on the larger runner.
+    if: >-
+      github.repository == '0xPolygon/kurtosis-pos' &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
     timeout-minutes: 60
 
     permissions:

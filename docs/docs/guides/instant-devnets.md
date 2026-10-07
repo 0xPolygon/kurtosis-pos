@@ -43,6 +43,8 @@ Then, restore the devnet.
 
 The script also accepts the same output directory argument as `extract.sh`, so if you extracted the snapshot to a different directory, make sure to pass that directory to `restore.sh` as well.
 
+Every service gets a static address on `10.86.42.0/24`. If that range overlaps a local network, pick another `/24` with `POS_DEVNET_SUBNET_PREFIX=10.99.7 ./scripts/snapshot/restore.sh`.
+
 Monitor the logs using `docker compose`:
 
 ```bash
