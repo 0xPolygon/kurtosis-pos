@@ -1,5 +1,5 @@
 name: github.com/0xPolygon/kurtosis-pos
 description: This is a Kurtosis package for deploying a Polygon PoS devnet
 replace:
-  github.com/ethpandaops/ethereum-package: github.com/ethpandaops/ethereum-package@6dd3f2613d1f9d1a9274864083c692726146c9db  # 2026-09-28
+  github.com/ethpandaops/ethereum-package: github.com/ethpandaops/ethereum-package@bdbea4124dc8485b03991a137bb82347019b3922  # 2026-10-06
   github.com/kurtosis-tech/prometheus-package: github.com/kurtosis-tech/prometheus-package@f3402ebad8cffe98eef990e41ca863f7e8746c21  # 2026-06-24
