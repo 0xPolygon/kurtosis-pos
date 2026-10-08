@@ -49,6 +49,7 @@ def run(plan, args):
 
     else:
         plan.print("Using an external l1")
+        l1_launcher.warn_external_l1_hardfork(plan)
         l1_rpc_url = dev_args.get("l1_rpc_url")
         l1_chain_id = plan.run_sh(
             name="l1-chain-id-reader",
