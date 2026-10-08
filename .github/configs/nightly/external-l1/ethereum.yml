@@ -1,12 +1,12 @@
 participants:
   - count: 1
     cl_type: lighthouse
-    cl_image: sigp/lighthouse:v8.2.3
+    cl_image: sigp/lighthouse:v8.3.0-rc.0
     el_type: geth
     el_image: ethereum/client-go:v1.17.8
     use_separate_vc: true
     vc_type: lighthouse
-    vc_image: sigp/lighthouse:v8.2.3
+    vc_image: sigp/lighthouse:v8.3.0-rc.0
     supernode: True
 
 network_params:
@@ -28,3 +28,14 @@ network_params:
   prefunded_accounts: '{"0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9": {"balance": "1000000000ETH"}, "0x4e59b44847b379578588920cA78FbF26c0B4956C": {"balance": "0ETH", "code": "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3"}, "0x11111f7eaa946be186bedc72df002ff166ee9045": {"balance": "10000ETH"}, "0x22222743b71969b4f3fb87a650ec116548ed740b": {"balance": "10000ETH"}, "0x33333fae0b3a33c88f4b9a1313147fc60f721f67": {"balance": "10000ETH"}, "0x44444baa7e42ed432556acd1e47c546793f9e165": {"balance": "10000ETH"}, "0x5555583243bbaaddb38713c6c008701cdae73a75": {"balance": "10000ETH"}, "0x66666f88bc5720214b941fc9c9d3190093c94b4a": {"balance": "10000ETH"}, "0x77777106ea5bec90bc5b52dbeb465f4a6a467960": {"balance": "10000ETH"}, "0x888883de3e8fb5c8e9c5ec34106d26aca272b306": {"balance": "10000ETH"}, "0x999998fe132d7c2ee4d568606056c279ed791bf1": {"balance": "10000ETH"}, "0x1010104191c700348e4ee44eb3f54287c0e8d5ef": {"balance": "10000ETH"}}'
   seconds_per_slot: 1
   preset: minimal
+  # Mirrors the L1 forks of src/config/input_parser.star: forge simulates L1 scripts
+  # with Amsterdam (L1_HARDFORK), so this L1 must run Glamsterdam from genesis.
+  altair_fork_epoch: 0
+  bellatrix_fork_epoch: 0
+  capella_fork_epoch: 0
+  deneb_fork_epoch: 0
+  electra_fork_epoch: 0
+  fulu_fork_epoch: 0
+  bpo_1_epoch: 0
+  bpo_2_epoch: 0
+  gloas_fork_epoch: 0
