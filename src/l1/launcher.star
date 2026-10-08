@@ -63,7 +63,7 @@ def check_l1_hardfork_from_beacon(plan, cl_rpc_url):
         cl_rpc_url,
         [
             "version=$(curl -s $URL/eth/v1/beacon/states/head/fork | jq -r .data.current_version)",
-            'cl_fork=$(curl -s $URL/eth/v1/config/spec | jq -r --arg v "$version" \'.data | to_entries[] | select((.key | endswith("_FORK_VERSION")) and .value == $v) | .key | sub("_FORK_VERSION$"; "") | ascii_downcase\')',
+            'cl_fork=$(curl -s $URL/eth/v1/config/spec | jq -r --arg v "$version" \'.data | to_entries[] | select((.key | endswith("_FORK_VERSION")) and .value == $v) | .key | sub("_FORK_VERSION$"; "") | ascii_downcase\' | head -n1)',
             # Consensus fork -> execution fork, the name forge and anvil take.
             'case "$cl_fork" in gloas) actual=amsterdam;; fulu) actual=osaka;; electra) actual=prague;; deneb) actual=cancun;; capella) actual=shanghai;; *) actual="$cl_fork";; esac',
         ],
