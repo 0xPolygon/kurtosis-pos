@@ -40,6 +40,8 @@ After the tests complete, you should see output similar to:
 ```bash
 tests/bridge/fx.bats
  ✓ send a message from L1 to L2 via fx-portal state tunnel
+ ✓ fx-portal L1 state stays pending on L2 until the state sync is committed
+ ✓ force a state sync through FxRoot without going through a root tunnel
  ✓ bridge ERC20 from L1 to L2 via fx-portal
  ✓ bridge ERC721 from L1 to L2 via fx-portal
  ✓ bridge ERC1155 from L1 to L2 via fx-portal
@@ -57,7 +59,7 @@ tests/bridge/pos.bats
  ✓ bridge ERC721 from L1 to L2 via pos bridge
  ✓ bridge ERC1155 from L1 to L2 via pos bridge
 
-13 tests, 0 failures
+15 tests, 0 failures
 ```
 
 Once the deposits have landed on L2, run the L2-to-L1 withdraw tests to exercise the exit flow (burn on L2, wait for a checkpoint on L1, build an exit proof, claim).
