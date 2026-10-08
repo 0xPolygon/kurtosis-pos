@@ -1,3 +1,5 @@
+constants = import_module("../config/constants.star")
+
 CONTRACTS_CONFIG_FILE_PATH = "../../static_files/contracts"
 
 
@@ -18,6 +20,7 @@ def deploy_l1(
         env_vars={
             "PRIVATE_KEY": private_key,
             "L1_RPC_URL": l1_rpc_url,
+            "L1_HARDFORK": constants.L1_HARDFORK,
         },
         files={
             "/opt/data": config_artifact,

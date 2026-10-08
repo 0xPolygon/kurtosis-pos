@@ -84,6 +84,8 @@ SEQSTORE_GATEWAY_SERVICE_NAME = "seqstore-gateway"
 SEQSTORE_GRPC_PORT_NUMBER = 9550
 
 L1_CHAIN_ID = "3151908"  # 0x301824
+# Runtime hardfork forge simulates L1 scripts with. Keep in sync with the last L1 fork.
+L1_HARDFORK = "amsterdam"
 
 # Do NOT change EL_CHAIN_ID / CL_CHAIN_ID — both are baked into pre-built
 # artifacts at image-build time:

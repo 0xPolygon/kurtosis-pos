@@ -73,10 +73,11 @@ if [[ -z "${bytecode}" || "${bytecode}" == "null" ]]; then
   echo "Error: failed to read ValidatorShare bytecode from ${artifact}"
   exit 1
 fi
+# No --legacy: a legacy gas price is pinned to the current base fee, which the
+# heavy Amsterdam deploy blocks before this one can push past by estimation time.
 new_validator_share=$(cast send \
   --rpc-url "${L1_RPC_URL}" \
   --private-key "${PRIVATE_KEY}" \
-  --legacy \
   --create "${bytecode}" \
   --json |
   jq -r '.contractAddress')

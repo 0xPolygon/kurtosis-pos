@@ -101,7 +101,7 @@ jq -n \
 # Deploy sPOL contracts on L1, then L2, in separate forge runs so that only the
 # L1 run simulates with Amsterdam gas pricing. Each run writes
 # script/deployment.json with the other chain's addresses zeroed, so keep both.
-forge script --hardfork amsterdam script/deployPerChain.s.sol:DeployPerChain \
+forge script --hardfork "${L1_HARDFORK}" script/deployPerChain.s.sol:DeployPerChain \
   --sig 'runL1(string)' 'ethereum-polygon' \
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy
 mv script/deployment.json script/deployment-l1.json

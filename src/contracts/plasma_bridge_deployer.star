@@ -20,6 +20,7 @@ def deploy_l1(plan, polygon_pos_args, l1_rpc_url, private_key, validator_account
         env_vars={
             "PRIVATE_KEY": private_key,
             "L1_RPC_URL": l1_rpc_url,
+            "L1_HARDFORK": constants.L1_HARDFORK,
             "CL_CHAIN_ID": constants.CL_CHAIN_ID,
             "VALIDATOR_ACCOUNTS": validator_accounts_formatted,
             "VALIDATOR_BALANCE": str(constants.VALIDATORS_BALANCE_ETH),
@@ -78,6 +79,7 @@ def deploy_l2(
         env_vars={
             "PRIVATE_KEY": private_key,
             "L1_RPC_URL": l1_rpc_url,
+            "L1_HARDFORK": constants.L1_HARDFORK,
             "L2_RPC_URL": l2_rpc_url,
         },
         files={

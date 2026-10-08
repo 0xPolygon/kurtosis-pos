@@ -34,7 +34,7 @@ forge script -vvvv --rpc-url "${L2_RPC_URL}" --broadcast --legacy \
   scripts/deployment-scripts/childContractDeployment.s.sol:ChildContractDeploymentScript
 
 echo "Mapping L2 contracts to the registry on L1..."
-forge script -vvvv --hardfork amsterdam --rpc-url "${L1_RPC_URL}" --broadcast --legacy \
+forge script -vvvv --hardfork "${L1_HARDFORK}" --rpc-url "${L1_RPC_URL}" --broadcast --legacy \
   scripts/deployment-scripts/syncChildStateToRoot.s.sol:SyncChildStateToRootScript
 
 mkdir -p /opt/contracts
