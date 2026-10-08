@@ -75,6 +75,6 @@ There is no PR template: the body is at most 5 bullets, one per bump
 **CI** (run by `bump-version-matrix.yml`): only edit files. Do not commit, push
 or open the PR: return the title and body, and the workflow opens or refreshes the
 PR. If nothing is left to bump (every drifted row is 📌, rc or unpublished), make
-no change and return an empty title. Either way, list each drifted row left
-unbumped in `skipped` (component, current and latest version, reason): the
-workflow writes it to the run summary.
+no change and return an empty title. Either way, list every drifted row in
+`bumped` (component, old and new version) or `skipped` (component, current and
+latest version, reason): the workflow writes both to the run summary.
