@@ -154,7 +154,16 @@ def run(plan, args):
         l2_cl_genesis_artifact,
         l1_context.rpc_url,
     )
-    l2_rpc_url = l2_context.all_participants[0].el_context.rpc_http_url
+    # Forge pins its fork block and reads state there; a non-archive validator keeps
+    # only the latest trie in memory, so prefer an RPC node for the L2 deploys.
+    rpc_participants = [
+        p
+        for p in l2_context.all_participants
+        if p.kind == constants.PARTICIPANT_KIND.rpc
+    ]
+    l2_rpc_url = (rpc_participants or l2_context.all_participants)[
+        0
+    ].el_context.rpc_http_url
 
     contract_addresses_artifact = contracts.deploy_l2_contracts(
         plan,
