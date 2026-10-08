@@ -25,7 +25,7 @@ env:
 
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
-  POS_CONTRACT_DEPLOYER_VERSION: 0.0.4
+  POS_CONTRACT_DEPLOYER_VERSION: 0.0.6
   # pos-contracts (anvil-pos) - 2025-08-01 — bridge contracts, MATIC→POL migration
   POS_CONTRACTS_ANVIL_POS_BRANCH: anvil-pos
   POS_CONTRACTS_ANVIL_POS_COMMIT_SHA: d96d5929
@@ -36,6 +36,9 @@ env:
   # pos-portal - 2025-10-24
   POS_PORTAL_BRANCH: master
   POS_PORTAL_COMMIT_SHA: 3402faa
+  # fx-portal - 2023-12-19
+  FX_PORTAL_BRANCH: main
+  FX_PORTAL_COMMIT_SHA: 7319592
   # spol-contracts - 2026-04-16
   SPOL_CONTRACTS_BRANCH: main
   SPOL_CONTRACTS_COMMIT_SHA: 3c4bdf6c
@@ -92,6 +95,8 @@ jobs:
             com.polygon.pos-contracts-main.commit=${{ env.POS_CONTRACTS_MAIN_COMMIT_SHA }}
             com.polygon.pos-portal.branch=${{ env.POS_PORTAL_BRANCH }}
             com.polygon.pos-portal.commit=${{ env.POS_PORTAL_COMMIT_SHA }}
+            com.polygon.fx-portal.branch=${{ env.FX_PORTAL_BRANCH }}
+            com.polygon.fx-portal.commit=${{ env.FX_PORTAL_COMMIT_SHA }}
             com.polygon.spol-contracts.branch=${{ env.SPOL_CONTRACTS_BRANCH }}
             com.polygon.spol-contracts.commit=${{ env.SPOL_CONTRACTS_COMMIT_SHA }}
 
@@ -108,6 +113,8 @@ jobs:
             POS_CONTRACTS_MAIN_TAG_OR_COMMIT_SHA=${{ env.POS_CONTRACTS_MAIN_COMMIT_SHA }}
             POS_PORTAL_BRANCH=${{ env.POS_PORTAL_BRANCH }}
             POS_PORTAL_TAG_OR_COMMIT_SHA=${{ env.POS_PORTAL_COMMIT_SHA }}
+            FX_PORTAL_BRANCH=${{ env.FX_PORTAL_BRANCH }}
+            FX_PORTAL_TAG_OR_COMMIT_SHA=${{ env.FX_PORTAL_COMMIT_SHA }}
             SPOL_CONTRACTS_BRANCH=${{ env.SPOL_CONTRACTS_BRANCH }}
             SPOL_CONTRACTS_TAG_OR_COMMIT_SHA=${{ env.SPOL_CONTRACTS_COMMIT_SHA }}
           push: true

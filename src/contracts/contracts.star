@@ -1,6 +1,7 @@
 plasma_bridge_deployer = import_module("./plasma_bridge_deployer.star")
 matic_to_pol_migrator = import_module("./matic_to_pol_migrator.star")
 pos_bridge_deployer = import_module("./pos_bridge_deployer.star")
+fx_portal_deployer = import_module("./fx_portal_deployer.star")
 upgrade_validator_share = import_module("./upgrade_validator_share.star")
 lst_deployer = import_module("./lst_deployer.star")
 
@@ -70,6 +71,15 @@ def deploy_l2_contracts(
         private_key,
         plasma_bridge_addresses,
     )
+    fx_portal_addresses = fx_portal_deployer.deploy(
+        plan,
+        polygon_pos_args,
+        dev_args,
+        l1_rpc_url,
+        l2_rpc_url,
+        private_key,
+        pos_bridge_addresses,
+    )
 
     # LST is the only L2 deploy that uses CREATE2 on L1 (via vm.createSelectFork),
     # so re-running it against an L1 that already has sPOL deployed at the same
@@ -78,7 +88,7 @@ def deploy_l2_contracts(
     # which case sPOL was deployed by the prior run that produced the supplied
     # addresses file.
     if not dev_args.get("should_deploy_matic_contracts"):
-        return pos_bridge_addresses
+        return fx_portal_addresses
 
     return lst_deployer.deploy_lst_contracts(
         plan,
@@ -88,5 +98,5 @@ def deploy_l2_contracts(
         private_key,
         admin_address,
         validator_accounts,
-        pos_bridge_addresses,
+        fx_portal_addresses,
     )
