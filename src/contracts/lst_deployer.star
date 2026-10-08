@@ -31,6 +31,7 @@ def deploy_lst_contracts(
         env_vars={
             "PRIVATE_KEY": private_key,
             "L1_RPC_URL": l1_rpc_url,
+            "L1_HARDFORK": constants.L1_HARDFORK,
             "L2_RPC_URL": l2_rpc_url,
             "L1_CHAIN_ID": str(constants.L1_CHAIN_ID),
             "L2_CHAIN_ID": str(constants.EL_CHAIN_ID),

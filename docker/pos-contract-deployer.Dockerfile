@@ -23,7 +23,8 @@ ARG POS_PORTAL_TAG_OR_COMMIT_SHA="3402faa"
 ARG SPOL_CONTRACTS_BRANCH="main"
 ARG SPOL_CONTRACTS_TAG_OR_COMMIT_SHA="3c4bdf6c"
 
-ENV FOUNDRY_VERSION="stable"
+# v1.8.5+ is required to simulate scripts with Amsterdam gas pricing (--hardfork amsterdam).
+ENV FOUNDRY_VERSION="v1.8.5"
 # Baked at image-build time. Custom chain IDs are NOT supported — redeploy with a
 # different default here if you genuinely need another L2 chain id.
 ENV EL_CHAIN_ID="4927"
@@ -89,6 +90,7 @@ WORKDIR /opt/spol-contracts
 RUN git clone --branch ${SPOL_CONTRACTS_BRANCH} https://github.com/0xPolygon/spol-contracts . \
   && git checkout ${SPOL_CONTRACTS_TAG_OR_COMMIT_SHA} \
   && rm -rf .git
+COPY static_files/contracts/l1/scripts/deployPerChain.s.sol /opt/spol-contracts/script/deployPerChain.s.sol
 RUN forge soldeer install \
   && forge build
 

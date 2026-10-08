@@ -77,6 +77,7 @@ def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
                         "--balance {}".format(constants.ADMIN_BALANCE_ETH),
                         "--load-state /opt/anvil/genesis.json",
                         "--dump-state /tmp/state_dump.json",
+                        "--hardfork {}".format(constants.L1_HARDFORK),
                         "--host 0.0.0.0",
                         "--port {}".format(ANVIL_PORT_NUMBER),
                     ]
