@@ -48,8 +48,8 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.7",
-    "l1_cl_image": "sigp/lighthouse:v8.2.3",
+    "l1_el_image": "ethereum/client-go:v1.17.8",
+    "l1_cl_image": "sigp/lighthouse:v8.3.0-rc.0",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.5",
     # layer 2
     "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.12.1",
@@ -84,6 +84,8 @@ SEQSTORE_GATEWAY_SERVICE_NAME = "seqstore-gateway"
 SEQSTORE_GRPC_PORT_NUMBER = 9550
 
 L1_CHAIN_ID = "3151908"  # 0x301824
+# L1 hardfork: anvil runs it and forge simulates L1 scripts with it. Keep in sync with the last L1 fork.
+L1_HARDFORK = "amsterdam"
 
 # Do NOT change EL_CHAIN_ID / CL_CHAIN_ID — both are baked into pre-built
 # artifacts at image-build time:

@@ -1,19 +1,22 @@
 constants = import_module("../config/constants.star")
 
 
+# Also waits for the last scheduled L1 hard fork, so contracts are never deployed
+# across a fork boundary that changes gas pricing.
 def wait_for_l1_startup(plan, cl_rpc_url):
     plan.run_sh(
         name="l1-startup-monitor",
-        description="Wait for L1 to start up - it can take up to 5 minutes",
+        description="Wait for L1 to start up and reach its last scheduled hard fork - it can take up to 5 minutes",
         env_vars={
             "CL_RPC_URL": cl_rpc_url,
         },
         run="\n".join(
             [
                 "while true; do",
+                '  target=$(curl $CL_RPC_URL/eth/v1/config/spec | jq --raw-output \'.data | ([to_entries[] | select((.key | endswith("_FORK_EPOCH")) and .value != "18446744073709551615") | .value | tonumber] | max) * (.SLOTS_PER_EPOCH | tonumber)\');',
                 '  slot=$(curl $CL_RPC_URL/eth/v1/beacon/headers/ | jq --raw-output ".data[0].header.message.slot");',
-                '  echo "L1 chain is starting up... Current slot: $slot";',
-                '  if [[ "$slot" =~ ^[0-9]+$ ]] && [[ "$slot" -gt "0" ]]; then',
+                '  echo "L1 chain is starting up... Current slot: $slot, last hard fork slot: $target";',
+                '  if [[ "$slot" =~ ^[0-9]+$ ]] && [[ "$target" =~ ^[0-9]+$ ]] && [[ "$slot" -gt "0" ]] && [[ "$slot" -ge "$target" ]]; then',
                 '    echo "L1 chain has started!";',
                 "    break;",
                 "  fi;",

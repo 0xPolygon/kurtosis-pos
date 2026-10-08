@@ -22,7 +22,7 @@ cp /opt/data/addresses/contractAddresses.json ./contractAddresses.json
 
 echo "Deploying POL token and PolygonMigration..."
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
-forge script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast \
+forge script -vvvv --hardfork "${L1_HARDFORK}" --rpc-url "${L1_RPC_URL}" --broadcast \
   scripts/deployment-scripts/deployPolAndMigration.s.sol:DeployPolAndMigrationScript
 
 # Parse deployed addresses from the broadcast JSON.

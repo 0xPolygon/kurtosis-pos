@@ -81,7 +81,7 @@ def deploy_l2_contracts(
         pos_bridge_addresses,
     )
 
-    # LST is the only L2 deploy that uses CREATE2 on L1 (via vm.createSelectFork),
+    # LST is the only L2 deploy that uses CREATE2 on L1,
     # so re-running it against an L1 that already has sPOL deployed at the same
     # salt-derived addresses fails with CreateCollision. Skip it whenever we're
     # reusing pre-deployed contracts (should_deploy_matic_contracts=false), in
