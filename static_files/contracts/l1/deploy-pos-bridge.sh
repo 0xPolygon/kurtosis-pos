@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# shellcheck source=../forge-l1.sh
-source /opt/data/forge-l1.sh
-
 # Deploy pos-bridge L1 (root) contracts on top of an existing pos-contracts deployment.
 # Mirrors mainnet maticnetwork/pos-portal.
 
@@ -24,7 +21,7 @@ cp /opt/data/addresses/contractAddresses.json /opt/pos-portal/contractAddresses.
 
 echo "Deploying pos-bridge L1 (root) contracts..."
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
-forge_l1 script -vvvv --rpc-url "${L1_RPC_URL}" --broadcast --legacy \
+forge script -vvvv --hardfork amsterdam --rpc-url "${L1_RPC_URL}" --broadcast --legacy \
   scripts/deployment-scripts/deployPosBridgeRoot.s.sol:DeployPosBridgeRootScript
 
 cp contractAddresses.json "${CONTRACT_ADDRESSES_FILE}"

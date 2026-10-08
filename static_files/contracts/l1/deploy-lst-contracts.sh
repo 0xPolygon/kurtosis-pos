@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# shellcheck source=../forge-l1.sh
-source /opt/data/forge-l1.sh
-
 # Deploy sPOL/LST contracts to L1 and L2 using the kurtosis PoS devnet addresses.
 # Runs inside the pos-contract-deployer image, which bundles the spol-contracts
 # source, soldeer deps, and a warm forge cache at /opt/spol-contracts
@@ -104,7 +101,7 @@ jq -n \
 # Deploy sPOL contracts on L1, then L2, in separate forge runs so that only the
 # L1 run simulates with Amsterdam gas pricing. Each run writes
 # script/deployment.json with the other chain's addresses zeroed, so keep both.
-forge_l1 script script/deployPerChain.s.sol:DeployPerChain \
+forge script --hardfork amsterdam script/deployPerChain.s.sol:DeployPerChain \
   --sig 'runL1(string)' 'ethereum-polygon' \
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy
 mv script/deployment.json script/deployment-l1.json
