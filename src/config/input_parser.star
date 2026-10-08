@@ -61,20 +61,20 @@ ETHEREUM_PACKAGE_ARGS = {
         # Ethereum hard fork configurations.
         # Supported fork epochs are documented in `static_files/genesis-generation-config/el-cl/values.env.tmpl`.
         # in the ethereum package repository.
+        # Every fork activates at genesis, so the L1 never has to reach a later epoch
+        # before contracts can be deployed.
         "altair_fork_epoch": 0,
         "bellatrix_fork_epoch": 0,
         "capella_fork_epoch": 0,
-        "deneb_fork_epoch": 1,
-        "electra_fork_epoch": 2,
-        "fulu_fork_epoch": 3,  # Requires a supernode or perfect PeerDAS to be enabled.
-        # Blob parameter only (BPO) forks bump the blob target/max. They require Fulu, so
-        # every bpo_*_epoch must be >= fulu_fork_epoch. The ethereum package defaults them
-        # to epoch 0, which is before our Fulu activation, so we schedule them explicitly:
-        # both activate with Fulu. BPO 3 to 5 stay disabled, as in the ethereum package defaults.
-        "bpo_1_epoch": 3,
-        "bpo_2_epoch": 3,
+        "deneb_fork_epoch": 0,
+        "electra_fork_epoch": 0,
+        "fulu_fork_epoch": 0,  # Requires a supernode or perfect PeerDAS to be enabled.
+        # Blob parameter only (BPO) forks bump the blob target/max. BPO 3 to 5 stay
+        # disabled, as in the ethereum package defaults.
+        "bpo_1_epoch": 0,
+        "bpo_2_epoch": 0,
         # Glamsterdam: Gloas (CL) + Amsterdam (EL).
-        "gloas_fork_epoch": 4,
+        "gloas_fork_epoch": 0,
     },
     "persistent": True,
 }
