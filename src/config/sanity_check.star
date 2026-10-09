@@ -86,6 +86,12 @@ POLYGON_POS_PARAMS = {
         "image",
         "ws_secret",
     ],
+    "observability_params": [
+        "deploy_panoptichain",
+    ],
+    "nginx_params": [
+        "image",
+    ],
 }
 
 VALID_L1_BACKENDS = [
@@ -210,6 +216,29 @@ def sanity_check_polygon_args(plan, input_args):
         if ethstats_server_params:
             fail(
                 "`ethstats_server_params` must be empty when the status checker is not deployed."
+            )
+
+    # Make sure nginx params are defined only if nginx is deployed.
+    if constants.ADDITIONAL_SERVICES.nginx in additional_services:
+        _validate_dict(input_args, "nginx_params")
+        nginx_params = input_args.get("nginx_params")
+        if not "image" in nginx_params:
+            fail(
+                '`nginx_params` must include the "image" field when nginx is deployed.'
+            )
+    else:
+        nginx_params = input_args.get("nginx_params", {})
+        if nginx_params:
+            fail("`nginx_params` must be empty when nginx is not deployed.")
+
+    # Make sure observability params are defined only if the observability stack is deployed.
+    if constants.ADDITIONAL_SERVICES.observability in additional_services:
+        _validate_dict(input_args, "observability_params")
+    else:
+        observability_params = input_args.get("observability_params", {})
+        if observability_params:
+            fail(
+                "`observability_params` must be empty when the observability stack is not deployed."
             )
 
     plan.print("Sanity check passed")

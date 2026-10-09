@@ -210,14 +210,30 @@ You can check the admin private key and mnemonic default values at `src/config/i
 
 The `additional_services` array lets you enable optional tools and utilities alongside your devnet. These are not configuration options themselves, but rather extra services you can include by listing their names in the array.
 
-|      Service      |                                                 Description                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                             |
-| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                          |
-| `ethstats_server` | Visual interface for tracking network status                                                                 |
-| `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) |
-| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                 |
-| `tx_spammer`      | Send transactions to the network to simulate load                                                            |
+| Service           | Description                                                                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                                                          |
+| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                                                       |
+| `ethstats_server` | Visual interface for tracking network status                                                                                              |
+| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`)               |
+| `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`) |
+| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                              |
+| `tx_spammer`      | Send transactions to the network to simulate load                                                                                         |
+
+### `nginx_params`
+
+Only allowed when `nginx` is listed in `additional_services`.
+
+The `nginx` service deploys [nginx](https://nginx.org) with every bor node (validators, rpc, and archive alike) as an upstream — except stateless-sync nodes (`el_bor_sync_with_witness: true`), whose disabled txpool means they cannot accept transactions — balanced with `least_conn` (each request goes to the upstream with the fewest active connections), which spreads concurrent requests across all nodes — a good fit for load tests, particularly with long-held calls like `eth_sendRawTransactionSync` that occupy a bor RPC execution-pool slot until the receipt lands. There is no caching, retry logic (beyond connection-error failover), or method awareness.
+
+```bash
+# The JSON-RPC endpoint is served at the root path.
+cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
+```
+
+| Field | Type   | Default           | Description                |
+| ----- | ------ | ----------------- | -------------------------- |
+| image | string | nginx:1.29-alpine | Image used to deploy nginx |
 
 ### `ethstats_server_params`
 
@@ -225,6 +241,14 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | --------- | ------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | image     | string | europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124 | Image used to deploy the ethstats server                                  |
 | ws_secret | string | sharedsecret                                                                            | Shared secret used to authenticate nodes reporting to the ethstats server |
+
+### `observability_params`
+
+Only allowed when `observability` is listed in `additional_services`.
+
+| Field               | Type | Default | Description                                                                                                                  |
+| ------------------- | ---- | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| deploy_panoptichain | bool | true    | Deploy [Panoptichain](https://github.com/0xPolygon/panoptichain) alongside Prometheus and Grafana. Set to `false` to skip it |
 
 ### `sequence_store_params`
 

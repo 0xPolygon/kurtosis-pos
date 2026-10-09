@@ -171,9 +171,18 @@ STATUS_CHECKER_ARGS = {
     "image": constants.IMAGES.get("status_checker_image"),
 }
 
+OBSERVABILITY_ARGS = {
+    # Deploy panoptichain alongside prometheus and grafana.
+    "deploy_panoptichain": True,
+}
+
 ETHSTATS_SERVER_ARGS = {
     "image": constants.IMAGES.get("ethstats_server_image"),
     "ws_secret": constants.ETHSTATS_SERVER_WS_SECRET,
+}
+
+NGINX_ARGS = {
+    "image": constants.IMAGES.get("nginx_image"),
 }
 
 
@@ -281,6 +290,20 @@ def _parse_polygon_pos_args(plan, polygon_pos_args):
     result["ethstats_server_params"] = _parse_ethstats_server_params(
         is_ethstats_server_deployed, ethstats_server_params
     )
+
+    is_observability_deployed = (
+        constants.ADDITIONAL_SERVICES.observability in result["additional_services"]
+    )
+    observability_params = polygon_pos_args.get("observability_params", {})
+    result["observability_params"] = _parse_observability_params(
+        is_observability_deployed, observability_params
+    )
+
+    is_nginx_deployed = (
+        constants.ADDITIONAL_SERVICES.nginx in result["additional_services"]
+    )
+    nginx_params = polygon_pos_args.get("nginx_params", {})
+    result["nginx_params"] = _parse_nginx_params(is_nginx_deployed, nginx_params)
 
     # The sequence store is deployed iff any participant opts into it.
     is_sequence_store_deployed = any(
@@ -477,6 +500,36 @@ def _parse_ethstats_server_params(is_ethstats_server_deployed, ethstats_server_p
 
     # Sort the dict and return the result.
     return _sort_dict_by_values(ethstats_server_params)
+
+
+def _parse_nginx_params(is_nginx_deployed, nginx_params):
+    # If nginx is not deployed, return an empty dict.
+    if not is_nginx_deployed:
+        return {}
+
+    # Create a mutable copy of nginx_params.
+    nginx_params = dict(nginx_params) if nginx_params else {}
+
+    for k, v in NGINX_ARGS.items():
+        nginx_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(nginx_params)
+
+
+def _parse_observability_params(is_observability_deployed, observability_params):
+    # If the observability stack is not deployed, return an empty dict.
+    if not is_observability_deployed:
+        return {}
+
+    # Create a mutable copy of observability_params.
+    observability_params = dict(observability_params) if observability_params else {}
+
+    for k, v in OBSERVABILITY_ARGS.items():
+        observability_params.setdefault(k, v)
+
+    # Sort the dict and return the result.
+    return _sort_dict_by_values(observability_params)
 
 
 def _sort_dict_by_values(d):
