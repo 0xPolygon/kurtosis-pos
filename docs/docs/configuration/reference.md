@@ -210,15 +210,15 @@ You can check the admin private key and mnemonic default values at `src/config/i
 
 The `additional_services` array lets you enable optional tools and utilities alongside your devnet. These are not configuration options themselves, but rather extra services you can include by listing their names in the array.
 
-|      Service      |                                                 Description                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                             |
-| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                          |
-| `ethstats_server` | Visual interface for tracking network status                                                                 |
-| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`) |
+| Service           | Description                                                                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                                                          |
+| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                                                       |
+| `ethstats_server` | Visual interface for tracking network status                                                                                              |
+| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`)               |
 | `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`) |
-| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                 |
-| `tx_spammer`      | Send transactions to the network to simulate load                                                            |
+| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                              |
+| `tx_spammer`      | Send transactions to the network to simulate load                                                                                         |
 
 ### `nginx_params`
 
@@ -246,8 +246,8 @@ cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 
 Only allowed when `observability` is listed in `additional_services`.
 
-| Field               | Type | Default | Description                                                                            |
-| ------------------- | ---- | ------- | -------------------------------------------------------------------------------------- |
+| Field               | Type | Default | Description                                                                                                                  |
+| ------------------- | ---- | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | deploy_panoptichain | bool | true    | Deploy [Panoptichain](https://github.com/0xPolygon/panoptichain) alongside Prometheus and Grafana. Set to `false` to skip it |
 
 ### `sequence_store_params`
