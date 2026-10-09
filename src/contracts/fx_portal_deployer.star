@@ -19,6 +19,10 @@ def deploy(
 
     # Same reasoning as pos_bridge_deployer.deploy_l2: L1 contracts already exist.
     skip_l1_wiring = not dev_args.get("should_deploy_matic_contracts")
+    # The LST deploy is skipped in that case, so fx-portal produces the final addresses file.
+    artifact_name = (
+        "pos-contract-addresses" if skip_l1_wiring else "fx-portal-addresses"
+    )
 
     result = plan.run_sh(
         name="fx-portal-deployer",
@@ -37,7 +41,7 @@ def deploy(
         store=[
             StoreSpec(
                 src="/opt/contracts/contractAddresses.json",
-                name="fx-portal-addresses",
+                name=artifact_name,
             ),
         ],
         run="bash /opt/data/l2/deploy-fx-portal.sh",

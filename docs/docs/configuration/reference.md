@@ -26,7 +26,7 @@ dev:
 | l1_backend                        | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight                                                                                  |
 | should_deploy_l1                  | bool   | true             | Whether to deploy the L1 chain                                                                                                                                    |
 | l1_rpc_url                        | string | -                | RPC URL of an existing L1 to connect to. Required when `should_deploy_l1: false`. The L1 must run Amsterdam (Glamsterdam), the fork L1 scripts are simulated with |
-| should_deploy_matic_contracts     | bool   | true             | Whether to deploy the contract suite (plasma bridge, MATIC→POL migration, pos bridge, sPOL/LST)                                                                   |
+| should_deploy_matic_contracts     | bool   | true             | Whether to deploy the contract suite (plasma bridge, MATIC→POL migration, pos bridge, fx-portal, sPOL/LST)                                                        |
 | l2_el_genesis_filepath            | string | -                | Path to a pre-built L2 EL genesis file. Required when `should_deploy_matic_contracts: false`                                                                      |
 | l2_cl_genesis_filepath            | string | -                | Path to a pre-built L2 CL genesis file. Required when `should_deploy_matic_contracts: false`                                                                      |
 | matic_contract_addresses_filepath | string | -                | Path to a JSON of already-deployed MATIC contract addresses. Required when `should_deploy_matic_contracts: false`                                                 |
@@ -57,19 +57,26 @@ ethereum_package:
 
 #### `participants`
 
-| Field    | Type   | Default                     | Description                      |
-| -------- | ------ | --------------------------- | -------------------------------- |
-| cl_type  | string | lighthouse                  | Consensus Layer (CL) client type |
-| cl_image | string | sigp/lighthouse:v8.3.0-rc.0 | Image for the CL client          |
-| el_type  | string | geth                        | Execution Layer (EL) client type |
-| el_image | string | ethereum/client-go:v1.17.8  | Image for the EL client          |
+| Field           | Type   | Default                     | Description                                                     |
+| --------------- | ------ | --------------------------- | --------------------------------------------------------------- |
+| cl_type         | string | lighthouse                  | Consensus Layer (CL) client type                                |
+| cl_image        | string | sigp/lighthouse:v8.3.0-rc.0 | Image for the CL client                                         |
+| el_type         | string | geth                        | Execution Layer (EL) client type                                |
+| el_image        | string | ethereum/client-go:v1.17.8  | Image for the EL client                                         |
+| use_separate_vc | bool   | true                        | Run the validator client in its own container                   |
+| vc_type         | string | lighthouse                  | Validator client type                                           |
+| vc_image        | string | sigp/lighthouse:v8.3.0-rc.0 | Image for the validator client                                  |
+| supernode       | bool   | true                        | Custody all PeerDAS data columns, required since Fulu is active |
 
 #### `network_params`
 
-|      Field       |  Type  | Default |                       Description                        |
-| ---------------- | ------ | ------- | -------------------------------------------------------- |
-| preset           | string | minimal | Network preset, useful for rapid testing and development |
-| seconds_per_slot | int    | 1       | Number of seconds per slot on the Beacon chain           |
+| Field                               | Type   | Default | Description                                                   |
+| ----------------------------------- | ------ | ------- | ------------------------------------------------------------- |
+| preset                              | string | minimal | Network preset, useful for rapid testing and development      |
+| seconds_per_slot                    | int    | 1       | Number of seconds per slot on the Beacon chain                |
+| altair_fork_epoch … fulu_fork_epoch | int    | 0       | Every L1 fork up to Fulu activates at genesis                 |
+| bpo_1_epoch, bpo_2_epoch            | int    | 0       | Blob parameter only (BPO) forks; BPO 3 to 5 stay disabled     |
+| gloas_fork_epoch                    | int    | 0       | Glamsterdam (Gloas on the CL, Amsterdam on the EL) at genesis |
 
 ### Anvil Backend
 
@@ -132,7 +139,7 @@ Default: a single validator.
 | kind                             | string | validator                             | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                               |
 | cl_type                          | string | heimdall-v2                           | Consensus Layer (CL) client type                                                                                                                                                                                                                      |
 | cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.12.1 | Image for the CL client                                                                                                                                                                                                                               |
-| cl_queue_image                   | string | rabbitmq:4.3.4                        | Image for the CL queue                                                                                                                                                                                                                                |
+| cl_queue_image                   | string | rabbitmq:4.3.6                        | Image for the CL queue                                                                                                                                                                                                                                |
 | cl_log_level                     | string | info                                  | Log level for the CL client                                                                                                                                                                                                                           |
 | cl_log_format                    | string | text                                  | Log format for the CL client                                                                                                                                                                                                                          |
 | cl_min_retain_blocks             | int    | 0                                     | Minimal distance from current height to retain height                                                                                                                                                                                                 |
@@ -226,10 +233,10 @@ Deployed if and only if at least one participant sets `el_bor_use_sequence_store
 | Field          | Type   | Default                       | Description                                                                                            |
 | -------------- | ------ | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
 | image          | string | seqstore:local                | Sequence-store image (ingress/gateway/auditor), built locally from the sequence-store repo             |
-| redpanda_image | string | redpandadata/redpanda:v26.2.1 | Redpanda broker image                                                                                  |
+| redpanda_image | string | redpandadata/redpanda:v26.2.2 | Redpanda broker image                                                                                  |
 | redpanda_count | int    | 1                             | Broker count. With more than one, the topic is created at RF=count with majority `min.insync.replicas` |
 | gateway_count  | int    | 1                             | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name  |
-| envoy_image    | string | envoyproxy/envoy:v1.31.10     | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
+| envoy_image    | string | envoyproxy/envoy:v1.39.3      | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
 
 ### `status_checker_params`
 
