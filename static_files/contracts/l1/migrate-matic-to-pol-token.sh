@@ -61,6 +61,12 @@ calldata=$(cast calldata "initializePOL(address,address)" "${pol_token}" "${migr
 cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
   "${governance_proxy_address}" "update(address,bytes)" "${stake_manager_proxy_address}" "${calldata}"
 
+# Rewards are paid out of StakeManager's POL balance, which on mainnet the emission manager
+# tops up. Without it, withdrawRewardsPOL and unstakePOL revert once rewards exceed the stakes.
+echo "Funding StakeManager with POL for validator rewards..."
+cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" \
+  "${pol_token}" "transfer(address,uint256)" "${stake_manager_proxy_address}" 1000000ether
+
 # Mainnet steps 4/5/6: register pol, matic, polygonMigration in the contract map.
 echo "Registering pol, matic, polygonMigration in Registry..."
 for pair in "pol:${pol_token}" "matic:${matic_token}" "polygonMigration:${migration}"; do

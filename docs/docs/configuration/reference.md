@@ -21,15 +21,15 @@ dev:
   should_deploy_matic_contracts: true
 ```
 
-| Field                             | Type   | Default          | Description                                                                                                       |
-| --------------------------------- | ------ | ---------------- | ----------------------------------------------------------------------------------------------------------------- |
-| l1_backend                        | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight                                  |
-| should_deploy_l1                  | bool   | true             | Whether to deploy the L1 chain                                                                                    |
-| l1_rpc_url                        | string | -                | RPC URL of an existing L1 to connect to. Required when `should_deploy_l1: false`                                  |
-| should_deploy_matic_contracts     | bool   | true             | Whether to deploy the contract suite (plasma bridge, MATIC→POL migration, pos bridge, sPOL/LST)                   |
-| l2_el_genesis_filepath            | string | -                | Path to a pre-built L2 EL genesis file. Required when `should_deploy_matic_contracts: false`                      |
-| l2_cl_genesis_filepath            | string | -                | Path to a pre-built L2 CL genesis file. Required when `should_deploy_matic_contracts: false`                      |
-| matic_contract_addresses_filepath | string | -                | Path to a JSON of already-deployed MATIC contract addresses. Required when `should_deploy_matic_contracts: false` |
+| Field                             | Type   | Default          | Description                                                                                                                                                       |
+| --------------------------------- | ------ | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| l1_backend                        | string | ethereum-package | L1 backend to use: `ethereum-package` for full devnet or `anvil` for lightweight                                                                                  |
+| should_deploy_l1                  | bool   | true             | Whether to deploy the L1 chain                                                                                                                                    |
+| l1_rpc_url                        | string | -                | RPC URL of an existing L1 to connect to. Required when `should_deploy_l1: false`. The L1 must run Amsterdam (Glamsterdam), the fork L1 scripts are simulated with |
+| should_deploy_matic_contracts     | bool   | true             | Whether to deploy the contract suite (plasma bridge, MATIC→POL migration, pos bridge, sPOL/LST)                                                                   |
+| l2_el_genesis_filepath            | string | -                | Path to a pre-built L2 EL genesis file. Required when `should_deploy_matic_contracts: false`                                                                      |
+| l2_cl_genesis_filepath            | string | -                | Path to a pre-built L2 CL genesis file. Required when `should_deploy_matic_contracts: false`                                                                      |
+| matic_contract_addresses_filepath | string | -                | Path to a JSON of already-deployed MATIC contract addresses. Required when `should_deploy_matic_contracts: false`                                                 |
 
 ## L1 Configuration
 
@@ -155,7 +155,7 @@ Default: a single validator.
 
 | Field                      | Type   | Default                                                 | Description                                 |
 | -------------------------- | ------ | ------------------------------------------------------- | ------------------------------------------- |
-| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.5           | Image used to deploy MATIC contracts to L1  |
+| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.6           | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd        | Image used to create the L2 EL genesis file |
 | validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0 | Image used to generate validator configs    |
 

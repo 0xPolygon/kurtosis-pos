@@ -7,7 +7,7 @@ sidebar_position: 2
 This guide will show you how to run end-to-end (e2e) bridge tests against a Kurtosis devnet.
 
 :::note
-The devnet deploys both bridges: the **Plasma bridge** (DepositManager, WithdrawManager, predicates) and the **PoS bridge** (RootChainManager, ChildChainManager, pos-portal predicates). The bridge test suites cover each independently.
+The devnet deploys three bridges: the **Plasma bridge** (DepositManager, WithdrawManager, predicates), the **PoS bridge** (RootChainManager, ChildChainManager, pos-portal predicates) and **fx-portal** (FxRoot, FxChild, state and ERC20/ERC721/ERC1155 tunnels). The bridge test suites cover each independently.
 :::
 
 :::info
@@ -38,6 +38,14 @@ bats --filter-tags pos,bridge --recursive tests/
 After the tests complete, you should see output similar to:
 
 ```bash
+tests/bridge/fx.bats
+ ✓ send a message from L1 to L2 via fx-portal state tunnel
+ ✓ fx-portal L1 state stays pending on L2 until the state sync is committed
+ ✓ force a state sync through FxRoot without going through a root tunnel
+ ✓ bridge ERC20 from L1 to L2 via fx-portal
+ ✓ bridge ERC721 from L1 to L2 via fx-portal
+ ✓ bridge ERC1155 from L1 to L2 via fx-portal
+
 tests/bridge/plasma.bats
  ✓ bridge POL from L1 to L2 via plasma bridge
  ✓ bridge MATIC from L1 to L2 via plasma bridge
@@ -51,7 +59,7 @@ tests/bridge/pos.bats
  ✓ bridge ERC721 from L1 to L2 via pos bridge
  ✓ bridge ERC1155 from L1 to L2 via pos bridge
 
-9 tests, 0 failures
+15 tests, 0 failures
 ```
 
 Once the deposits have landed on L2, run the L2-to-L1 withdraw tests to exercise the exit flow (burn on L2, wait for a checkpoint on L1, build an exit proof, claim).
@@ -67,6 +75,12 @@ Withdraw tests take several minutes per case — each needs a fresh L1 checkpoin
 After the tests complete, you should see output similar to:
 
 ```bash
+tests/bridge/fx.bats
+ ✓ send a message from L2 to L1 via fx-portal state tunnel
+ ✓ withdraw ERC20 from L2 to L1 via fx-portal
+ ✓ withdraw ERC721 from L2 to L1 via fx-portal
+ ✓ withdraw ERC1155 from L2 to L1 via fx-portal
+
 tests/bridge/plasma.bats
  ✓ withdraw native tokens from L2 to L1 via plasma bridge
  ✓ withdraw MaticWeth from L2 to L1 via plasma bridge
@@ -79,7 +93,7 @@ tests/bridge/pos.bats
  ✓ withdraw ERC721 from L2 to L1 via pos bridge
  ✓ withdraw ERC1155 from L2 to L1 via pos bridge
 
-8 tests, 0 failures
+12 tests, 0 failures
 ```
 
 If any tests fail, check the logs in your Kurtosis enclave for more details.

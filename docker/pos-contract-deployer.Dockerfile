@@ -19,6 +19,9 @@ ARG POS_CONTRACTS_MAIN_TAG_OR_COMMIT_SHA="935dee17"
 # pos-portal - 2025-10-24
 ARG POS_PORTAL_BRANCH="master"
 ARG POS_PORTAL_TAG_OR_COMMIT_SHA="3402faa"
+# fx-portal - 2023-12-19
+ARG FX_PORTAL_BRANCH="main"
+ARG FX_PORTAL_TAG_OR_COMMIT_SHA="7319592"
 # spol-contracts - 2026-04-16
 ARG SPOL_CONTRACTS_BRANCH="main"
 ARG SPOL_CONTRACTS_TAG_OR_COMMIT_SHA="3c4bdf6c"
@@ -83,6 +86,13 @@ COPY static_files/contracts/l1/scripts/deployPosBridgeRoot.s.sol /opt/pos-portal
 COPY static_files/contracts/l2/scripts/deployPosBridgeChild.s.sol /opt/pos-portal/scripts/deployment-scripts/deployPosBridgeChild.s.sol
 RUN forge build
 
+# fx-portal.
+WORKDIR /opt/fx-portal
+RUN git clone --branch ${FX_PORTAL_BRANCH} https://github.com/0xPolygon/fx-portal . \
+  && git checkout ${FX_PORTAL_TAG_OR_COMMIT_SHA} \
+  && git submodule update --init --recursive --depth 1 \
+  && forge build --skip test --skip script
+
 # spol-contracts. The kurtosis-specific validator setup script is uploaded at
 # deploy time as a kurtosis artifact (rendered from a template so VALIDATOR_COUNT
 # matches the actual devnet) — not baked into the image.
@@ -96,7 +106,7 @@ RUN forge soldeer install \
 
 
 FROM debian:bookworm-slim
-LABEL description="Polygon PoS contracts deployment image (pos-contracts + pos-portal + spol-contracts)"
+LABEL description="Polygon PoS contracts deployment image (pos-contracts + pos-portal + fx-portal + spol-contracts)"
 LABEL author="devtools@polygon.technology"
 
 RUN apt-get update \
@@ -149,6 +159,10 @@ RUN sed -i '/^\[profile\.default\]/a offline = true' foundry.toml
 COPY --from=builder /opt/pos-portal/lib/forge-std ./lib/forge-std
 COPY --from=builder /opt/pos-portal/scripts/deployment-scripts ./scripts/deployment-scripts
 COPY --from=builder /opt/pos-portal/out ./out
+
+# fx-portal runtime surface: contracts are deployed with `cast send --create`
+# from the pre-built artifacts, so only out/ is needed.
+COPY --from=builder /opt/fx-portal/out /opt/fx-portal/out
 
 # spol-contracts runtime surface. forge re-resolves remappings at script time,
 # so src/, script/, dependencies/ all need to stay. Total: ~21MB. Skip test/,

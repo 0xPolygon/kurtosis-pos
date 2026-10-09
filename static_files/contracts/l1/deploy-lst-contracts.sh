@@ -157,6 +157,12 @@ else
   exit 1
 fi
 
+# The messenger calls StateSender.syncState directly (no FxRoot), so it must be
+# registered for sPOLChild or every L1 -> L2 message reverts "Invalid sender".
+echo "Registering sPOLMessenger on StateSender for sPOLChild..."
+cast send --rpc-url "${L1_RPC_URL}" --private-key "${PRIVATE_KEY}" --legacy \
+  "${STATE_SENDER_L1}" "register(address,address)" "${SPOL_MESSENGER_PROXY}" "${SPOL_CHILD_L2}"
+
 # Setup initial validators. Mirrors mainnet's canonical
 # spol-contracts/script/SetupInitialValidators.s.sol but ranges over kurtosis'
 # sequential validator ids (1..VALIDATOR_COUNT) rather than the mainnet/testnet
