@@ -62,7 +62,7 @@ IMAGES = {
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
-    "nginx_image": "nginx:1.29-alpine",
+    "nginx_image": "nginx:1.31.6-alpine",
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.15.0",

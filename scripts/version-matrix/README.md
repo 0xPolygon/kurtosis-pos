@@ -79,7 +79,10 @@ Every key in `IMAGES` must be listed in exactly one of two tables in
 deliberate: a new image should not be able to slip in untracked.
 
 - `COMPONENT_REPOS` — the image has an upstream GitHub repo that cuts releases.
-  Maps the `IMAGES` key to `(display name, org/repo)`.
+  Maps the `IMAGES` key to `(display name, org/repo)`. If the repo tags its
+  releases with a prefix other than `v` (nginx tags `release-1.31.6`), also add
+  the key to `RELEASE_TAG_PREFIXES` so the prefix is stripped for the comparison
+  and re-added when linking the release.
 - `SKIPPED_IMAGES` — there is nothing upstream to compare against, with the
   reason. Two cases apply today: the `pos-*` images are built from `docker/` in
   this repo and published by `publish-images.yaml`, so their tag is whatever we
