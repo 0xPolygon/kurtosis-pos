@@ -222,17 +222,22 @@ class VersionMatrixExtractor:
             return None
         if version in ("latest", "main", "master"):
             return f"https://github.com/{repo}/releases/latest"
-        # A build-variant suffix (nginx `1.31.6-alpine`) is not part of the
-        # release tag, so link the underlying release; a prerelease suffix
-        # (`8.3.0-rc.0`) is part of the tag, so keep it.
-        if not cls._is_prerelease(version):
-            version = version.partition("-")[0]
-        return f"https://github.com/{repo}/releases/tag/{tag_prefix}{version.lstrip('v')}"
+        tag = cls._without_variant_suffix(version)
+        return f"https://github.com/{repo}/releases/tag/{tag_prefix}{tag.lstrip('v')}"
 
     @staticmethod
     def _is_prerelease(tag_name: str) -> bool:
         """Whether a tag looks like a prerelease rather than a stable version."""
         return re.search(r"-(alpha|beta|rc|test)", tag_name, re.IGNORECASE) is not None
+
+    @classmethod
+    def _without_variant_suffix(cls, version: str) -> str:
+        """Drop a build-variant suffix: `1.31.6-alpine` -> `1.31.6`.
+
+        A build variant (nginx's `-alpine`) is not a version difference; a
+        prerelease suffix (`8.3.0-rc.0`) is part of the version and is kept.
+        """
+        return version if cls._is_prerelease(version) else version.partition("-")[0]
 
     def _get_latest_version(self, repo: str, tag_prefix: str = "v") -> Optional[str]:
         """Fetch the latest stable release version for a repo."""
@@ -278,10 +283,12 @@ class VersionMatrixExtractor:
         if ours < theirs:
             return STATUS_BEHIND
 
-        # Same numeric version: a suffix on one side but not the other means we
-        # run a patched build of the release rather than the release itself.
-        our_suffix = version.partition("-")[2]
-        their_suffix = latest_version.partition("-")[2]
+        # Same numeric version: a prerelease suffix on one side but not the
+        # other means we run a prerelease of the release rather than the release
+        # itself. A build-variant suffix (nginx `-alpine`) is not a version
+        # difference and is ignored.
+        our_suffix = self._without_variant_suffix(version).partition("-")[2]
+        their_suffix = self._without_variant_suffix(latest_version).partition("-")[2]
         if our_suffix == their_suffix:
             return STATUS_MATCHES
         return STATUS_NEWER
