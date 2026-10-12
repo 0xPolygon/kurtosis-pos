@@ -76,6 +76,7 @@ COMPONENT_REPOS = {
     "l2_el_bor_image": ("bor", "0xPolygon/bor"),
     "l2_cl_queue_image": ("rabbitmq", "rabbitmq/rabbitmq-server"),
     # additional services
+    "nginx_image": ("nginx", "nginx/nginx"),
     "status_checker_image": ("status-checker", "0xPolygon/status-checker"),
     # observability
     "prometheus_image": ("prometheus", "prometheus/prometheus"),
@@ -84,6 +85,13 @@ COMPONENT_REPOS = {
     # sequence store (preconfirmation experiment)
     "seqstore_redpanda_image": ("redpanda", "redpanda-data/redpanda"),
     "seqstore_envoy_image": ("envoy", "envoyproxy/envoy"),
+}
+
+# Components whose upstream release tags carry a prefix other than the default
+# "v". The matrix strips it to compare versions and re-adds it when linking the
+# release; nginx tags its releases `release-1.31.6`, not `v1.31.6`.
+RELEASE_TAG_PREFIXES = {
+    "nginx_image": "release-",
 }
 
 # Images intentionally left out of the matrix, with the reason. Keeping this
@@ -171,8 +179,9 @@ class VersionMatrixExtractor:
                 continue
 
             name, repo = COMPONENT_REPOS[key]
+            tag_prefix = RELEASE_TAG_PREFIXES.get(key, "v")
             version = self._version_from_image(image)
-            latest_version = self._get_latest_version(repo)
+            latest_version = self._get_latest_version(repo, tag_prefix)
             status = self._determine_status(version, latest_version)
 
             pin_reason = None
@@ -187,8 +196,8 @@ class VersionMatrixExtractor:
                 version=version,
                 image=image,
                 latest_version=latest_version,
-                version_source_url=self._release_url(repo, version),
-                latest_version_source_url=self._release_url(repo, latest_version),
+                version_source_url=self._release_url(repo, version, tag_prefix),
+                latest_version_source_url=self._release_url(repo, latest_version, tag_prefix),
                 status=status,
                 pin_reason=pin_reason,
             )
@@ -205,14 +214,19 @@ class VersionMatrixExtractor:
             return tag
         return tag.lstrip("v")
 
-    @staticmethod
-    def _release_url(repo: str, version: Optional[str],
+    @classmethod
+    def _release_url(cls, repo: str, version: Optional[str],
                      tag_prefix: str = "v") -> Optional[str]:
         """Build a browsable release URL for a component version."""
         if not version:
             return None
         if version in ("latest", "main", "master"):
             return f"https://github.com/{repo}/releases/latest"
+        # A build-variant suffix (nginx `1.31.6-alpine`) is not part of the
+        # release tag, so link the underlying release; a prerelease suffix
+        # (`8.3.0-rc.0`) is part of the tag, so keep it.
+        if not cls._is_prerelease(version):
+            version = version.partition("-")[0]
         return f"https://github.com/{repo}/releases/tag/{tag_prefix}{version.lstrip('v')}"
 
     @staticmethod
@@ -220,14 +234,14 @@ class VersionMatrixExtractor:
         """Whether a tag looks like a prerelease rather than a stable version."""
         return re.search(r"-(alpha|beta|rc|test)", tag_name, re.IGNORECASE) is not None
 
-    def _get_latest_version(self, repo: str) -> Optional[str]:
+    def _get_latest_version(self, repo: str, tag_prefix: str = "v") -> Optional[str]:
         """Fetch the latest stable release version for a repo."""
         release = self._github_get(f"repos/{repo}/releases/latest",
                                    allow_missing=True)
         if release and release.get("tag_name"):
             tag = release["tag_name"]
             if not self._is_prerelease(tag):
-                return tag.lstrip("v")
+                return self._strip_tag_prefix(tag, tag_prefix)
 
         # Some repos publish prereleases as "latest", or never cut releases at
         # all; fall back to the newest stable tag.
@@ -236,10 +250,17 @@ class VersionMatrixExtractor:
             for tag in tags:
                 name = tag.get("name", "")
                 if name and not self._is_prerelease(name):
-                    return name.lstrip("v")
+                    return self._strip_tag_prefix(name, tag_prefix)
 
         print(f"No stable release or tag found for {repo}.")
         return None
+
+    @staticmethod
+    def _strip_tag_prefix(tag: str, tag_prefix: str) -> str:
+        """Drop the release tag prefix: `v1.8.5`/`release-1.31.6` -> `1.8.5`/`1.31.6`."""
+        if tag_prefix and tag.startswith(tag_prefix):
+            return tag[len(tag_prefix):]
+        return tag.lstrip("v")
 
     def _determine_status(self, version: Optional[str],
                           latest_version: Optional[str]) -> Optional[str]:
