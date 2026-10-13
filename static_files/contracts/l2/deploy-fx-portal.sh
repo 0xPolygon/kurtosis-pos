@@ -29,30 +29,68 @@ if [[ "${SKIP_L1_WIRING:-0}" == "1" ]]; then
   fi
 fi
 
-# deploy <rpc> <contract> [constructor-sig args...]
-deploy() {
-  local rpc="$1" contract="$2"
-  shift 2
-  local bytecode
-  bytecode=$(jq -r '.bytecode.object' "out/${contract}.sol/${contract}.json")
-  cast send --rpc-url "${rpc}" --private-key "${PRIVATE_KEY}" --legacy --json \
-    --create "${bytecode}" "$@" | jq -re '.contractAddress'
+deployer=$(cast wallet address --private-key "${PRIVATE_KEY}")
+declare -A rpc=([l1]="${L1_RPC_URL}" [l2]="${L2_RPC_URL}") nonce pending
+for chain in l1 l2; do
+  nonce[${chain}]=$(cast nonce --rpc-url "${rpc[${chain}]}" --block pending "${deployer}")
+  pending[${chain}]=""
+done
+
+# Transactions are sent without waiting, with explicit nonces, then confirmed in
+# one pass: a deployed address is a pure function of (deployer, nonce), so every
+# address is known before anything is mined. Wiring calls target contracts that
+# may not be mined yet, so gas estimation cannot be used for them (fixed gas limit).
+send_async() {
+  local chain="$1"
+  shift
+  local hash
+  hash=$(cast send --rpc-url "${rpc[${chain}]}" --private-key "${PRIVATE_KEY}" --legacy \
+    --async --nonce "${nonce[${chain}]}" "$@")
+  pending[${chain}]+=" ${hash}"
+  nonce[${chain}]=$((nonce[${chain}] + 1))
 }
 
-send() {
-  local rpc="$1"
+# deploy <l1|l2> <address-var> <contract> [constructor-sig args...]
+deploy() {
+  local chain="$1" var="$2" contract="$3"
+  shift 3
+  local bytecode address
+  bytecode=$(jq -r '.bytecode.object' "out/${contract}.sol/${contract}.json")
+  address=$(cast compute-address "${deployer}" --nonce "${nonce[${chain}]}" | awk '{print $NF}')
+  send_async "${chain}" --create "${bytecode}" "$@"
+  printf -v "${var}" '%s' "${address}"
+}
+
+wire() {
+  local chain="$1"
   shift
-  cast send --rpc-url "${rpc}" --private-key "${PRIVATE_KEY}" --legacy "$@" > /dev/null
+  send_async "${chain}" --gas-limit 200000 "$@"
+}
+
+confirm() {
+  local chain="$1" hash status
+  for hash in ${pending[${chain}]}; do
+    # A dropped tx would make cast receipt poll forever.
+    if ! status=$(timeout 120 cast receipt --rpc-url "${rpc[${chain}]}" --json "${hash}" | jq -r '.status'); then
+      echo "ERROR: no receipt for ${chain} transaction ${hash} after 120s" >&2
+      exit 1
+    fi
+    if [[ "${status}" != "0x1" && "${status}" != "1" ]]; then
+      echo "ERROR: ${chain} transaction ${hash} failed (status ${status})" >&2
+      exit 1
+    fi
+  done
+  pending[${chain}]=""
 }
 
 checkpoint_manager=$(jq -re '.root.RootChainProxy' contractAddresses.json)
 state_sender=$(jq -re '.root.StateSender' contractAddresses.json)
 
-echo "Deploying FxChild and token templates on L2..."
-fx_child=$(deploy "${L2_RPC_URL}" FxChild)
-erc20_template=$(deploy "${L2_RPC_URL}" FxERC20)
-erc721_template=$(deploy "${L2_RPC_URL}" FxERC721)
-erc1155_template=$(deploy "${L2_RPC_URL}" FxERC1155)
+echo "Sending FxChild and token templates on L2..."
+deploy l2 fx_child FxChild
+deploy l2 erc20_template FxERC20
+deploy l2 erc721_template FxERC721
+deploy l2 erc1155_template FxERC1155
 
 if [[ "${SKIP_L1_WIRING:-0}" == "1" ]]; then
   fx_root=$(jq -re '.root.fxPortal.FxRoot' contractAddresses.json)
@@ -61,33 +99,53 @@ if [[ "${SKIP_L1_WIRING:-0}" == "1" ]]; then
   erc721_root_tunnel=$(jq -re '.root.fxPortal.FxERC721RootTunnel' contractAddresses.json)
   erc1155_root_tunnel=$(jq -re '.root.fxPortal.FxERC1155RootTunnel' contractAddresses.json)
 else
-  echo "Deploying FxRoot and root tunnels on L1..."
-  fx_root=$(deploy "${L1_RPC_URL}" FxRoot "constructor(address)" "${state_sender}")
-  state_root_tunnel=$(deploy "${L1_RPC_URL}" FxStateRootTunnel \
-    "constructor(address,address)" "${checkpoint_manager}" "${fx_root}")
-  erc20_root_tunnel=$(deploy "${L1_RPC_URL}" FxERC20RootTunnel \
-    "constructor(address,address,address)" "${checkpoint_manager}" "${fx_root}" "${erc20_template}")
-  erc721_root_tunnel=$(deploy "${L1_RPC_URL}" FxERC721RootTunnel \
-    "constructor(address,address,address)" "${checkpoint_manager}" "${fx_root}" "${erc721_template}")
-  erc1155_root_tunnel=$(deploy "${L1_RPC_URL}" FxERC1155RootTunnel \
-    "constructor(address,address,address)" "${checkpoint_manager}" "${fx_root}" "${erc1155_template}")
+  echo "Sending FxRoot and root tunnels on L1..."
+  deploy l1 fx_root FxRoot "constructor(address)" "${state_sender}"
+  deploy l1 state_root_tunnel FxStateRootTunnel \
+    "constructor(address,address)" "${checkpoint_manager}" "${fx_root}"
+  deploy l1 erc20_root_tunnel FxERC20RootTunnel \
+    "constructor(address,address,address)" "${checkpoint_manager}" "${fx_root}" "${erc20_template}"
+  deploy l1 erc721_root_tunnel FxERC721RootTunnel \
+    "constructor(address,address,address)" "${checkpoint_manager}" "${fx_root}" "${erc721_template}"
+  deploy l1 erc1155_root_tunnel FxERC1155RootTunnel \
+    "constructor(address,address,address)" "${checkpoint_manager}" "${fx_root}" "${erc1155_template}"
 fi
 
-echo "Deploying child tunnels on L2..."
-state_child_tunnel=$(deploy "${L2_RPC_URL}" FxStateChildTunnel "constructor(address)" "${fx_child}")
-erc20_child_tunnel=$(deploy "${L2_RPC_URL}" FxERC20ChildTunnel \
-  "constructor(address,address)" "${fx_child}" "${erc20_template}")
-erc721_child_tunnel=$(deploy "${L2_RPC_URL}" FxERC721ChildTunnel \
-  "constructor(address,address)" "${fx_child}" "${erc721_template}")
-erc1155_child_tunnel=$(deploy "${L2_RPC_URL}" FxERC1155ChildTunnel \
-  "constructor(address,address)" "${fx_child}" "${erc1155_template}")
+# The child tunnel constructors require the token template to already hold code,
+# so their gas estimation reverts until the templates are mined.
+echo "Waiting for the L2 token templates..."
+confirm l2
+
+echo "Sending child tunnels on L2..."
+deploy l2 state_child_tunnel FxStateChildTunnel "constructor(address)" "${fx_child}"
+deploy l2 erc20_child_tunnel FxERC20ChildTunnel \
+  "constructor(address,address)" "${fx_child}" "${erc20_template}"
+deploy l2 erc721_child_tunnel FxERC721ChildTunnel \
+  "constructor(address,address)" "${fx_child}" "${erc721_template}"
+deploy l2 erc1155_child_tunnel FxERC1155ChildTunnel \
+  "constructor(address,address)" "${fx_child}" "${erc1155_template}"
+
+if [[ "${SKIP_L1_WIRING:-0}" != "1" ]]; then
+  echo "Wiring L1..."
+  wire l1 "${fx_root}" "setFxChild(address)" "${fx_child}"
+  # StateSender.syncState only accepts registered (sender, receiver) pairs.
+  wire l1 "${state_sender}" "register(address,address)" "${fx_root}" "${fx_child}"
+  wire l1 "${state_root_tunnel}" "setFxChildTunnel(address)" "${state_child_tunnel}"
+  wire l1 "${erc20_root_tunnel}" "setFxChildTunnel(address)" "${erc20_child_tunnel}"
+  wire l1 "${erc721_root_tunnel}" "setFxChildTunnel(address)" "${erc721_child_tunnel}"
+  wire l1 "${erc1155_root_tunnel}" "setFxChildTunnel(address)" "${erc1155_child_tunnel}"
+fi
 
 echo "Wiring L2..."
-send "${L2_RPC_URL}" "${fx_child}" "setFxRoot(address)" "${fx_root}"
-send "${L2_RPC_URL}" "${state_child_tunnel}" "setFxRootTunnel(address)" "${state_root_tunnel}"
-send "${L2_RPC_URL}" "${erc20_child_tunnel}" "setFxRootTunnel(address)" "${erc20_root_tunnel}"
-send "${L2_RPC_URL}" "${erc721_child_tunnel}" "setFxRootTunnel(address)" "${erc721_root_tunnel}"
-send "${L2_RPC_URL}" "${erc1155_child_tunnel}" "setFxRootTunnel(address)" "${erc1155_root_tunnel}"
+wire l2 "${fx_child}" "setFxRoot(address)" "${fx_root}"
+wire l2 "${state_child_tunnel}" "setFxRootTunnel(address)" "${state_root_tunnel}"
+wire l2 "${erc20_child_tunnel}" "setFxRootTunnel(address)" "${erc20_root_tunnel}"
+wire l2 "${erc721_child_tunnel}" "setFxRootTunnel(address)" "${erc721_root_tunnel}"
+wire l2 "${erc1155_child_tunnel}" "setFxRootTunnel(address)" "${erc1155_root_tunnel}"
+
+echo "Waiting for confirmations..."
+confirm l2
+confirm l1
 
 if [[ "${SKIP_L1_WIRING:-0}" == "1" ]]; then
   # The L1 tunnels are pinned to the previous L2 addresses: fail loud on drift.
@@ -104,15 +162,6 @@ if [[ "${SKIP_L1_WIRING:-0}" == "1" ]]; then
       exit 1
     fi
   done
-else
-  echo "Wiring L1..."
-  send "${L1_RPC_URL}" "${fx_root}" "setFxChild(address)" "${fx_child}"
-  # StateSender.syncState only accepts registered (sender, receiver) pairs.
-  send "${L1_RPC_URL}" "${state_sender}" "register(address,address)" "${fx_root}" "${fx_child}"
-  send "${L1_RPC_URL}" "${state_root_tunnel}" "setFxChildTunnel(address)" "${state_child_tunnel}"
-  send "${L1_RPC_URL}" "${erc20_root_tunnel}" "setFxChildTunnel(address)" "${erc20_child_tunnel}"
-  send "${L1_RPC_URL}" "${erc721_root_tunnel}" "setFxChildTunnel(address)" "${erc721_child_tunnel}"
-  send "${L1_RPC_URL}" "${erc1155_root_tunnel}" "setFxChildTunnel(address)" "${erc1155_child_tunnel}"
 fi
 
 jq \
