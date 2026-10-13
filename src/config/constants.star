@@ -71,7 +71,7 @@ IMAGES = {
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
     "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
-    "seqstore_envoy_image": "envoyproxy/envoy:v1.39.3",
+    "seqstore_envoy_image": "envoyproxy/envoy:v1.39.4",
 }
 
 # The sequence-store image is built locally from the sequence-store repo.
