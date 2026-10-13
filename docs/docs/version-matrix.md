@@ -24,7 +24,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | Component      | Deployed version                                                            | Latest stable version                                                    | Status               |
 | -------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------- |
 | bor            | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)             | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)          | ✅ matches stable    |
-| envoy          | [1.39.3](https://github.com/envoyproxy/envoy/releases/tag/v1.39.3)          | [1.39.3](https://github.com/envoyproxy/envoy/releases/tag/v1.39.3)       | ✅ matches stable    |
+| envoy          | [1.39.4](https://github.com/envoyproxy/envoy/releases/tag/v1.39.4)          | [1.39.4](https://github.com/envoyproxy/envoy/releases/tag/v1.39.4)       | ✅ matches stable    |
 | foundry        | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)          | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)       | ✅ matches stable    |
 | geth           | [1.17.8](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8)      | [1.17.8](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8)   | ✅ matches stable    |
 | grafana        | [13.2.3](https://github.com/grafana/grafana/releases/tag/v13.2.3)           | [13.2.3](https://github.com/grafana/grafana/releases/tag/v13.2.3)        | ✅ matches stable    |
