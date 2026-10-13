@@ -39,7 +39,7 @@ done
 # Transactions are sent without waiting, with explicit nonces, then confirmed in
 # one pass: a deployed address is a pure function of (deployer, nonce), so every
 # address is known before anything is mined. Wiring calls target contracts that
-# are not mined yet, so gas estimation cannot be used for them (fixed gas limit).
+# may not be mined yet, so gas estimation cannot be used for them (fixed gas limit).
 send_async() {
   local chain="$1"
   shift
@@ -70,29 +70,27 @@ wire() {
 confirm() {
   local chain="$1" hash status
   for hash in ${pending[${chain}]}; do
-    status=$(cast receipt --rpc-url "${rpc[${chain}]}" --json "${hash}" | jq -r '.status')
+    # A dropped tx would make cast receipt poll forever.
+    if ! status=$(timeout 120 cast receipt --rpc-url "${rpc[${chain}]}" --json "${hash}" | jq -r '.status'); then
+      echo "ERROR: no receipt for ${chain} transaction ${hash} after 120s" >&2
+      exit 1
+    fi
     if [[ "${status}" != "0x1" && "${status}" != "1" ]]; then
       echo "ERROR: ${chain} transaction ${hash} failed (status ${status})" >&2
       exit 1
     fi
   done
+  pending[${chain}]=""
 }
 
 checkpoint_manager=$(jq -re '.root.RootChainProxy' contractAddresses.json)
 state_sender=$(jq -re '.root.StateSender' contractAddresses.json)
 
-echo "Sending FxChild, token templates and child tunnels on L2..."
+echo "Sending FxChild and token templates on L2..."
 deploy l2 fx_child FxChild
 deploy l2 erc20_template FxERC20
 deploy l2 erc721_template FxERC721
 deploy l2 erc1155_template FxERC1155
-deploy l2 state_child_tunnel FxStateChildTunnel "constructor(address)" "${fx_child}"
-deploy l2 erc20_child_tunnel FxERC20ChildTunnel \
-  "constructor(address,address)" "${fx_child}" "${erc20_template}"
-deploy l2 erc721_child_tunnel FxERC721ChildTunnel \
-  "constructor(address,address)" "${fx_child}" "${erc721_template}"
-deploy l2 erc1155_child_tunnel FxERC1155ChildTunnel \
-  "constructor(address,address)" "${fx_child}" "${erc1155_template}"
 
 if [[ "${SKIP_L1_WIRING:-0}" == "1" ]]; then
   fx_root=$(jq -re '.root.fxPortal.FxRoot' contractAddresses.json)
@@ -111,7 +109,23 @@ else
     "constructor(address,address,address)" "${checkpoint_manager}" "${fx_root}" "${erc721_template}"
   deploy l1 erc1155_root_tunnel FxERC1155RootTunnel \
     "constructor(address,address,address)" "${checkpoint_manager}" "${fx_root}" "${erc1155_template}"
+fi
 
+# The child tunnel constructors require the token template to already hold code,
+# so their gas estimation reverts until the templates are mined.
+echo "Waiting for the L2 token templates..."
+confirm l2
+
+echo "Sending child tunnels on L2..."
+deploy l2 state_child_tunnel FxStateChildTunnel "constructor(address)" "${fx_child}"
+deploy l2 erc20_child_tunnel FxERC20ChildTunnel \
+  "constructor(address,address)" "${fx_child}" "${erc20_template}"
+deploy l2 erc721_child_tunnel FxERC721ChildTunnel \
+  "constructor(address,address)" "${fx_child}" "${erc721_template}"
+deploy l2 erc1155_child_tunnel FxERC1155ChildTunnel \
+  "constructor(address,address)" "${fx_child}" "${erc1155_template}"
+
+if [[ "${SKIP_L1_WIRING:-0}" != "1" ]]; then
   echo "Wiring L1..."
   wire l1 "${fx_root}" "setFxChild(address)" "${fx_child}"
   # StateSender.syncState only accepts registered (sender, receiver) pairs.
