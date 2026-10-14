@@ -74,7 +74,10 @@ There is no PR template: the body is at most 5 bullets, one per bump
 
 **CI** (run by `bump-version-matrix.yml`): only edit files. Do not commit, push
 or open the PR: return the title and body, and the workflow opens or refreshes the
-PR. If nothing is left to bump (every drifted row is 📌, rc or unpublished), make
+PR. Files under `.github/workflows/` are dropped from that PR (the app token
+cannot push them), e.g. the external-L1 ethereum-package pin in `deploy.yaml`
+that must match `kurtosis.yml`: still edit them, but never claim them in the body;
+add a bullet asking a maintainer to apply the exact line by hand. If nothing is left to bump (every drifted row is 📌, rc or unpublished), make
 no change and return an empty title. Either way, list every drifted row in
 `bumped` (component, old and new version) or `skipped` (component, current and
 latest version, reason: `pinned` for 📌, `pre-release` for rc, `unpublished`, or
