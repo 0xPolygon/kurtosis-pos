@@ -53,7 +53,7 @@ IMAGES = {
     "l1_cl_image": "sigp/lighthouse:v8.3.0-rc.0",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.5",
     # layer 2
-    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.12.1",
+    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.12.2",
     "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.2",
     "l2_cl_queue_image": "rabbitmq:4.3.6",
     # utilities
