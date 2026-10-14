@@ -260,7 +260,7 @@ Deployed if and only if at least one participant sets `el_bor_use_sequence_store
 | redpanda_image | string | redpandadata/redpanda:v26.2.2 | Redpanda broker image                                                                                  |
 | redpanda_count | int    | 1                             | Broker count. With more than one, the topic is created at RF=count with majority `min.insync.replicas` |
 | gateway_count  | int    | 1                             | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name  |
-| envoy_image    | string | envoyproxy/envoy:v1.39.4      | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
+| envoy_image    | string | envoyproxy/envoy:v1.40.0      | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
 
 ### `status_checker_params`
 
