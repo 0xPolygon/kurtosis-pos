@@ -54,7 +54,7 @@ IMAGES = {
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.5",
     # layer 2
     "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.12.2",
-    "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.2",
+    "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.3",
     "l2_cl_queue_image": "rabbitmq:4.3.6",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.6",
@@ -62,7 +62,7 @@ IMAGES = {
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
-    "nginx_image": "nginx:1.31.6-alpine",
+    "nginx_image": "nginx:1.31.7-alpine",
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
     # observability
     "prometheus_image": "prom/prometheus:v3.15.0",

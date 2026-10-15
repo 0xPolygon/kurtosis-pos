@@ -23,14 +23,14 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 
 | Component      | Deployed version                                                            | Latest stable version                                                    | Status               |
 | -------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------- |
-| bor            | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)             | [2.10.2](https://github.com/0xPolygon/bor/releases/tag/v2.10.2)          | ✅ matches stable    |
+| bor            | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)             | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)          | ✅ matches stable    |
 | envoy          | [1.40.0](https://github.com/envoyproxy/envoy/releases/tag/v1.40.0)          | [1.40.0](https://github.com/envoyproxy/envoy/releases/tag/v1.40.0)       | ✅ matches stable    |
 | foundry        | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)          | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)       | ✅ matches stable    |
 | geth           | [1.17.8](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8)      | [1.17.8](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8)   | ✅ matches stable    |
 | grafana        | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)           | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)        | ✅ matches stable    |
 | heimdall-v2    | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)     | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)  | ✅ matches stable    |
 | lighthouse     | [8.3.0-rc.0](https://github.com/sigp/lighthouse/releases/tag/v8.3.0-rc.0)   | [8.2.3](https://github.com/sigp/lighthouse/releases/tag/v8.2.3)          | ⚡️ newer than stable |
-| nginx          | [1.31.6-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.6) | [1.31.6](https://github.com/nginx/nginx/releases/tag/release-1.31.6)     | ✅ matches stable    |
+| nginx          | [1.31.7-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.7) | [1.31.7](https://github.com/nginx/nginx/releases/tag/release-1.31.7)     | ✅ matches stable    |
 | panoptichain   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)      | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | ✅ matches stable    |
 | prometheus     | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)     | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)  | ✅ matches stable    |
 | rabbitmq       | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6)    | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6) | ✅ matches stable    |
@@ -48,7 +48,7 @@ Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/se
 | Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
 | -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
 | foundry  | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)      | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)      | ✅ matches stable |
-| kurtosis | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | ✅ matches stable |
+| kurtosis | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | [1.21.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.21.0) | 🚨 behind stable  |
 
 ## Kurtosis packages
 
