@@ -74,7 +74,7 @@ image = "ghcr.io/0xpolygon/bor:v2.10.3"
 # DO — constants.star
 IMAGES = {
     "l2_el_bor_image":         "ghcr.io/0xpolygon/bor:v2.10.3",
-    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.11.0",
+    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.12.2",
 }
 
 # launcher
