@@ -233,7 +233,7 @@ cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 
 | Field | Type   | Default             | Description                |
 | ----- | ------ | ------------------- | -------------------------- |
-| image | string | nginx:1.31.6-alpine | Image used to deploy nginx |
+| image | string | nginx:1.31.7-alpine | Image used to deploy nginx |
 
 ### `ethstats_server_params`
 
