@@ -98,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: mfinelli/setup-shfmt@v4
+      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d # v4.0.1
         with:
           shfmt-version: 3.13.1
 
