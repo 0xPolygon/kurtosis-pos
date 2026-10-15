@@ -45,7 +45,7 @@ Nodes with `el_bor_archive_mode: true` get a `-archive` suffix (e.g. `l2-el-1-bo
 | L1 chain ID                   | `3151908`                                                            |
 | L2 EL chain ID                | `4927`                                                               |
 | L2 CL chain ID                | `heimdall-4927`                                                      |
-| Bor image                     | `ghcr.io/0xpolygon/bor:v2.10.2`                                      |
+| Bor image                     | `ghcr.io/0xpolygon/bor:v2.10.3`                                      |
 | Heimdall-v2 image             | `ghcr.io/0xpolygon/heimdall-v2:v0.12.2`                              |
 | Sprint duration               | 16 blocks                                                            |
 | Rio hard fork                 | block 128 (required by Heimdall-v2)                                  |
