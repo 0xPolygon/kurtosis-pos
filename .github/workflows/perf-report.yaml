@@ -26,7 +26,14 @@ jobs:
     # it: `head_repository` is the repo the upstream run's code came from.
     # (`workflow_run.repository` is always this repo, so comparing it to
     # github.repository is a no-op.) Fork PRs therefore get no perf comment.
-    if: ${{ github.event.workflow_run.head_repository.full_name == github.repository }}
+    # Cancelled runs (superseded by a newer push) still upload perf artifacts
+    # with no phases, which would replace the last useful comment with an
+    # empty report.
+    if: >-
+      ${{
+        github.event.workflow_run.head_repository.full_name == github.repository &&
+        github.event.workflow_run.conclusion != 'cancelled'
+      }}
 
     steps:
       - uses: actions/checkout@v7
