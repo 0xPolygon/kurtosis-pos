@@ -45,11 +45,18 @@ jobs:
       matrix:
         include:
           - devnet_type: small
+            l1_backend: ethereum-package
           - devnet_type: large
+            l1_backend: ethereum-package
             extra_flags: --args-file .github/configs/large.yml.norun
-          - devnet_type: anvil
+          - devnet_type: small
+            l1_backend: anvil
             extra_flags: --args-file .github/configs/l1-backends/anvil.yml
             l1_rpc: anvil
+
+    env:
+      # ethereum-package jobs keep their historical id so perf baselines carry over.
+      JOB_ID: snapshot-${{ matrix.devnet_type }}${{ matrix.l1_backend == 'anvil' && '-anvil' || '' }}
 
     steps:
       - uses: actions/checkout@v7
@@ -116,8 +123,9 @@ jobs:
       - uses: ./.github/actions/perf
         if: always()
         with:
-          job_id: snapshot-${{ matrix.devnet_type }}
+          job_id: ${{ env.JOB_ID }}
           flavour: ${{ matrix.devnet_type }}
+          l1_backend: ${{ matrix.l1_backend }}
 
       # Each dump is a no-op when its devnet is absent: the kurtosis enclave is
       # removed before the devnet is restored with docker compose.
@@ -125,17 +133,17 @@ jobs:
         if: failure()
         with:
           enclave_name: ${{ env.ENCLAVE_NAME }}
-          args_filename: snapshot-${{ matrix.devnet_type }}
+          args_filename: ${{ env.JOB_ID }}
 
       - uses: ./.github/actions/compose/dump
         if: failure()
         with:
           compose_file: ${{ github.workspace }}/tmp/docker-compose.yaml
-          archive_suffix: snapshot-${{ matrix.devnet_type }}-restored
+          archive_suffix: ${{ env.JOB_ID }}-restored
 
       - name: Push snapshot image
         # The anvil variant only covers the restore path; no image is published for it.
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.devnet_type != 'anvil'
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.l1_backend != 'anvil'
         run: |
           image="ghcr.io/0xpolygon/pos-devnet-${{ matrix.devnet_type }}:${{ github.ref_name }}"
           docker tag pos-devnet "$image"

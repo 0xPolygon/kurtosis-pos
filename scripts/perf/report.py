@@ -34,7 +34,7 @@ from pathlib import Path
 SCHEMA = "kurtosis-pos.perf.v1"
 
 # Identifiers that are rendered verbatim into the Markdown PR comment
-# (metadata.job, metadata.flavour, phases[].phase). The artifacts are the
+# (metadata.job, metadata.flavour, metadata.l1_backend, phases[].phase). The artifacts are the
 # least-trusted input this script consumes — they come from whichever run
 # triggered perf-report.yaml — so anything outside this charset (backticks,
 # pipes, newlines, HTML) is rejected rather than risk breaking out of a
@@ -73,6 +73,7 @@ class JobReport:
     job: str
     flavour: str | None
     phases: list[PhaseRecord]
+    l1_backend: str | None = None
 
 
 @dataclass
@@ -119,6 +120,9 @@ def _parse_run_file(data: object) -> JobReport:
     flavour = meta.get("flavour")
     if flavour is not None:
         flavour = _ident(flavour, "metadata.flavour")
+    l1_backend = meta.get("l1_backend")
+    if l1_backend is not None:
+        l1_backend = _ident(l1_backend, "metadata.l1_backend")
     raw_phases = data.get("phases", [])
     if not isinstance(raw_phases, list):
         raise ValueError("phases is not a list")
@@ -140,7 +144,7 @@ def _parse_run_file(data: object) -> JobReport:
                 extras=extras,
             )
         )
-    return JobReport(job=job, flavour=flavour, phases=phases)
+    return JobReport(job=job, flavour=flavour, phases=phases, l1_backend=l1_backend)
 
 
 def load_run(run_dir: Path) -> list[JobReport]:
@@ -243,6 +247,27 @@ def _env_name(jr: JobReport) -> str:
     return jr.flavour or jr.job
 
 
+def _sort_key(jr: JobReport) -> tuple[str, str]:
+    return (_env_name(jr), jr.l1_backend or "")
+
+
+def _show_backend(jobs: list[JobReport]) -> bool:
+    return any(jr.l1_backend for jr in jobs)
+
+
+def _label_cells(jr: JobReport, show_backend: bool) -> str:
+    cells = f"| `{_env_name(jr)}` "
+    if show_backend:
+        cells += f"| `{jr.l1_backend}` " if jr.l1_backend else "| — "
+    return cells
+
+
+def _label_header(show_backend: bool) -> tuple[str, str]:
+    if show_backend:
+        return "| Env | Backend |", "|---|---|"
+    return "| Env |", "|---|"
+
+
 def _phase_by_name(jr: JobReport, name: str) -> PhaseRecord | None:
     for p in jr.phases:
         if p.phase == name:
@@ -273,7 +298,7 @@ def _single_phase_table(
 ) -> list[str]:
     rows = [
         (jr, _phase_by_name(jr, phase_name))
-        for jr in sorted(current_jobs, key=_env_name)
+        for jr in sorted(current_jobs, key=_sort_key)
     ]
     # Skip the table only when NO env recorded this phase (e.g. the deploy
     # workflow has no snapshot phases). An env missing a phase that its
@@ -281,8 +306,10 @@ def _single_phase_table(
     # is visible instead of silently dropping the env.
     if all(p is None for _, p in rows):
         return []
-    header = "| Env | Current | Baseline (min / avg / max) | Δ vs avg |"
-    sep = "|---|---|---|---|"
+    show_backend = _show_backend(current_jobs)
+    header, sep = _label_header(show_backend)
+    header += " Current | Baseline (min / avg / max) | Δ vs avg |"
+    sep += "---|---|---|"
     if compare_to:
         header += f" {compare_label} |"
         sep += "---|"
@@ -297,14 +324,14 @@ def _single_phase_table(
     for jr, p in rows:
         stats = baselines.get((jr.job, phase_name), BaselineStats())
         if p is None:
-            row = f"| `{_env_name(jr)}` | n/a ❌ | {fmt_baseline(stats, 's')} | — |"
+            row = f"{_label_cells(jr, show_backend)}| n/a ❌ | {fmt_baseline(stats, 's')} | — |"
             if compare_to:
                 row += " — |"
             row += f" {stats.count} |"
             out.append(row)
             continue
         row = (
-            f"| `{_env_name(jr)}` | {fmt_value(p)} | {fmt_baseline(stats, unit_hint(p))} "
+            f"{_label_cells(jr, show_backend)}| {fmt_value(p)} | {fmt_baseline(stats, unit_hint(p))} "
             f"| {fmt_delta(p, stats)} |"
         )
         if compare_to:
@@ -321,7 +348,7 @@ def _snapshot_table(
     baselines: dict[tuple[str, str], BaselineStats],
 ) -> list[str]:
     rows = []
-    for jr in sorted(current_jobs, key=_env_name):
+    for jr in sorted(current_jobs, key=_sort_key):
         build = _phase_by_name(jr, "snapshot-build")
         size = _phase_by_name(jr, "snapshot-image-size")
         rows.append((jr, build, size))
@@ -329,17 +356,19 @@ def _snapshot_table(
     # phases at all; a single failed env still gets a row.
     if all(build is None and size is None for _, build, size in rows):
         return []
+    show_backend = _show_backend(current_jobs)
+    header, sep = _label_header(show_backend)
     out = [
         "### Snapshot",
         "",
-        "| Env | Build time | Image size | Δ build | Δ size | N build | N size |",
-        "|---|---|---|---|---|---|---|",
+        header + " Build time | Image size | Δ build | Δ size | N build | N size |",
+        sep + "---|---|---|---|---|---|",
     ]
     for jr, build, size in rows:
         build_stats = baselines.get((jr.job, "snapshot-build"), BaselineStats())
         size_stats = baselines.get((jr.job, "snapshot-image-size"), BaselineStats())
         out.append(
-            f"| `{_env_name(jr)}` "
+            f"{_label_cells(jr, show_backend)}"
             f"| {fmt_value(build) if build else 'n/a ❌'} "
             f"| {fmt_value(size) if size else 'n/a ❌'} "
             f"| {fmt_delta(build, build_stats) if build else '—'} "
