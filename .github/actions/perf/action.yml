@@ -19,6 +19,12 @@ inputs:
       "small", "large", "heimdall-v2-bor"). Surfaces in perf-report.yaml.
     required: false
     default: ''
+  l1_backend:
+    description: |
+      Optional L1 backend recorded in the artifact metadata ("anvil" or
+      "ethereum-package"). Shown as its own column in perf-report.yaml.
+    required: false
+    default: ''
   perf_dir:
     description: Directory holding $PERF_DIR/results.jsonl.
     required: false
@@ -33,6 +39,7 @@ runs:
         PERF_DIR: ${{ inputs.perf_dir }}
         PERF_JOB: ${{ inputs.job_id }}
         PERF_FLAVOUR: ${{ inputs.flavour }}
+        PERF_L1_BACKEND: ${{ inputs.l1_backend }}
       run: |
         if [[ ! -f "${PERF_DIR}/results.jsonl" ]]; then
           echo "::warning::No perf results recorded at ${PERF_DIR}/results.jsonl — emitting an empty artifact so the job still shows as failed in the report"
