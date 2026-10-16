@@ -89,6 +89,39 @@ if [[ -z "$docker_major" || "$docker_major" -lt 25 ]]; then
   exit 1
 fi
 
+# Seed the anvil L1 backend's captured state. snapshot.sh baked the live
+# post-deploy anvil state (captured via the `anvil_dumpState` RPC) into the
+# image as /anvil-state.hex, which extract.sh wrote out to the snapshot folder.
+# anvil's own `--dump-state` writes only on SIGINT (not the SIGTERM the stop
+# sequence sends), so the on-disk state isn't otherwise captured. Decode it into
+# the `/opt/anvil/genesis.json` that anvil boots with `--load-state`, before the
+# volumes are restored, rather than replaying it over RPC after start-up:
+# - anvil caps HTTP request bodies at 2 MiB, and a devnet's state dump outgrows
+#   that (anvil_loadState then fails with -32600 before the body is parsed).
+# - heimdall and bor come up against an L1 that already has the deployed
+#   contracts, instead of a genesis-only L1 until the replay lands.
+# The file is present only for anvil-backend snapshots; absent under the
+# ethereum-package backend, where this is a no-op.
+anvil_state_file="$snapshot_folder/anvil-state.hex"
+if [[ -s "$anvil_state_file" ]]; then
+  docker_compose_file="$snapshot_folder/docker-compose.yaml"
+  anvil_volume=$(docker compose --file "$docker_compose_file" config --format json |
+    jq -r '[.services[].volumes[]? | select(.target == "/opt/anvil") | .source] | first // empty')
+  # restore_docker_volumes maps a folder name to its volume by `_` -> `--`.
+  anvil_volume_dir="$snapshot_folder/volumes/${anvil_volume//--/_}"
+  if [[ -z "$anvil_volume" || ! -d "$anvil_volume_dir" ]]; then
+    log_error "Could not find the snapshot volume mounted at /opt/anvil (volume: '${anvil_volume}')"
+    exit 1
+  fi
+  log_info "Seeding captured anvil state into ${anvil_volume}:/opt/anvil/genesis.json"
+  # The dump is hex-encoded gzipped JSON, the same state format `--load-state`
+  # reads. Decode inside alpine: the extracted volume folder is root-owned.
+  docker run --rm \
+    -v "$(realpath "$anvil_volume_dir")":/data \
+    -v "$(realpath "$anvil_state_file")":/anvil-state.hex:ro \
+    "$ALPINE_IMAGE" sh -c 'tr -d "[:space:]" < /anvil-state.hex | sed "s/^0x//" | xxd -r -p | gunzip > /data/genesis.json'
+fi
+
 log_info "Restoring docker volumes"
 volume_folder_path="$(realpath "$snapshot_folder/volumes")"
 restore_docker_volumes "$volume_folder_path"
@@ -129,50 +162,5 @@ while :; do
   sleep 1
 done
 log_info "Devnet started"
-
-# Re-apply the anvil L1 backend's captured state. snapshot.sh baked the live
-# post-deploy anvil state (captured via the `anvil_dumpState` RPC) into the
-# image as /anvil-state.hex, which extract.sh wrote out to the snapshot folder.
-# anvil's own `--dump-state` writes only on SIGINT (not the SIGTERM the stop
-# sequence sends), so the on-disk state isn't otherwise captured. Replay the hex
-# via `anvil_loadState` so the restored devnet has the deployed L1 contracts.
-# The file is present only for anvil-backend snapshots; absent under the
-# ethereum-package backend, where this is a no-op. snapshot.sh::configure_ports
-# binds anvil to host 8545.
-anvil_state_file="$snapshot_folder/anvil-state.hex"
-if [[ -s "$anvil_state_file" ]]; then
-  anvil_rpc_url="http://127.0.0.1:8545"
-  log_info "Re-applying captured anvil state via ${anvil_rpc_url} (anvil_loadState)"
-  # `up --wait` gates on anvil's container healthcheck, which doesn't exercise
-  # the JSON-RPC; poll until the RPC actually answers before loading state.
-  deadline=$((SECONDS + 60))
-  until curl -fsSL -X POST -H 'Content-Type: application/json' \
-    --data '{"jsonrpc":"2.0","method":"web3_clientVersion","id":1}' \
-    "$anvil_rpc_url" > /dev/null 2>&1; do
-    if [[ "$SECONDS" -gt "$deadline" ]]; then
-      log_error "anvil RPC at ${anvil_rpc_url} did not respond within 60s"
-      exit 1
-    fi
-    sleep 1
-  done
-  # Assemble the JSON-RPC body in a file: the hex blob is multi-MB and exceeds
-  # ARG_MAX as a command-line argument, so it goes through file redirection.
-  anvil_body_file=$(mktemp)
-  {
-    printf '{"jsonrpc":"2.0","method":"anvil_loadState","params":["'
-    # Strip any whitespace (a stray trailing newline embedded mid-string would
-    # make the JSON-RPC body invalid); the hex itself has no internal spaces.
-    tr -d '[:space:]' < "$anvil_state_file"
-    printf '"],"id":1}'
-  } > "$anvil_body_file"
-  anvil_load_response=$(curl -fsSL -X POST -H 'Content-Type: application/json' \
-    --data-binary "@${anvil_body_file}" "$anvil_rpc_url")
-  rm -f "$anvil_body_file"
-  if ! printf '%s' "$anvil_load_response" | jq -e '.result == true' > /dev/null 2>&1; then
-    log_error "anvil_loadState rejected the captured state: ${anvil_load_response}"
-    exit 1
-  fi
-  log_info "anvil L1 state restored"
-fi
 
 log_info "Use 'docker compose --file $docker_compose_file down --volumes' to remove the devnet"
