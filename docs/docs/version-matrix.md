@@ -48,7 +48,7 @@ Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/se
 | Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
 | -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
 | foundry  | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)      | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)      | ✅ matches stable |
-| kurtosis | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | [1.21.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.21.0) | 🚨 behind stable  |
+| kurtosis | [1.21.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.21.0) | [1.21.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.21.0) | ✅ matches stable |
 
 ## Kurtosis packages
 
@@ -56,5 +56,5 @@ External Kurtosis packages the package depends on. Versions are pinned in the [`
 
 | Package                                                                                            | Pinned version                                                                                                    | Latest stable version                                                                                                    | Status            |
 | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [69dcfbbcbde1](https://github.com/ethpandaops/ethereum-package/tree/69dcfbbcbde1ce91a6d0790c8150c84de55e3b2b)     | [HEAD (69dcfbbcbde1)](https://github.com/ethpandaops/ethereum-package/tree/69dcfbbcbde1ce91a6d0790c8150c84de55e3b2b)     | ✅ matches stable |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [f191032be3a7](https://github.com/ethpandaops/ethereum-package/tree/f191032be3a7ba069a6bb049ea5d5b9c3b1357e8)     | [HEAD (f191032be3a7)](https://github.com/ethpandaops/ethereum-package/tree/f191032be3a7ba069a6bb049ea5d5b9c3b1357e8)     | ✅ matches stable |
 | [github.com/kurtosis-tech/prometheus-package](https://github.com/kurtosis-tech/prometheus-package) | [f3402ebad8cf](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | [HEAD (f3402ebad8cf)](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | ✅ matches stable |
