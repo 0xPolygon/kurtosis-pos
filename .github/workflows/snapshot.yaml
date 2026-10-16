@@ -43,15 +43,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        devnet_type: [small, large]
+        l1_backend: [ethereum-package, anvil]
         include:
-          - devnet_type: small
-            l1_backend: ethereum-package
           - devnet_type: large
             l1_backend: ethereum-package
             extra_flags: --args-file .github/configs/large.yml.norun
           - devnet_type: small
             l1_backend: anvil
             extra_flags: --args-file .github/configs/l1-backends/anvil.yml
+            l1_rpc: anvil
+          - devnet_type: large
+            l1_backend: anvil
+            extra_flags: --args-file .github/configs/large-anvil.yml.norun
             l1_rpc: anvil
 
     env:
