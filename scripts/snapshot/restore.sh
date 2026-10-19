@@ -38,12 +38,18 @@ restore_docker_volumes() {
   # The pack+unpack happens inside an alpine container as root so we can
   # read the host-owned files (where the user may have edited configs)
   # and write into volumes that expect root-owned content.
+  # The volumes already exist at this point (`docker compose create`). Creating
+  # one here for a folder compose does not declare would leave an unlabelled
+  # volume that `down --volumes` never removes.
   for d in "$volume_folder_path"/*/; do
     [[ -d "$d" ]] || continue
+    volume_name=$(basename "$d" | sed 's/_/--/g')
+    if ! jq -e --arg v "$volume_name" 'any(.[]; .name == $v)' <<< "$compose_volumes_json" > /dev/null; then
+      log_warn "Skipping folder $(basename "$d"): no volume '$volume_name' in the compose file"
+      continue
+    fi
     (
-      volume_name=$(basename "$d" | sed 's/_/--/g')
       echo "$volume_name"
-      docker volume create "$volume_name" > /dev/null
       docker run --rm \
         -v "$volume_name":/data \
         -v "$(realpath "$d")":/backup \
@@ -89,6 +95,20 @@ if [[ -z "$docker_major" || "$docker_major" -lt 25 ]]; then
   exit 1
 fi
 
+docker_compose_file="$snapshot_folder/docker-compose.yaml"
+compose_volumes_json=$(docker compose --file "$docker_compose_file" config --format json | jq -c '[.volumes // {} | .[] | {name, external: (.external // false)}]')
+
+# Volumes are unpacked over whatever they already hold, so a leftover volume
+# from a previous devnet would mix its data into this one.
+mapfile -t existing_volumes < <(jq -r '.[].name' <<< "$compose_volumes_json" |
+  while read -r v; do docker volume inspect "$v" > /dev/null 2>&1 && echo "$v"; done)
+if [[ ${#existing_volumes[@]} -gt 0 ]]; then
+  log_error "${#existing_volumes[@]} volumes of this devnet already exist (e.g. ${existing_volumes[0]})"
+  log_error "Remove the previous devnet first: docker compose --file $docker_compose_file down --volumes"
+  log_error "Volumes of snapshots built before compose managed them are not removed by that; delete them with: docker volume rm <name>"
+  exit 1
+fi
+
 # Seed the anvil L1 backend's captured state. snapshot.sh baked the live
 # post-deploy anvil state (captured via the `anvil_dumpState` RPC) into the
 # image as /anvil-state.hex, which extract.sh wrote out to the snapshot folder.
@@ -104,7 +124,6 @@ fi
 # ethereum-package backend, where this is a no-op.
 anvil_state_file="$snapshot_folder/anvil-state.hex"
 if [[ -s "$anvil_state_file" ]]; then
-  docker_compose_file="$snapshot_folder/docker-compose.yaml"
   anvil_volume=$(docker compose --file "$docker_compose_file" config --format json |
     jq -r '[.services[].volumes[]? | select(.target == "/opt/anvil") | .source] | first // empty')
   # restore_docker_volumes maps a folder name to its volume by `_` -> `--`.
@@ -122,13 +141,18 @@ if [[ -s "$anvil_state_file" ]]; then
     "$ALPINE_IMAGE" sh -c 'tr -d "[:space:]" < /anvil-state.hex | sed "s/^0x//" | xxd -r -p | gunzip > /data/genesis.json'
 fi
 
+log_info "Creating devnet containers and volumes"
+# Snapshots built before compose managed the volumes declare them `external`.
+jq -r '.[] | select(.external) | .name' <<< "$compose_volumes_json" |
+  while read -r v; do docker volume create "$v" > /dev/null; done
+docker compose --file "$docker_compose_file" create
+
 log_info "Restoring docker volumes"
 volume_folder_path="$(realpath "$snapshot_folder/volumes")"
 restore_docker_volumes "$volume_folder_path"
 log_info "Docker volumes restored"
 
 log_info "Starting devnet using docker-compose"
-docker_compose_file="$snapshot_folder/docker-compose.yaml"
 # Bring everything up detached without --wait. `compose up --wait` aborts the
 # moment any service container exits, even if `restart: unless-stopped` will
 # bring it back. Some services (heimdall, bor) panic on first boot post-restore

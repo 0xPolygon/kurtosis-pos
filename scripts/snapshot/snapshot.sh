@@ -270,6 +270,10 @@ sanitize_volume_names() {
 
   # Sort volumes alphabetically
   yq --in-place --yaml-output '.volumes = (.volumes | to_entries | sort_by(.key) | from_entries)' "$docker_compose_file"
+
+  # docker-autocompose declares every volume `external`, which `down --volumes`
+  # never removes. Let compose own them under their fixed names instead.
+  yq --in-place --yaml-output '.volumes |= with_entries(.value = {name: .key})' "$docker_compose_file"
 }
 
 rename_file_artifact_volumes() {
@@ -669,118 +673,6 @@ kurtosis files inspect "$enclave_name" l2-el-genesis genesis.json |
   sed -n '/^{/,$p' | jq . > "$l2_genesis_tmp"
 log_info "File artifacts extracted (contractAddresses.json: $(wc -c < "$contract_addresses_tmp") bytes, l2-genesis.json: $(wc -c < "$l2_genesis_tmp") bytes)"
 
-# Wait until the checkpoint flow is idle: heimdall has observed every ack L1
-# emitted AND no checkpoint is buffered (a buffered checkpoint means an L1
-# submission may be in flight). If L1 records ack #N while heimdall misses it,
-# the restored listener never replays the event and checkpoints stall forever.
-# While bor keeps producing blocks, the buffer is only empty for a few seconds
-# after each ack, so poll every second and take the first idle reading. On
-# anvil, an ack landing after that reading is caught by the post-dump check
-# below; on ethereum-package, L1 is stopped right after, before a new
-# checkpoint can go from proposal to L1 inclusion.
-wait_for_checkpoint_quiescence() {
-  local enclave_name="$1"
-
-  local cl_api_url root_chain_proxy l1_rpc_url cl_service
-  # Pick the first L2 CL validator regardless of el/cl flavour or archive suffix.
-  # `validator` is a `kind`, so the suffix is always `-validator` or `-validator-archive`.
-  cl_service=$(docker ps --filter "network=kt-$enclave_name" --format "{{.Names}}" |
-    awk -F'--' '{print $1}' |
-    grep -E '^l2-cl-[0-9]+-.*-validator(-archive)?$' |
-    sort | head -n1)
-  if [[ -z "$cl_service" ]]; then
-    log_error "No L2 CL validator service found in enclave '$enclave_name'"
-    return 1
-  fi
-  cl_api_url=$(kurtosis port print "$enclave_name" "$cl_service" http)
-  # `l1_backend` chooses between a single-node `anvil` service and the
-  # ethereum-package's `el-1-geth-lighthouse`. Both expose `rpc`. Probe
-  # the anvil name first; only one of the two services exists in any
-  # given enclave.
-  l1_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null ||
-    kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
-  root_chain_proxy=$(jq -r '.root.RootChainProxy' "$contract_addresses_tmp")
-
-  local num_steps=600 previous_state=""
-  for step in $(seq 1 "$num_steps"); do
-    # `currentHeaderBlock()` returns the next-slot id (multiples of
-    # ChildChainBlockInterval=10000); divide to get the count of acks on L1.
-    local l1_header_block l1_acks heimdall_acks buffered_end_block state
-    l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | head -n 1 | awk '{print $1}' || true)
-    # A failed read must not pass for "0 acks", which would look idle.
-    if [[ -z "$l1_header_block" ]]; then
-      log_info "Checkpoint quiescence check ${step}/${num_steps}: L1 read failed, retrying"
-      sleep 1
-      continue
-    fi
-    l1_acks=$((l1_header_block / 10000))
-    heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2> /dev/null | jq -r '.ack_count // 0' || echo 0)
-    # An empty buffer is returned as a zero-value checkpoint.
-    buffered_end_block=$(curl -sf "$cl_api_url/checkpoints/buffer" 2> /dev/null | jq -r '.checkpoint.end_block // "0"' || echo "unknown")
-
-    state="L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}, buffered end_block=${buffered_end_block}"
-    if [[ "$state" != "$previous_state" ]]; then
-      log_info "Checkpoint quiescence check ${step}/${num_steps}: ${state}"
-      previous_state="$state"
-    fi
-    if [[ "${heimdall_acks}" -ge 1 && "${heimdall_acks}" -ge "${l1_acks}" && "${buffered_end_block}" == "0" ]]; then
-      log_info "Checkpoint flow is quiescent (${state})"
-      quiescent_l1_acks="${l1_acks}"
-      return 0
-    fi
-    sleep 1
-  done
-  log_error "Checkpoint flow did not reach quiescence within $num_steps steps"
-  return 1
-}
-
-log_info "Waiting for the checkpoint flow to be idle"
-wait_for_checkpoint_quiescence "$enclave_name"
-
-# Persist the anvil L1 backend's post-deploy state into the snapshot. anvil
-# boots `--load-state /opt/anvil/genesis.json --dump-state /tmp/state_dump.json`
-# (src/l1/anvil.star): /tmp is not captured, AND anvil writes that dump only on
-# SIGINT (not the SIGTERM the stop sequence below sends) — so without
-# intervention the deployed L1 contracts and checkpoint state are lost on
-# restore and the restored devnet comes up on bare genesis. Capture the live
-# state via the `anvil_dumpState` RPC and bake it into the snapshot IMAGE as
-# /anvil-state.hex (the same image-file bake contractAddresses.json uses — a
-# `docker cp` into the live /opt/anvil files-artifact volume does NOT survive
-# volume capture). restore.sh replays it via `anvil_loadState`. Captured after
-# quiescence so it's consistent with heimdall's acked checkpoints. No-op under
-# the ethereum-package L1 backend, which has no anvil service.
-anvil_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null || true)
-if [[ -n "$anvil_rpc_url" ]]; then
-  log_info "Capturing anvil L1 state via ${anvil_rpc_url} (anvil_dumpState)"
-  anvil_state_tmp=$(mktemp)
-  # `jq -j` (not -r): emit the hex with NO trailing newline. restore.sh splices
-  # the file contents straight into a JSON string, so a trailing newline would
-  # produce an invalid anvil_loadState request body.
-  curl -fsSL -X POST -H 'Content-Type: application/json' \
-    --data '{"jsonrpc":"2.0","method":"anvil_dumpState","params":[],"id":1}' \
-    "$anvil_rpc_url" | jq -j '.result // empty' > "$anvil_state_tmp"
-  if [[ "$(wc -c < "$anvil_state_tmp")" -lt 100 ]]; then
-    log_error "anvil_dumpState returned an unexpectedly short result ($(wc -c < "$anvil_state_tmp") bytes)"
-    exit 1
-  fi
-  log_info "Captured $(wc -c < "$anvil_state_tmp") bytes of anvil state for /anvil-state.hex"
-  # The dump, not the container stop, freezes the restored L1: an ack mined
-  # since quiescence would reach heimdall but be missing from the dump.
-  root_chain_proxy=$(jq -r '.root.RootChainProxy' "$contract_addresses_tmp")
-  l1_header_block_after_dump=$(cast call --rpc-url "$anvil_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" | awk '{print $1}')
-  if [[ "$((l1_header_block_after_dump / 10000))" != "$quiescent_l1_acks" ]]; then
-    log_error "A checkpoint ack landed on L1 during the anvil state dump (acks: ${quiescent_l1_acks} -> $((l1_header_block_after_dump / 10000)))"
-    exit 1
-  fi
-fi
-
-# Stop containers in dependency order to avoid app/store divergence:
-# 1. L1 first, right after quiescence — no checkpoint ack can land on L1 while
-#    heimdall is down and miss it
-# 2. L2 CL (heimdall) — stops block production at consensus layer
-# 3. L2 EL (bor) — bor flushes its head-pointer atomically with no new blocks arriving
-# 4. Everything else last (rabbitmq, init/migration jobs)
-# Within each tier, stop in parallel; wait for the tier to fully drain before moving on.
 stop_tier() {
   local tier_name="$1"
   shift
@@ -799,19 +691,191 @@ mapfile -t all_containers < <(get_enclave_containers "$enclave_name")
 l1_containers=()
 cl_containers=()
 el_containers=()
+rabbitmq_containers=()
 other_containers=()
 for c in "${all_containers[@]}"; do
   case "$c" in
     anvil--* | el-[0-9]*-* | cl-[0-9]*-* | vc-[0-9]*-*) l1_containers+=("$c") ;;
     *l2-cl-*heimdall*) cl_containers+=("$c") ;;
     *l2-el-*) el_containers+=("$c") ;;
+    *l2-cl-*rabbitmq*)
+      rabbitmq_containers+=("$c")
+      other_containers+=("$c")
+      ;;
     *) other_containers+=("$c") ;;
   esac
 done
 
+# Every L1 <-> heimdall flow (checkpoints, acks, state syncs) runs through
+# heimdall's bridge, and a snapshot taken mid-flow restores into a devnet that
+# can never finish it (e.g. a checkpoint buffered in heimdall but never
+# submitted: on restore it has expired, a new proposal replaces it, the bridge
+# still pushes the old one to L1 and the mismatching ack stalls checkpoints).
+#
+# bor blocks are the only trigger for new checkpoints: the bridge proposes on
+# new bor headers, and validators vote NO on any proposal while bor is down.
+# In-flight work does not need bor: submitting an approved checkpoint and
+# voting on its ack only read heimdall and L1. So stop bor, then let heimdall
+# and L1 run until every flow is drained. Nothing can start a new flow after
+# that, so the state no longer depends on when each container stops.
+wait_for_cross_chain_drain() {
+  local enclave_name="$1"
+
+  local cl_api_url root_chain_proxy state_sender l1_rpc_url cl_service
+  # Pick the first L2 CL validator regardless of el/cl flavour or archive suffix.
+  # `validator` is a `kind`, so the suffix is always `-validator` or `-validator-archive`.
+  cl_service=$(docker ps --filter "network=kt-$enclave_name" --format "{{.Names}}" |
+    awk -F'--' '{print $1}' |
+    grep -E '^l2-cl-[0-9]+-.*-validator(-archive)?$' |
+    sort | head -n1)
+  if [[ -z "$cl_service" ]]; then
+    log_error "No L2 CL validator service found in enclave '$enclave_name'"
+    return 1
+  fi
+  cl_api_url=$(kurtosis port print "$enclave_name" "$cl_service" http)
+  # `l1_backend` chooses between a single-node `anvil` service and the
+  # ethereum-package's `el-1-geth-lighthouse`. Both expose `rpc`. Probe
+  # the anvil name first; only one of the two services exists in any
+  # given enclave.
+  l1_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null ||
+    kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
+  root_chain_proxy=$(jq -r '.root.RootChainProxy' "$contract_addresses_tmp")
+  state_sender=$(jq -r '.root.StateSender' "$contract_addresses_tmp")
+  # Without a queue to read, the bridge task check below would always pass.
+  if [[ ${#rabbitmq_containers[@]} -eq 0 ]]; then
+    log_error "No L2 CL rabbitmq container found in enclave '$enclave_name'"
+    return 1
+  fi
+  local queue_counts_dir
+  queue_counts_dir=$(mktemp -d)
+
+  # A proposal or ack voted YES in heimdall block N is only applied in block
+  # N+1, so a drained reading must still hold a few blocks later.
+  local settle_blocks=3
+  local timeout_seconds=600 previous_state="" drained_since_height=""
+  local deadline=$((SECONDS + timeout_seconds)) step=0
+  while ((SECONDS < deadline)); do
+    step=$((step + 1))
+    local l1_header_block l1_acks l1_state_syncs heimdall_acks heimdall_state_syncs buffered_end_block queued_tasks height state
+    # `currentHeaderBlock()` returns the next-slot id (multiples of
+    # ChildChainBlockInterval=10000); divide to get the count of acks on L1.
+    l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | awk 'NR==1 {print $1}' || true)
+    l1_state_syncs=$(cast call --rpc-url "$l1_rpc_url" "$state_sender" "counter()(uint256)" 2> /dev/null | awk 'NR==1 {print $1}' || true)
+    heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2> /dev/null | jq -r '.ack_count // "0"' || true)
+    # Nothing to wait for without any state sync on L1, and heimdall may answer
+    # an error rather than 0 when it has no record.
+    if [[ "$l1_state_syncs" == "0" ]]; then
+      heimdall_state_syncs=0
+    else
+      heimdall_state_syncs=$(curl -sf "$cl_api_url/clerk/event-records/latest-id" 2> /dev/null | jq -r '.latest_record_id // "0"' || true)
+    fi
+    # An empty buffer is returned as a zero-value checkpoint.
+    buffered_end_block=$(curl -sf "$cl_api_url/checkpoints/buffer" 2> /dev/null | jq -r '.checkpoint.end_block // "0"' || true)
+    height=$(curl -sf "$cl_api_url/cosmos/base/tendermint/v1beta1/blocks/latest" 2> /dev/null | jq -r '.block.header.height // empty' || true)
+    # Bridge tasks waiting in rabbitmq, including delayed ones (acks are queued
+    # with a delay): a task lost with the queue would be lost for good.
+    # The worker consumes `machinery_tasks`; `machinery_task` gets a copy of
+    # every task that nothing consumes, and `task_*` queues hold task results.
+    # Each `rabbitmqctl` call takes about a second, so query them in parallel.
+    rm -f "$queue_counts_dir"/*
+    # A failed call leaves no count file behind.
+    for c in "${rabbitmq_containers[@]}"; do
+      (
+        queues=$(docker exec "$c" rabbitmqctl list_queues --quiet --no-table-headers name messages 2> /dev/null) &&
+          awk '$1 == "machinery_tasks" || $1 ~ /^delay\./ {s += $2} END {print s + 0}' <<< "$queues" > "$queue_counts_dir/$c"
+      ) &
+    done
+    wait
+    queued_tasks=0
+    for c in "${rabbitmq_containers[@]}"; do
+      local n
+      n=$(cat "$queue_counts_dir/$c" 2> /dev/null || true)
+      if [[ -z "$n" ]]; then
+        queued_tasks=""
+        break
+      fi
+      queued_tasks=$((queued_tasks + n))
+    done
+    # A failed read must not pass for an idle value.
+    if [[ -z "$l1_header_block" || -z "$l1_state_syncs" || -z "$heimdall_acks" || -z "$heimdall_state_syncs" || -z "$buffered_end_block" || -z "$height" || -z "$queued_tasks" ]]; then
+      log_info "Drain check ${step}: read failed, retrying"
+      drained_since_height=""
+      sleep 1
+      continue
+    fi
+    l1_acks=$((l1_header_block / 10000))
+
+    state="L1 acks=${l1_acks}, heimdall ack_count=${heimdall_acks}, buffered end_block=${buffered_end_block}, L1 state syncs=${l1_state_syncs}, heimdall state syncs=${heimdall_state_syncs}, queued bridge tasks=${queued_tasks}"
+    if [[ "$state" != "$previous_state" ]]; then
+      log_info "Drain check ${step} (heimdall height ${height}): ${state}"
+      previous_state="$state"
+      drained_since_height=""
+    fi
+    if [[ "$heimdall_acks" -ge 1 && "$heimdall_acks" == "$l1_acks" && "$buffered_end_block" == "0" &&
+      "$heimdall_state_syncs" == "$l1_state_syncs" && "$queued_tasks" == "0" ]]; then
+      drained_since_height=${drained_since_height:-$height}
+      if [[ "$((height - drained_since_height))" -ge "$settle_blocks" ]]; then
+        log_info "Cross-chain flows drained and stable for ${settle_blocks} heimdall blocks (${state})"
+        drained_l1_acks="$l1_acks"
+        rm -r "$queue_counts_dir"
+        return 0
+      fi
+    else
+      drained_since_height=""
+    fi
+    sleep 1
+  done
+  rm -r "$queue_counts_dir"
+  log_error "Cross-chain flows did not drain within ${timeout_seconds}s"
+  return 1
+}
+
+stop_tier "L2 EL (bor)" "${el_containers[@]}"
+log_info "Waiting for cross-chain flows to drain"
+wait_for_cross_chain_drain "$enclave_name"
+
+# Persist the anvil L1 backend's post-deploy state into the snapshot. anvil
+# boots `--load-state /opt/anvil/genesis.json --dump-state /tmp/state_dump.json`
+# (src/l1/anvil.star): /tmp is not captured, AND anvil writes that dump only on
+# SIGINT (not the SIGTERM the stop sequence below sends) — so without
+# intervention the deployed L1 contracts and checkpoint state are lost on
+# restore and the restored devnet comes up on bare genesis. Capture the live
+# state via the `anvil_dumpState` RPC and bake it into the snapshot IMAGE as
+# /anvil-state.hex (the same image-file bake contractAddresses.json uses — a
+# `docker cp` into the live /opt/anvil files-artifact volume does NOT survive
+# volume capture). restore.sh replays it via `anvil_loadState`. Captured after
+# the drain so it's consistent with heimdall's acked checkpoints. No-op under
+# the ethereum-package L1 backend, which has no anvil service.
+anvil_rpc_url=$(kurtosis port print "$enclave_name" anvil rpc 2> /dev/null || true)
+if [[ -n "$anvil_rpc_url" ]]; then
+  log_info "Capturing anvil L1 state via ${anvil_rpc_url} (anvil_dumpState)"
+  anvil_state_tmp=$(mktemp)
+  # `jq -j` (not -r): emit the hex with NO trailing newline. restore.sh splices
+  # the file contents straight into a JSON string, so a trailing newline would
+  # produce an invalid anvil_loadState request body.
+  curl -fsSL -X POST -H 'Content-Type: application/json' \
+    --data '{"jsonrpc":"2.0","method":"anvil_dumpState","params":[],"id":1}' \
+    "$anvil_rpc_url" | jq -j '.result // empty' > "$anvil_state_tmp"
+  if [[ "$(wc -c < "$anvil_state_tmp")" -lt 100 ]]; then
+    log_error "anvil_dumpState returned an unexpectedly short result ($(wc -c < "$anvil_state_tmp") bytes)"
+    exit 1
+  fi
+  log_info "Captured $(wc -c < "$anvil_state_tmp") bytes of anvil state for /anvil-state.hex"
+  # The dump, not the container stop, freezes the restored L1: an ack mined
+  # since the drain would reach heimdall but be missing from the dump.
+  root_chain_proxy=$(jq -r '.root.RootChainProxy' "$contract_addresses_tmp")
+  l1_header_block_after_dump=$(cast call --rpc-url "$anvil_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" | awk '{print $1}')
+  if [[ "$((l1_header_block_after_dump / 10000))" != "$drained_l1_acks" ]]; then
+    log_error "A checkpoint ack landed on L1 during the anvil state dump (acks: ${drained_l1_acks} -> $((l1_header_block_after_dump / 10000)))"
+    exit 1
+  fi
+fi
+
+# Flows are drained and bor is down, so nothing can change cross-chain state
+# any more: the stop order no longer matters for consistency. heimdall still
+# goes before rabbitmq, which it panics without.
 stop_tier "L1" "${l1_containers[@]}"
 stop_tier "L2 CL (heimdall)" "${cl_containers[@]}"
-stop_tier "L2 EL (bor)" "${el_containers[@]}"
 stop_tier "remaining containers" "${other_containers[@]}"
 log_info "All containers stopped"
 
