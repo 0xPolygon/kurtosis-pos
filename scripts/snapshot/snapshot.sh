@@ -13,53 +13,6 @@ source "${SCRIPT_DIR}/log.sh"
 # UTILITY FUNCTIONS
 ##############################################################################
 
-# Polls all L2 EL RPC endpoints until every node has reached the target block.
-wait_for_rpcs_to_reach_block() {
-  local enclave_name="$1"
-  local target_block="$2"
-
-  # Get all L2 EL service names (strip UUID suffix)
-  mapfile -t l2_el_services < <(docker ps --filter "network=kt-$enclave_name" --format "{{.Names}}" |
-    grep l2-el | sort | awk -F'--' '{print $1}')
-
-  # Resolve RPC URLs once — they don't change between checks
-  declare -A rpc_urls
-  for service in "${l2_el_services[@]}"; do
-    rpc_urls[$service]=$(kurtosis port print "$enclave_name" "$service" rpc)
-  done
-
-  # Poll each service until all have reached the target block
-  local num_steps=50
-  for step in $(seq 1 "$num_steps"); do
-    log_info "Check ${step}/${num_steps}"
-    local all_ready=true
-    for service in "${l2_el_services[@]}"; do
-      local block_number status
-      block_number=$(cast bn --rpc-url "${rpc_urls[$service]}")
-      if [[ "$block_number" -lt "$target_block" ]]; then
-        status="NOT READY"
-        all_ready=false
-      else
-        status="OK"
-      fi
-      log_info "- $service: $block_number/$target_block - $status"
-    done
-
-    if $all_ready; then
-      log_info "All L2 RPCs reached block $target_block"
-      return 0
-    fi
-    log_info "Not all L2 RPCs reached block $target_block, retrying in 10s..."
-    sleep 10
-  done
-  log_error "Not all L2 RPCs reached block $target_block after $num_steps steps"
-  return 1
-}
-
-##############################################################################
-# UTILITY FUNCTIONS
-##############################################################################
-
 # List enclave containers, excluding kurtosis internals and ephemeral jobs.
 # Usage: get_enclave_containers <enclave_name> [--all]
 get_enclave_containers() {
@@ -643,10 +596,6 @@ log_info "Using enclave name: $enclave_name"
 # local network: POS_DEVNET_SUBNET_PREFIX=10.99.7 ./scripts/snapshot/restore.sh
 # shellcheck disable=SC2016
 subnet_prefix='${POS_DEVNET_SUBNET_PREFIX:-10.86.42}'
-
-target_block=128 # first span handover (span 0 ends at 127)
-log_info "Waiting for L2 to reach block $target_block"
-wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 
 # Extract kurtosis file artifacts that post-restore e2e tests need.
 # `kurtosis files inspect` only works on a live enclave, so we have to grab

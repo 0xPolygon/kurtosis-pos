@@ -91,7 +91,7 @@ kurtosis run \
 
 ### Snapshot the enclave
 
-The script waits for L2 to reach a certain block height (128, the first span handover), stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
+The script stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
 
 ```bash
 ./scripts/snapshot/snapshot.sh pos
