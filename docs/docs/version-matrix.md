@@ -48,7 +48,7 @@ Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/se
 | Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
 | -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
 | foundry  | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)      | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)      | ✅ matches stable |
-| kurtosis | [1.20.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.20.0) | [1.21.0](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.21.0) | 🚨 behind stable  |
+| kurtosis | [1.22.1](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.22.1) | [1.22.1](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.22.1) | ✅ matches stable |
 
 ## Kurtosis packages
 
