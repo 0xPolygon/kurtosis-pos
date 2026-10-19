@@ -270,6 +270,10 @@ sanitize_volume_names() {
 
   # Sort volumes alphabetically
   yq --in-place --yaml-output '.volumes = (.volumes | to_entries | sort_by(.key) | from_entries)' "$docker_compose_file"
+
+  # docker-autocompose declares every volume `external`, which `down --volumes`
+  # never removes. Let compose own them under their fixed names instead.
+  yq --in-place --yaml-output '.volumes |= with_entries(.value = {name: .key})' "$docker_compose_file"
 }
 
 rename_file_artifact_volumes() {

@@ -70,11 +70,7 @@ Tear down the devnet when you're done:
 docker compose --file ./tmp/docker-compose.yaml down --volumes
 ```
 
-The data volumes are declared as `external`, so `down --volumes` leaves them in place, and `restore.sh` unpacks the next snapshot on top of their content. Remove them before restoring another snapshot on the same machine:
-
-```bash
-docker volume ls --quiet | grep '^pos-' | xargs docker volume rm
-```
+This removes the data volumes too. `restore.sh` refuses to run while volumes of a previous devnet are still around, since it would unpack the snapshot on top of their content. Snapshots built before this change declare their volumes as `external`, which `down --volumes` leaves in place: remove those with `docker volume rm`.
 
 ## Create a snapshot from a kurtosis enclave
 
