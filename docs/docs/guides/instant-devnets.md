@@ -70,6 +70,12 @@ Tear down the devnet when you're done:
 docker compose --file ./tmp/docker-compose.yaml down --volumes
 ```
 
+The data volumes are declared as `external`, so `down --volumes` leaves them in place, and `restore.sh` unpacks the next snapshot on top of their content. Remove them before restoring another snapshot on the same machine:
+
+```bash
+docker volume ls --quiet | grep '^pos-' | xargs docker volume rm
+```
+
 ## Create a snapshot from a kurtosis enclave
 
 You can also create your own snapshot from a kurtosis enclave using the `snapshot` script.
@@ -92,6 +98,11 @@ kurtosis run \
 ### Snapshot the enclave
 
 The script waits for L2 to reach a certain block height (128, Rio HF activation block), stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
+
+To make sure the snapshot never captures a half-finished exchange between L1 and heimdall (a checkpoint buffered but not yet submitted, an ack not yet voted, a state sync not yet recorded), the script stops the enclave in two steps:
+
+1. It stops bor first. Without bor, heimdall cannot accept new checkpoints, but the checkpoints already in flight can still be submitted to L1 and acked, since that only needs heimdall and L1.
+2. It waits until the cross-chain flows are drained, and stay so for a few heimdall blocks: no buffered checkpoint, the same checkpoint ack count and state sync count on L1 and in heimdall, and no bridge task left in rabbitmq. Only then does it stop L1, heimdall and the remaining services.
 
 ```bash
 ./scripts/snapshot/snapshot.sh pos
