@@ -84,7 +84,7 @@ polygon_pos_package:
 | Bor image         | `ghcr.io/0xpolygon/bor:v2.10.3`                                                |
 | Heimdall-v2 image | `ghcr.io/0xpolygon/heimdall-v2:v0.12.2`                                       |
 | Sprint duration   | 16 blocks                                                            |
-| Rio HF activation | block 128                                                            |
+| Rio HF activation | block 0                                                              |
 | Admin address     | `0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9`                         |
 | Admin private key | `0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea` |
 
@@ -186,7 +186,6 @@ Snapshots are Docker-compose based (not `kurtosis run`) and restore in ~20 secon
 | -------------------------- | ----------------------------------- | ------------------------------------------------------ |
 | Deploy hangs at L1 startup | `ethereum-package` slow to finalize | Switch to `l1_backend: anvil`                          |
 | Service not found          | Typo in service name                | Run `kurtosis enclave inspect pos` to see exact names  |
-| Bor not producing blocks   | Rio HF not reached yet              | Wait for block 128; use monitor scripts                |
 | Contract deploy fails      | Admin account not funded            | Ensure `should_deploy_l1: true` and L1 completed first |
 | Image not found            | Local image tag mismatch            | Set `--image-download always` or push image first      |
 | Port conflict              | Another enclave running             | Run `kurtosis enclave ls` and remove stale enclaves    |

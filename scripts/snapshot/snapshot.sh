@@ -66,7 +66,7 @@ get_enclave_containers() {
   local enclave_name="$1"
   local extra_args="${2:-}"
   docker ps $extra_args --filter "network=kt-$enclave_name" --format "{{.Names}}" |
-    grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|matic-to-pol-migration|validator-share-upgrade|el-genesis-timestamp|read|run|reader|deriver|deployer|generator|monitor"
+    grep -Ev "kurtosis|files-artifacts-expander|validator-key-generation|matic-to-pol-migration|validator-share-upgrade|read|run|reader|deriver|deployer|generator|monitor"
 }
 
 ##############################################################################
@@ -644,7 +644,7 @@ log_info "Using enclave name: $enclave_name"
 # shellcheck disable=SC2016
 subnet_prefix='${POS_DEVNET_SUBNET_PREFIX:-10.86.42}'
 
-target_block=128 # Rio HF activation block
+target_block=128 # first span handover (span 0 ends at 127)
 log_info "Waiting for L2 to reach block $target_block"
 wait_for_rpcs_to_reach_block "$enclave_name" "$target_block"
 

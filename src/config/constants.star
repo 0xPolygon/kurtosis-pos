@@ -131,20 +131,17 @@ EL_HARD_FORK_BLOCKS = {
     "napoli": 0,
     "ahmedabad": 0,
     "bhilai": 0,
-    # rio must be enabled at block 128 because it's hardcoded in heimdall-v2 codebase
-    # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
-    "rio": 128,
-    # hardforks happening after rio should also be enabled at block 128 or later
-    "madhugiri": 128,
-    "madhugiriPro": 128,
-    "dandeli": 128,
-    "lisovo": 128,
-    "lisovoPro": 128,
-    "giugliano": 128,
-    "chicago": 128,
-    "valencia": 128,
-    # Newest bor EL fork; after valencia. Enabled at 128 like the other
-    # post-rio forks. Requires bor >= 2.10.0 (older public bor images ignore
-    # the unknown austinBlock genesis field).
-    "austin": 128,
+    # rio must match heimdall-v2's local rioHeight (helper/config.go).
+    "rio": 0,
+    "madhugiri": 0,
+    "madhugiriPro": 0,
+    "dandeli": 0,
+    "lisovo": 0,
+    "lisovoPro": 0,
+    "giugliano": 0,
+    "chicago": 0,
+    "valencia": 0,
+    # Requires bor >= 2.10.0 (older public bor images ignore the unknown
+    # austinBlock genesis field).
+    "austin": 0,
 }

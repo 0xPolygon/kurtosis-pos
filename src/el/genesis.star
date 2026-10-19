@@ -10,7 +10,6 @@ EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 def generate(
     plan,
     polygon_pos_args,
-    validator_accounts,
     validator_config_artifact,
     admin_address,
 ):
@@ -57,19 +56,6 @@ def generate(
         },
     )
 
-    # Compute a future EL genesis timestamp so all bor nodes have time to
-    # boot and peer before mining starts. Delay scales with node count,
-    # capped at 180s.
-    delay = _compute_delay(len(validator_accounts))
-    timestamp_result = plan.run_sh(
-        name="l2-el-genesis-timestamp",
-        description="Computing future EL genesis timestamp ({}s from now)".format(
-            delay
-        ),
-        run="printf '%s' $(( $(date +%s) + {} ))".format(delay),
-    )
-    timestamp = timestamp_result.output
-
     # Generate the alloc field of the EL genesis and return the final EL genesis.
     el_genesis_builder_script_artifact = plan.upload_files(
         name="l2-el-genesis-builder-config",
@@ -89,7 +75,6 @@ def generate(
             "ADMIN_BALANCE_WEI": hex.int_to_hex(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
             ),
-            "EL_GENESIS_TIMESTAMP": timestamp,
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
@@ -115,21 +100,3 @@ def generate(
         )
     l2_el_genesis_artifact = result.files_artifacts[0]
     return l2_el_genesis_artifact
-
-
-# Returns how many seconds to push the genesis timestamp into the future so all
-# validators are ready to mine when bor wakes up. Numbers chosen by hand:
-#   - 0 for single-node devnet: nothing to peer with, no race.
-#   - 90s base: covers Docker Desktop / local-dev environments where image-pull
-#     and the static-nodes P2P handshake settle slower than GHA runners. The
-#     previous 45s floor was sufficient for n=2 on GHA but failed at n=4 on
-#     macOS — bor woke up before all peers had completed handshake, forking at
-#     sprint 0 (Heimdall HTTP 500 on /bor/spans/1, gRPC code 18 on span
-#     broadcasts, l2-startup-monitor 5-min timeout).
-#   - +15s per extra validator: docker daemon / disk / image-pull contention
-#     scales faster than the original +5s slope assumed once n > 2.
-#   - 240s cap: image-pull bandwidth dominates beyond that.
-def _compute_delay(n):
-    if n <= 1:
-        return 0
-    return min(240, 90 + 15 * (n - 2))

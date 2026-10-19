@@ -27,8 +27,9 @@ def generate(
         proposer = validator_data.validator_set[0]
 
     # Producers are validators without `el_bor_sync_with_witness` (stateless
-    # nodes can't execute and seal blocks). Filter the full validator set down
-    # to the producing subset and use it for span 0's `selected_producers`.
+    # nodes can't execute and seal blocks). Span 0 gets only the first one:
+    # post-Rio spans have a single producer, so more would all seal from
+    # genesis and fork. Later spans rotate across all of them.
     producer_vote_ids = heimdall_v2_genesis.get_producer_vote_val_ids(participants)
     producer_id_set = {v: True for v in producer_vote_ids.split(",") if v}
     producing_validators = [
@@ -49,7 +50,7 @@ def generate(
         "supply": json.indent(json.encode(validator_data.supply)),
         "dividend_accounts": json.indent(json.encode(validator_data.dividends)),
         "validators": json.indent(json.encode(validator_data.validator_set)),
-        "selected_producers": json.indent(json.encode(producing_validators)),
+        "selected_producers": json.indent(json.encode(producing_validators[:1])),
         "proposer": json.indent(json.encode(proposer)),
         "producer_count": len(validator_data.validator_set),
         "total_voting_power": validator_data.total_voting_power,
