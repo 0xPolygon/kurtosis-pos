@@ -21,21 +21,21 @@ Versions of every component the package deploys, compared against the latest ups
 
 Container images deployed by the package, pinned in [`src/config/constants.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/constants.star).
 
-| Component      | Deployed version                                                            | Latest stable version                                                    | Status               |
-| -------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------- |
-| bor            | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)             | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)          | ✅ matches stable    |
-| envoy          | [1.40.0](https://github.com/envoyproxy/envoy/releases/tag/v1.40.0)          | [1.40.0](https://github.com/envoyproxy/envoy/releases/tag/v1.40.0)       | ✅ matches stable    |
-| foundry        | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)          | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)       | ✅ matches stable    |
-| geth           | [1.17.8](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8)      | [1.17.8](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8)   | ✅ matches stable    |
-| grafana        | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)           | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)        | ✅ matches stable    |
-| heimdall-v2    | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)     | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)  | ✅ matches stable    |
-| lighthouse     | [8.3.0-rc.0](https://github.com/sigp/lighthouse/releases/tag/v8.3.0-rc.0)   | [8.2.3](https://github.com/sigp/lighthouse/releases/tag/v8.2.3)          | ⚡️ newer than stable |
-| nginx          | [1.31.7-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.7) | [1.31.7](https://github.com/nginx/nginx/releases/tag/release-1.31.7)     | ✅ matches stable    |
-| panoptichain   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)      | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | ✅ matches stable    |
-| prometheus     | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)     | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)  | ✅ matches stable    |
-| rabbitmq       | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6)    | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6) | ✅ matches stable    |
-| redpanda       | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | ✅ matches stable    |
-| status-checker | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9)    | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | ✅ matches stable    |
+| Component      | Deployed version                                                            | Latest stable version                                                    | Status            |
+| -------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------- |
+| bor            | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)             | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)          | ✅ matches stable |
+| envoy          | [1.40.0](https://github.com/envoyproxy/envoy/releases/tag/v1.40.0)          | [1.40.0](https://github.com/envoyproxy/envoy/releases/tag/v1.40.0)       | ✅ matches stable |
+| foundry        | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)          | [1.8.5](https://github.com/foundry-rs/foundry/releases/tag/v1.8.5)       | ✅ matches stable |
+| geth           | [1.17.8](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8)      | [1.17.8](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8)   | ✅ matches stable |
+| grafana        | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)           | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)        | ✅ matches stable |
+| heimdall-v2    | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)     | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)  | ✅ matches stable |
+| lighthouse     | [8.3.0](https://github.com/sigp/lighthouse/releases/tag/v8.3.0)             | [8.3.0](https://github.com/sigp/lighthouse/releases/tag/v8.3.0)          | ✅ matches stable |
+| nginx          | [1.31.7-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.7) | [1.31.7](https://github.com/nginx/nginx/releases/tag/release-1.31.7)     | ✅ matches stable |
+| panoptichain   | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)      | [8.1.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.0)   | ✅ matches stable |
+| prometheus     | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)     | [3.15.0](https://github.com/prometheus/prometheus/releases/tag/v3.15.0)  | ✅ matches stable |
+| rabbitmq       | [4.3.6](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.3.6)    | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0) | 🚨 behind stable  |
+| redpanda       | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2) | ✅ matches stable |
+| status-checker | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9)    | [0.2.9](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.9) | ✅ matches stable |
 
 ### Untracked images
 
@@ -56,5 +56,5 @@ External Kurtosis packages the package depends on. Versions are pinned in the [`
 
 | Package                                                                                            | Pinned version                                                                                                    | Latest stable version                                                                                                    | Status            |
 | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [f191032be3a7](https://github.com/ethpandaops/ethereum-package/tree/f191032be3a7ba069a6bb049ea5d5b9c3b1357e8)     | [HEAD (f191032be3a7)](https://github.com/ethpandaops/ethereum-package/tree/f191032be3a7ba069a6bb049ea5d5b9c3b1357e8)     | ✅ matches stable |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [3416a0252e5b](https://github.com/ethpandaops/ethereum-package/tree/3416a0252e5bc25a0d31d24fea9c46707447eb08)     | [HEAD (3416a0252e5b)](https://github.com/ethpandaops/ethereum-package/tree/3416a0252e5bc25a0d31d24fea9c46707447eb08)     | ✅ matches stable |
 | [github.com/kurtosis-tech/prometheus-package](https://github.com/kurtosis-tech/prometheus-package) | [f3402ebad8cf](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | [HEAD (f3402ebad8cf)](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | ✅ matches stable |

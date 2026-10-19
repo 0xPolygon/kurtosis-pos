@@ -256,7 +256,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy L1 devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@f191032be3a7ba069a6bb049ea5d5b9c3b1357e8 # 2026-10-15, keep in sync with kurtosis.yml
+        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@3416a0252e5bc25a0d31d24fea9c46707447eb08 # 2026-10-16, keep in sync with kurtosis.yml
 
       - name: Wait for L1 to be ready
         run: |
