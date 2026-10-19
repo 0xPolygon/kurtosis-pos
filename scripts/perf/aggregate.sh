@@ -42,6 +42,7 @@ metadata=$(
   jq --null-input \
     --arg job "$JOB" \
     --arg flavour "${PERF_FLAVOUR:-}" \
+    --arg l1_backend "${PERF_L1_BACKEND:-}" \
     --arg workflow "${GITHUB_WORKFLOW:-}" \
     --arg run_id "${GITHUB_RUN_ID:-}" \
     --arg run_attempt "${GITHUB_RUN_ATTEMPT:-}" \
@@ -56,6 +57,7 @@ metadata=$(
     '{
       job: $job,
       flavour: (if $flavour == "" then null else $flavour end),
+      l1_backend: (if $l1_backend == "" then null else $l1_backend end),
       workflow: $workflow,
       run_id: $run_id,
       run_attempt: $run_attempt,
