@@ -38,12 +38,18 @@ restore_docker_volumes() {
   # The pack+unpack happens inside an alpine container as root so we can
   # read the host-owned files (where the user may have edited configs)
   # and write into volumes that expect root-owned content.
+  # The volumes already exist at this point (`docker compose create`). Creating
+  # one here for a folder compose does not declare would leave an unlabelled
+  # volume that `down --volumes` never removes.
   for d in "$volume_folder_path"/*/; do
     [[ -d "$d" ]] || continue
+    volume_name=$(basename "$d" | sed 's/_/--/g')
+    if ! jq -e --arg v "$volume_name" 'any(.[]; .name == $v)' <<< "$compose_volumes_json" > /dev/null; then
+      log_warn "Skipping folder $(basename "$d"): no volume '$volume_name' in the compose file"
+      continue
+    fi
     (
-      volume_name=$(basename "$d" | sed 's/_/--/g')
       echo "$volume_name"
-      docker volume create "$volume_name" > /dev/null
       docker run --rm \
         -v "$volume_name":/data \
         -v "$(realpath "$d")":/backup \

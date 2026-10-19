@@ -741,6 +741,13 @@ wait_for_cross_chain_drain() {
     kurtosis port print "$enclave_name" el-1-geth-lighthouse rpc)
   root_chain_proxy=$(jq -r '.root.RootChainProxy' "$contract_addresses_tmp")
   state_sender=$(jq -r '.root.StateSender' "$contract_addresses_tmp")
+  # Without a queue to read, the bridge task check below would always pass.
+  if [[ ${#rabbitmq_containers[@]} -eq 0 ]]; then
+    log_error "No L2 CL rabbitmq container found in enclave '$enclave_name'"
+    return 1
+  fi
+  local queue_counts_dir
+  queue_counts_dir=$(mktemp -d)
 
   # A proposal or ack voted YES in heimdall block N is only applied in block
   # N+1, so a drained reading must still hold a few blocks later.
@@ -755,7 +762,13 @@ wait_for_cross_chain_drain() {
     l1_header_block=$(cast call --rpc-url "$l1_rpc_url" "$root_chain_proxy" "currentHeaderBlock()(uint256)" 2> /dev/null | awk 'NR==1 {print $1}' || true)
     l1_state_syncs=$(cast call --rpc-url "$l1_rpc_url" "$state_sender" "counter()(uint256)" 2> /dev/null | awk 'NR==1 {print $1}' || true)
     heimdall_acks=$(curl -sf "$cl_api_url/checkpoints/count" 2> /dev/null | jq -r '.ack_count // "0"' || true)
-    heimdall_state_syncs=$(curl -sf "$cl_api_url/clerk/event-records/latest-id" 2> /dev/null | jq -r '.latest_record_id // "0"' || true)
+    # Nothing to wait for without any state sync on L1, and heimdall may answer
+    # an error rather than 0 when it has no record.
+    if [[ "$l1_state_syncs" == "0" ]]; then
+      heimdall_state_syncs=0
+    else
+      heimdall_state_syncs=$(curl -sf "$cl_api_url/clerk/event-records/latest-id" 2> /dev/null | jq -r '.latest_record_id // "0"' || true)
+    fi
     # An empty buffer is returned as a zero-value checkpoint.
     buffered_end_block=$(curl -sf "$cl_api_url/checkpoints/buffer" 2> /dev/null | jq -r '.checkpoint.end_block // "0"' || true)
     height=$(curl -sf "$cl_api_url/cosmos/base/tendermint/v1beta1/blocks/latest" 2> /dev/null | jq -r '.block.header.height // empty' || true)
@@ -763,11 +776,20 @@ wait_for_cross_chain_drain() {
     # with a delay): a task lost with the queue would be lost for good.
     # The worker consumes `machinery_tasks`; `machinery_task` gets a copy of
     # every task that nothing consumes, and `task_*` queues hold task results.
+    # Each `rabbitmqctl` call takes about a second, so query them in parallel.
+    rm -f "$queue_counts_dir"/*
+    # A failed call leaves no count file behind.
+    for c in "${rabbitmq_containers[@]}"; do
+      (
+        queues=$(docker exec "$c" rabbitmqctl list_queues --quiet --no-table-headers name messages 2> /dev/null) &&
+          awk '$1 == "machinery_tasks" || $1 ~ /^delay\./ {s += $2} END {print s + 0}' <<< "$queues" > "$queue_counts_dir/$c"
+      ) &
+    done
+    wait
     queued_tasks=0
     for c in "${rabbitmq_containers[@]}"; do
       local n
-      n=$(docker exec "$c" rabbitmqctl list_queues --quiet --no-table-headers name messages 2> /dev/null |
-        awk '$1 == "machinery_tasks" || $1 ~ /^delay\./ {s += $2} END {print s + 0}') || n=""
+      n=$(cat "$queue_counts_dir/$c" 2> /dev/null || true)
       if [[ -z "$n" ]]; then
         queued_tasks=""
         break
@@ -795,6 +817,7 @@ wait_for_cross_chain_drain() {
       if [[ "$((height - drained_since_height))" -ge "$settle_blocks" ]]; then
         log_info "Cross-chain flows drained and stable for ${settle_blocks} heimdall blocks (${state})"
         drained_l1_acks="$l1_acks"
+        rm -r "$queue_counts_dir"
         return 0
       fi
     else
@@ -802,6 +825,7 @@ wait_for_cross_chain_drain() {
     fi
     sleep 1
   done
+  rm -r "$queue_counts_dir"
   log_error "Cross-chain flows did not drain within ${timeout_seconds}s"
   return 1
 }
