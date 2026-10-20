@@ -4,7 +4,7 @@ name: snapshot
 # Publish to GHCR on a successful tag push.
 on:
   schedule:
-    - cron: 0 6 * * * # 6 AM UTC every day.
+    - cron: 0 4 * * * # 04:00 UTC every day.
   workflow_dispatch:
   push:
     tags: ['v*']
