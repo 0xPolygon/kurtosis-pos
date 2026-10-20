@@ -9,7 +9,7 @@ on:
   # Schedule: daily while the devnet is stabilising; migrate to Mon/Wed/Fri
   # (`0 6 * * 1,3,5`) once the failure rate is consistently near 0%.
   schedule:
-    - cron: 0 4 * * * # 04:00 UTC every day.
+    - cron: 0 6 * * * # Run this workflow every day at 6 AM UTC.
   workflow_dispatch:
 
 # Permissions required to pull images from GAR.
