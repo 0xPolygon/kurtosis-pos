@@ -1,6 +1,6 @@
 ---
 name: kurtosis-pos-quality
-description: Quality and CI for kurtosis-pos. Covers CI workflows (checks, deploy, stability, snapshot, publish-images), Starlark formatting, typos, markdown linting, documentation sync, and Docker image publishing.
+description: Quality and CI for kurtosis-pos. Covers CI workflows (checks, deploy, snapshot, publish-images), Starlark formatting, typos, markdown linting, documentation sync, and Docker image publishing.
 allowed-tools: Bash, Read, Glob, Grep
 compatibility: Requires kurtosis CLI 1.22.1+, cargo (typos-cli, rumdl), and gh CLI for workflow dispatch.
 ---
@@ -18,7 +18,6 @@ compatibility: Requires kurtosis CLI 1.22.1+, cargo (typos-cli, rumdl), and gh C
 | --------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `checks.yaml`         | PR / push to main           | Lint (kurtosis + rumdl), typos, unit tests. Pins `KURTOSIS_VERSION: 1.22.1`.                                                                                   |
 | `deploy.yaml`         | PR / push / daily           | Deploys configs in `.github/configs/` (excludes `.norun`). On schedule/`workflow_dispatch` only, also runs `nightly/` configs. PR merges skip nightly configs. |
-| `stability.yaml`      | Daily / `workflow_dispatch` | 30 parallel deploys per config; measures failure rate                                                                                                          |
 | `snapshot.yaml`       | `workflow_dispatch`         | Deploys a devnet, takes a snapshot, publishes it as a Docker image                                                                                             |
 | `publish-images.yaml` | `workflow_dispatch`         | Builds and pushes the three setup Docker images                                                                                                                |
 | `docs.yaml`           | PR / push to main           | Builds the Docusaurus site; fails on broken links                                                                                                              |
@@ -165,15 +164,3 @@ Suffix a config file with `.norun` to keep it valid but skip it in `deploy.yaml`
 ```
 
 Use this for configs that are too large or slow for regular PR CI (e.g., the 7-validator snapshot base).
-
----
-
-## Stability workflow
-
-The `stability.yaml` workflow runs 30 parallel deploys per config daily and measures the startup failure rate. To trigger manually:
-
-```bash
-gh workflow run stability.yaml
-```
-
-Results are posted as a GitHub job summary and as a Slack alert. The goal is a consistent failure rate near 0%; if failures increase, investigate recent changes to L1 startup timing or contract deployment.
