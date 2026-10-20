@@ -1,0 +1,39 @@
+# large.yml.norun on the anvil L1 backend (snapshot workflow). Keep the participants in sync with it.
+dev:
+  l1_backend: anvil
+
+polygon_pos_package:
+  participants:
+    # Bor validator nodes (5 total - 3 full + 2 stateless validators, 3 active block producers)
+    - kind: validator
+      cl_type: heimdall-v2
+      el_type: bor
+      el_bor_produce_witness: true
+      count: 3
+
+    - kind: validator
+      cl_type: heimdall-v2
+      el_type: bor
+      el_bor_produce_witness: true
+      el_bor_sync_with_witness: true
+      count: 2
+
+    # Bor RPC nodes (2 rpc nodes: one stateful, one stateless)
+    - kind: rpc
+      cl_type: heimdall-v2
+      el_type: bor
+      el_bor_sync_with_witness: false
+      count: 1
+
+    - kind: rpc
+      cl_type: heimdall-v2
+      el_type: bor
+      el_bor_sync_with_witness: true
+      count: 1
+
+    # Bor archive node
+    - kind: rpc
+      cl_type: heimdall-v2
+      el_type: bor
+      el_bor_archive_mode: true
+      count: 1

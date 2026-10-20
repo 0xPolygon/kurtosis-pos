@@ -47,14 +47,14 @@ jobs:
         run: |
           echo "deb [trusted=yes] https://sdk.kurtosis.com/kurtosis-cli-release-artifacts/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
           sudo apt update
-          sudo apt install -y kurtosis-cli=1.20.0
+          sudo apt install -y kurtosis-cli=1.22.1
           kurtosis analytics disable
 
       - name: Bump pins
         id: claude
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        uses: anthropics/claude-code-action@1d6de8cb0c237e7c15e9e1bdf973826ebae490cc # v1.0.248
+        uses: anthropics/claude-code-action@f27be6b65a4652f08a2ba3cff79114829b588967 # v1.0.252
         with:
           anthropic_api_key: ${{ secrets.CLAUDE_API_KEY }}
           # Read-only: the PR is opened below with another app's token.
@@ -75,7 +75,7 @@ jobs:
       - name: Get app token
         id: app-token
         if: fromJSON(steps.claude.outputs.structured_output || '{"title":""}').title != ''
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           app-id: ${{ secrets.SEMANTIC_RELEASE_BOT_APP_ID }}
           private-key: ${{ secrets.SEMANTIC_RELEASE_BOT_APP_PRIVATE_KEY }}
