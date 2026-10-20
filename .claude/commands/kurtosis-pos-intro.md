@@ -69,7 +69,7 @@ tools/devnet-monitor/            # Go health-check binary (blocks, checkpoints, 
 .github/
   configs/                       # Ready-made YAML args files for CI and manual runs
   actions/monitor/               # Composite action that builds + runs devnet-monitor
-  workflows/                     # CI: checks, deploy, stability, snapshot, publish-images
+  workflows/                     # CI: checks, deploy, snapshot, publish-images
 ```
 
 ---
