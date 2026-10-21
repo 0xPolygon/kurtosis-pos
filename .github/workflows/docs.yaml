@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      NODE_VERSION: 24
+      NODE_VERSION: 24.22.1
 
     steps:
       - uses: actions/checkout@v7
