@@ -1,6 +1,6 @@
 module github.com/0xPolygon/kurtosis-pos/tools/devnet-monitor
 
-go 1.26.0
+go 1.26.10
 
 require (
 	github.com/ethereum/go-ethereum v1.17.2
