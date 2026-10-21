@@ -20,6 +20,7 @@ concurrency:
 
 env:
   ENCLAVE_NAME: pos
+  DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
 
 jobs:
   snapshot:
@@ -152,3 +153,50 @@ jobs:
           image="ghcr.io/0xpolygon/pos-devnet-${{ matrix.devnet_type }}:${{ github.ref_name }}"
           docker tag pos-devnet "$image"
           docker push "$image"
+
+  workflow-summary:
+    runs-on: ubuntu-latest
+    if: always() && github.repository == '0xPolygon/kurtosis-pos' && github.event_name == 'schedule'
+    needs: snapshot
+    steps:
+      - name: Build the Slack message
+        id: message
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT: ${{ needs.snapshot.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          JOBS_API: repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs
+        run: |
+          # Links are a bonus: an API error must not cost the Slack message.
+          jobs=$(gh api --paginate "$JOBS_API" --jq '.jobs[]') || jobs=""
+
+          case "$RESULT" in
+            success) status="all snapshots built and restored ✅" ;;
+            failure) status="some snapshots failed ❌" ;;
+            *) status="snapshots were cancelled or skipped ⚠️" ;;
+          esac
+          # Per matrix leg, so the link lands on the leg that broke.
+          broken=$(jq -rs '[.[] | select(.conclusion == "failure" or .conclusion == "cancelled")
+            | "<\(.html_url)|\(.name)>"] | join(", ")' <<< "$jobs")
+          [[ -n "$broken" ]] && status+=" ($broken)"
+
+          echo "text=<$RUN_URL|Kurtosis POS Snapshot>: $status" >> "$GITHUB_OUTPUT"
+
+      - uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
+        with:
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          method: chat.postMessage
+          payload: |
+            {
+              "channel": ${{ env.DEVTOOLS_SLACK_ALERTS_CHANNEL_ID }},
+              "text": "Kurtosis POS Snapshot - Test Summary",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ${{ toJSON(steps.message.outputs.text) }}
+                  }
+                }
+              ]
+            }
