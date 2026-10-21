@@ -158,6 +158,8 @@ jobs:
     runs-on: ubuntu-latest
     if: always() && github.repository == '0xPolygon/kurtosis-pos' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     needs: snapshot
+    permissions:
+      actions: read
     steps:
       - name: Build the Slack message
         id: message
