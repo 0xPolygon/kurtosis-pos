@@ -14,7 +14,7 @@ RUN apt-get update \
   && make
 
 
-FROM node:26-bookworm
+FROM node:26.12.1-bookworm
 LABEL description="MATIC (Polygon PoS) EL genesis builder image"
 LABEL author="devtools@polygon.technology"
 
