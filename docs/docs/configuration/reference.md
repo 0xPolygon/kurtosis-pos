@@ -264,6 +264,6 @@ Deployed if and only if at least one participant sets `el_bor_use_sequence_store
 
 ### `status_checker_params`
 
-| Field |  Type  |                 Default                 |               Description               |
-| ----- | ------ | --------------------------------------- | --------------------------------------- |
-| image | string | ghcr.io/0xpolygon/status-checker:v0.2.9 | Image used to deploy the status checker |
+| Field |  Type  |                 Default                  |               Description               |
+| ----- | ------ | ---------------------------------------- | --------------------------------------- |
+| image | string | ghcr.io/0xpolygon/status-checker:v0.2.10 | Image used to deploy the status checker |
