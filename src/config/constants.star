@@ -63,7 +63,7 @@ IMAGES = {
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
     "nginx_image": "nginx:1.31.7-alpine",
-    "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
+    "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.10",
     # observability
     "prometheus_image": "prom/prometheus:v3.15.0",
     "grafana_image": "grafana/grafana:13.2.4",
