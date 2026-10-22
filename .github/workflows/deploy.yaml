@@ -410,6 +410,32 @@ jobs:
         with:
           args_filename: cl-el-genesis
 
+  # Recap of the run (job durations, perf report) for every trigger, PRs
+  # included; workflow-summary below only pings Slack for scheduled runs.
+  run-summary:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - check-version-matrix
+      - bump-version-matrix
+      - run-without-args
+      - run-with-args
+      - test-e2e
+      - run-with-external-l1
+      - run-with-cl-el-genesis
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/perf-summary
+        with:
+          workflow_name: deploy
+          github_token: ${{ github.token }}
+
   workflow-summary:
     runs-on: ubuntu-latest
     if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
