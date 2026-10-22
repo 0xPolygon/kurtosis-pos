@@ -60,12 +60,12 @@ ethereum_package:
 | Field           | Type   | Default                    | Description                                                     |
 | --------------- | ------ | -------------------------- | --------------------------------------------------------------- |
 | cl_type         | string | lighthouse                 | Consensus Layer (CL) client type                                |
-| cl_image        | string | sigp/lighthouse:v8.3.0     | Image for the CL client                                         |
+| cl_image        | string | sigp/lighthouse:v8.3.1     | Image for the CL client                                         |
 | el_type         | string | geth                       | Execution Layer (EL) client type                                |
-| el_image        | string | ethereum/client-go:v1.17.8 | Image for the EL client                                         |
+| el_image        | string | ethereum/client-go:v1.17.9 | Image for the EL client                                         |
 | use_separate_vc | bool   | true                       | Run the validator client in its own container                   |
 | vc_type         | string | lighthouse                 | Validator client type                                           |
-| vc_image        | string | sigp/lighthouse:v8.3.0     | Image for the validator client                                  |
+| vc_image        | string | sigp/lighthouse:v8.3.1     | Image for the validator client                                  |
 | supernode       | bool   | true                       | Custody all PeerDAS data columns, required since Fulu is active |
 
 #### `network_params`
@@ -94,7 +94,7 @@ anvil:
 
 | Field          | Type   | Default                           | Description                                                                                           |
 | -------------- | ------ | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.8.5 | Anvil container image                                                                                 |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.8.6 | Anvil container image                                                                                 |
 | network_id     | string | 3151908                           | L1 network/chain ID                                                                                   |
 | block_time     | int    | 1                                 | Block time in seconds                                                                                 |
 | slots_in_epoch | int    | 2                                 | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
@@ -233,7 +233,7 @@ cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 
 | Field | Type   | Default             | Description                |
 | ----- | ------ | ------------------- | -------------------------- |
-| image | string | nginx:1.31.7-alpine | Image used to deploy nginx |
+| image | string | nginx:1.31.8-alpine | Image used to deploy nginx |
 
 ### `ethstats_server_params`
 
