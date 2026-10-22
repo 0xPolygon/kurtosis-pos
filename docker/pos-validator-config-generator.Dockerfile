@@ -1,5 +1,5 @@
-ARG HEIMDALL_V2_VERSION="0.10.0"
-FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
+ARG HEIMDALL_V2_VERSION="0.12.2"
+FROM ghcr.io/0xpolygon/heimdall-v2:v${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
 FROM golang:1.27.3-alpine AS polycli-builder

@@ -48,14 +48,12 @@ env:
   # genesis-contracts - 2025¬01¬08
   GENESIS_CONTRACTS_BRANCH: master
   GENESIS_CONTRACTS_COMMIT_SHA: 96a19dd
-  # Bump when rebuilding with the same sources (e.g. a base image or toolchain update)
+  # Image revision, bumped when rebuilding with the same sources (e.g. a toolchain update)
   EL_GENESIS_BUILDER_REVISION: 1
 
   # pos-validator-config-generator settings
   VALIDATOR_CONFIG_IMAGE_NAME: 0xPolygon/pos-validator-config-generator
-  HEIMDALL_V2_VERSION: 0.10.0
-  # Bump when rebuilding with the same sources (e.g. a base image or toolchain update)
-  VALIDATOR_CONFIG_REVISION: 1
+  HEIMDALL_V2_VERSION: 0.12.2
   POLYGON_CLI_VERSION: v0.1.111
 
 jobs:
@@ -223,7 +221,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.VALIDATOR_CONFIG_IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ env.HEIMDALL_V2_VERSION }}-r${{ env.VALIDATOR_CONFIG_REVISION }}
+            type=raw,value=${{ env.HEIMDALL_V2_VERSION }}
 
       - name: Build and push docker image
         id: push
