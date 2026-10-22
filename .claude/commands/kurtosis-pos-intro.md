@@ -21,17 +21,15 @@ compatibility: Requires kurtosis CLI with a running engine and Go 1.23+.
 | ---------------- | ----------------------------------- | ----------------------------------------------------------------- |
 | `kurtosis`       | Run and manage enclaves             | [docs.kurtosis.com/install](https://docs.kurtosis.com/install)    |
 | `docker`         | Container runtime                   | [docs.docker.com/get-docker](https://docs.docker.com/get-docker/) |
-| `go` 1.23+       | Build `kurtosis-test`               | `brew install go`                                                 |
 | `kurtosis-test`  | Run `*_test.star` unit tests        | see install below                                                 |
 | `cast` (Foundry) | Send transactions, read chain state | `curl -L https://foundry.paradigm.xyz \| bash`                    |
 | `typos-cli`      | Check for typos                     | `cargo install typos-cli`                                         |
 | `rumdl`          | Lint markdown                       | `cargo install rumdl`                                             |
 
 ```bash
-# Install kurtosis-test (requires Go 1.23+)
-git clone --branch v0.0.6 https://github.com/ethereum-optimism/kurtosis-test.git /tmp/kurtosis-test
-cd /tmp/kurtosis-test && go build -o kurtosis-test cli/main.go
-sudo cp kurtosis-test /usr/local/bin
+# Install kurtosis-test (Linux x86_64; other platforms: https://github.com/leovct/kurtosis-test/releases)
+curl -sSfL https://github.com/leovct/kurtosis-test/releases/download/v0.0.10/kurtosis-test_Linux_x86_64.tar.gz \
+  | sudo tar xz -C /usr/local/bin kurtosis-test
 
 # Start the Kurtosis engine — required before any kurtosis run, once per session
 kurtosis engine start
