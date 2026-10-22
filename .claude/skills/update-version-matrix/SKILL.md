@@ -73,8 +73,7 @@ Title: `chore: bump <dep> to <version>`, or `chore: bump <dep>, <dep> and <dep>`
 There is no PR template: the body is at most 5 bullets, one per bump
 `old → [new](release url)`, plus what was skipped and why (📌, rc, unpublished image).
 
-**Local**: work in a worktree off `origin/main`, commit, push, `gh pr create`, then
-`gh pr comment <n> --body "@claude please review"`.
+**Local**: work in a worktree off `origin/main`, commit, push, `gh pr create`.
 
 **CI** (run by `bump-version-matrix.yml`): only edit files. Do not commit, push
 or open the PR: return the title and body, and the workflow opens or refreshes the
