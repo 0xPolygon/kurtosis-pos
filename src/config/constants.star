@@ -49,9 +49,9 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.8",
-    "l1_cl_image": "sigp/lighthouse:v8.3.0",
-    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.5",
+    "l1_el_image": "ethereum/client-go:v1.17.9",
+    "l1_cl_image": "sigp/lighthouse:v8.3.1",
+    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.6",
     # layer 2
     "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.12.2",
     "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.3",
@@ -62,12 +62,12 @@ IMAGES = {
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
     # additional services
-    "nginx_image": "nginx:1.31.7-alpine",
+    "nginx_image": "nginx:1.31.8-alpine",
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.10",
     # observability
-    "prometheus_image": "prom/prometheus:v3.15.0",
+    "prometheus_image": "prom/prometheus:v3.15.1",
     "grafana_image": "grafana/grafana:13.2.4",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.1.0",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.1.2",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
     "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
