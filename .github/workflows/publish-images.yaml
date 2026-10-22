@@ -25,7 +25,7 @@ env:
 
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
-  POS_CONTRACT_DEPLOYER_VERSION: 0.0.6
+  POS_CONTRACT_DEPLOYER_VERSION: 0.0.7
   # pos-contracts (anvil-pos) - 2025-08-01 — bridge contracts, MATIC→POL migration
   POS_CONTRACTS_ANVIL_POS_BRANCH: anvil-pos
   POS_CONTRACTS_ANVIL_POS_COMMIT_SHA: d96d5929
@@ -48,10 +48,12 @@ env:
   # genesis-contracts - 2025¬01¬08
   GENESIS_CONTRACTS_BRANCH: master
   GENESIS_CONTRACTS_COMMIT_SHA: 96a19dd
+  # Image revision, bumped when rebuilding with the same sources (e.g. a toolchain update)
+  EL_GENESIS_BUILDER_REVISION: 1
 
   # pos-validator-config-generator settings
   VALIDATOR_CONFIG_IMAGE_NAME: 0xPolygon/pos-validator-config-generator
-  HEIMDALL_V2_VERSION: 0.10.0
+  HEIMDALL_V2_VERSION: 0.12.2
   POLYGON_CLI_VERSION: v0.1.111
 
 jobs:
@@ -157,13 +159,14 @@ jobs:
 
       # Tag images with the specific genesis-contracts commit SHA for version control.
       # This ensures reproducible builds tied to a specific contracts version.
+      # The `-r<n>` suffix (EL_GENESIS_BUILDER_REVISION) lets us republish a rebuild of the same SHA under a new tag.
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.EL_GENESIS_BUILDER_IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ env.GENESIS_CONTRACTS_COMMIT_SHA }}
+            type=raw,value=${{ env.GENESIS_CONTRACTS_COMMIT_SHA }}-r${{ env.EL_GENESIS_BUILDER_REVISION }}
 
       - name: Build and push docker image
         id: push
