@@ -2,7 +2,7 @@
 name: kurtosis-pos-intro
 description: Onboarding guide for kurtosis-pos contributors. Use when setting up the dev environment, exploring the repo layout, or understanding common starting points and the PR checklist.
 allowed-tools: Bash, Read, Glob, Grep
-compatibility: Requires kurtosis CLI with a running engine and Go 1.23+.
+compatibility: Requires kurtosis CLI with a running engine.
 ---
 
 ## Related skills
