@@ -1,13 +1,15 @@
-FROM debian:bullseye-slim AS soldity-builder
+FROM debian:bookworm-slim AS soldity-builder
 LABEL description="Solidity builder"
 LABEL author="devtools@polygon.technology"
 
 ENV SOLIDITY_VERSION="0.5.17"
 
 WORKDIR /opt/solidity
+# solc 0.5.17 builds with -Werror, which fails on the deprecation warnings of gcc 12.
 RUN apt-get update \
-  && apt-get install --yes cmake cvc4 gcc g++ git libboost-all-dev z3 \
+  && apt-get install --yes cmake gcc g++ git libboost-all-dev z3 \
   && git clone --branch v${SOLIDITY_VERSION} --depth 1 https://github.com/ethereum/solidity.git . \
+  && grep -rl -- '-Werror' cmake CMakeLists.txt | xargs sed -i 's/-Werror//g' \
   && mkdir build \
   && cd build \
   && cmake .. \
