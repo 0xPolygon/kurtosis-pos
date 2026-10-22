@@ -153,6 +153,7 @@ Images are tagged with upstream commit SHA or version string — never `latest`.
 
 1. Update the tag in `constants.star` (`IMAGES` dict)
 2. Update the corresponding env var in `publish-images.yaml` (`POS_CONTRACTS_COMMIT_SHA`, `GENESIS_CONTRACTS_COMMIT_SHA`, or `HEIMDALL_V2_VERSION`)
+   - `pos-el-genesis-builder` is tagged `<GENESIS_CONTRACTS_COMMIT_SHA>-r<EL_GENESIS_BUILDER_REVISION>`: bump `EL_GENESIS_BUILDER_REVISION` when rebuilding with the same SHA, and reset it to `1` when the SHA changes
 3. Trigger `publish-images.yaml` to build and push the new image
 
 ### Excluding configs from the CI matrix

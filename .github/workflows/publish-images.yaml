@@ -159,6 +159,7 @@ jobs:
 
       # Tag images with the specific genesis-contracts commit SHA for version control.
       # This ensures reproducible builds tied to a specific contracts version.
+      # The `-r<n>` suffix (EL_GENESIS_BUILDER_REVISION) lets us republish a rebuild of the same SHA under a new tag.
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
