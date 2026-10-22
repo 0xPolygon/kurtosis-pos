@@ -42,9 +42,6 @@ jobs:
           # .git/config so a bug in the artifact parsing below can't reach it.
           persist-credentials: false
 
-      # Download artifacts from the upstream workflow_run. The built-in
-      # actions/download-artifact does not support cross-workflow downloads,
-      # so use the GitHub API via gh.
       # The built-in actions/download-artifact does not support cross-workflow
       # downloads, so the script goes through the GitHub API via gh.
       - name: Download current-run perf artifacts
@@ -84,7 +81,9 @@ jobs:
             --output tmp/perf-out/report.md \
             --source "${{ github.event.workflow_run.name }}"
           # Durations first, for every job of the upstream run (all done by now).
-          ./scripts/perf/job-durations.sh "$RUN_ID" | cat - tmp/perf-out/report.md > tmp/perf-out/combined.md
+          # Best-effort: an API error here must not cost the perf comment.
+          { ./scripts/perf/job-durations.sh "$RUN_ID" || echo "::warning::Could not list the job durations" >&2; } |
+            cat - tmp/perf-out/report.md > tmp/perf-out/combined.md
           mv tmp/perf-out/combined.md tmp/perf-out/report.md
 
       - name: Resolve PR number

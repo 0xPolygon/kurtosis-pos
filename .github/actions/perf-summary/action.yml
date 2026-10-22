@@ -34,13 +34,13 @@ runs:
       run: |
         # Same as above: never fail the workflow over the recap.
         {
-          ./scripts/perf/fetch-reports.sh run "$RUN_ID" tmp/perf-current
-          ./scripts/perf/fetch-reports.sh baseline "$WORKFLOW_NAME" "$SHA" tmp/perf-baseline
-          mkdir -p tmp/perf-out
-          python3 scripts/perf/report.py \
-            --current tmp/perf-current \
-            --baseline tmp/perf-baseline \
-            --output tmp/perf-out/report.md \
-            --source "$WORKFLOW_NAME" > /dev/null
-          cat tmp/perf-out/report.md >> "$GITHUB_STEP_SUMMARY"
+          ./scripts/perf/fetch-reports.sh run "$RUN_ID" tmp/perf-current &&
+            ./scripts/perf/fetch-reports.sh baseline "$WORKFLOW_NAME" "$SHA" tmp/perf-baseline &&
+            mkdir -p tmp/perf-out &&
+            python3 scripts/perf/report.py \
+              --current tmp/perf-current \
+              --baseline tmp/perf-baseline \
+              --output tmp/perf-out/report.md \
+              --source "$WORKFLOW_NAME" > /dev/null &&
+            cat tmp/perf-out/report.md >> "$GITHUB_STEP_SUMMARY"
         } || echo "::warning::Could not render the perf report"
