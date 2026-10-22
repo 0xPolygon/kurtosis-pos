@@ -73,6 +73,9 @@ jobs:
 
       - name: Render report
         if: steps.download.outputs.has_artifacts == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
           mkdir -p tmp/perf-out
           python3 scripts/perf/report.py \
@@ -80,6 +83,9 @@ jobs:
             --baseline tmp/perf-baseline \
             --output tmp/perf-out/report.md \
             --source "${{ github.event.workflow_run.name }}"
+          # Durations first, for every job of the upstream run (all done by now).
+          ./scripts/perf/job-durations.sh "$RUN_ID" | cat - tmp/perf-out/report.md > tmp/perf-out/combined.md
+          mv tmp/perf-out/combined.md tmp/perf-out/report.md
 
       - name: Resolve PR number
         id: pr
