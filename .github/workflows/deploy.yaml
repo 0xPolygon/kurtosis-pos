@@ -422,6 +422,15 @@ jobs:
       - run-with-external-l1
       - run-with-cl-el-genesis
     steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/perf-summary
+        with:
+          workflow_name: deploy
+          github_token: ${{ github.token }}
+
       # bump-version-matrix is skipped whenever the matrix is up to date, so it is
       # left out of the test status and reported with the matrix instead.
       - name: Build the Slack message

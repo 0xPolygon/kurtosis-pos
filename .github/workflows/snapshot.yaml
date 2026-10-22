@@ -160,7 +160,17 @@ jobs:
     needs: snapshot
     permissions:
       actions: read
+      contents: read
     steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/perf-summary
+        with:
+          workflow_name: snapshot
+          github_token: ${{ github.token }}
+
       - name: Build the Slack message
         id: message
         env:
