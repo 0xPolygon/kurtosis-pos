@@ -47,8 +47,8 @@ case "${1:-}" in
     # -f is used, which 404s here.
     run_ids=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs" \
       -f branch=main -f status=success -f per_page=100 \
-      --jq ".workflow_runs[] | select(.name == \"${workflow_name}\" and .head_sha != \"${current_sha}\") | .id" \
-      | head -n 10)
+      --jq ".workflow_runs[] | select(.name == \"${workflow_name}\" and .head_sha != \"${current_sha}\") | .id" |
+      head -n 10)
     echo "Baseline run IDs: ${run_ids:-<none>}" >&2
     for id in $run_ids; do
       fetch_run "$id" "${dest}/${id}"
