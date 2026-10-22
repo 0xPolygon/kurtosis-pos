@@ -1,5 +1,5 @@
-ARG HEIMDALL_V2_VERSION="0.10.0"
-FROM 0xpolygon/heimdall-v2:${HEIMDALL_V2_VERSION} AS heimdall-v2
+ARG HEIMDALL_V2_VERSION="0.12.2"
+FROM ghcr.io/0xpolygon/heimdall-v2:v${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 
 FROM golang:1.27.3-alpine AS polycli-builder
@@ -20,7 +20,7 @@ LABEL author="devtools@polygon.technology"
 ENV CL_CHAIN_ID="heimdall-4927"
 ENV CL_CLIENT_CONFIG_PATH="/etc/cl"
 
-COPY --from=heimdall-v2 /usr/bin/heimdalld /usr/local/bin/heimdalld
+COPY --from=heimdall-v2 /usr/local/bin/heimdalld /usr/local/bin/heimdalld
 COPY --from=polycli-builder /opt/polygon-cli/out/polycli /usr/local/bin/polycli
 COPY --from=polycli-builder /opt/polygon-cli/bindings /opt/bindings
 
