@@ -1,0 +1,46 @@
+name: perf-summary
+description: |
+  Append a recap of the current run to the job summary: how long each job took,
+  then the perf report (same tables as the sticky PR comment of perf-report.yaml).
+  Needs `actions: read` on the calling job and a checkout of the repository.
+
+inputs:
+  workflow_name:
+    description: Name of the calling workflow ("deploy" or "snapshot"), used to pick the baseline runs.
+    required: true
+  github_token:
+    description: Token used to read the run's jobs and artifacts.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Job durations
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+        RUN_ID: ${{ github.run_id }}
+      run: |
+        # The recap is a bonus: an API error must not fail the workflow.
+        ./scripts/perf/job-durations.sh "$RUN_ID" >> "$GITHUB_STEP_SUMMARY" || echo "::warning::Could not list the job durations"
+
+    - name: Perf report
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+        WORKFLOW_NAME: ${{ inputs.workflow_name }}
+        RUN_ID: ${{ github.run_id }}
+        SHA: ${{ github.sha }}
+      run: |
+        # Same as above: never fail the workflow over the recap.
+        {
+          ./scripts/perf/fetch-reports.sh run "$RUN_ID" tmp/perf-current
+          ./scripts/perf/fetch-reports.sh baseline "$WORKFLOW_NAME" "$SHA" tmp/perf-baseline
+          mkdir -p tmp/perf-out
+          python3 scripts/perf/report.py \
+            --current tmp/perf-current \
+            --baseline tmp/perf-baseline \
+            --output tmp/perf-out/report.md \
+            --source "$WORKFLOW_NAME" > /dev/null
+          cat tmp/perf-out/report.md >> "$GITHUB_STEP_SUMMARY"
+        } || echo "::warning::Could not render the perf report"

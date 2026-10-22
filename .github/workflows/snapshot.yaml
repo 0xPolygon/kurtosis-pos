@@ -154,6 +154,25 @@ jobs:
           docker tag pos-devnet "$image"
           docker push "$image"
 
+  # Recap of the run (job durations, perf report) for every trigger, PRs
+  # included; workflow-summary below only pings Slack for scheduled runs.
+  run-summary:
+    runs-on: ubuntu-latest
+    if: always() && github.repository == '0xPolygon/kurtosis-pos'
+    needs: snapshot
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/perf-summary
+        with:
+          workflow_name: snapshot
+          github_token: ${{ github.token }}
+
   workflow-summary:
     runs-on: ubuntu-latest
     if: always() && github.repository == '0xPolygon/kurtosis-pos' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
