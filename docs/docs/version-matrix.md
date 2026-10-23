@@ -24,12 +24,12 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | Component      | Deployed version                                                            | Latest stable version                                                      | Status            |
 | -------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------- |
 | bor            | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)             | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)            | ✅ matches stable |
-| envoy          | [1.40.0](https://github.com/envoyproxy/envoy/releases/tag/v1.40.0)          | [1.40.0](https://github.com/envoyproxy/envoy/releases/tag/v1.40.0)         | ✅ matches stable |
+| envoy          | [1.40.1](https://github.com/envoyproxy/envoy/releases/tag/v1.40.1)          | [1.40.1](https://github.com/envoyproxy/envoy/releases/tag/v1.40.1)         | ✅ matches stable |
 | foundry        | [1.8.6](https://github.com/foundry-rs/foundry/releases/tag/v1.8.6)          | [1.8.6](https://github.com/foundry-rs/foundry/releases/tag/v1.8.6)         | ✅ matches stable |
 | geth           | [1.17.9](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.9)      | [1.17.9](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.9)     | ✅ matches stable |
 | grafana        | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)           | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)          | ✅ matches stable |
 | heimdall-v2    | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)     | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)    | ✅ matches stable |
-| lighthouse     | [8.3.1](https://github.com/sigp/lighthouse/releases/tag/v8.3.1)             | [8.3.1](https://github.com/sigp/lighthouse/releases/tag/v8.3.1)            | ✅ matches stable |
+| lighthouse     | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)             | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)            | ✅ matches stable |
 | nginx          | [1.31.8-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.8) | [1.31.8](https://github.com/nginx/nginx/releases/tag/release-1.31.8)       | ✅ matches stable |
 | panoptichain   | [8.1.2](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.2)      | [8.1.2](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.2)     | ✅ matches stable |
 | prometheus     | [3.15.1](https://github.com/prometheus/prometheus/releases/tag/v3.15.1)     | [3.15.1](https://github.com/prometheus/prometheus/releases/tag/v3.15.1)    | ✅ matches stable |
