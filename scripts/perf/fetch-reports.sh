@@ -44,11 +44,11 @@ case "${1:-}" in
     mkdir -p "$dest"
     # /actions/runs spans all workflows; widen the page so the post-filter by
     # name still leaves enough samples. -X GET: gh api defaults to POST when
-    # -f is used, which 404s here.
+    # -f is used, which 404s here. Slice in jq rather than piping into head:
+    # head closing early SIGPIPEs gh, which pipefail turns into exit 141.
     run_ids=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs" \
       -f branch=main -f status=success -f per_page=100 \
-      --jq ".workflow_runs[] | select(.name == \"${workflow_name}\" and .head_sha != \"${current_sha}\") | .id" |
-      head -n 10)
+      --jq "[.workflow_runs[] | select(.name == \"${workflow_name}\" and .head_sha != \"${current_sha}\") | .id] | .[:10][]")
     echo "Baseline run IDs: ${run_ids:-<none>}" >&2
     for id in $run_ids; do
       fetch_run "$id" "${dest}/${id}"
