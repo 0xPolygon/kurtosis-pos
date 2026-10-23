@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -47,6 +48,15 @@ func (b *Bor) FinalizedBlock(ctx context.Context) (uint64, error) {
 		return 0, nil
 	}
 	return header.Number.Uint64(), nil
+}
+
+// BlockHash returns the hash of the block at the given height.
+func (b *Bor) BlockHash(ctx context.Context, number uint64) (common.Hash, error) {
+	header, err := b.eth.HeaderByNumber(ctx, new(big.Int).SetUint64(number))
+	if err != nil {
+		return common.Hash{}, err
+	}
+	return header.Hash(), nil
 }
 
 // GasPrice returns the suggested gas price.
