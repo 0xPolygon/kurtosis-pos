@@ -51,10 +51,11 @@ inputs:
     description: The key to use for caching Docker images
     required: false
     default: docker-images
+  # Not /tmp: ubuntu-26.04 runners mount it as a tmpfs that the image tarballs overflow.
   cache_folder:
-    description: The folder to use for caching Docker images
+    description: The folder to use for caching Docker images (defaults to <runner.temp>/docker-images)
     required: false
-    default: /tmp/docker-images
+    default: ""
   main_branch:
     description: The name of the main branch for cache keys
     required: false
@@ -120,7 +121,7 @@ runs:
     - uses: actions/cache@v5
       id: cache
       with:
-        path: ${{ inputs.cache_folder }}
+        path: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
         key: ${{ inputs.cache_key }}-${{ inputs.main_branch }}-${{ github.sha }}
         restore-keys: |
           ${{ inputs.cache_key }}-${{ inputs.main_branch }}-
@@ -128,10 +129,12 @@ runs:
     - name: Load cached docker images
       if: steps.cache.outputs.cache-matched-key != 'true'
       shell: bash
+      env:
+        CACHE_FOLDER: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
       run: |
         echo "Loading cached images..."
-        if [[ -d "${{ inputs.cache_folder }}" ]]; then
-          for image_tar in ${{ inputs.cache_folder }}/*.tar; do
+        if [[ -d "$CACHE_FOLDER" ]]; then
+          for image_tar in "$CACHE_FOLDER"/*.tar; do
             if [[ -f "$image_tar" ]]; then
               {
                 docker load -i "$image_tar"
