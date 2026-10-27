@@ -24,9 +24,9 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | Component      | Deployed version                                                            | Latest stable version                                                      | Status            |
 | -------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------- |
 | bor            | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)             | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)            | ✅ matches stable |
-| envoy          | [1.40.1](https://github.com/envoyproxy/envoy/releases/tag/v1.40.1)          | [1.40.1](https://github.com/envoyproxy/envoy/releases/tag/v1.40.1)         | ✅ matches stable |
+| envoy          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ matches stable |
 | foundry        | [1.8.6](https://github.com/foundry-rs/foundry/releases/tag/v1.8.6)          | [1.8.6](https://github.com/foundry-rs/foundry/releases/tag/v1.8.6)         | ✅ matches stable |
-| geth           | [1.17.9](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.9)      | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)   | 🚨 behind stable  |
+| geth           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)    | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)   | ✅ matches stable |
 | grafana        | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)           | [13.2.4](https://github.com/grafana/grafana/releases/tag/v13.2.4)          | ✅ matches stable |
 | heimdall-v2    | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)     | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)    | ✅ matches stable |
 | lighthouse     | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)             | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)            | ✅ matches stable |

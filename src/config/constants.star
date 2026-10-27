@@ -49,7 +49,7 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.9",
+    "l1_el_image": "ethereum/client-go:v1.17.10",
     "l1_cl_image": "sigp/lighthouse:v8.3.2",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.6",
     # layer 2
@@ -71,7 +71,7 @@ IMAGES = {
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
     "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
-    "seqstore_envoy_image": "envoyproxy/envoy:v1.40.1",
+    "seqstore_envoy_image": "envoyproxy/envoy:v1.40.2",
 }
 
 # The sequence-store image is built locally from the sequence-store repo.

@@ -57,16 +57,16 @@ ethereum_package:
 
 #### `participants`
 
-| Field           | Type   | Default                    | Description                                                     |
-| --------------- | ------ | -------------------------- | --------------------------------------------------------------- |
-| cl_type         | string | lighthouse                 | Consensus Layer (CL) client type                                |
-| cl_image        | string | sigp/lighthouse:v8.3.2     | Image for the CL client                                         |
-| el_type         | string | geth                       | Execution Layer (EL) client type                                |
-| el_image        | string | ethereum/client-go:v1.17.9 | Image for the EL client                                         |
-| use_separate_vc | bool   | true                       | Run the validator client in its own container                   |
-| vc_type         | string | lighthouse                 | Validator client type                                           |
-| vc_image        | string | sigp/lighthouse:v8.3.2     | Image for the validator client                                  |
-| supernode       | bool   | true                       | Custody all PeerDAS data columns, required since Fulu is active |
+| Field           | Type   | Default                     | Description                                                     |
+| --------------- | ------ | --------------------------- | --------------------------------------------------------------- |
+| cl_type         | string | lighthouse                  | Consensus Layer (CL) client type                                |
+| cl_image        | string | sigp/lighthouse:v8.3.2      | Image for the CL client                                         |
+| el_type         | string | geth                        | Execution Layer (EL) client type                                |
+| el_image        | string | ethereum/client-go:v1.17.10 | Image for the EL client                                         |
+| use_separate_vc | bool   | true                        | Run the validator client in its own container                   |
+| vc_type         | string | lighthouse                  | Validator client type                                           |
+| vc_image        | string | sigp/lighthouse:v8.3.2      | Image for the validator client                                  |
+| supernode       | bool   | true                        | Custody all PeerDAS data columns, required since Fulu is active |
 
 #### `network_params`
 
@@ -260,7 +260,7 @@ Deployed if and only if at least one participant sets `el_bor_use_sequence_store
 | redpanda_image | string | redpandadata/redpanda:v26.2.2 | Redpanda broker image                                                                                  |
 | redpanda_count | int    | 1                             | Broker count. With more than one, the topic is created at RF=count with majority `min.insync.replicas` |
 | gateway_count  | int    | 1                             | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name  |
-| envoy_image    | string | envoyproxy/envoy:v1.40.1      | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
+| envoy_image    | string | envoyproxy/envoy:v1.40.2      | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
 
 ### `status_checker_params`
 
