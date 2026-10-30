@@ -25,7 +25,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | -------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------- |
 | bor            | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)             | [2.10.3](https://github.com/0xPolygon/bor/releases/tag/v2.10.3)            | ✅ matches stable |
 | envoy          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ matches stable |
-| foundry        | [1.8.6](https://github.com/foundry-rs/foundry/releases/tag/v1.8.6)          | [1.8.6](https://github.com/foundry-rs/foundry/releases/tag/v1.8.6)         | ✅ matches stable |
+| foundry        | [1.8.7](https://github.com/foundry-rs/foundry/releases/tag/v1.8.7)          | [1.8.7](https://github.com/foundry-rs/foundry/releases/tag/v1.8.7)         | ✅ matches stable |
 | geth           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)    | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)   | ✅ matches stable |
 | grafana        | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)           | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)          | ✅ matches stable |
 | heimdall-v2    | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)     | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)    | ✅ matches stable |
@@ -47,7 +47,7 @@ Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/se
 
 | Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
 | -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
-| foundry  | [1.8.6](https://github.com/foundry-rs/foundry/releases/tag/v1.8.6)      | [1.8.6](https://github.com/foundry-rs/foundry/releases/tag/v1.8.6)      | ✅ matches stable |
+| foundry  | [1.8.7](https://github.com/foundry-rs/foundry/releases/tag/v1.8.7)      | [1.8.7](https://github.com/foundry-rs/foundry/releases/tag/v1.8.7)      | ✅ matches stable |
 | kurtosis | [1.22.2](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.22.2) | [1.22.2](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.22.2) | ✅ matches stable |
 
 ## Kurtosis packages
