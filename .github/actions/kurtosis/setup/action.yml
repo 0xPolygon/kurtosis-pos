@@ -10,7 +10,7 @@ inputs:
   foundry_version:
     description: The version of Foundry to install
     required: false
-    default: v1.8.6
+    default: v1.8.7
   python_version:
     description: The version of Python to install
     required: false
