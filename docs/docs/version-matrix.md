@@ -31,7 +31,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | heimdall-v2    | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)     | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)    | ✅ matches stable |
 | lighthouse     | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)             | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)            | ✅ matches stable |
 | nginx          | [1.31.8-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.8) | [1.31.8](https://github.com/nginx/nginx/releases/tag/release-1.31.8)       | ✅ matches stable |
-| panoptichain   | [8.1.2](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.2)      | [8.1.2](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.2)     | ✅ matches stable |
+| panoptichain   | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)      | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)     | ✅ matches stable |
 | prometheus     | [3.15.1](https://github.com/prometheus/prometheus/releases/tag/v3.15.1)     | [3.15.1](https://github.com/prometheus/prometheus/releases/tag/v3.15.1)    | ✅ matches stable |
 | rabbitmq       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)    | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)   | ✅ matches stable |
 | redpanda       | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ matches stable |
