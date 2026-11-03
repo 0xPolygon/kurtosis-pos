@@ -53,13 +53,13 @@ IMAGES = {
     "l1_cl_image": "sigp/lighthouse:v8.3.2",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.9.0",
     # layer 2
-    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.12.2",
+    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.13.2",
     "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.3",
     "l2_cl_queue_image": "rabbitmq:4.4.0",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.7",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd-r1",
-    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.12.2",
+    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.13.2",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14",
     # additional services
     "nginx_image": "nginx:1.31.8-alpine",
@@ -143,8 +143,6 @@ EL_HARD_FORK_BLOCKS = {
     "giugliano": 128,
     "chicago": 128,
     "valencia": 128,
-    # Newest bor EL fork; after valencia. Enabled at 128 like the other
-    # post-rio forks. Requires bor >= 2.10.0 (older public bor images ignore
-    # the unknown austinBlock genesis field).
     "austin": 128,
+    "hampi": 128,
 }

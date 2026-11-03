@@ -52,6 +52,7 @@ def generate(
                     "chicago_fork_block": network_params.get("chicago_fork_block"),
                     "valencia_fork_block": network_params.get("valencia_fork_block"),
                     "austin_fork_block": network_params.get("austin_fork_block"),
+                    "hampi_fork_block": network_params.get("hampi_fork_block"),
                 },
             )
         },

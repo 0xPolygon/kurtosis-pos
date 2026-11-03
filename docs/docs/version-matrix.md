@@ -28,7 +28,7 @@ Container images deployed by the package, pinned in [`src/config/constants.star`
 | foundry        | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)          | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)         | ✅ matches stable |
 | geth           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)    | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)   | ✅ matches stable |
 | grafana        | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)           | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)          | ✅ matches stable |
-| heimdall-v2    | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)     | [0.12.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.12.2)    | ✅ matches stable |
+| heimdall-v2    | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)     | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)    | ✅ matches stable |
 | lighthouse     | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)             | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)            | ✅ matches stable |
 | nginx          | [1.31.8-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.8) | [1.31.8](https://github.com/nginx/nginx/releases/tag/release-1.31.8)       | ✅ matches stable |
 | panoptichain   | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)      | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)     | ✅ matches stable |
