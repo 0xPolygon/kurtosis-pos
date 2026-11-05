@@ -38,6 +38,7 @@
       "valenciaBlock": {{.valencia_fork_block}},
       "austinBlock": {{.austin_fork_block}},
       "hampiBlock": {{.hampi_fork_block}},
+      "uburuBlock": {{.uburu_fork_block}},
       "stateSyncConfirmationDelay": {
         "0": 32
       },

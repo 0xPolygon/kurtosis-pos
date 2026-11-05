@@ -54,7 +54,7 @@ IMAGES = {
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.9.0",
     # layer 2
     "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.13.2",
-    "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.3",
+    "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.11.0",
     "l2_cl_queue_image": "rabbitmq:4.4.0",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.7",
@@ -145,4 +145,5 @@ EL_HARD_FORK_BLOCKS = {
     "valencia": 128,
     "austin": 128,
     "hampi": 128,
+    "uburu": 128,
 }

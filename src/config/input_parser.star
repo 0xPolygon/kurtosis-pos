@@ -156,6 +156,7 @@ POLYGON_POS_PACKAGE_ARGS = {
         "valencia_fork_block": constants.EL_HARD_FORK_BLOCKS.get("valencia"),
         "austin_fork_block": constants.EL_HARD_FORK_BLOCKS.get("austin"),
         "hampi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("hampi"),
+        "uburu_fork_block": constants.EL_HARD_FORK_BLOCKS.get("uburu"),
     },
     "additional_services": [],
 }

@@ -5,6 +5,10 @@ math = import_module("../math/math.star")
 
 EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
+# Uburu state copied verbatim from mainnet: the StateReceiver code swapped in at the
+# fork block (bor's genesis-mainnet-v1.json blockAlloc) and the state-sync gas oracle
+# it reads (proxy, implementation and ProxyAdmin, same addresses as mainnet and Amoy).
+EL_UBURU_DIR_PATH = "../../static_files/el/genesis/uburu"
 
 
 def generate(
@@ -53,6 +57,7 @@ def generate(
                     "valencia_fork_block": network_params.get("valencia_fork_block"),
                     "austin_fork_block": network_params.get("austin_fork_block"),
                     "hampi_fork_block": network_params.get("hampi_fork_block"),
+                    "uburu_fork_block": network_params.get("uburu_fork_block"),
                 },
             )
         },
@@ -76,6 +81,10 @@ def generate(
         name="l2-el-genesis-builder-config",
         src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
     )
+    uburu_artifact = plan.upload_files(
+        name="l2-el-uburu",
+        src=EL_UBURU_DIR_PATH,
+    )
     result = plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
@@ -91,6 +100,7 @@ def generate(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
             ),
             "EL_GENESIS_TIMESTAMP": timestamp,
+            "UBURU_FORK_BLOCK": str(network_params.get("uburu_fork_block")),
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
@@ -98,6 +108,7 @@ def generate(
             "/opt/data/genesis": el_genesis_temporary_artifact,
             "/opt/data/genesis-builder": el_genesis_builder_script_artifact,
             "/opt/data/validator": validator_config_artifact,
+            "/opt/data/uburu": uburu_artifact,
         },
         store=[
             StoreSpec(

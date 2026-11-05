@@ -68,6 +68,7 @@ POLYGON_POS_PARAMS = {
         "valencia_fork_block",
         "austin_fork_block",
         "hampi_fork_block",
+        "uburu_fork_block",
     ],
     "additional_services": [
         getattr(constants.ADDITIONAL_SERVICES, field)
