@@ -5,6 +5,11 @@ math = import_module("../math/math.star")
 
 EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
+# Runtime bytecode of the StateReceiver swapped in at the Uburu fork block, copied
+# verbatim from bor's mainnet genesis (builder/files/genesis-mainnet-v1.json).
+EL_STATE_RECEIVER_UBURU_CODE_FILE_PATH = (
+    "../../static_files/el/genesis/state-receiver-uburu.hex"
+)
 
 
 def generate(
@@ -53,6 +58,7 @@ def generate(
                     "valencia_fork_block": network_params.get("valencia_fork_block"),
                     "austin_fork_block": network_params.get("austin_fork_block"),
                     "hampi_fork_block": network_params.get("hampi_fork_block"),
+                    "uburu_fork_block": network_params.get("uburu_fork_block"),
                 },
             )
         },
@@ -76,6 +82,10 @@ def generate(
         name="l2-el-genesis-builder-config",
         src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
     )
+    state_receiver_uburu_code_artifact = plan.upload_files(
+        name="l2-el-state-receiver-uburu-code",
+        src=EL_STATE_RECEIVER_UBURU_CODE_FILE_PATH,
+    )
     result = plan.run_sh(
         name="l2-el-genesis-generator",
         description="Generating L2 EL genesis",
@@ -91,6 +101,7 @@ def generate(
                 math.ether_to_wei(constants.ADMIN_BALANCE_ETH)
             ),
             "EL_GENESIS_TIMESTAMP": timestamp,
+            "UBURU_FORK_BLOCK": str(network_params.get("uburu_fork_block")),
         },
         files={
             # Load the artefacts one by one instead of using a Directory because it is not
@@ -98,6 +109,7 @@ def generate(
             "/opt/data/genesis": el_genesis_temporary_artifact,
             "/opt/data/genesis-builder": el_genesis_builder_script_artifact,
             "/opt/data/validator": validator_config_artifact,
+            "/opt/data/state-receiver-uburu": state_receiver_uburu_code_artifact,
         },
         store=[
             StoreSpec(

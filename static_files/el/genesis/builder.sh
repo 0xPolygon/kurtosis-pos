@@ -10,7 +10,7 @@ EL_GENESIS_FILE="/opt/data/genesis/genesis.json"
 # Checking environment variables. Chain ids are baked into the image at build time
 # (via EL_CHAIN_ID / CL_CHAIN_ID ENVs in the Dockerfile) and injected back into this
 # script's environment by the container; custom values are not supported.
-for v in EL_CHAIN_ID CL_CHAIN_ID ADMIN_ADDRESS ADMIN_BALANCE_WEI; do
+for v in EL_CHAIN_ID CL_CHAIN_ID ADMIN_ADDRESS ADMIN_BALANCE_WEI UBURU_FORK_BLOCK; do
   if [[ -z "${!v:-}" ]]; then
     echo "Error: ${v} environment variable is not set"
     exit 1
@@ -63,6 +63,16 @@ mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
 jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
   "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" > tmp.json
+mv tmp.json "${EL_GENESIS_FILE}"
+
+# Swap the StateReceiver code at the Uburu fork block, as bor's mainnet and Amoy
+# genesis do. The bytecode embeds mainnet's gas oracle address, which has no code
+# on the devnet, so the contract falls back to its default gas (same as Amoy).
+state_receiver_address="0000000000000000000000000000000000001001"
+jq --arg b "${UBURU_FORK_BLOCK}" --arg a "${state_receiver_address}" \
+  --rawfile c /opt/data/state-receiver-uburu/state-receiver-uburu.hex \
+  '.config.bor.blockAlloc[$b][$a] = {"balance": "0x0", "code": ($c | rtrimstr("\n"))}' \
+  "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
 # Add the genesis timestamp to the EL genesis.
