@@ -60,17 +60,21 @@ jq --arg a "${create2_address}" --arg c "${create2_code}" \
   '.alloc[$a] = {"balance": "0x0", "code": $c}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
+# Add the state-sync gas oracle read by the Uburu StateReceiver, with its mainnet
+# code and storage, at the addresses hardcoded in that StateReceiver.
+jq --slurpfile o /opt/data/uburu/gas-oracle-alloc.json '.alloc += $o[0]' \
+  "${EL_GENESIS_ALLOC_FILE}" > tmp.json
+mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
+
 # Add the alloc field to the temporary EL genesis to create the final EL genesis.
 jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
   "${EL_GENESIS_FILE}" "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
-# Swap the StateReceiver code at the Uburu fork block, as bor's mainnet and Amoy
-# genesis do. The bytecode embeds mainnet's gas oracle address, which has no code
-# on the devnet, so the contract falls back to its default gas (same as Amoy).
+# Swap the StateReceiver code at the Uburu fork block, as bor's mainnet genesis does.
 state_receiver_address="0000000000000000000000000000000000001001"
 jq --arg b "${UBURU_FORK_BLOCK}" --arg a "${state_receiver_address}" \
-  --rawfile c /opt/data/state-receiver-uburu/state-receiver-uburu.hex \
+  --rawfile c /opt/data/uburu/state-receiver.hex \
   '.config.bor.blockAlloc[$b][$a] = {"balance": "0x0", "code": ($c | rtrimstr("\n"))}' \
   "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
