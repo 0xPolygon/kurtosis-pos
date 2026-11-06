@@ -19,12 +19,16 @@ gh run view <run> --log --job <job> | grep -E '\s[-+]\|' | sed 's/.*Z //'
 
 Otherwise regenerate (step 3) on a fresh `origin/main` and read
 `git diff docs/docs/version-matrix.md`. The `+` rows are the new matrix. Keep only
-rows marked 🚨 (behind stable). Skip:
+rows marked 🚨 (behind). Skip:
 
 - 📌 `pinned` rows: deliberate holds declared in `PINNED_VERSIONS` in
   `extract-versions.py`. Pins are per environment, so a component 📌 in one
   environment and 🚨 in another still needs bumping in the second.
 - Pre-releases (`rc`, `beta`, `alpha`): flag them instead.
+- The `Hard forks` tables: they are not versions and never use 🚨. A bump can
+  change them (a new bor fork shows up as 💤, a dropped one as ❌): keep that in
+  the regenerated page and mention it in the PR body, but never edit fork
+  settings to make a row green.
 
 Before bumping, check the new image is published:
 `docker manifest inspect <image>:<tag>`. A release often lands before its image

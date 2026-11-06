@@ -8,53 +8,54 @@ sidebar_position: 4
 
 Versions of every component the package deploys, compared against the latest upstream release.
 
-## Status
-
-| Status               | Meaning                                                        |
-| -------------------- | -------------------------------------------------------------- |
-| ✅ matches stable    | Running the latest upstream release.                           |
-| ⚡️ newer than stable | Ahead of the latest release — a prerelease or a patched build. |
-| 🚨 behind stable     | An upstream release is available and should be picked up.      |
-| 📌 pinned            | Deliberately held back — the reason is shown inline.           |
-
 ## Images
 
-Container images deployed by the package, pinned in [`src/config/constants.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/constants.star).
+Container images deployed by the package, pinned in [`src/config/constants.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/constants.star). For `pos-*` (built in this repo, GHCR), `toolbox` and `ethstats-server` (Artifact Registry), the latest version is the latest tag in their registry.
 
-| Component      | Deployed version                                                            | Latest stable version                                                      | Status            |
-| -------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------- |
-| bor            | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)             | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)            | ✅ matches stable |
-| envoy          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ matches stable |
-| foundry        | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)          | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)         | ✅ matches stable |
-| geth           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)    | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)   | ✅ matches stable |
-| grafana        | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)           | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)          | ✅ matches stable |
-| heimdall-v2    | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)     | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)    | ✅ matches stable |
-| lighthouse     | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)             | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)            | ✅ matches stable |
-| nginx          | [1.31.8-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.8) | [1.31.8](https://github.com/nginx/nginx/releases/tag/release-1.31.8)       | ✅ matches stable |
-| panoptichain   | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)      | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)     | ✅ matches stable |
-| prometheus     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ matches stable |
-| rabbitmq       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)    | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)   | ✅ matches stable |
-| redpanda       | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ matches stable |
-| status-checker | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10)  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10) | ✅ matches stable |
+### Core
 
-### Untracked images
+The L1, the L2 clients and the images that deploy them: the devnet does not start without them.
 
-Some images are deliberately absent from the table above: the `pos-*` images are [built in this repo](https://github.com/0xPolygon/kurtosis-pos/tree/main/docker) and published by `publish-images.yaml`, and `toolbox` / `ethstats-server` live on Artifact Registry. Neither has an upstream release stream to compare against. The full list is `SKIPPED_IMAGES` in `scripts/version-matrix/extract-versions.py`.
+| Component                      | Deployed version                                                                                               | Latest stable version                                                                             | Status        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------- |
+| bor                            | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)                                                | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)                                   | ✅ up to date |
+| foundry                        | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)                                             | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)                                | ✅ up to date |
+| geth                           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                                       | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                          | ✅ up to date |
+| heimdall-v2                    | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)                                        | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)                           | ✅ up to date |
+| lighthouse                     | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)                                                | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)                                   | ✅ up to date |
+| pos-contract-deployer          | [0.0.7](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-contract-deployer.Dockerfile)           | [0.0.7](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-contract-deployer)           | ✅ up to date |
+| pos-el-genesis-builder         | [96a19dd-r1](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-el-genesis-builder.Dockerfile)     | [96a19dd-r1](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-el-genesis-builder)     | ✅ up to date |
+| pos-validator-config-generator | [0.13.2](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-validator-config-generator.Dockerfile) | [0.13.2](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-validator-config-generator) | ✅ up to date |
+| rabbitmq                       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)                                       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)                          | ✅ up to date |
 
-## CI tools
+### Additional
 
-Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/setup/action.yml`](https://github.com/0xPolygon/kurtosis-pos/blob/main/.github/actions/kurtosis/setup/action.yml).
+Everything else: utility images, observability, the status checker and the sequence store experiment.
 
-| Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
-| -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
-| foundry  | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)      | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)      | ✅ matches stable |
-| kurtosis | [1.22.2](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.22.2) | [1.22.2](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.22.2) | ✅ matches stable |
+| Component       | Deployed version                                                            | Latest stable version                                                      | Status        |
+| --------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------- |
+| envoy           | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ up to date |
+| ethstats-server | 9da2124                                                                     | 9da2124                                                                    | ✅ up to date |
+| grafana         | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)           | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)          | ✅ up to date |
+| nginx           | [1.31.8-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.8) | [1.31.8](https://github.com/nginx/nginx/releases/tag/release-1.31.8)       | ✅ up to date |
+| panoptichain    | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)      | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)     | ✅ up to date |
+| prometheus      | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ up to date |
+| redpanda        | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ up to date |
+| status-checker  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10)  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10) | ✅ up to date |
+| toolbox         | 0.0.14                                                                      | 0.0.14                                                                     | ✅ up to date |
 
 ## Kurtosis packages
 
 External Kurtosis packages the package depends on. Versions are pinned in the [`replace` block of `kurtosis.yml`](https://github.com/0xPolygon/kurtosis-pos/blob/main/kurtosis.yml), which is the single place to bump them.
 
-| Package                                                                                            | Pinned version                                                                                                    | Latest stable version                                                                                                    | Status            |
-| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [5795b77e6523](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc)     | [HEAD (5795b77e6523)](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc)     | ✅ matches stable |
-| [github.com/kurtosis-tech/prometheus-package](https://github.com/kurtosis-tech/prometheus-package) | [f3402ebad8cf](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | [HEAD (f3402ebad8cf)](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | ✅ matches stable |
+### Core
+
+| Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status        |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [5795b77e6523](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc) | [HEAD (5795b77e6523)](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc) | ✅ up to date |
+
+### Additional
+
+| Package                                                                                            | Pinned version                                                                                                    | Latest stable version                                                                                                    | Status        |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------- |
+| [github.com/kurtosis-tech/prometheus-package](https://github.com/kurtosis-tech/prometheus-package) | [f3402ebad8cf](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | [HEAD (f3402ebad8cf)](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | ✅ up to date |
