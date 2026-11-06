@@ -1,7 +1,9 @@
 name: snapshot
 
 # Build snapshot images for each devnet variant and validate them end-to-end.
-# Publish to GHCR on a successful tag push.
+# Publish both L1 backends to GHCR on a successful tag push: the geth +
+# lighthouse image as pos-devnet-<size>:<tag>, the anvil image as
+# pos-devnet-<size>:<tag>-anvil.
 on:
   schedule:
     - cron: 0 4 * * * # 04:00 UTC every day.
@@ -147,10 +149,17 @@ jobs:
           archive_suffix: ${{ env.JOB_ID }}-restored
 
       - name: Push snapshot image
-        # The anvil variant only covers the restore path; no image is published for it.
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && matrix.l1_backend != 'anvil'
+        # Both backends are published because they suit different restores. The
+        # geth + lighthouse image has a realistic L1 but only restores within
+        # minutes of the build (its beacon chain stalls once the wall clock is far
+        # past its genesis time), which is what this workflow does. The anvil image
+        # has no slot clock and restores at any age, so it is the one to pin in CI.
+        # It is a tag suffix on the same package rather than a new package: a new
+        # GHCR package starts private and needs an org admin to make it public,
+        # while a new tag inherits this package's public visibility.
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         run: |
-          image="ghcr.io/0xpolygon/pos-devnet-${{ matrix.devnet_type }}:${{ github.ref_name }}"
+          image="ghcr.io/0xpolygon/pos-devnet-${{ matrix.devnet_type }}:${{ github.ref_name }}${{ matrix.l1_backend == 'anvil' && '-anvil' || '' }}"
           docker tag pos-devnet "$image"
           docker push "$image"
 
