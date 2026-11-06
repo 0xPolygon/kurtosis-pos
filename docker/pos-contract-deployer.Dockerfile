@@ -115,7 +115,7 @@ WORKDIR /opt/pol-token
 RUN git clone --branch ${POL_TOKEN_BRANCH} https://github.com/0xPolygon/pol-token . \
   && git checkout ${POL_TOKEN_TAG_OR_COMMIT_SHA} \
   && git submodule update --init --recursive --depth 1 \
-  && find . -name .git -exec rm -rf {} + 2>/dev/null || true \
+  && { find . -name .git -exec rm -rf {} + 2>/dev/null || true; } \
   # Grant our deploy script access to contractAddresses.json (same rule as pos-portal).
   && sed -i 's|fs_permissions = \[|fs_permissions = [{ access = "read-write", path = "./contractAddresses.json" }, |' foundry.toml
 COPY static_files/contracts/l1/scripts/deployPolAndMigration.s.sol /opt/pol-token/script/deployPolAndMigration.s.sol
@@ -198,7 +198,7 @@ COPY --from=builder /opt/spol-contracts/out ./out
 COPY --from=builder /opt/spol-contracts/cache ./cache
 
 # pol-token runtime surface. deployPolAndMigration.s.sol runs via `forge script`, which
-# re-resolves imports from src/, script/ and lib/; out/ and cache/ avoid recompiling. Skip
+# re-resolves imports from src/, script/ and lib/ and recompiles them with the cached solc. Skip
 # test/, audit/, certora/, docs/, deployments/ and broadcast/ (upstream mainnet broadcasts).
 WORKDIR /opt/pol-token
 COPY --from=builder /opt/pol-token/foundry.toml ./foundry.toml

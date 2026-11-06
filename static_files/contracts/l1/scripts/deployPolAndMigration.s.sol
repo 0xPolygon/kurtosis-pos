@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.21;
 
-import {Script, console} from "forge-std/Script.sol";
+import {Script, console2 as console} from "forge-std/Script.sol";
 
 import {ProxyAdmin, TransparentUpgradeableProxy} from "openzeppelin-contracts/contracts/proxy/transparent/ProxyAdmin.sol";
 import {PolygonEcosystemToken} from "../src/PolygonEcosystemToken.sol";
