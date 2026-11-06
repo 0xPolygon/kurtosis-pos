@@ -11,8 +11,9 @@ Three kinds of dependency are covered:
 - **External Kurtosis packages** — the `replace` block of `kurtosis.yml`.
 
 All are compared against their upstream GitHub releases and annotated with a
-status. The matrix also lists the [hard forks](#hard-forks) the devnet
-activates. The output lands in [`docs/docs/version-matrix.md`](../../docs/docs/version-matrix.md).
+status. The output lands in [`docs/docs/version-matrix.md`](../../docs/docs/version-matrix.md).
+The [hard forks](#hard-forks) the devnet activates get their own page,
+[`docs/docs/hard-forks.md`](../../docs/docs/hard-forks.md).
 
 ## Components
 
@@ -25,7 +26,7 @@ activates. The output lands in [`docs/docs/version-matrix.md`](../../docs/docs/v
 
 ```text
 constants.star ──┐
-                 ├─► extract-versions.py ──► matrix.json ──► generate-markdown.py ──► version-matrix.md
+                 ├─► extract-versions.py ──► matrix.json ──► generate-markdown.py ──► version-matrix.md + hard-forks.md
 kurtosis.yml ────┤
 action.yml ──────┤
                  │
