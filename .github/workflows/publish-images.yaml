@@ -25,7 +25,7 @@ env:
 
   # pos-contract-deployer settings
   POS_CONTRACTS_IMAGE_NAME: 0xPolygon/pos-contract-deployer
-  POS_CONTRACT_DEPLOYER_VERSION: 0.0.7
+  POS_CONTRACT_DEPLOYER_VERSION: 0.0.8
   # pos-contracts (anvil-pos) - 2025-08-01 — bridge contracts, MATIC→POL migration
   POS_CONTRACTS_ANVIL_POS_BRANCH: anvil-pos
   POS_CONTRACTS_ANVIL_POS_COMMIT_SHA: d96d5929
@@ -42,6 +42,9 @@ env:
   # spol-contracts - 2026-04-16
   SPOL_CONTRACTS_BRANCH: main
   SPOL_CONTRACTS_COMMIT_SHA: 3c4bdf6c
+  # pol-token - 2025-09-11 — production POL (PolygonEcosystemToken) and PolygonMigration
+  POL_TOKEN_BRANCH: main
+  POL_TOKEN_COMMIT_SHA: 5dafabc
 
   # pos-el-genesis-builder settings
   EL_GENESIS_BUILDER_IMAGE_NAME: 0xPolygon/pos-el-genesis-builder
@@ -102,6 +105,8 @@ jobs:
             com.polygon.fx-portal.commit=${{ env.FX_PORTAL_COMMIT_SHA }}
             com.polygon.spol-contracts.branch=${{ env.SPOL_CONTRACTS_BRANCH }}
             com.polygon.spol-contracts.commit=${{ env.SPOL_CONTRACTS_COMMIT_SHA }}
+            com.polygon.pol-token.branch=${{ env.POL_TOKEN_BRANCH }}
+            com.polygon.pol-token.commit=${{ env.POL_TOKEN_COMMIT_SHA }}
 
       - name: Build and push docker image
         id: push
@@ -120,6 +125,8 @@ jobs:
             FX_PORTAL_TAG_OR_COMMIT_SHA=${{ env.FX_PORTAL_COMMIT_SHA }}
             SPOL_CONTRACTS_BRANCH=${{ env.SPOL_CONTRACTS_BRANCH }}
             SPOL_CONTRACTS_TAG_OR_COMMIT_SHA=${{ env.SPOL_CONTRACTS_COMMIT_SHA }}
+            POL_TOKEN_BRANCH=${{ env.POL_TOKEN_BRANCH }}
+            POL_TOKEN_TAG_OR_COMMIT_SHA=${{ env.POL_TOKEN_COMMIT_SHA }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
