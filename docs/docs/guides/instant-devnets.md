@@ -20,7 +20,7 @@ Images are hosted on GHCR. The tags correspond to the kurtosis-pos package versi
 
 Environments are snapshotted at block 128 on the L2 chain (Rio hard fork activation), which should be enough for most testing purposes.
 
-Snapshot archives are compressed with zstd, so `extract.sh` needs the `zstd` CLI on the host (`brew install zstd` on macOS, `apt install zstd` on Debian/Ubuntu, `apk add zstd` on Alpine). `restore.sh` runs zstd inside a container; on the host it needs `jq`, and `curl` for its L1 check.
+Snapshot archives are compressed with zstd; `extract.sh` decompresses them inside a container, so the host needs no `zstd` CLI. On the host, `restore.sh` needs `jq`, and `curl` for its L1 check.
 
 Remove any existing snapshot data.
 
