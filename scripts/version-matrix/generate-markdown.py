@@ -15,6 +15,8 @@ import subprocess
 from pathlib import Path
 from typing import Dict, Optional
 
+from hard_forks import STATUS_NOT_ENABLED, STATUS_OUT_OF_SYNC, STATUS_UNSUPPORTED
+
 STATUS_EMOJI = {
     "up to date": "✅",
     "ahead": "⚡️",
@@ -118,7 +120,6 @@ class MarkdownMatrixGenerator:
         md += "Everything else: utility images, observability, the status checker and the sequence store experiment.\n\n"
         md += self._generate_image_table({n: c for n, c in images.items() if not c.get("core")})
 
-
         packages = data.get("packages", {})
         if packages:
             md += "\n## Kurtosis packages\n\n"
@@ -202,7 +203,7 @@ class MarkdownMatrixGenerator:
             if layer == "heimdall_v2" and fork["name"] in MIRRORED_BOR_FORKS:
                 continue
             twin = other_by_name.get(fork["name"])
-            if twin and twin["status"] == "out of sync":
+            if twin and twin["status"] == STATUS_OUT_OF_SYNC:
                 fork = dict(fork, status=twin["status"], note=twin.get("note"))
             result.append(fork)
         return result
@@ -210,7 +211,8 @@ class MarkdownMatrixGenerator:
     def _generate_pos_fork_table(self, forks: list, section: Dict, client: str,
                                  testnet_url: str, mainnet_url: str) -> str:
         """One row per fork of a single layer, newest first."""
-        table = "| Fork | Devnet status | Devnet block | Amoy block | Mainnet block |\n"
+        unit = "block" if client == "bor" else "height"
+        table = f"| Fork | Devnet status | Devnet {unit} | Amoy {unit} | Mainnet {unit} |\n"
         table += "| --- | --- | --- | --- | --- |\n"
         shown = [f for f in forks if not (self._is_unscheduled(f) or self._is_unsupported(f))]
         ordered = sorted(shown, key=lambda f: (POS_FORK_ORDER.index(f["name"])
@@ -243,13 +245,13 @@ class MarkdownMatrixGenerator:
 
     @staticmethod
     def _is_unscheduled(fork: Dict) -> bool:
-        return (fork.get("status") == "not enabled"
+        return (fork.get("status") == STATUS_NOT_ENABLED
                 and fork.get("testnet") is None
                 and fork.get("mainnet") is None)
 
     @staticmethod
     def _is_unsupported(fork: Dict) -> bool:
-        return fork.get("status") == "enabled but unsupported"
+        return fork.get("status") == STATUS_UNSUPPORTED
 
     @staticmethod
     def _unsupported_note(forks, client: str) -> str:
@@ -258,11 +260,11 @@ class MarkdownMatrixGenerator:
         items = ", ".join(f"`{f['name']}`" for f in forks)
         return f"\nEnabled on devnet but not supported by {client}, so the setting is ignored: {items}.\n"
 
-    @classmethod
-    def _unscheduled_note(cls, forks) -> str:
+    @staticmethod
+    def _unscheduled_note(forks) -> str:
         if not forks:
             return ""
-        items = ", ".join(f"`{f["name"]}`" for f in forks)
+        items = ", ".join(f"`{f['name']}`" for f in forks)
         return f"\nNot enabled on devnet and not scheduled on testnet or mainnet: {items}.\n"
 
     @staticmethod
@@ -283,10 +285,6 @@ class MarkdownMatrixGenerator:
             value = str(fork["mainnet"])
             return f"[{value}]({url.format(value)})" if url else value
         return "—"
-
-    @staticmethod
-    def _support(known: Optional[bool]) -> str:
-        return {True: "✅", False: "❌"}.get(known, "—")
 
     def _generate_image_table(self, images: Dict, name_header: str = "Component",
                               version_header: str = "Deployed version") -> str:

@@ -69,13 +69,13 @@ Enabled on devnet but not supported by bor, so the setting is ignored: `agra`, `
 
 ### CL (Heimdall-v2)
 
-| Fork                                                                                                                           | Devnet status | Devnet block | Amoy block | Mainnet block |
-| ------------------------------------------------------------------------------------------------------------------------------ | ------------- | ------------ | ---------- | ------------- |
-| [karwar](https://forum.polygon.technology/t/heimdall-v0-13-2-released-for-mainnet-and-amoy/22491)                              | ✅ enabled    | 1            | 50020000   | 57006000      |
-| [lugano](https://forum.polygon.technology/t/security-release-review-heimdall-v0-12-1-lugano-hf/22389)                          | ✅ enabled    | 1            | 47105000   | 54627000      |
-| [kyoto](https://forum.polygon.technology/t/security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138) | ✅ enabled    | 1            | 42252000   | 51533000      |
-| [ithaca](https://forum.polygon.technology/t/heimdall-v0-10-0-ithaca-hf-mainnet/22038)                                          | ✅ enabled    | 1            | 40776000   | 50185000      |
-| [zurich](https://forum.polygon.technology/t/heimdall-v0-9-0-mainnet/21950)                                                     | ✅ enabled    | 1            | 37750000   | 47880000      |
-| [phuket](https://forum.polygon.technology/t/heimdall-v2-v0-7-1-for-polygon-amoy-and-mainnet/21863)                             | ✅ enabled    | 1            | 32276400   | 44070000      |
+| Fork                                                                                                                           | Devnet status | Devnet height | Amoy height | Mainnet height |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------- | ------------- | ----------- | -------------- |
+| [karwar](https://forum.polygon.technology/t/heimdall-v0-13-2-released-for-mainnet-and-amoy/22491)                              | ✅ enabled    | 1             | 50020000    | 57006000       |
+| [lugano](https://forum.polygon.technology/t/security-release-review-heimdall-v0-12-1-lugano-hf/22389)                          | ✅ enabled    | 1             | 47105000    | 54627000       |
+| [kyoto](https://forum.polygon.technology/t/security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138) | ✅ enabled    | 1             | 42252000    | 51533000       |
+| [ithaca](https://forum.polygon.technology/t/heimdall-v0-10-0-ithaca-hf-mainnet/22038)                                          | ✅ enabled    | 1             | 40776000    | 50185000       |
+| [zurich](https://forum.polygon.technology/t/heimdall-v0-9-0-mainnet/21950)                                                     | ✅ enabled    | 1             | 37750000    | 47880000       |
+| [phuket](https://forum.polygon.technology/t/heimdall-v2-v0-7-1-for-polygon-amoy-and-mainnet/21863)                             | ✅ enabled    | 1             | 32276400    | 44070000       |
 
 Checked against: [heimdall-v2 v0.13.2](https://github.com/0xPolygon/heimdall-v2/blob/v0.13.2/helper/config.go)
