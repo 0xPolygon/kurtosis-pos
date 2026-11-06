@@ -8,53 +8,128 @@ sidebar_position: 4
 
 Versions of every component the package deploys, compared against the latest upstream release.
 
-## Status
-
-| Status               | Meaning                                                        |
-| -------------------- | -------------------------------------------------------------- |
-| ✅ matches stable    | Running the latest upstream release.                           |
-| ⚡️ newer than stable | Ahead of the latest release — a prerelease or a patched build. |
-| 🚨 behind stable     | An upstream release is available and should be picked up.      |
-| 📌 pinned            | Deliberately held back — the reason is shown inline.           |
-
 ## Images
 
-Container images deployed by the package, pinned in [`src/config/constants.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/constants.star).
+Container images deployed by the package, pinned in [`src/config/constants.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/constants.star). For `pos-*` (built in this repo, GHCR), `toolbox` and `ethstats-server` (Artifact Registry), the latest version is the latest tag in their registry.
 
-| Component      | Deployed version                                                            | Latest stable version                                                      | Status            |
-| -------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------- |
-| bor            | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)             | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)            | ✅ matches stable |
-| envoy          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ matches stable |
-| foundry        | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)          | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)         | ✅ matches stable |
-| geth           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)    | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)   | ✅ matches stable |
-| grafana        | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)           | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)          | ✅ matches stable |
-| heimdall-v2    | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)     | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)    | ✅ matches stable |
-| lighthouse     | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)             | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)            | ✅ matches stable |
-| nginx          | [1.31.8-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.8) | [1.31.8](https://github.com/nginx/nginx/releases/tag/release-1.31.8)       | ✅ matches stable |
-| panoptichain   | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)      | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)     | ✅ matches stable |
-| prometheus     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ matches stable |
-| rabbitmq       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)    | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)   | ✅ matches stable |
-| redpanda       | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ matches stable |
-| status-checker | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10)  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10) | ✅ matches stable |
+### Core
 
-### Untracked images
+The L1, the L2 clients and the images that deploy them: the devnet does not start without them.
 
-Some images are deliberately absent from the table above: the `pos-*` images are [built in this repo](https://github.com/0xPolygon/kurtosis-pos/tree/main/docker) and published by `publish-images.yaml`, and `toolbox` / `ethstats-server` live on Artifact Registry. Neither has an upstream release stream to compare against. The full list is `SKIPPED_IMAGES` in `scripts/version-matrix/extract-versions.py`.
+| Component                      | Deployed version                                                                                               | Latest stable version                                                                             | Status        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------- |
+| bor                            | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)                                                | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)                                   | ✅ up to date |
+| foundry                        | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)                                             | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)                                | ✅ up to date |
+| geth                           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                                       | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                          | ✅ up to date |
+| heimdall-v2                    | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)                                        | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)                           | ✅ up to date |
+| lighthouse                     | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)                                                | [8.3.2](https://github.com/sigp/lighthouse/releases/tag/v8.3.2)                                   | ✅ up to date |
+| pos-contract-deployer          | [0.0.7](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-contract-deployer.Dockerfile)           | [0.0.7](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-contract-deployer)           | ✅ up to date |
+| pos-el-genesis-builder         | [96a19dd-r1](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-el-genesis-builder.Dockerfile)     | [96a19dd-r1](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-el-genesis-builder)     | ✅ up to date |
+| pos-validator-config-generator | [0.13.2](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-validator-config-generator.Dockerfile) | [0.13.2](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-validator-config-generator) | ✅ up to date |
+| rabbitmq                       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)                                       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)                          | ✅ up to date |
 
-## CI tools
+### Additional
 
-Tools installed by CI, pinned as input defaults in [`.github/actions/kurtosis/setup/action.yml`](https://github.com/0xPolygon/kurtosis-pos/blob/main/.github/actions/kurtosis/setup/action.yml).
+Everything else: utility images, observability, the status checker and the sequence store experiment.
 
-| Tool     | Pinned version                                                          | Latest stable version                                                   | Status            |
-| -------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------- |
-| foundry  | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)      | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)      | ✅ matches stable |
-| kurtosis | [1.22.2](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.22.2) | [1.22.2](https://github.com/kurtosis-tech/kurtosis/releases/tag/1.22.2) | ✅ matches stable |
+| Component       | Deployed version                                                            | Latest stable version                                                      | Status        |
+| --------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------- |
+| envoy           | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ up to date |
+| ethstats-server | 9da2124                                                                     | 9da2124                                                                    | ✅ up to date |
+| grafana         | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)           | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)          | ✅ up to date |
+| nginx           | [1.31.8-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.8) | [1.31.8](https://github.com/nginx/nginx/releases/tag/release-1.31.8)       | ✅ up to date |
+| panoptichain    | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)      | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)     | ✅ up to date |
+| prometheus      | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ up to date |
+| redpanda        | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ up to date |
+| status-checker  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10)  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10) | ✅ up to date |
+| toolbox         | 0.0.14                                                                      | 0.0.14                                                                     | ✅ up to date |
 
 ## Kurtosis packages
 
 External Kurtosis packages the package depends on. Versions are pinned in the [`replace` block of `kurtosis.yml`](https://github.com/0xPolygon/kurtosis-pos/blob/main/kurtosis.yml), which is the single place to bump them.
 
-| Package                                                                                            | Pinned version                                                                                                    | Latest stable version                                                                                                    | Status            |
-| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)         | [5795b77e6523](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc)     | [HEAD (5795b77e6523)](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc)     | ✅ matches stable |
-| [github.com/kurtosis-tech/prometheus-package](https://github.com/kurtosis-tech/prometheus-package) | [f3402ebad8cf](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | [HEAD (f3402ebad8cf)](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | ✅ matches stable |
+### Core
+
+| Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status        |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [5795b77e6523](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc) | [HEAD (5795b77e6523)](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc) | ✅ up to date |
+
+### Additional
+
+| Package                                                                                            | Pinned version                                                                                                    | Latest stable version                                                                                                    | Status        |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------- |
+| [github.com/kurtosis-tech/prometheus-package](https://github.com/kurtosis-tech/prometheus-package) | [f3402ebad8cf](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | [HEAD (f3402ebad8cf)](https://github.com/kurtosis-tech/prometheus-package/tree/f3402ebad8cffe98eef990e41ca863f7e8746c21) | ✅ up to date |
+
+## Hard forks
+
+### L1 (Ethereum)
+
+Fork epochs are the ethereum-package `minimal` preset defaults, overridden in [`src/config/input_parser.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/input_parser.star).
+
+| CL fork   | EL fork   | Devnet status | Devnet epoch | Sepolia epoch                                         | Mainnet epoch                                 |
+| --------- | --------- | ------------- | ------------ | ----------------------------------------------------- | --------------------------------------------- |
+| gloas     | amsterdam | ✅ enabled    | 0            | [353024](https://beaconscan.com/sepolia/epoch/353024) | —                                             |
+| bpo_2     | bpo2      | ✅ enabled    | 0            | [275712](https://beaconscan.com/sepolia/epoch/275712) | [419072](https://beaconscan.com/epoch/419072) |
+| bpo_1     | bpo1      | ✅ enabled    | 0            | [274176](https://beaconscan.com/sepolia/epoch/274176) | [412672](https://beaconscan.com/epoch/412672) |
+| fulu      | osaka     | ✅ enabled    | 0            | [272640](https://beaconscan.com/sepolia/epoch/272640) | [411392](https://beaconscan.com/epoch/411392) |
+| electra   | prague    | ✅ enabled    | 0            | [222464](https://beaconscan.com/sepolia/epoch/222464) | [364032](https://beaconscan.com/epoch/364032) |
+| deneb     | cancun    | ✅ enabled    | 0            | [132608](https://beaconscan.com/sepolia/epoch/132608) | [269568](https://beaconscan.com/epoch/269568) |
+| capella   | shanghai  | ✅ enabled    | 0            | [56832](https://beaconscan.com/sepolia/epoch/56832)   | [194048](https://beaconscan.com/epoch/194048) |
+| bellatrix | —         | ✅ enabled    | 0            | [100](https://beaconscan.com/sepolia/epoch/100)       | [144896](https://beaconscan.com/epoch/144896) |
+| altair    | —         | ✅ enabled    | 0            | [50](https://beaconscan.com/sepolia/epoch/50)         | [74240](https://beaconscan.com/epoch/74240)   |
+
+Checked against:
+
+- [ethereum-package 5795b77e6523](https://github.com/ethpandaops/ethereum-package/blob/5795b77e65235ad223d4d3b413b2739190bf60cc/src/package_io/input_parser.star)
+- [geth v1.17.10](https://github.com/ethereum/go-ethereum/blob/v1.17.10/params/config.go)
+- [lighthouse v8.3.2](https://github.com/sigp/lighthouse/blob/v8.3.2/common/eth2_network_config/built_in_network_configs/mainnet/config.yaml)
+
+`L1_HARDFORK`, the fork anvil and forge simulate, is `amsterdam`: ✅ matches the latest enabled EL fork.
+
+Not enabled on devnet and not scheduled on testnet or mainnet: `heze`, `bpo_3`, `bpo_4`, `bpo_5`.
+
+### L2 (Polygon PoS)
+
+Bor (EL) and Heimdall-v2 (CL) are different chains, so their forks are listed apart.
+
+- Bor fork blocks are set in `EL_HARD_FORK_BLOCKS` in [`src/config/constants.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/constants.star).
+- Heimdall-v2 hardcodes its fork heights, so the devnet gets the local network heights.
+
+#### EL (Bor)
+
+| Fork                                                                                                                            | Devnet status | Devnet block | Amoy block                                              | Mainnet block                                      |
+| ------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------ | ------------------------------------------------------- | -------------------------------------------------- |
+| hampi                                                                                                                           | ✅ enabled    | 128          | —                                                       | —                                                  |
+| [uburu](https://forum.polygon.technology/t/announcement-bor-v2-11-0/22516)                                                      | ✅ enabled    | 128          | [51978200](https://amoy.polygonscan.com/block/51978200) | [96787900](https://polygonscan.com/block/96787900) |
+| [austin](https://forum.polygon.technology/t/security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138) | ✅ enabled    | 128          | [44120000](https://amoy.polygonscan.com/block/44120000) | [91949700](https://polygonscan.com/block/91949700) |
+| [valencia](https://forum.polygon.technology/t/bor-v2-9-0-and-erigon-v3-7-2-releases/21987)                                      | ✅ enabled    | 128          | [40776000](https://amoy.polygonscan.com/block/40776000) | [89531000](https://polygonscan.com/block/89531000) |
+| chicago                                                                                                                         | ✅ enabled    | 128          | [38358000](https://amoy.polygonscan.com/block/38358000) | [87218600](https://polygonscan.com/block/87218600) |
+| [giugliano](https://forum.polygon.technology/t/pip-84-giugliano-hardfork/21808)                                                 | ✅ enabled    | 128          | [35573500](https://amoy.polygonscan.com/block/35573500) | [85268500](https://polygonscan.com/block/85268500) |
+| lisovoPro                                                                                                                       | ✅ enabled    | 128          | [34062000](https://amoy.polygonscan.com/block/34062000) | [83756500](https://polygonscan.com/block/83756500) |
+| [lisovo](https://forum.polygon.technology/t/pip-81-lisovo-hardfork/21713)                                                       | ✅ enabled    | 128          | [33634700](https://amoy.polygonscan.com/block/33634700) | [83756500](https://polygonscan.com/block/83756500) |
+| dandeli                                                                                                                         | ✅ enabled    | 128          | [31890000](https://amoy.polygonscan.com/block/31890000) | [81424000](https://polygonscan.com/block/81424000) |
+| madhugiriPro                                                                                                                    | ✅ enabled    | 128          | [29287400](https://amoy.polygonscan.com/block/29287400) | [80084800](https://polygonscan.com/block/80084800) |
+| [madhugiri](https://forum.polygon.technology/t/pip-76-madhugiri-hardfork/21377)                                                 | ✅ enabled    | 128          | [28899616](https://amoy.polygonscan.com/block/28899616) | [80084800](https://polygonscan.com/block/80084800) |
+| [rio](https://forum.polygon.technology/t/pip-73-rio-hardfork/21268)                                                             | ✅ enabled    | 128          | [26272256](https://amoy.polygonscan.com/block/26272256) | [77414656](https://polygonscan.com/block/77414656) |
+| [bhilai](https://forum.polygon.technology/t/pip-63-bhilai-hardfork/20872)                                                       | ✅ enabled    | 0            | [22765056](https://amoy.polygonscan.com/block/22765056) | [73440256](https://polygonscan.com/block/73440256) |
+| [ahmedabad](https://forum.polygon.technology/t/pip-37-ahmedabad-hardfork/13885)                                                 | ✅ enabled    | 0            | [11865856](https://amoy.polygonscan.com/block/11865856) | [62278656](https://polygonscan.com/block/62278656) |
+| [indore](https://forum.polygon.technology/t/pip-13-indore-hard-fork/12272)                                                      | ✅ enabled    | 0            | [73100](https://amoy.polygonscan.com/block/73100)       | [44934656](https://polygonscan.com/block/44934656) |
+| [delhi](https://forum.polygon.technology/t/pip-7-delhi-hardfork/10904)                                                          | ✅ enabled    | 0            | [73100](https://amoy.polygonscan.com/block/73100)       | [38189056](https://polygonscan.com/block/38189056) |
+| jaipur                                                                                                                          | ✅ enabled    | 0            | [73100](https://amoy.polygonscan.com/block/73100)       | [23850000](https://polygonscan.com/block/23850000) |
+
+Checked against: [bor v2.11.0](https://github.com/0xPolygon/bor/blob/v2.11.0/params/config.go)
+
+Enabled on devnet but not supported by bor, so the setting is ignored: `agra`, `napoli`.
+
+#### CL (Heimdall-v2)
+
+| Fork                                                                                                                           | Devnet status | Devnet block | Amoy block | Mainnet block |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------- | ------------ | ---------- | ------------- |
+| [karwar](https://forum.polygon.technology/t/heimdall-v0-13-2-released-for-mainnet-and-amoy/22491)                              | ✅ enabled    | 1            | 50020000   | 57006000      |
+| [lugano](https://forum.polygon.technology/t/security-release-review-heimdall-v0-12-1-lugano-hf/22389)                          | ✅ enabled    | 1            | 47105000   | 54627000      |
+| [kyoto](https://forum.polygon.technology/t/security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138) | ✅ enabled    | 1            | 42252000   | 51533000      |
+| [ithaca](https://forum.polygon.technology/t/heimdall-v0-10-0-ithaca-hf-mainnet/22038)                                          | ✅ enabled    | 1            | 40776000   | 50185000      |
+| [zurich](https://forum.polygon.technology/t/heimdall-v0-9-0-mainnet/21950)                                                     | ✅ enabled    | 1            | 37750000   | 47880000      |
+| [phuket](https://forum.polygon.technology/t/heimdall-v2-v0-7-1-for-polygon-amoy-and-mainnet/21863)                             | ✅ enabled    | 1            | 32276400   | 44070000      |
+
+Checked against: [heimdall-v2 v0.13.2](https://github.com/0xPolygon/heimdall-v2/blob/v0.13.2/helper/config.go)

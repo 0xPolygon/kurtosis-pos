@@ -5,11 +5,11 @@ Automated version matrix extraction tool for Kurtosis PoS.
 Extracts version information from:
 1. `IMAGES` in src/config/constants.star — the container images we deploy.
 2. The `replace` block of kurtosis.yml — the external Kurtosis packages we pin.
-3. Input defaults of .github/actions/kurtosis/setup/action.yml — the tools CI installs.
 
 All are compared against their upstream GitHub releases (or branch HEAD, for
-packages that ship faster than they tag) and annotated with a status. The result
-is written to matrix.json, which generate-markdown.py renders into the docs.
+packages that ship faster than they tag) and annotated with a status. Hard fork
+schedules are added by hard_forks.py. The result is written to matrix.json,
+which generate-markdown.py renders into the docs.
 """
 
 import os
@@ -23,6 +23,8 @@ from typing import Dict, Optional, Tuple
 import requests
 import yaml
 
+import hard_forks
+
 
 @dataclass
 class ComponentVersion:
@@ -34,16 +36,7 @@ class ComponentVersion:
     latest_version_source_url: Optional[str] = None
     status: Optional[str] = None
     pin_reason: Optional[str] = None
-
-
-@dataclass
-class ToolVersion:
-    """A tool version installed by CI, and how it compares to upstream."""
-    version: str
-    latest_version: Optional[str] = None
-    version_source_url: Optional[str] = None
-    latest_version_source_url: Optional[str] = None
-    status: Optional[str] = None
+    core: bool = False
 
 
 @dataclass
@@ -59,6 +52,7 @@ class PackageVersion:
     commit_distance: Optional[str] = None
     tracking_mode: str = "release"
     pin_reason: Optional[str] = None
+    core: bool = False
 
 
 # Images from `IMAGES` mapped to the GitHub repo that releases them.
@@ -94,32 +88,40 @@ RELEASE_TAG_PREFIXES = {
     "nginx_image": "release-",
 }
 
+REPO_URL = "https://github.com/0xPolygon/kurtosis-pos"
+
+# Images published to a container registry rather than released on GitHub: the
+# pos-* ones are built from docker/<name>.Dockerfile in this repo and published
+# to GHCR by publish-images.yaml, toolbox lives on Artifact Registry. "Latest"
+# is the highest tag in the registry among the tags matching the pattern.
+BUILT_IMAGES = {
+    "pos_contract_deployer_image": ("pos-contract-deployer", r"\d+\.\d+\.\d+"),
+    # `<genesis-contracts sha>-r<revision>`: a revision bumps when the image is
+    # rebuilt for the same sha.
+    "pos_el_genesis_builder_image": ("pos-el-genesis-builder", r"[0-9a-f]+-r\d+"),
+    "pos_validator_config_generator_image": ("pos-validator-config-generator", r"\d+\.\d+\.\d+"),
+    "toolbox_image": ("toolbox", r"\d+\.\d+\.\d+"),
+    # Commit sha tags cannot be ordered: the latest is the last one uploaded.
+    "ethstats_server_image": ("ethstats-server", r"[0-9a-f]{7,40}"),
+}
+
 # Images intentionally left out of the matrix, with the reason. Keeping this
 # explicit means a newly added image that lands in neither table is a visible
 # gap rather than a silent omission — main() prints a warning for those.
-SKIPPED_IMAGES = {
-    # Built from docker/*.Dockerfile in this repo and published by
-    # publish-images.yaml, so there is no upstream release to track: the tag is
-    # whatever we last published.
-    "pos_contract_deployer_image": "built in this repo (docker/)",
-    "pos_el_genesis_builder_image": "built in this repo (docker/)",
-    "pos_validator_config_generator_image": "built in this repo (docker/)",
-    # Hosted on Google Artifact Registry with commit-sha tags and no public
-    # GitHub release stream to compare against.
-    "toolbox_image": "internal image on Artifact Registry",
-    "ethstats_server_image": "internal image on Artifact Registry",
-}
+SKIPPED_IMAGES: Dict[str, str] = {}
 
-# Tools installed by CI, keyed by input name in the setup action, with the
-# tool name shown in the matrix, its upstream repo and its release tag prefix.
-# python_version is left out: it follows a language line, not a GitHub release.
-CI_TOOL_REPOS = {
-    "kurtosis_version": ("kurtosis", "kurtosis-tech/kurtosis", ""),
-    "foundry_version": ("foundry", "foundry-rs/foundry", "v"),
+# Images the devnet cannot run without: the L1 (geth and lighthouse, or anvil),
+# the L2 clients and what deploys them. Everything else (observability, spammers, status checker, the sequence
+# store experiment) is an additional service. Keys are `IMAGES` keys.
+CORE_IMAGES = {
+    "l1_el_image", "l1_cl_image", "l1_anvil_image",
+    "l2_cl_heimdall_v2_image", "l2_el_bor_image", "l2_cl_queue_image",
+    "pos_contract_deployer_image", "pos_el_genesis_builder_image",
+    "pos_validator_config_generator_image",
 }
 
 # Components deliberately held back from the latest stable release, keyed by
-# component name. These render as "pinned" instead of "behind stable" so that
+# component name. These render as "pinned" instead of "behind" so that
 # genuine regressions stay visible in the matrix.
 #
 # Keep every reason in the same short form: "Only supports <component> <line> so far."
@@ -129,9 +131,13 @@ PINNED_VERSIONS: Dict[str, str] = {}
 # Same convention as PINNED_VERSIONS.
 PINNED_PACKAGES: Dict[str, str] = {}
 
-STATUS_MATCHES = "matches stable"
-STATUS_BEHIND = "behind stable"
-STATUS_NEWER = "newer than stable"
+# Packages the devnet cannot run without (the default L1); the rest is additional.
+# Keys are package locators.
+CORE_PACKAGES = {"github.com/ethpandaops/ethereum-package"}
+
+STATUS_MATCHES = "up to date"
+STATUS_BEHIND = "behind"
+STATUS_NEWER = "ahead"
 STATUS_PINNED = "pinned"
 
 
@@ -142,8 +148,6 @@ class VersionMatrixExtractor:
         self.repo_root = repo_root
         self.constants_path = repo_root / "src" / "config" / "constants.star"
         self.kurtosis_yaml_path = repo_root / "kurtosis.yml"
-        self.setup_action_path = (
-            repo_root / ".github" / "actions" / "kurtosis" / "setup" / "action.yml")
 
     # --- images ------------------------------------------------------------
 
@@ -151,7 +155,7 @@ class VersionMatrixExtractor:
         """Extract image versions from the `IMAGES` dict in constants.star.
 
         Returns (components, unknown_keys) where unknown_keys lists image keys
-        that are in neither COMPONENT_REPOS nor SKIPPED_IMAGES.
+        that are in none of COMPONENT_REPOS, BUILT_IMAGES and SKIPPED_IMAGES.
         """
         components: Dict[str, ComponentVersion] = {}
         unknown_keys = []
@@ -174,6 +178,24 @@ class VersionMatrixExtractor:
             key, image = entry.groups()
             if key in SKIPPED_IMAGES:
                 continue
+            if key in BUILT_IMAGES:
+                name, tag_pattern = BUILT_IMAGES[key]
+                version = self._version_from_image(image)
+                latest_version = self._get_latest_registry_tag(image, tag_pattern)
+                on_ghcr = image.split("/", 1)[0] == "ghcr.io"
+                dockerfile = self.repo_root / "docker" / f"{name}.Dockerfile"
+                components[name] = ComponentVersion(
+                    version=version,
+                    image=image,
+                    latest_version=latest_version,
+                    version_source_url=(f"{REPO_URL}/blob/main/docker/{name}.Dockerfile"
+                                        if dockerfile.exists() else None),
+                    latest_version_source_url=(f"{REPO_URL}/pkgs/container/{name}"
+                                               if on_ghcr and latest_version else None),
+                    status=self._determine_built_status(version, latest_version),
+                    core=key in CORE_IMAGES,
+                )
+                continue
             if key not in COMPONENT_REPOS:
                 unknown_keys.append(key)
                 continue
@@ -185,7 +207,7 @@ class VersionMatrixExtractor:
             status = self._determine_status(version, latest_version)
 
             pin_reason = None
-            # A pin only ever downgrades a "behind stable" result: once the
+            # A pin only ever downgrades a "behind" result: once the
             # component catches up, its real status is reported again, which is
             # the signal to delete the entry.
             if status == STATUS_BEHIND and key in PINNED_VERSIONS:
@@ -200,6 +222,7 @@ class VersionMatrixExtractor:
                 latest_version_source_url=self._release_url(repo, latest_version, tag_prefix),
                 status=status,
                 pin_reason=pin_reason,
+                core=key in CORE_IMAGES,
             )
 
         return components, unknown_keys
@@ -267,6 +290,45 @@ class VersionMatrixExtractor:
             return tag[len(tag_prefix):]
         return tag.lstrip("v")
 
+    @staticmethod
+    def _get_latest_registry_tag(image: str, tag_pattern: str) -> Optional[str]:
+        """Highest tag matching tag_pattern of a public image, read anonymously
+        from its registry (Docker Registry v2 API)."""
+        host, _, rest = image.partition("/")
+        repository = rest.rsplit(":", 1)[0]
+        headers = {}
+        if host == "ghcr.io":
+            # GHCR hands out an anonymous pull token; Artifact Registry needs none.
+            token = requests.get(f"https://{host}/token", params={"scope": f"repository:{repository}:pull"},
+                                 timeout=30).json().get("token")
+            headers["Authorization"] = f"Bearer {token}"
+        response = requests.get(f"https://{host}/v2/{repository}/tags/list", params={"n": 1000},
+                                headers=headers, timeout=30)
+        response.raise_for_status()
+        tags = [t for t in response.json().get("tags") or [] if re.fullmatch(tag_pattern, t)]
+        if not tags:
+            return None
+        if "-r" in tags[0]:
+            return max(tags, key=lambda t: int(t.rpartition("-r")[2]))
+        if re.fullmatch(r"[0-9a-f]{7,40}", tags[0]):
+            # Artifact Registry lists the upload time of each manifest next to its tags.
+            uploaded = {tag: int(manifest["timeUploadedMs"])
+                        for manifest in response.json().get("manifest", {}).values()
+                        for tag in manifest.get("tag", [])}
+            return max(tags, key=lambda t: uploaded.get(t, 0))
+        return max(tags, key=lambda t: VersionMatrixExtractor._version_key(t))
+
+    def _determine_built_status(self, version: str, latest_version: Optional[str]) -> Optional[str]:
+        """Compare a built image's tag against the latest tag published to GHCR."""
+        if re.fullmatch(r"[0-9a-f]{7,40}", version) and latest_version:
+            return STATUS_MATCHES if version == latest_version else STATUS_BEHIND
+        if "-r" in version and latest_version:
+            if version == latest_version:
+                return STATUS_MATCHES
+            ours, theirs = (int(v.rpartition("-r")[2]) for v in (version, latest_version))
+            return STATUS_NEWER if ours > theirs else STATUS_BEHIND
+        return self._determine_status(version, latest_version)
+
     def _determine_status(self, version: Optional[str],
                           latest_version: Optional[str]) -> Optional[str]:
         """Compare a deployed version against the latest stable release."""
@@ -306,31 +368,6 @@ class VersionMatrixExtractor:
         while len(numbers) < 3:
             numbers.append(0)
         return tuple(numbers)
-
-    # --- ci tools ----------------------------------------------------------
-
-    def extract_tools(self) -> Dict[str, ToolVersion]:
-        """Extract tool versions from the input defaults of the setup action."""
-        tools: Dict[str, ToolVersion] = {}
-
-        action = yaml.safe_load(self.setup_action_path.read_text()) or {}
-        inputs = action.get("inputs") or {}
-        for key, (name, repo, tag_prefix) in CI_TOOL_REPOS.items():
-            default = (inputs.get(key) or {}).get("default")
-            if not default:
-                raise ValueError(f"No default for input {key} in {self.setup_action_path}")
-
-            version = str(default).lstrip("v")
-            latest_version = self._get_latest_version(repo)
-            tools[name] = ToolVersion(
-                version=version,
-                latest_version=latest_version,
-                version_source_url=self._release_url(repo, version, tag_prefix),
-                latest_version_source_url=self._release_url(repo, latest_version, tag_prefix),
-                status=self._determine_status(version, latest_version),
-            )
-
-        return tools
 
     # --- packages ----------------------------------------------------------
 
@@ -393,6 +430,7 @@ class VersionMatrixExtractor:
                 commit_distance=commit_distance,
                 tracking_mode=tracking_mode,
                 pin_reason=pin_reason,
+                core=package_locator in CORE_PACKAGES,
             )
 
         return packages
@@ -560,20 +598,19 @@ class VersionMatrixExtractor:
         print("Extracting images...")
         images, unknown_keys = self.extract_images()
 
-        print("Extracting CI tools...")
-        tools = self.extract_tools()
-
         print("Extracting external Kurtosis packages...")
         packages = self.extract_packages()
+
+        print("Extracting hard forks...")
+        forks = hard_forks.extract(self.repo_root)
 
         matrix = {
             "generated_at": datetime.now().isoformat(),
             "images": {name: asdict(component) for name, component in images.items()},
-            "tools": {name: asdict(tool) for name, tool in tools.items()},
             "packages": {name: asdict(package) for name, package in packages.items()},
+            "hard_forks": forks,
             "summary": {
                 "total_images": len(images),
-                "total_tools": len(tools),
                 "total_packages": len(packages),
                 "skipped_images": len(SKIPPED_IMAGES),
             },
@@ -610,14 +647,13 @@ def main():
     print("\n=== Version Matrix Summary ===")
     print(f"Images tracked: {summary['total_images']}")
     print(f"Images skipped: {summary['skipped_images']}")
-    print(f"CI tools tracked: {summary['total_tools']}")
     print(f"Packages tracked: {summary['total_packages']}")
 
     # An image in neither COMPONENT_REPOS nor SKIPPED_IMAGES is a gap: it was
     # added to constants.star without deciding how to track it.
     if unknown_keys:
         print("\nUntracked images found in constants.star. Add them to "
-              "COMPONENT_REPOS or SKIPPED_IMAGES in this script:")
+              "COMPONENT_REPOS, BUILT_IMAGES or SKIPPED_IMAGES in this script:")
         for key in unknown_keys:
             print(f"  - {key}")
         exit(1)

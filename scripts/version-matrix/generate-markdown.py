@@ -3,25 +3,81 @@
 Render matrix.json into the version matrix documentation page.
 
 Produces docs/docs/version-matrix.md: one table for the container
-images we deploy, one for the tools CI installs, one for the external Kurtosis
-packages we pin, each with a
-status indicator and links to the deployed and latest upstream versions.
+images we deploy and one for the external Kurtosis
+packages we pin, each with a status indicator and links to the deployed and latest upstream versions, then
+the hard fork schedules of the L1, bor and heimdall-v2.
 """
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
 from typing import Dict, Optional
 
 STATUS_EMOJI = {
-    "matches stable": "✅",
-    "newer than stable": "⚡️",
-    "behind stable": "🚨",
+    "up to date": "✅",
+    "ahead": "⚡️",
+    "behind": "🚨",
     "pinned": "📌",
 }
 
+# Hard fork rows never use 🚨: the bump workflow acts on 🚨 rows, and a fork is
+# not something to bump.
+L1_EPOCH_URL = "https://beaconscan.com/epoch/{}"
+SEPOLIA_EPOCH_URL = "https://beaconscan.com/sepolia/epoch/{}"
+BOR_BLOCK_URL = "https://polygonscan.com/block/{}"
+AMOY_BLOCK_URL = "https://amoy.polygonscan.com/block/{}"
+
+# Mainnet activation order, newest first. Bor blocks and Heimdall heights cannot be compared, so
+# the order of forks across the two layers is kept by hand; a fork missing here is listed first.
+POS_FORK_ORDER = [
+    "hampi", "uburu", "karwar", "lugano", "kyoto", "austin", "ithaca", "valencia", "zurich",
+    "chicago", "phuket", "giugliano", "lisovoPro", "lisovo", "dandeli", "madhugiriPro",
+    "madhugiri", "rio", "bhilai", "ahmedabad", "indore", "delhi", "jaipur",
+]
+
+# Bor forks that Heimdall-v2 also carries a height for, only to stay in sync with Bor.
+MIRRORED_BOR_FORKS = {"rio"}
+
+FORUM = "https://forum.polygon.technology/t/"
+# Forum post announcing or specifying each fork: the PIP when there is one, else the release post.
+# Forks missing here (jaipur, chicago, hampi, dandeli, madhugiri/lisovo "Pro") have no dedicated post.
+FORUM_POSTS = {
+    "delhi": "pip-7-delhi-hardfork/10904",
+    "indore": "pip-13-indore-hard-fork/12272",
+    "ahmedabad": "pip-37-ahmedabad-hardfork/13885",
+    "bhilai": "pip-63-bhilai-hardfork/20872",
+    "rio": "pip-73-rio-hardfork/21268",
+    "madhugiri": "pip-76-madhugiri-hardfork/21377",
+    "lisovo": "pip-81-lisovo-hardfork/21713",
+    "giugliano": "pip-84-giugliano-hardfork/21808",
+    "valencia": "bor-v2-9-0-and-erigon-v3-7-2-releases/21987",
+    "austin": "security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138",
+    "uburu": "announcement-bor-v2-11-0/22516",
+    "zurich": "heimdall-v0-9-0-mainnet/21950",
+    "phuket": "heimdall-v2-v0-7-1-for-polygon-amoy-and-mainnet/21863",
+    "ithaca": "heimdall-v0-10-0-ithaca-hf-mainnet/22038",
+    "kyoto": "security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138",
+    "lugano": "security-release-review-heimdall-v0-12-1-lugano-hf/22389",
+    "karwar": "heimdall-v0-13-2-released-for-mainnet-and-amoy/22491",
+}
+
+FORK_STATUSES = {
+    "enabled": ("✅", "Activated by the devnet and known to the pinned clients."),
+    "not enabled": ("💤", "Known to the pinned clients, but the devnet leaves it off."),
+    "not supported yet": ("⏳", "Exposed by the package, but not known to a pinned client yet."),
+    "enabled but unsupported": ("❌", "Configured by the devnet, but a pinned client does not know it and ignores the setting."),
+    "out of sync": ("❌", "Heimdall-v2 and bor activate the fork at different blocks."),
+}
+STATUS_EMOJI.update({status: emoji for status, (emoji, _) in FORK_STATUSES.items()})
+
 REPO_URL = "https://github.com/0xPolygon/kurtosis-pos"
+
+
+def _short_ref(ref: str) -> str:
+    """Shorten commit SHAs like the package table does, but never a tag."""
+    return ref[:12] if re.fullmatch(r"[0-9a-f]{40}", ref) else ref
 
 
 class MarkdownMatrixGenerator:
@@ -48,33 +104,19 @@ class MarkdownMatrixGenerator:
         md += "Versions of every component the package deploys, compared against "
         md += "the latest upstream release.\n\n"
 
-        md += "## Status\n\n"
-        md += "| Status | Meaning |\n"
-        md += "| ------ | ------- |\n"
-        md += "| ✅ matches stable | Running the latest upstream release. |\n"
-        md += "| ⚡️ newer than stable | Ahead of the latest release — a prerelease or a patched build. |\n"
-        md += "| 🚨 behind stable | An upstream release is available and should be picked up. |\n"
-        md += "| 📌 pinned | Deliberately held back — the reason is shown inline. |\n\n"
-
         md += "## Images\n\n"
         md += "Container images deployed by the package, pinned in "
-        md += f"[`src/config/constants.star`]({REPO_URL}/blob/main/src/config/constants.star).\n\n"
-        md += self._generate_image_table(data.get("images", {}))
+        md += f"[`src/config/constants.star`]({REPO_URL}/blob/main/src/config/constants.star). "
+        md += "For `pos-*` (built in this repo, GHCR), `toolbox` and `ethstats-server` (Artifact Registry), "
+        md += "the latest version is the latest tag in their registry.\n\n"
+        images = data.get("images", {})
+        md += "### Core\n\n"
+        md += "The L1, the L2 clients and the images that deploy them: the devnet does not start without them.\n\n"
+        md += self._generate_image_table({n: c for n, c in images.items() if c.get("core")})
+        md += "\n### Additional\n\n"
+        md += "Everything else: utility images, observability, the status checker and the sequence store experiment.\n\n"
+        md += self._generate_image_table({n: c for n, c in images.items() if not c.get("core")})
 
-        md += "\n### Untracked images\n\n"
-        md += "Some images are deliberately absent from the table above: the "
-        md += f"`pos-*` images are [built in this repo]({REPO_URL}/tree/main/docker) "
-        md += "and published by `publish-images.yaml`, and `toolbox` / "
-        md += "`ethstats-server` live on Artifact Registry. Neither has an "
-        md += "upstream release stream to compare against. The full list is "
-        md += "`SKIPPED_IMAGES` in `scripts/version-matrix/extract-versions.py`.\n"
-
-        tools = data.get("tools", {})
-        if tools:
-            md += "\n## CI tools\n\n"
-            md += "Tools installed by CI, pinned as input defaults in "
-            md += f"[`.github/actions/kurtosis/setup/action.yml`]({REPO_URL}/blob/main/.github/actions/kurtosis/setup/action.yml).\n\n"
-            md += self._generate_image_table(tools, "Tool", "Pinned version")
 
         packages = data.get("packages", {})
         if packages:
@@ -82,9 +124,163 @@ class MarkdownMatrixGenerator:
             md += "External Kurtosis packages the package depends on. Versions are pinned "
             md += f"in the [`replace` block of `kurtosis.yml`]({REPO_URL}/blob/main/kurtosis.yml), "
             md += "which is the single place to bump them.\n\n"
-            md += self._generate_package_table(packages)
+            md += "### Core\n\n"
+            md += self._generate_package_table({n: p for n, p in packages.items() if p.get("core")})
+            additional = {n: p for n, p in packages.items() if not p.get("core")}
+            if additional:
+                md += "\n### Additional\n\n"
+                md += self._generate_package_table(additional)
+
+        forks = data.get("hard_forks")
+        if forks:
+            md += self._generate_hard_forks(forks)
 
         return md
+
+    @staticmethod
+    def _newest_first(forks: list) -> list:
+        """Latest activation first; a fork not scheduled yet comes before any scheduled one."""
+        def key(fork):
+            return tuple(
+                float("inf") if fork.get(field) is None else fork[field]
+                for field in ("mainnet", "testnet", "devnet")
+            )
+        return sorted(reversed(forks), key=key, reverse=True)
+
+    def _generate_hard_forks(self, forks: Dict) -> str:
+        md = "\n## Hard forks\n\n"
+        l1 = forks["l1"]
+        md += "\n### L1 (Ethereum)\n\n"
+        md += "Fork epochs are the ethereum-package `minimal` preset defaults, "
+        md += f"overridden in [`src/config/input_parser.star`]({REPO_URL}/blob/main/src/config/input_parser.star). "
+        md = md.rstrip() + "\n\n"
+        md += "| CL fork | EL fork | Devnet status | Devnet epoch | Sepolia epoch | Mainnet epoch |\n"
+        md += "| --- | --- | --- | --- | --- | --- |\n"
+        scheduled = self._newest_first([f for f in l1["forks"] if not self._is_unscheduled(f)])
+        for fork in scheduled:
+            md += (
+                f"| {fork['name']} | {fork.get('el_name') or '—'}"
+                f" | {self._status(fork['status'], pin_reason=fork.get('note'))}"
+                f" | {self._activation(fork['devnet'])} | {self._testnet(fork, SEPOLIA_EPOCH_URL)}"
+                f" | {self._mainnet(fork, L1_EPOCH_URL)} |\n"
+            )
+        md += f"\n{self._sources(l1)}\n"
+        l1_hardfork = l1.get("l1_hardfork") or {}
+        value, latest = l1_hardfork.get("value"), l1_hardfork.get("latest_enabled")
+        if value:
+            verdict = ("✅ matches the latest enabled EL fork" if value == latest
+                       else f"❌ the latest enabled EL fork is `{latest}`")
+            md += f"\n`L1_HARDFORK`, the fork anvil and forge simulate, is `{value}`: {verdict}.\n"
+        md += self._unscheduled_note([f for f in l1["forks"] if self._is_unscheduled(f)])
+
+        md += "\n### L2 (Polygon PoS)\n\n"
+        md += "Bor (EL) and Heimdall-v2 (CL) are different chains, so their forks are listed apart.\n\n"
+        md += f"- Bor fork blocks are set in `EL_HARD_FORK_BLOCKS` in [`src/config/constants.star`]({REPO_URL}/blob/main/src/config/constants.star).\n"
+        md += "- Heimdall-v2 hardcodes its fork heights, so the devnet gets the local network heights.\n"
+        md = md.rstrip() + "\n\n"
+        md += "#### EL (Bor)\n\n"
+        md += self._generate_pos_fork_table(self._pos_forks(forks, "bor"), forks["bor"], "bor",
+                                            AMOY_BLOCK_URL, BOR_BLOCK_URL)
+        md += "\n#### CL (Heimdall-v2)\n\n"
+        md += self._generate_pos_fork_table(self._pos_forks(forks, "heimdall_v2"), forks["heimdall_v2"],
+                                            "heimdall-v2", None, None)
+        return md
+
+    @staticmethod
+    def _pos_forks(forks: Dict, layer: str) -> list:
+        """The forks of one layer. An out-of-sync fork is flagged on both layers."""
+        other = forks["heimdall_v2" if layer == "bor" else "bor"]["forks"]
+        other_by_name = {f["name"]: f for f in other}
+        result = []
+        for fork in forks[layer]["forks"]:
+            if layer == "heimdall_v2" and fork["name"] in MIRRORED_BOR_FORKS:
+                continue
+            twin = other_by_name.get(fork["name"])
+            if twin and twin["status"] == "out of sync":
+                fork = dict(fork, status=twin["status"], note=twin.get("note"))
+            result.append(fork)
+        return result
+
+    def _generate_pos_fork_table(self, forks: list, section: Dict, client: str,
+                                 testnet_url: str, mainnet_url: str) -> str:
+        """One row per fork of a single layer, newest first."""
+        table = "| Fork | Devnet status | Devnet block | Amoy block | Mainnet block |\n"
+        table += "| --- | --- | --- | --- | --- |\n"
+        shown = [f for f in forks if not (self._is_unscheduled(f) or self._is_unsupported(f))]
+        ordered = sorted(shown, key=lambda f: (POS_FORK_ORDER.index(f["name"])
+                                               if f["name"] in POS_FORK_ORDER else -1))
+        for fork in ordered:
+            table += (
+                f"| {self._fork_link(fork['name'])}"
+                f" | {self._status(fork['status'], pin_reason=fork.get('note'))}"
+                f" | {self._activation(fork['devnet'])}"
+                f" | {self._testnet(fork, testnet_url)}"
+                f" | {self._mainnet(fork, mainnet_url)} |\n"
+            )
+        links = ", ".join(f"[{src['name']} {_short_ref(src['ref'])}]({src['url']})"
+                          for src in section["sources"])
+        table += f"\nChecked against: {links}\n"
+        table += self._unscheduled_note([f for f in forks if self._is_unscheduled(f)])
+        table += self._unsupported_note([f for f in forks if self._is_unsupported(f)], client)
+        return table
+
+    @staticmethod
+    def _sources(section: Dict) -> str:
+        """Name the pinned versions a fork table was checked against."""
+        links = [f"[{s['name']} {_short_ref(s['ref'])}]({s['url']})"
+                 for s in section["sources"]]
+        return "Checked against:\n\n" + "\n".join(f"- {link}" for link in links)
+
+    @staticmethod
+    def _activation(value: Optional[int]) -> str:
+        return "—" if value is None else str(value)
+
+    @staticmethod
+    def _is_unscheduled(fork: Dict) -> bool:
+        return (fork.get("status") == "not enabled"
+                and fork.get("testnet") is None
+                and fork.get("mainnet") is None)
+
+    @staticmethod
+    def _is_unsupported(fork: Dict) -> bool:
+        return fork.get("status") == "enabled but unsupported"
+
+    @staticmethod
+    def _unsupported_note(forks, client: str) -> str:
+        if not forks:
+            return ""
+        items = ", ".join(f"`{f['name']}`" for f in forks)
+        return f"\nEnabled on devnet but not supported by {client}, so the setting is ignored: {items}.\n"
+
+    @classmethod
+    def _unscheduled_note(cls, forks) -> str:
+        if not forks:
+            return ""
+        items = ", ".join(f"`{f["name"]}`" for f in forks)
+        return f"\nNot enabled on devnet and not scheduled on testnet or mainnet: {items}.\n"
+
+    @staticmethod
+    def _fork_link(name: str) -> str:
+        post = FORUM_POSTS.get(name)
+        return f"[{name}]({FORUM}{post})" if post else name
+
+    @staticmethod
+    def _testnet(fork: Dict, url: Optional[str] = None) -> str:
+        if fork.get("testnet") is None:
+            return "—"
+        value = str(fork["testnet"])
+        return f"[{value}]({url.format(value)})" if url else value
+
+    @staticmethod
+    def _mainnet(fork: Dict, url: Optional[str] = None) -> str:
+        if fork.get("mainnet") is not None:
+            value = str(fork["mainnet"])
+            return f"[{value}]({url.format(value)})" if url else value
+        return "—"
+
+    @staticmethod
+    def _support(known: Optional[bool]) -> str:
+        return {True: "✅", False: "❌"}.get(known, "—")
 
     def _generate_image_table(self, images: Dict, name_header: str = "Component",
                               version_header: str = "Deployed version") -> str:
