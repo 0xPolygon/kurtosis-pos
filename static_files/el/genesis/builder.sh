@@ -61,8 +61,18 @@ jq --arg a "${create2_address}" --arg c "${create2_code}" \
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the state-sync gas oracle read by the Uburu StateReceiver, with its mainnet
-# code and storage, at the addresses hardcoded in that StateReceiver.
-jq --slurpfile o /opt/data/uburu/gas-oracle-alloc.json '.alloc += $o[0]' \
+# code and storage, at the addresses hardcoded in that StateReceiver. The mainnet
+# owners (oracle owner, ProxyAdmin owner) are replaced by the admin address so the
+# admin can call setGasLimit and upgrade the oracle on a devnet. The per-record gas
+# limit is left at mainnet's 160000.
+oracle_owner_slot="0x9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c199300"
+proxy_admin_owner_slot="0x0000000000000000000000000000000000000000000000000000000000000000"
+admin_slot_value=$(printf "0x%064s" "${admin_address,,}" | tr ' ' '0')
+jq --arg v "${admin_slot_value}" --arg os "${oracle_owner_slot}" --arg ps "${proxy_admin_owner_slot}" \
+  '. | .["5e3a5eafd4501332c0bc2acfd38df3ebc5152147"].storage[$os] = $v
+     | .["d0e888f8ccb701f5ed8db86495294ee2fd257765"].storage[$ps] = $v' \
+  /opt/data/uburu/gas-oracle-alloc.json > oracle-alloc.json
+jq --slurpfile o oracle-alloc.json '.alloc += $o[0]' \
   "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
@@ -73,9 +83,18 @@ mv tmp.json "${EL_GENESIS_FILE}"
 
 # Swap the StateReceiver code at the Uburu fork block, as bor's mainnet genesis does.
 state_receiver_address="0000000000000000000000000000000000001001"
+# The mainnet root setter is an immutable in its bytecode; replace it with the admin
+# address so the admin can call setRootAndLeafCount and replayFailedStateSync.
+mainnet_root_setter="eb1cd9e44ab6bfe5a55ee96c468086e51b1b873a"
+state_receiver_hex=$(tr -d '\n' < /opt/data/uburu/state-receiver.hex)
+grep -qi "${mainnet_root_setter}" <<< "${state_receiver_hex}" || {
+  echo "Mainnet root setter not found in state-receiver.hex" >&2
+  exit 1
+}
+state_receiver_code=$(sed "s/${mainnet_root_setter}/${admin_address,,}/Ig" <<< "${state_receiver_hex}")
 jq --arg b "${UBURU_FORK_BLOCK}" --arg a "${state_receiver_address}" \
-  --rawfile c /opt/data/uburu/state-receiver.hex \
-  '.config.bor.blockAlloc[$b][$a] = {"balance": "0x0", "code": ($c | rtrimstr("\n"))}' \
+  --arg c "${state_receiver_code}" \
+  '.config.bor.blockAlloc[$b][$a] = {"balance": "0x0", "code": $c}' \
   "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 

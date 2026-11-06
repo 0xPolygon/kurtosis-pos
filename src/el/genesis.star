@@ -5,9 +5,10 @@ math = import_module("../math/math.star")
 
 EL_GENESIS_BUILDER_SCRIPT_FILE_PATH = "../../static_files/el/genesis/builder.sh"
 EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
-# Uburu state copied verbatim from mainnet: the StateReceiver code swapped in at the
-# fork block (bor's genesis-mainnet-v1.json blockAlloc) and the state-sync gas oracle
-# it reads (proxy, implementation and ProxyAdmin, same addresses as mainnet and Amoy).
+# Uburu state copied from mainnet: the StateReceiver code swapped in at the fork block
+# (bor's genesis-mainnet-v1.json blockAlloc) and the state-sync gas oracle it reads
+# (proxy, implementation and ProxyAdmin, same addresses as mainnet and Amoy). builder.sh
+# replaces the mainnet owners and root setter with the admin address.
 EL_UBURU_DIR_PATH = "../../static_files/el/genesis/uburu"
 
 
