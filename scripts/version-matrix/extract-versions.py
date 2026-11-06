@@ -181,7 +181,7 @@ class VersionMatrixExtractor:
             if key in BUILT_IMAGES:
                 name, tag_pattern = BUILT_IMAGES[key]
                 version = self._version_from_image(image)
-                latest_version = self._get_latest_registry_tag(image, tag_pattern)
+                latest_version = self._get_latest_registry_tag(image, tag_pattern, version)
                 on_ghcr = image.split("/", 1)[0] == "ghcr.io"
                 dockerfile = self.repo_root / "docker" / f"{name}.Dockerfile"
                 components[name] = ComponentVersion(
@@ -291,17 +291,20 @@ class VersionMatrixExtractor:
         return tag.lstrip("v")
 
     @staticmethod
-    def _get_latest_registry_tag(image: str, tag_pattern: str) -> Optional[str]:
+    def _get_latest_registry_tag(image: str, tag_pattern: str, current: Optional[str] = None) -> Optional[str]:
         """Highest tag matching tag_pattern of a public image, read anonymously
-        from its registry (Docker Registry v2 API)."""
+        from its registry (Docker Registry v2 API). Revision tags (`<sha>-r<n>`)
+        are only compared with tags of the sha of `current`: the revision starts
+        again at r1 for each sha."""
         host, _, rest = image.partition("/")
         repository = rest.rsplit(":", 1)[0]
         headers = {}
         if host == "ghcr.io":
             # GHCR hands out an anonymous pull token; Artifact Registry needs none.
-            token = requests.get(f"https://{host}/token", params={"scope": f"repository:{repository}:pull"},
-                                 timeout=30).json().get("token")
-            headers["Authorization"] = f"Bearer {token}"
+            token_response = requests.get(f"https://{host}/token",
+                                          params={"scope": f"repository:{repository}:pull"}, timeout=30)
+            token_response.raise_for_status()
+            headers["Authorization"] = f"Bearer {token_response.json()['token']}"
         response = requests.get(f"https://{host}/v2/{repository}/tags/list", params={"n": 1000},
                                 headers=headers, timeout=30)
         response.raise_for_status()
@@ -309,12 +312,19 @@ class VersionMatrixExtractor:
         if not tags:
             return None
         if "-r" in tags[0]:
-            return max(tags, key=lambda t: int(t.rpartition("-r")[2]))
+            if not current or "-r" not in current:
+                return None
+            sha = current.rpartition("-r")[0]
+            same_sha = [t for t in tags if t.rpartition("-r")[0] == sha]
+            return max(same_sha, key=lambda t: int(t.rpartition("-r")[2])) if same_sha else None
         if re.fullmatch(r"[0-9a-f]{7,40}", tags[0]):
-            # Artifact Registry lists the upload time of each manifest next to its tags.
+            # Artifact Registry lists the upload time of each manifest next to its tags;
+            # without it the newest tag cannot be told, so report nothing.
             uploaded = {tag: int(manifest["timeUploadedMs"])
                         for manifest in response.json().get("manifest", {}).values()
                         for tag in manifest.get("tag", [])}
+            if not uploaded:
+                return None
             return max(tags, key=lambda t: uploaded.get(t, 0))
         return max(tags, key=lambda t: VersionMatrixExtractor._version_key(t))
 
