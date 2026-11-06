@@ -63,12 +63,18 @@ mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 # Add the state-sync gas oracle read by the Uburu StateReceiver, with its mainnet
 # code and storage, at the addresses hardcoded in that StateReceiver. The mainnet
 # owners (oracle owner, ProxyAdmin owner) are replaced by the admin address so the
-# admin can call setGasLimit and upgrade the oracle on a devnet.
+# admin can call setGasLimit and upgrade the oracle on a devnet. The per-record gas
+# limit is also raised from mainnet's 160000 to 1000000: deploying a fx-portal child
+# token clone does not fit in 160000, so the state sync was committed as failed.
+oracle_gas_limit_slot="0x52a463d9fafd23036c8acb4ad55ffe5fd0cab584ff8822c6f748e07fb5783d00"
+oracle_gas_limit="0x00000000000000000000000000000000000000000000000000000000000f4240"
 oracle_owner_slot="0x9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c199300"
 proxy_admin_owner_slot="0x0000000000000000000000000000000000000000000000000000000000000000"
 admin_slot_value=$(printf "0x%064s" "${admin_address}" | tr ' ' '0')
 jq --arg v "${admin_slot_value}" --arg os "${oracle_owner_slot}" --arg ps "${proxy_admin_owner_slot}" \
+  --arg gs "${oracle_gas_limit_slot}" --arg gl "${oracle_gas_limit}" \
   '. | .["5e3a5eafd4501332c0bc2acfd38df3ebc5152147"].storage[$os] = $v
+     | .["5e3a5eafd4501332c0bc2acfd38df3ebc5152147"].storage[$gs] = $gl
      | .["d0e888f8ccb701f5ed8db86495294ee2fd257765"].storage[$ps] = $v' \
   /opt/data/uburu/gas-oracle-alloc.json > oracle-alloc.json
 jq --slurpfile o oracle-alloc.json '.alloc += $o[0]' \
