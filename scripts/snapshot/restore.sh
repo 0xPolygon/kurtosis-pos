@@ -114,10 +114,11 @@ wait_for_l1_progress() {
 
   log_info "Waiting for L1 to produce a block (service: $l1_service, rpc: $l1_url, timeout: ${timeout}s)"
   local deadline=$(($(date +%s) + timeout))
-  local first="" current=""
+  local first="" current="" reply=""
   while (($(date +%s) < deadline)); do
-    current=$(l1_rpc "$l1_url" eth_blockNumber "[]")
-    if [[ -n "$current" ]]; then
+    reply=$(l1_rpc "$l1_url" eth_blockNumber "[]")
+    if [[ -n "$reply" ]]; then
+      current="$reply"
       if [[ -z "$first" ]]; then
         first="$current"
       elif ((current > first)); then
@@ -138,8 +139,12 @@ wait_for_l1_progress() {
     head_line="L1 at $l1_url did not answer eth_blockNumber/eth_getBlockByNumber within ${timeout}s, so its head is unknown"
   fi
   log_error "$head_line"
-  log_error "With the geth + lighthouse L1: these snapshots carry their beacon genesis time; a lone lighthouse with no peers never counts itself synced once the wall clock is far ahead, so it never proposes; these snapshots only restore within minutes of being built."
-  log_error "Use the pos-devnet-<size>:<tag>-anvil image, which has no slot clock, or set POS_DEVNET_SKIP_L1_CHECK=1 to keep this devnet up anyway."
+  if [[ "$l1_service" != *-anvil ]]; then
+    log_error "With the geth + lighthouse L1: these snapshots carry their beacon genesis time; a lone lighthouse with no peers never counts itself synced once the wall clock is far ahead, so it never proposes; these snapshots only restore within minutes of being built."
+    log_error "Use the pos-devnet-<size>:<tag>-anvil image, which has no slot clock, or set POS_DEVNET_SKIP_L1_CHECK=1 to keep this devnet up anyway."
+  else
+    log_error "Check the $l1_service logs (docker compose --file $docker_compose_file logs $l1_service), or set POS_DEVNET_SKIP_L1_CHECK=1 to keep this devnet up anyway."
+  fi
   exit 1
 }
 

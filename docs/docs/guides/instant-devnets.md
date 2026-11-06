@@ -13,14 +13,14 @@ We provide two snapshot types:
 - **pos-devnet-small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities. It is based on the default configuration of the package.
 - **pos-devnet-large**: the environment contains an L1 chain and an L2 chain with 5 heimdall-v2/bor validators, 2 rpc nodes (one stateless bor node, one stateful bor node) and one archive bor node. Useful for testing in a more realistic environment. It is based on `.github/configs/large.yml.norun`.
 
-Images are hosted on GHCR. The tags correspond to the kurtosis-pos package versions, and each size ships in two images that differ only in the L1 backend:
+Images are hosted on GHCR. The tags correspond to the kurtosis-pos package versions. Releases after v1.4.8 ship each size in two images that differ only in the L1 backend (v1.4.8 and earlier have no `-anvil` image):
 
 - **`pos-devnet-<size>:<tag>`**: geth + lighthouse L1. The most realistic L1, but it only restores within minutes of being built, which is what the snapshot workflow does. The beacon chain keeps the genesis time it was built with, and a lone lighthouse with no peers never counts itself synced once the wall clock is far ahead of its head slot, so it never proposes another L1 block.
 - **`pos-devnet-<size>:<tag>-anvil`**: anvil L1. Anvil has no slot clock, so this image restores at any age. Use it whenever the restore is not right after the build, for example when pinning a snapshot in CI.
 
 Environments are snapshotted at block 128 on the L2 chain (Rio hard fork activation), which should be enough for most testing purposes.
 
-Snapshot archives are compressed with zstd, so `extract.sh` needs the `zstd` CLI on the host (`brew install zstd` on macOS, `apt install zstd` on Debian/Ubuntu, `apk add zstd` on Alpine). `restore.sh` runs zstd inside a container and has no host dependency.
+Snapshot archives are compressed with zstd, so `extract.sh` needs the `zstd` CLI on the host (`brew install zstd` on macOS, `apt install zstd` on Debian/Ubuntu, `apk add zstd` on Alpine). `restore.sh` runs zstd inside a container; on the host it needs `jq`, and `curl` for its L1 check.
 
 Remove any existing snapshot data.
 
