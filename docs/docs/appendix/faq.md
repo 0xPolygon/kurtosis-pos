@@ -102,7 +102,7 @@ When deploying the devnet on an `arm64` architecture, you may encounter the foll
 ```bash
 There was an error validating Starlark code
 ...
-Caused by: Tried pulling image 'europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12' with platform '' but failed
+Caused by: Tried pulling image 'europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14' with platform '' but failed
 ...
 ```
 
@@ -110,11 +110,11 @@ Some of our images are built for `amd64` only. That's why you see a warning like
 
 ```bash
 WARNING: Container images with different architecture than expected(arm64):
-> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12 - amd64
+> europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14 - amd64
 ```
 
 **Solution:** Pull the image by specifying the `amd64` platform.
 
 ```bash
-docker pull --platform linux/amd64 europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12
+docker pull --platform linux/amd64 europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14
 ```

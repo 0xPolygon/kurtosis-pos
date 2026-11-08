@@ -6,11 +6,11 @@ inputs:
   kurtosis_version:
     description: The version of Kurtosis to install
     required: false
-    default: 1.22.1
+    default: 1.22.2
   foundry_version:
     description: The version of Foundry to install
     required: false
-    default: v1.8.5
+    default: v1.9.0
   python_version:
     description: The version of Python to install
     required: false
@@ -51,10 +51,11 @@ inputs:
     description: The key to use for caching Docker images
     required: false
     default: docker-images
+  # Not /tmp: ubuntu-26.04 runners mount it as a tmpfs that the image tarballs overflow.
   cache_folder:
-    description: The folder to use for caching Docker images
+    description: The folder to use for caching Docker images (defaults to <runner.temp>/docker-images)
     required: false
-    default: /tmp/docker-images
+    default: ""
   main_branch:
     description: The name of the main branch for cache keys
     required: false
@@ -64,15 +65,14 @@ runs:
   using: composite
   steps:
     - name: Free up disk space
-      uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-      with:
-        tool-cache: false
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: false
-        docker-images: true
-        swap-storage: true
+      shell: bash
+      # Removes preinstalled toolchains (Android, .NET, Haskell) and GitHub's preloaded images, ~24 GB.
+      # Must run before the image cache is restored.
+      run: |
+        df -h /
+        sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup
+        docker image prune --all --force > /dev/null
+        df -h /
 
     # Install dependencies
     - name: Install kurtosis
@@ -82,6 +82,11 @@ runs:
         sudo apt update
         sudo apt install -y kurtosis-cli=${{ inputs.kurtosis_version }}
         kurtosis analytics disable
+        # Since 1.21 the engine starts otel + ClickHouse side containers on Docker, and every kurtosis
+        # command re-checks them. CI checks logs with `docker logs` and vector still serves
+        # `kurtosis service logs`, so opt out of the otel collector.
+        printf '%s\n' 'config-version: 9' 'should-send-metrics: false' 'kurtosis-clusters:' \
+          '  docker:' '    type: docker' '    backend-log-collector: vector' > "$(kurtosis config path)"
         kurtosis version
 
     - name: Install yq
@@ -120,7 +125,7 @@ runs:
     - uses: actions/cache@v5
       id: cache
       with:
-        path: ${{ inputs.cache_folder }}
+        path: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
         key: ${{ inputs.cache_key }}-${{ inputs.main_branch }}-${{ github.sha }}
         restore-keys: |
           ${{ inputs.cache_key }}-${{ inputs.main_branch }}-
@@ -128,10 +133,12 @@ runs:
     - name: Load cached docker images
       if: steps.cache.outputs.cache-matched-key != 'true'
       shell: bash
+      env:
+        CACHE_FOLDER: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
       run: |
         echo "Loading cached images..."
-        if [[ -d "${{ inputs.cache_folder }}" ]]; then
-          for image_tar in ${{ inputs.cache_folder }}/*.tar; do
+        if [[ -d "$CACHE_FOLDER" ]]; then
+          for image_tar in "$CACHE_FOLDER"/*.tar; do
             if [[ -f "$image_tar" ]]; then
               {
                 docker load -i "$image_tar"

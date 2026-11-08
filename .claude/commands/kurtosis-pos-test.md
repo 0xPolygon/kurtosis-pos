@@ -18,10 +18,9 @@ compatibility: Requires a running kurtosis-pos enclave for e2e and chaos tests.
 Unit tests live in `*_test.star` files co-located with the module under test (e.g. `src/config/input_parser_test.star`). They test config parsing and validation — no enclave needed.
 
 ```bash
-# Install kurtosis-test (requires Go 1.23+)
-git clone --branch v0.0.6 https://github.com/ethereum-optimism/kurtosis-test.git /tmp/kurtosis-test
-cd /tmp/kurtosis-test && go build -o kurtosis-test cli/main.go
-sudo cp kurtosis-test /usr/local/bin
+# Install kurtosis-test (Linux x86_64; other platforms: https://github.com/leovct/kurtosis-test/releases)
+curl -sSfL https://github.com/leovct/kurtosis-test/releases/download/v0.0.10/kurtosis-test_Linux_x86_64.tar.gz \
+  | sudo tar xz -C /usr/local/bin kurtosis-test
 
 # Run all unit tests from the repo root
 kurtosis-test .

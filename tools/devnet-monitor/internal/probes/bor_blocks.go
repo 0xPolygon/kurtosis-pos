@@ -57,7 +57,13 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, l
 	}
 	lg.Debug("Send transactions to stimulate activity", "node", sender)
 
-	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
+	// Fail fast on a fork left by the deploy: the progress loop below would
+	// only time out on finality minutes later, without naming the cause.
+	if !checkBorForks(ctx, rpcs, "start", lg) {
+		return forkResult(res, rpcs, start)
+	}
+
+	monitorCtx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
 	var (
@@ -69,7 +75,7 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, l
 		wg.Add(1)
 		go func(svc discover.Service) {
 			defer wg.Done()
-			if !monitorBor(ctx, svc, svc.Name == sender, opts.MinBlocks, lg) {
+			if !monitorBor(monitorCtx, svc, svc.Name == sender, opts.MinBlocks, lg) {
 				mu.Lock()
 				failed = append(failed, svc.Name)
 				mu.Unlock()
@@ -78,10 +84,26 @@ func (Bor) Run(ctx context.Context, dn discover.Devnet, opts probeapi.Options, l
 	}
 	wg.Wait()
 
+	// Catch a fork that happened while the chain was advancing.
+	if len(failed) == 0 && !checkBorForks(ctx, rpcs, "end", lg) {
+		return forkResult(res, rpcs, start)
+	}
+
 	res.Checked = len(rpcs)
 	res.Failed = len(failed)
 	res.OK = res.Checked - res.Failed
 	res.FailedNodes = failed
+	res.Duration = time.Since(start)
+	return res
+}
+
+// forkResult marks every node as failed: a fork can't be pinned on one side.
+func forkResult(res probeapi.Result, rpcs []discover.Service, start time.Time) probeapi.Result {
+	res.Checked = len(rpcs)
+	res.Failed = len(rpcs)
+	for _, s := range rpcs {
+		res.FailedNodes = append(res.FailedNodes, s.Name)
+	}
 	res.Duration = time.Since(start)
 	return res
 }

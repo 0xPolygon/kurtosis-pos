@@ -20,10 +20,11 @@ inputs:
     description: The key to use for caching Docker images
     required: false
     default: docker-images
+  # Must resolve to the same path as in the setup action, or the cache never matches.
   cache_folder:
-    description: The folder to use for caching Docker images
+    description: The folder to use for caching Docker images (defaults to <runner.temp>/docker-images)
     required: false
-    default: /tmp/docker-images
+    default: ""
   main_branch:
     description: The name of the main branch for cache keys
     required: false
@@ -139,26 +140,28 @@ runs:
     - name: Save docker images to cache directory
       if: ${{ inputs.save_cache == 'true' }}
       shell: bash
+      env:
+        CACHE_FOLDER: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
       run: |
         echo "Saving all images to cache directory..."
-        mkdir -p ${{ inputs.cache_folder }}
+        mkdir -p "$CACHE_FOLDER"
 
         # Save all images on the host (excluding dangling images)
         for image in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep -v "<none>"); do
           {
             name=$(echo "$image" | sed 's/[\/:]/_/g')
-            docker save "$image" -o "${{ inputs.cache_folder }}/${name}.tar"
+            docker save "$image" -o "$CACHE_FOLDER/${name}.tar"
           } &
         done
         wait
 
         echo "Docker images saved successfully"
-        echo "Size: $(du -sh ${{ inputs.cache_folder }} | awk '{print $1}')"
-        echo "Number of images: $(ls -1 ${{ inputs.cache_folder }} | wc -l)"
+        echo "Size: $(du -sh "$CACHE_FOLDER" | awk '{print $1}')"
+        echo "Number of images: $(ls -1 "$CACHE_FOLDER" | wc -l)"
 
     - name: Save cache
       if: ${{ inputs.save_cache == 'true' }}
       uses: actions/cache@v5
       with:
-        path: ${{ inputs.cache_folder }}
+        path: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
         key: ${{ inputs.cache_key }}-${{ inputs.main_branch }}-${{ github.sha }}

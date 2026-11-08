@@ -49,29 +49,29 @@ ADDITIONAL_SERVICES = struct(
 
 IMAGES = {
     # layer 1
-    "l1_el_image": "ethereum/client-go:v1.17.8",
-    "l1_cl_image": "sigp/lighthouse:v8.3.0",
-    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.8.5",
+    "l1_el_image": "ethereum/client-go:v1.17.10",
+    "l1_cl_image": "sigp/lighthouse:v8.3.2",
+    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.9.0",
     # layer 2
-    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.12.2",
-    "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.10.3",
+    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.13.2",
+    "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.11.0",
     "l2_cl_queue_image": "rabbitmq:4.4.0",
     # utilities
-    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.6",
-    "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd",
-    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0",
-    "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.12",
+    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.7",
+    "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd-r1",
+    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.13.2",
+    "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14",
     # additional services
-    "nginx_image": "nginx:1.31.7-alpine",
-    "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.9",
+    "nginx_image": "nginx:1.31.8-alpine",
+    "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.10",
     # observability
-    "prometheus_image": "prom/prometheus:v3.15.0",
-    "grafana_image": "grafana/grafana:13.2.4",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.1.0",
+    "prometheus_image": "prom/prometheus:v3.16.0",
+    "grafana_image": "grafana/grafana:13.3.0",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.1.4",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
     "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
-    "seqstore_envoy_image": "envoyproxy/envoy:v1.40.0",
+    "seqstore_envoy_image": "envoyproxy/envoy:v1.40.2",
 }
 
 # The sequence-store image is built locally from the sequence-store repo.
@@ -144,4 +144,6 @@ EL_HARD_FORK_BLOCKS = {
     # Requires bor >= 2.10.0 (older public bor images ignore the unknown
     # austinBlock genesis field).
     "austin": 0,
+    "hampi": 0,
+    "uburu": 0,
 }

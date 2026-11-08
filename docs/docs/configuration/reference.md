@@ -57,16 +57,16 @@ ethereum_package:
 
 #### `participants`
 
-| Field           | Type   | Default                    | Description                                                     |
-| --------------- | ------ | -------------------------- | --------------------------------------------------------------- |
-| cl_type         | string | lighthouse                 | Consensus Layer (CL) client type                                |
-| cl_image        | string | sigp/lighthouse:v8.3.0     | Image for the CL client                                         |
-| el_type         | string | geth                       | Execution Layer (EL) client type                                |
-| el_image        | string | ethereum/client-go:v1.17.8 | Image for the EL client                                         |
-| use_separate_vc | bool   | true                       | Run the validator client in its own container                   |
-| vc_type         | string | lighthouse                 | Validator client type                                           |
-| vc_image        | string | sigp/lighthouse:v8.3.0     | Image for the validator client                                  |
-| supernode       | bool   | true                       | Custody all PeerDAS data columns, required since Fulu is active |
+| Field           | Type   | Default                     | Description                                                     |
+| --------------- | ------ | --------------------------- | --------------------------------------------------------------- |
+| cl_type         | string | lighthouse                  | Consensus Layer (CL) client type                                |
+| cl_image        | string | sigp/lighthouse:v8.3.2      | Image for the CL client                                         |
+| el_type         | string | geth                        | Execution Layer (EL) client type                                |
+| el_image        | string | ethereum/client-go:v1.17.10 | Image for the EL client                                         |
+| use_separate_vc | bool   | true                        | Run the validator client in its own container                   |
+| vc_type         | string | lighthouse                  | Validator client type                                           |
+| vc_image        | string | sigp/lighthouse:v8.3.2      | Image for the validator client                                  |
+| supernode       | bool   | true                        | Custody all PeerDAS data columns, required since Fulu is active |
 
 #### `network_params`
 
@@ -94,7 +94,7 @@ anvil:
 
 | Field          | Type   | Default                           | Description                                                                                           |
 | -------------- | ------ | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.8.5 | Anvil container image                                                                                 |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.9.0 | Anvil container image                                                                                 |
 | network_id     | string | 3151908                           | L1 network/chain ID                                                                                   |
 | block_time     | int    | 1                                 | Block time in seconds                                                                                 |
 | slots_in_epoch | int    | 2                                 | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
@@ -138,7 +138,7 @@ Default: a single validator.
 | -------------------------------- | ------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | kind                             | string | validator                             | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                               |
 | cl_type                          | string | heimdall-v2                           | Consensus Layer (CL) client type                                                                                                                                                                                                                      |
-| cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.12.2 | Image for the CL client                                                                                                                                                                                                                               |
+| cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.13.2 | Image for the CL client                                                                                                                                                                                                                               |
 | cl_queue_image                   | string | rabbitmq:4.4.0                        | Image for the CL queue                                                                                                                                                                                                                                |
 | cl_log_level                     | string | info                                  | Log level for the CL client                                                                                                                                                                                                                           |
 | cl_log_format                    | string | text                                  | Log format for the CL client                                                                                                                                                                                                                          |
@@ -148,7 +148,7 @@ Default: a single validator.
 | cl_storage_pruning_interval      | string | 10m0s                                 | Interval between prune routines.                                                                                                                                                                                                                      |
 | cl_indexer_pruning_enabled       | bool   | false                                 | Pruning enabling.                                                                                                                                                                                                                                     |
 | el_type                          | string | bor                                   | Execution Layer (EL) client type: `bor`                                                                                                                                                                                                               |
-| el_image                         | string | ghcr.io/0xpolygon/bor:v2.10.3         | Image for the EL client (bor: `ghcr.io/0xpolygon/bor:v2.10.3`)                                                                                                                                                                                        |
+| el_image                         | string | ghcr.io/0xpolygon/bor:v2.11.0         | Image for the EL client (bor: `ghcr.io/0xpolygon/bor:v2.11.0`)                                                                                                                                                                                        |
 | el_log_level                     | string | info                                  | Log level for the EL client                                                                                                                                                                                                                           |
 | el_log_format                    | string | text                                  | Log format for the EL client                                                                                                                                                                                                                          |
 | el_bor_produce_witness           | bool   | false                                 | Allow bor to start producing witnesses                                                                                                                                                                                                                |
@@ -162,9 +162,9 @@ Default: a single validator.
 
 | Field                      | Type   | Default                                                 | Description                                 |
 | -------------------------- | ------ | ------------------------------------------------------- | ------------------------------------------- |
-| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.6           | Image used to deploy MATIC contracts to L1  |
-| el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd        | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.10.0 | Image used to generate validator configs    |
+| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.7           | Image used to deploy MATIC contracts to L1  |
+| el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd-r1     | Image used to create the L2 EL genesis file |
+| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.13.2 | Image used to generate validator configs    |
 
 ### `network_params`
 
@@ -205,6 +205,8 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | chicago_fork_block                    | int    | 0                  | Block number for Chicago hard fork activation                                                                |
 | valencia_fork_block                   | int    | 0                  | Block number for Valencia hard fork activation (bor >= 2.10.0)                                               |
 | austin_fork_block                     | int    | 0                  | Block number for Austin hard fork activation (bor >= 2.10.0)                                                 |
+| hampi_fork_block                      | int    | 0                  | Block number for Hampi hard fork activation (bor >= 2.10.1)                                                  |
+| uburu_fork_block                      | int    | 0                  | Block number for Uburu hard fork activation (bor >= 2.11.0)                                                  |
 
 ### `additional_services`
 
@@ -233,7 +235,7 @@ cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 
 | Field | Type   | Default             | Description                |
 | ----- | ------ | ------------------- | -------------------------- |
-| image | string | nginx:1.31.7-alpine | Image used to deploy nginx |
+| image | string | nginx:1.31.8-alpine | Image used to deploy nginx |
 
 ### `ethstats_server_params`
 
@@ -260,10 +262,10 @@ Deployed if and only if at least one participant sets `el_bor_use_sequence_store
 | redpanda_image | string | redpandadata/redpanda:v26.2.2 | Redpanda broker image                                                                                  |
 | redpanda_count | int    | 1                             | Broker count. With more than one, the topic is created at RF=count with majority `min.insync.replicas` |
 | gateway_count  | int    | 1                             | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name  |
-| envoy_image    | string | envoyproxy/envoy:v1.40.0      | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
+| envoy_image    | string | envoyproxy/envoy:v1.40.2      | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
 
 ### `status_checker_params`
 
-| Field |  Type  |                 Default                 |               Description               |
-| ----- | ------ | --------------------------------------- | --------------------------------------- |
-| image | string | ghcr.io/0xpolygon/status-checker:v0.2.9 | Image used to deploy the status checker |
+| Field |  Type  |                 Default                  |               Description               |
+| ----- | ------ | ---------------------------------------- | --------------------------------------- |
+| image | string | ghcr.io/0xpolygon/status-checker:v0.2.10 | Image used to deploy the status checker |

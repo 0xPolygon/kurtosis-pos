@@ -42,98 +42,37 @@ jobs:
           # .git/config so a bug in the artifact parsing below can't reach it.
           persist-credentials: false
 
-      # Download artifacts from the upstream workflow_run. The built-in
-      # actions/download-artifact does not support cross-workflow downloads,
-      # so use the GitHub API via gh.
+      # The built-in actions/download-artifact does not support cross-workflow
+      # downloads, so the script goes through the GitHub API via gh.
       - name: Download current-run perf artifacts
         id: download
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
-          mkdir -p tmp/perf-current
-          # List artifacts on the upstream run, filter to perf-*, download each.
-          # Capture into a variable first so set -e catches gh api failures —
-          # otherwise mapfile only sees its own (always-success) exit code and
-          # a network blip / 5xx / rate-limit silently produces an empty list.
-          listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" \
-            --paginate \
-            --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"')
-          # Job reruns upload a same-named artifact once per attempt, and the
-          # run-level listing returns all of them. Keep only the newest
-          # (highest id) per name so a failed attempt's partial upload can't
-          # shadow the rerun's complete one.
-          listing=$(sort -rn <<< "$listing" | awk '!seen[$2]++')
-          mapfile -t artifacts <<< "$listing"
-          # mapfile on an empty string yields a 1-element array containing "".
-          if [[ ${#artifacts[@]} -eq 1 && -z "${artifacts[0]}" ]]; then
-            artifacts=()
-          fi
-          if [[ ${#artifacts[@]} -eq 0 ]]; then
+          ./scripts/perf/fetch-reports.sh run "$RUN_ID" tmp/perf-current
+          if compgen -G "tmp/perf-current/*.json" > /dev/null; then
+            echo "has_artifacts=true" >> "$GITHUB_OUTPUT"
+          else
             echo "No perf-* artifacts on upstream run ${RUN_ID} — exiting."
             echo "has_artifacts=false" >> "$GITHUB_OUTPUT"
-            exit 0
           fi
-          for entry in "${artifacts[@]}"; do
-            id=${entry%% *}
-            name=${entry#* }
-            gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}/zip" > "tmp/perf-current/${name}.zip"
-            unzip -j -o "tmp/perf-current/${name}.zip" -d "tmp/perf-current/"
-            rm "tmp/perf-current/${name}.zip"
-          done
-          ls -la tmp/perf-current/
-          echo "has_artifacts=true" >> "$GITHUB_OUTPUT"
 
       - name: Resolve baseline runs
-        id: baseline
         if: steps.download.outputs.has_artifacts == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
           CURRENT_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          # Last 10 successful runs of the same workflow on main. Exclude the
-          # triggering run (in case this is itself a main push).
-          mkdir -p tmp/perf-baseline
-          # /actions/runs returns runs across all workflows; widen the page to
-          # 100 so the post-filter by workflow name still leaves enough samples.
-          # -X GET is required: gh api defaults to POST when any -f field is
-          # supplied, which 404s on this GET-only endpoint.
-          runs_listing=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/actions/runs" \
-            -f "branch=main" \
-            -f "status=success" \
-            -f "per_page=100" \
-            --jq ".workflow_runs[] | select(.name == \"${WORKFLOW_NAME}\" and .head_sha != \"${CURRENT_SHA}\") | .id" \
-            | head -n 10)
-          mapfile -t run_ids <<< "$runs_listing"
-          if [[ ${#run_ids[@]} -eq 1 && -z "${run_ids[0]}" ]]; then
-            run_ids=()
-          fi
-          echo "Baseline run IDs: ${run_ids[*]:-<none>}"
-          echo "count=${#run_ids[@]}" >> "$GITHUB_OUTPUT"
-          for id in "${run_ids[@]}"; do
-            dest="tmp/perf-baseline/${id}"
-            mkdir -p "$dest"
-            baseline_listing=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/artifacts" \
-              --paginate \
-              --jq '.artifacts[] | select(.name | startswith("kurtosis-pos-perf-")) | "\(.id) \(.name)"')
-            # Same rerun dedupe as the current-run download above.
-            baseline_listing=$(sort -rn <<< "$baseline_listing" | awk '!seen[$2]++')
-            mapfile -t artifacts <<< "$baseline_listing"
-            if [[ ${#artifacts[@]} -eq 1 && -z "${artifacts[0]}" ]]; then
-              artifacts=()
-            fi
-            for entry in "${artifacts[@]}"; do
-              aid=${entry%% *}
-              aname=${entry#* }
-              gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${aid}/zip" > "${dest}/${aname}.zip" || continue
-              unzip -j -o "${dest}/${aname}.zip" -d "${dest}/" || true
-              rm -f "${dest}/${aname}.zip"
-            done
-          done
+        # Last 10 successful main runs of the same workflow, excluding the
+        # triggering run in case this is itself a main push.
+        run: ./scripts/perf/fetch-reports.sh baseline "$WORKFLOW_NAME" "$CURRENT_SHA" tmp/perf-baseline
 
       - name: Render report
         if: steps.download.outputs.has_artifacts == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
           mkdir -p tmp/perf-out
           python3 scripts/perf/report.py \
@@ -141,6 +80,11 @@ jobs:
             --baseline tmp/perf-baseline \
             --output tmp/perf-out/report.md \
             --source "${{ github.event.workflow_run.name }}"
+          # Durations first, for every job of the upstream run (all done by now).
+          # Best-effort: an API error here must not cost the perf comment.
+          { ./scripts/perf/job-durations.sh "$RUN_ID" || echo "::warning::Could not list the job durations" >&2; } |
+            cat - tmp/perf-out/report.md > tmp/perf-out/combined.md
+          mv tmp/perf-out/combined.md tmp/perf-out/report.md
 
       - name: Resolve PR number
         id: pr
