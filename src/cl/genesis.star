@@ -57,9 +57,9 @@ def generate(
 
     # Generate a temporary CL genesis.
     el_span_duration = network_params.get("el_span_duration")
-    l1_matic_token_address = contract_util.get_address(
+    l1_pol_token_address = contract_util.get_address(
         plan,
-        contract_name="l1_matic_token",
+        contract_name="l1_pol_token",
         contract_addresses_artifact=contract_addresses_artifact,
     )
     l1_stake_manager_proxy_address = contract_util.get_address(
@@ -110,7 +110,7 @@ def generate(
                         "cl_checkpoint_buffer_time"
                     ),
                     # contract addresses
-                    "matic_token_address": l1_matic_token_address,
+                    "pol_token_address": l1_pol_token_address,
                     "stake_manager_address": l1_stake_manager_proxy_address,
                     "slashing_manager_address": l1_slashing_manager_address,
                     "root_chain_proxy_address": l1_root_chain_proxy_address,
