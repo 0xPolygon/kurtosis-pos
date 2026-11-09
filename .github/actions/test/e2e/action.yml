@@ -52,8 +52,8 @@ runs:
       working-directory: pos-e2e
       shell: bash
       run: |
-        bats --filter-tags bridge tests/contracts/bridge/plasma.bats tests/contracts/bridge/pos.bats tests/contracts/bridge/fx.bats
-        bats --filter-tags withdraw tests/contracts/bridge/plasma.bats tests/contracts/bridge/pos.bats tests/contracts/bridge/fx.bats
+        bats --filter-tags bridge tests/bridge/plasma.bats tests/bridge/pos.bats tests/bridge/fx.bats
+        bats --filter-tags withdraw tests/bridge/plasma.bats tests/bridge/pos.bats tests/bridge/fx.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 
