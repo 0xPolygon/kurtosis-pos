@@ -65,8 +65,6 @@ Bor (EL) and Heimdall-v2 (CL) are different chains, so their forks are listed ap
 
 Checked against: [bor v2.11.0](https://github.com/0xPolygon/bor/blob/v2.11.0/params/config.go)
 
-Enabled on devnet but not supported by bor, so the setting is ignored: `agra`, `napoli`.
-
 ### CL (Heimdall-v2)
 
 | Fork                                                                                                                           | Devnet status | Devnet height | Amoy height | Mainnet height |

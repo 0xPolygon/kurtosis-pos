@@ -191,8 +191,6 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                                                                 |
 | delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                                                                  |
 | indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                                                                 |
-| agra_fork_block                       | int    | 0                  | Block number for Agra hard fork activation                                                                   |
-| napoli_fork_block                     | int    | 0                  | Block number for Napoli hard fork activation                                                                 |
 | ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                                                              |
 | bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                                                                 |
 | rio_fork_block                        | int    | 128                | Block number for Rio hard fork activation                                                                    |

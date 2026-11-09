@@ -39,8 +39,6 @@ def generate(
                     "jaipur_fork_block": network_params.get("jaipur_fork_block"),
                     "delhi_fork_block": network_params.get("delhi_fork_block"),
                     "indore_fork_block": network_params.get("indore_fork_block"),
-                    "agra_fork_block": network_params.get("agra_fork_block"),
-                    "napoli_fork_block": network_params.get("napoli_fork_block"),
                     "ahmedabad_fork_block": network_params.get("ahmedabad_fork_block"),
                     "bhilai_fork_block": network_params.get("bhilai_fork_block"),
                     "rio_fork_block": network_params.get("rio_fork_block"),
