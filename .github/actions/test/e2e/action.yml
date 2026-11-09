@@ -52,6 +52,7 @@ runs:
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 
+    # lst.bats moves sPOL through the pos bridge: it needs the bridge contracts and runs after the bridge tests.
     - name: Run contract tests
       working-directory: pos-e2e
       shell: bash
