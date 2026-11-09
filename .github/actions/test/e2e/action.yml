@@ -43,11 +43,6 @@ runs:
         polycli version
         popd
 
-    - name: Run contract tests
-      working-directory: pos-e2e
-      shell: bash
-      run: bats tests/contracts/pol-token.bats
-
     - name: Run bridge tests
       working-directory: pos-e2e
       shell: bash
@@ -57,10 +52,10 @@ runs:
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 
-    - name: Run LST tests
+    - name: Run contract tests
       working-directory: pos-e2e
       shell: bash
-      run: bats tests/contracts/lst.bats
+      run: bats tests/contracts/
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 
