@@ -13,11 +13,14 @@ We provide two snapshot types:
 - **pos-devnet-small**: the environment contains an L1 chain and an L2 chain with a single heimdall-v2/bor validator. Useful for testing basic functionalities. It is based on the default configuration of the package.
 - **pos-devnet-large**: the environment contains an L1 chain and an L2 chain with 5 heimdall-v2/bor validators, 2 rpc nodes (one stateless bor node, one stateful bor node) and one archive bor node. Useful for testing in a more realistic environment. It is based on `.github/configs/large.yml.norun`.
 
-Images are hosted on GHCR. The tags correspond to the kurtosis-pos package versions.
+Images are hosted on GHCR. The tags correspond to the kurtosis-pos package versions. Releases after v1.4.8 ship each size in two images that differ only in the L1 backend (v1.4.8 and earlier have no `-anvil` image):
 
-Environments are snapshotted around block 100 on the L2 chain, which should be enough for most testing purposes.
+- **`pos-devnet-<size>:<tag>`**: geth + lighthouse L1. The most realistic L1, but it only restores within minutes of being built, which is what the snapshot workflow does. The beacon chain keeps the genesis time it was built with, and a lone lighthouse with no peers never counts itself synced once the wall clock is far ahead of its head slot, so it never proposes another L1 block.
+- **`pos-devnet-<size>:<tag>-anvil`**: anvil L1. Anvil has no slot clock, so this image restores at any age. Use it whenever the restore is not right after the build, for example when pinning a snapshot in CI.
 
-Snapshot archives are compressed with zstd, so `extract.sh` needs the `zstd` CLI on the host (`brew install zstd` on macOS, `apt install zstd` on Debian/Ubuntu, `apk add zstd` on Alpine). `restore.sh` runs zstd inside a container and has no host dependency.
+Environments are snapshotted at block 128 on the L2 chain (Rio hard fork activation), which should be enough for most testing purposes.
+
+Snapshot archives are compressed with zstd; `extract.sh` decompresses them inside a container, so the host needs no `zstd` CLI. On the host, `restore.sh` needs `jq`, and `curl` for its L1 check.
 
 Remove any existing snapshot data.
 
@@ -42,6 +45,12 @@ Then, restore the devnet.
 ```
 
 The script also accepts the same output directory argument as `extract.sh`, so if you extracted the snapshot to a different directory, make sure to pass that directory to `restore.sh` as well.
+
+Once the services are healthy, `restore.sh` checks that the L1 head advances within 90 seconds. If it does not, the script prints the head block and its age, then exits with an error and leaves the containers up. This is what restoring an aged geth + lighthouse image looks like: switch to the `-anvil` image of the same tag. To keep the devnet up anyway, for example to inspect L2 state only, set `POS_DEVNET_SKIP_L1_CHECK=1`:
+
+```bash
+POS_DEVNET_SKIP_L1_CHECK=1 ./scripts/snapshot/restore.sh
+```
 
 Every service gets a static address on `10.86.42.0/24`. If that range overlaps a local network, pick another `/24` with `POS_DEVNET_SUBNET_PREFIX=10.99.7 ./scripts/snapshot/restore.sh`.
 

@@ -61,6 +61,94 @@ restore_docker_volumes() {
 }
 
 ##############################################################################
+# L1 LIVENESS
+##############################################################################
+
+# Print the `result` field of one JSON-RPC call, or nothing if the node does
+# not answer. Never fails, so callers under `set -e` can poll a node that is
+# still starting.
+l1_rpc() {
+  local url="$1" method="$2" params="$3"
+  curl --silent --fail --max-time 2 --header "Content-Type: application/json" \
+    --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"$method\",\"params\":$params}" "$url" 2> /dev/null |
+    jq -r '.result // empty' 2> /dev/null || true
+}
+
+# The L1 services carry no healthcheck, so "Devnet started" says nothing about
+# whether L1 produces blocks. A geth + lighthouse snapshot restored long after
+# it was built does not: its beacon chain keeps the genesis time it was built
+# with, and a lone lighthouse with no peers never counts itself synced once the
+# wall clock is far ahead of its head slot, so it never proposes. bor and
+# heimdall still come up healthy and the devnet looks fine until the first
+# checkpoint or bridge call hangs. Fail fast instead, with the way out.
+# The check is backend-agnostic (the head must advance), so a healthy anvil L1
+# with 1 s blocks passes within seconds and any other stuck L1 is caught too.
+wait_for_l1_progress() {
+  local docker_compose_file="$1"
+  local timeout=90
+
+  if [[ "${POS_DEVNET_SKIP_L1_CHECK:-}" == "1" ]]; then
+    log_warn "POS_DEVNET_SKIP_L1_CHECK=1: not checking that L1 produces blocks"
+    return 0
+  fi
+
+  # The L1 JSON-RPC service: anvil, or the first L1 EL node (snapshot.sh binds
+  # `-el-N-` services that are not `-l2-` to host 8545 + N - 1). Read the host
+  # port compose actually bound rather than assuming 8545: the published ports
+  # may have been rewritten to avoid a collision.
+  local l1_service
+  l1_service=$(docker compose --file "$docker_compose_file" config --format json |
+    jq -r '.services | keys[] | select(test("-anvil$") or (test("-el-1-") and (test("-l2-") | not)))' | head -n 1)
+  if [[ -z "$l1_service" ]]; then
+    log_warn "No L1 JSON-RPC service found in $docker_compose_file: not checking that L1 produces blocks"
+    return 0
+  fi
+  local host_port
+  host_port=$(docker compose --file "$docker_compose_file" port "$l1_service" 8545 2> /dev/null || true)
+  host_port="${host_port##*:}"
+  if [[ -z "$host_port" ]]; then
+    log_warn "Service $l1_service publishes no host port for 8545: not checking that L1 produces blocks"
+    return 0
+  fi
+  local l1_url="http://127.0.0.1:${host_port}"
+
+  log_info "Waiting for L1 to produce a block (service: $l1_service, rpc: $l1_url, timeout: ${timeout}s)"
+  local deadline=$(($(date +%s) + timeout))
+  local first="" current="" reply=""
+  while (($(date +%s) < deadline)); do
+    reply=$(l1_rpc "$l1_url" eth_blockNumber "[]")
+    if [[ -n "$reply" ]]; then
+      current="$reply"
+      if [[ -z "$first" ]]; then
+        first="$current"
+      elif ((current > first)); then
+        log_info "L1 is advancing (block $((first)) → $((current)))"
+        return 0
+      fi
+    fi
+    sleep 2
+  done
+
+  local head_line
+  local head_timestamp
+  head_timestamp=$(l1_rpc "$l1_url" eth_getBlockByNumber '["latest",false]' | jq -r '.timestamp // empty' 2> /dev/null || true)
+  if [[ -n "$current" && -n "$head_timestamp" ]]; then
+    local age=$(($(date +%s) - head_timestamp))
+    head_line="L1 head block $((current)) is $((age / 3600))h $((age % 3600 / 60))m old and did not advance in ${timeout}s"
+  else
+    head_line="L1 at $l1_url did not answer eth_blockNumber/eth_getBlockByNumber within ${timeout}s, so its head is unknown"
+  fi
+  log_error "$head_line"
+  if [[ "$l1_service" != *-anvil ]]; then
+    log_error "With the geth + lighthouse L1: these snapshots carry their beacon genesis time; a lone lighthouse with no peers never counts itself synced once the wall clock is far ahead, so it never proposes; these snapshots only restore within minutes of being built."
+    log_error "Use the pos-devnet-<size>:<tag>-anvil image, which has no slot clock, or set POS_DEVNET_SKIP_L1_CHECK=1 to keep this devnet up anyway."
+  else
+    log_error "Check the $l1_service logs (docker compose --file $docker_compose_file logs $l1_service), or set POS_DEVNET_SKIP_L1_CHECK=1 to keep this devnet up anyway."
+  fi
+  exit 1
+}
+
+##############################################################################
 # MAIN WORKFLOW
 ##############################################################################
 
@@ -187,4 +275,8 @@ while :; do
 done
 log_info "Devnet started"
 
+# Printed before the L1 check so it is on screen when the check fails: the
+# containers are left up for inspection.
 log_info "Use 'docker compose --file $docker_compose_file down --volumes' to remove the devnet"
+
+wait_for_l1_progress "$docker_compose_file"
