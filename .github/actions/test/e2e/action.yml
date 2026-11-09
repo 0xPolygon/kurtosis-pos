@@ -5,7 +5,7 @@ inputs:
   pos_e2e_tag:
     description: The git tag, branch, or commit hash of 0xPolygon/pos-e2e
     required: false
-    default: v0.1.0
+    default: test/pol-token-contract-checks
   pos_e2e_token:
     description: GitHub token with read access to 0xPolygon/pos-e2e
     required: true
@@ -42,6 +42,11 @@ runs:
         sudo mv polycli_* /usr/local/bin/polycli
         polycli version
         popd
+
+    - name: Run contract tests
+      working-directory: pos-e2e
+      shell: bash
+      run: bats tests/contracts/pol-token.bats
 
     - name: Run bridge tests
       working-directory: pos-e2e
