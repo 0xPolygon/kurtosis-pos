@@ -60,7 +60,7 @@ runs:
     - name: Run LST tests
       working-directory: pos-e2e
       shell: bash
-      run: bats tests/contracts/lst/spol.bats
+      run: bats tests/contracts/lst.bats
       env:
         TIMEOUT_SECONDS: 600 # default: 180
 
