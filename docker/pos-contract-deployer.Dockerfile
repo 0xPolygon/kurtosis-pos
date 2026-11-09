@@ -25,6 +25,12 @@ ARG FX_PORTAL_TAG_OR_COMMIT_SHA="7319592"
 # spol-contracts - 2026-04-16
 ARG SPOL_CONTRACTS_BRANCH="main"
 ARG SPOL_CONTRACTS_TAG_OR_COMMIT_SHA="3c4bdf6c"
+# pol-token - 2025-09-11
+# The production PolygonEcosystemToken (POL) and PolygonMigration. Deployed instead of
+# pos-contracts' 0.5.17 ERC20Permit stand-in so the devnet POL has mainnet's EIP-712 domain
+# and ERC-5267 eip712Domain().
+ARG POL_TOKEN_BRANCH="main"
+ARG POL_TOKEN_TAG_OR_COMMIT_SHA="5dafabc"
 
 # v1.8.5+ is required to simulate scripts with Amsterdam gas pricing (--hardfork amsterdam).
 ENV FOUNDRY_VERSION="v1.8.5"
@@ -51,7 +57,6 @@ RUN git clone --branch ${POS_CONTRACTS_ANVIL_POS_BRANCH} https://github.com/0xPo
   && npm install \
   && npm run template:process -- --bor-chain-id ${EL_CHAIN_ID} \
   && npm run generate:interfaces
-COPY static_files/contracts/l1/scripts/deployPolAndMigration.s.sol /opt/pos-contracts-anvil-pos/scripts/deployment-scripts/deployPolAndMigration.s.sol
 COPY static_files/contracts/l1/scripts/deployBurnOnlyPredicates.s.sol /opt/pos-contracts-anvil-pos/scripts/deployment-scripts/deployBurnOnlyPredicates.s.sol
 RUN forge build
 
@@ -104,9 +109,20 @@ COPY static_files/contracts/l1/scripts/deployPerChain.s.sol /opt/spol-contracts/
 RUN forge soldeer install \
   && forge build
 
+# pol-token. The POL deploy script is compiled inside this project so it can import the
+# production token and OpenZeppelin 4.9 from the pinned submodules.
+WORKDIR /opt/pol-token
+RUN git clone --branch ${POL_TOKEN_BRANCH} https://github.com/0xPolygon/pol-token . \
+  && git checkout ${POL_TOKEN_TAG_OR_COMMIT_SHA} \
+  && git submodule update --init --recursive --depth 1 \
+  && { find . -name .git -exec rm -rf {} + 2>/dev/null || true; } \
+  # Grant our deploy script access to contractAddresses.json (same rule as pos-portal).
+  && sed -i 's|fs_permissions = \[|fs_permissions = [{ access = "read-write", path = "./contractAddresses.json" }, |' foundry.toml
+COPY static_files/contracts/l1/scripts/deployPolAndMigration.s.sol /opt/pol-token/script/deployPolAndMigration.s.sol
+RUN forge build
 
 FROM debian:bookworm-slim
-LABEL description="Polygon PoS contracts deployment image (pos-contracts + pos-portal + fx-portal + spol-contracts)"
+LABEL description="Polygon PoS contracts deployment image (pos-contracts + pos-portal + fx-portal + spol-contracts + pol-token)"
 LABEL author="devtools@polygon.technology"
 
 RUN apt-get update \
@@ -180,6 +196,18 @@ COPY --from=builder /opt/spol-contracts/script ./script
 COPY --from=builder /opt/spol-contracts/dependencies ./dependencies
 COPY --from=builder /opt/spol-contracts/out ./out
 COPY --from=builder /opt/spol-contracts/cache ./cache
+
+# pol-token runtime surface. deployPolAndMigration.s.sol runs via `forge script`, which
+# re-resolves imports from src/, script/ and lib/ and recompiles them with the cached solc. Skip
+# test/, audit/, certora/, docs/, deployments/ and broadcast/ (upstream mainnet broadcasts).
+WORKDIR /opt/pol-token
+COPY --from=builder /opt/pol-token/foundry.toml ./foundry.toml
+RUN sed -i '/^\[profile\.default\]/a offline = true' foundry.toml
+COPY --from=builder /opt/pol-token/lib ./lib
+COPY --from=builder /opt/pol-token/src ./src
+COPY --from=builder /opt/pol-token/script ./script
+COPY --from=builder /opt/pol-token/out ./out
+COPY --from=builder /opt/pol-token/cache ./cache
 
 # No default workdir — every wrapper script `cd`s into the right repo itself.
 WORKDIR /
