@@ -83,6 +83,15 @@ runs:
         echo "L1_RPC_URL=$l1_rpc_url" >> $GITHUB_ENV
         echo "l1_rpc_url=$l1_rpc_url"
 
+    - name: Test the POL token
+      working-directory: pos-e2e
+      shell: bash
+      run: bats tests/contracts/pol-token.bats
+      env:
+        L1_RPC_URL: ${{ env.L1_RPC_URL }}
+        DOCKER_COMPOSE_FILE_PATH: ${{ inputs.compose_file }}
+        CONTRACT_ADDRESSES_PATH: ${{ inputs.compose_file != '' && format('{0}/tmp/contractAddresses.json', github.workspace) || '' }}
+
     - name: Test deposit and withdraw
       working-directory: pos-e2e
       shell: bash
