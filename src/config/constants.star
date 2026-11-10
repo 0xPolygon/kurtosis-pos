@@ -50,14 +50,14 @@ ADDITIONAL_SERVICES = struct(
 IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.17.10",
-    "l1_cl_image": "sigp/lighthouse:v8.3.2",
+    "l1_cl_image": "sigp/lighthouse:v8.3.3",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.9.0",
     # layer 2
     "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.13.2",
     "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.11.0",
     "l2_cl_queue_image": "rabbitmq:4.4.0",
     # utilities
-    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.7",
+    "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.8",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd-r1",
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.13.2",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14",
@@ -127,8 +127,6 @@ EL_HARD_FORK_BLOCKS = {
     "jaipur": 0,
     "delhi": 0,
     "indore": 0,
-    "agra": 0,
-    "napoli": 0,
     "ahmedabad": 0,
     "bhilai": 0,
     # rio must match heimdall-v2's local rioHeight (helper/config.go).

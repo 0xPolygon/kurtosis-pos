@@ -60,12 +60,12 @@ ethereum_package:
 | Field           | Type   | Default                     | Description                                                     |
 | --------------- | ------ | --------------------------- | --------------------------------------------------------------- |
 | cl_type         | string | lighthouse                  | Consensus Layer (CL) client type                                |
-| cl_image        | string | sigp/lighthouse:v8.3.2      | Image for the CL client                                         |
+| cl_image        | string | sigp/lighthouse:v8.3.3      | Image for the CL client                                         |
 | el_type         | string | geth                        | Execution Layer (EL) client type                                |
 | el_image        | string | ethereum/client-go:v1.17.10 | Image for the EL client                                         |
 | use_separate_vc | bool   | true                        | Run the validator client in its own container                   |
 | vc_type         | string | lighthouse                  | Validator client type                                           |
-| vc_image        | string | sigp/lighthouse:v8.3.2      | Image for the validator client                                  |
+| vc_image        | string | sigp/lighthouse:v8.3.3      | Image for the validator client                                  |
 | supernode       | bool   | true                        | Custody all PeerDAS data columns, required since Fulu is active |
 
 #### `network_params`
@@ -162,7 +162,7 @@ Default: a single validator.
 
 | Field                      | Type   | Default                                                 | Description                                 |
 | -------------------------- | ------ | ------------------------------------------------------- | ------------------------------------------- |
-| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.7           | Image used to deploy MATIC contracts to L1  |
+| contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.8           | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd-r1     | Image used to create the L2 EL genesis file |
 | validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.13.2 | Image used to generate validator configs    |
 
@@ -191,8 +191,6 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                                                                 |
 | delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                                                                  |
 | indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                                                                 |
-| agra_fork_block                       | int    | 0                  | Block number for Agra hard fork activation                                                                   |
-| napoli_fork_block                     | int    | 0                  | Block number for Napoli hard fork activation                                                                 |
 | ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                                                              |
 | bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                                                                 |
 | rio_fork_block                        | int    | 0                  | Block number for Rio hard fork activation                                                                    |

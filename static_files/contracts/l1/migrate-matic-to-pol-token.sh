@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Migrate MATIC to POL on L1. Mirrors the mainnet UpgradeStake_DepositManager_Mainnet
-# batch (pos-contracts scripts/deployers/pol-upgrade/...) — steps 2/8 (impl upgrades)
-# are skipped because d96d5929 already ships the POL-aware StakeManager and DepositManager.
+# Migrate MATIC to POL on L1. Deploys the production PolygonEcosystemToken and PolygonMigration
+# from 0xPolygon/pol-token (mainnet deploy shape, see deployPolAndMigration.s.sol), then mirrors the
+# mainnet UpgradeStake_DepositManager_Mainnet batch (pos-contracts scripts/deployers/pol-upgrade/...)
+# — steps 2/8 (impl upgrades) are skipped because d96d5929 already ships the POL-aware StakeManager
+# and DepositManager.
 
 CONTRACT_ADDRESSES_FILE="/opt/contracts/contractAddresses.json"
 
@@ -14,7 +16,7 @@ for v in PRIVATE_KEY L1_RPC_URL; do
   fi
 done
 
-cd /opt/pos-contracts-anvil-pos
+cd /opt/pol-token
 
 echo "Copying contract addresses file..."
 mkdir -p /opt/contracts
@@ -23,24 +25,30 @@ cp /opt/data/addresses/contractAddresses.json ./contractAddresses.json
 echo "Deploying POL token and PolygonMigration..."
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 forge script -vvvv --hardfork "${L1_HARDFORK}" --rpc-url "${L1_RPC_URL}" --broadcast \
-  scripts/deployment-scripts/deployPolAndMigration.s.sol:DeployPolAndMigrationScript
+  script/deployPolAndMigration.s.sol:DeployPolAndMigrationScript
 
-# Parse deployed addresses from the broadcast JSON.
+# Parse deployed addresses from the broadcast JSON. PolygonMigration is reached through its
+# TransparentUpgradeableProxy; require exactly one of each so a future extra proxy or token
+# deployment in the script cannot be parsed by mistake.
 l1_chain_id=$(cast chain-id --rpc-url "${L1_RPC_URL}")
-broadcast_file="/opt/pos-contracts-anvil-pos/broadcast/deployPolAndMigration.s.sol/${l1_chain_id}/run-latest.json"
-pol_token=$(jq -r '.transactions[] | select(.contractName == "ERC20Permit") | .contractAddress' "${broadcast_file}" | head -1)
-migration=$(jq -r '.transactions[] | select(.contractName == "PolygonMigration") | .contractAddress' "${broadcast_file}" | head -1)
+broadcast_file="/opt/pol-token/broadcast/deployPolAndMigration.s.sol/${l1_chain_id}/run-latest.json"
+created() {
+  jq -r --arg name "$1" \
+    '[.transactions[] | select(.contractName == $name and .transactionType == "CREATE") | .contractAddress]' \
+    "${broadcast_file}"
+}
+pol_tokens=$(created PolygonEcosystemToken)
+migrations=$(created TransparentUpgradeableProxy)
+if [[ $(jq length <<< "${pol_tokens}") -ne 1 || $(jq length <<< "${migrations}") -ne 1 ]]; then
+  echo "Error: expected exactly one PolygonEcosystemToken and one TransparentUpgradeableProxy (PolygonMigration) in ${broadcast_file}."
+  echo "PolygonEcosystemToken: ${pol_tokens}"
+  echo "TransparentUpgradeableProxy: ${migrations}"
+  exit 1
+fi
+pol_token=$(jq -r '.[0]' <<< "${pol_tokens}")
+migration=$(jq -r '.[0]' <<< "${migrations}")
 echo "POL token: ${pol_token}"
 echo "PolygonMigration: ${migration}"
-
-if [[ -z "${pol_token}" || "${pol_token}" == "null" ]]; then
-  echo "Error: failed to parse POL token address from broadcast file."
-  exit 1
-fi
-if [[ -z "${migration}" || "${migration}" == "null" ]]; then
-  echo "Error: failed to parse PolygonMigration address from broadcast file."
-  exit 1
-fi
 
 # Merge the new addresses into contractAddresses.json.
 jq --arg pol "${pol_token}" --arg migration "${migration}" \
