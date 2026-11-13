@@ -67,7 +67,7 @@ IMAGES = {
     # observability
     "prometheus_image": "prom/prometheus:v3.16.0",
     "grafana_image": "grafana/grafana:13.3.1",
-    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.1.4",
+    "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.2.0",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
     "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
