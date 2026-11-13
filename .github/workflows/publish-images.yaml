@@ -48,10 +48,9 @@ env:
 
   # pos-el-genesis-builder settings
   EL_GENESIS_BUILDER_IMAGE_NAME: 0xPolygon/pos-el-genesis-builder
-  # genesis-contracts - 2026-11-13 — StateReceiver with gas oracle and failed state sync hashes (Uburu)
+  # genesis-contracts - 2026-11-13
   GENESIS_CONTRACTS_BRANCH: master
   GENESIS_CONTRACTS_COMMIT_SHA: 5c006e2
-  # Image revision, bumped when rebuilding with the same sources (e.g. a toolchain update)
 
   # pos-validator-config-generator settings
   VALIDATOR_CONFIG_IMAGE_NAME: 0xPolygon/pos-validator-config-generator
