@@ -3,6 +3,8 @@ name: version-matrix
 on:
   schedule:
     - cron: 0 4 * * 1 # Monday 04:00 UTC, i.e. 6 AM Paris in summer (5 AM in winter), so the bump PR lands before the workday.
+  push: # TEMP: test run, to revert
+    branches: [ci/weekly-version-matrix]
   workflow_dispatch:
 
 permissions:
@@ -72,7 +74,7 @@ jobs:
 
   workflow-summary:
     runs-on: ubuntu-latest
-    if: always()
+    if: always() && github.event_name != 'push' # TEMP: no Slack during the test run
     needs:
       - check-version-matrix
       - bump-version-matrix
