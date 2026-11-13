@@ -54,11 +54,11 @@ state_receiver_code() {
 }
 
 # generate-genesis.js compiles the latest StateReceiver, the Uburu one, with its
-# immutables (root setter, gas oracle) left to zero. Before Uburu, mainnet runs the
-# StateReceiver deployed at Ahmedabad, which the devnet enables at genesis, so start
-# from that code instead. The Uburu code is swapped in at the fork block below.
-pre_uburu_state_receiver_code=$(state_receiver_code /opt/data/ahmedabad/state-receiver.hex)
-jq --arg a "${state_receiver_address}" --arg c "${pre_uburu_state_receiver_code}" \
+# immutables (root setter, gas oracle) left to zero. Mainnet runs the legacy
+# StateReceiver before Uburu, so start from that code instead. The Uburu code is
+# swapped in at the fork block below.
+legacy_state_receiver_code=$(state_receiver_code /opt/data/legacy-state-receiver/state-receiver.hex)
+jq --arg a "${state_receiver_address}" --arg c "${legacy_state_receiver_code}" \
   '.alloc[$a].code = $c' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
