@@ -163,7 +163,7 @@ Default: a single validator.
 | Field                      | Type   | Default                                                 | Description                                 |
 | -------------------------- | ------ | ------------------------------------------------------- | ------------------------------------------- |
 | contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.8           | Image used to deploy MATIC contracts to L1  |
-| el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd-r1     | Image used to create the L2 EL genesis file |
+| el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:5c006e2-r1     | Image used to create the L2 EL genesis file |
 | validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.13.2 | Image used to generate validator configs    |
 
 ### `network_params`

@@ -1,19 +1,31 @@
-FROM debian:bookworm-slim AS soldity-builder
+FROM debian:bookworm-slim AS solidity-builder
 LABEL description="Solidity builder"
 LABEL author="devtools@polygon.technology"
 
-ENV SOLIDITY_VERSION="0.5.17"
+# The solc versions generate-genesis.js compiles with. These old releases ship no
+# linux/arm64 binary, so they are built from source on every platform.
+# gcc 12 breaks these sources: they build with -Werror, which fails on its new
+# warnings, and some headers miss the <limits> include its libstdc++ no longer pulls in.
+# The version string ends up in the bytecode metadata hash. An empty prerelease.txt
+# drops the build date, and commit_hash.txt skips the dirty tree check that would add
+# ".mod" after the -Werror edit, so the bytecode matches the official binaries.
+ENV SOLIDITY_VERSIONS="0.5.17 0.6.12"
 
 WORKDIR /opt/solidity
-# solc 0.5.17 builds with -Werror, which fails on the deprecation warnings of gcc 12.
 RUN apt-get update \
-  && apt-get install --yes cmake gcc g++ git libboost-all-dev z3 \
-  && git clone --branch v${SOLIDITY_VERSION} --depth 1 https://github.com/ethereum/solidity.git . \
-  && grep -rl -- '-Werror' cmake CMakeLists.txt | xargs sed -i 's/-Werror//g' \
-  && mkdir build \
-  && cd build \
-  && cmake .. \
-  && make
+  && apt-get install --yes cmake g++ git libboost-all-dev make \
+  && for version in ${SOLIDITY_VERSIONS}; do \
+    git clone --branch "v${version}" --depth 1 https://github.com/ethereum/solidity.git "${version}" \
+    && cd "${version}" \
+    && touch prerelease.txt \
+    && git rev-parse --short=8 HEAD > commit_hash.txt \
+    && grep -rl -- '-Werror' cmake CMakeLists.txt | xargs sed -i 's/-Werror//g' \
+    && cmake -S . -B build -DUSE_Z3=OFF -DUSE_CVC4=OFF -DTESTS=OFF -DCMAKE_CXX_FLAGS="-include limits" \
+    && cmake --build build --target solc --parallel "$(nproc)" \
+    && install -D build/solc/solc "/opt/solc/solc-${version}" \
+    && cd .. \
+    || exit 1; \
+  done
 
 
 FROM node:26.12.1-bookworm
@@ -21,45 +33,47 @@ LABEL description="MATIC (Polygon PoS) EL genesis builder image"
 LABEL author="devtools@polygon.technology"
 
 ARG GENESIS_CONTRACTS_BRANCH="master"
-ARG GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="96a19dd"
-# Note: We do not use the latest version of the genesis contracts, `244bc6a`, released on 2025/03/13,
-# because it introduces a breaking change. The `StateReceiver` contract requires solc `0.6.12`,
-# while all other contracts still rely on solc `0.5.17`.
-# As a result, when generating the EL genesis, it attempts to compile all the contracts,
-# including the `StateReceiver`. Since we only install solc `0.5.17` in the `pos-el-genesis-builder`
-# image, the compilation fails. Removing the compilation of the `StateReceiver` contract does not
-# work because the EL genesis alloc section will be incorrect for contract
-# `0000000000000000000000000000000000001001`, as the code will be `0x`. Therefore, we opted to use
-# a previous version, `96a19dd`, released on 2025/01/08.
+ARG GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA="5c006e2"
 
-ENV TRUFFLE_VERSION="5.11.5"
 # Chain ids are baked into the image at build time: the matic-contracts
-# ChainIdMixin template is rendered with EL_CHAIN_ID and the BorValidatorSet
-# template with both EL_CHAIN_ID and CL_CHAIN_ID, then truffle compiles the
-# resulting sources. The compiled bytecode ends up in the L2 genesis alloc.
+# ChainIdMixin template is rendered with EL_CHAIN_ID, and the genesis is
+# generated once with EL_CHAIN_ID and CL_CHAIN_ID to check that every contract
+# compiles. The compiled bytecode ends up in the L2 genesis alloc.
 # Custom chain ids at runtime are NOT supported — to change them, rebuild
 # this image with different EL_CHAIN_ID / CL_CHAIN_ID build args.
 ENV EL_CHAIN_ID="4927"
 ENV CL_CHAIN_ID="heimdall-4927"
 
-COPY --from=soldity-builder /opt/solidity/build/solc /usr/local/bin/
+# generate-genesis.js compiles each contract with `solc-select use <version> && solc ...`.
+# solc-select would download amd64-only binaries, so this stand-in switches `solc`
+# between the compilers built above, with no network access at runtime.
+COPY --from=solidity-builder /opt/solc/ /opt/solc/
+RUN printf '%s\n' \
+    '#!/bin/sh' \
+    'set -eu' \
+    'if [ "${1:-}" != "use" ] || [ ! -x "/opt/solc/solc-${2:-}" ]; then' \
+    '  echo "usage: solc-select use <version>, available: $(ls /opt/solc | sed s/solc-// | tr "\\n" " ")" >&2' \
+    '  exit 1' \
+    'fi' \
+    'ln -sf "/opt/solc/solc-$2" /usr/local/bin/solc' \
+    > /usr/local/bin/solc-select \
+  && chmod +x /usr/local/bin/solc-select
 
 # Prepare environment to build MATIC genesis file.
+# Only the matic-contracts submodule is needed: the other ones hold the foundry
+# test and gas oracle dependencies, which generate-genesis.js does not compile.
 WORKDIR /opt/genesis-contracts
 RUN apt-get update \
   && apt-get install --no-install-recommends --yes jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* \
-  && npm install --global truffle@${TRUFFLE_VERSION} \
   && git clone --branch ${GENESIS_CONTRACTS_BRANCH} https://github.com/0xPolygon/genesis-contracts.git . \
   && git checkout ${GENESIS_CONTRACTS_TAG_OR_COMMIT_SHA} \
-  && git submodule init \
-  && git submodule update \
+  && git submodule update --init matic-contracts \
   && npm install \
   && cd matic-contracts \
   && npm install \
   && npm run template:process -- --bor-chain-id ${EL_CHAIN_ID} \
-  && truffle compile \
   && cd .. \
-  && node generate-borvalidatorset.js --bor-chain-id ${EL_CHAIN_ID} --heimdall-chain-id ${CL_CHAIN_ID} \
-  && truffle compile
+  && node generate-genesis.js --bor-chain-id ${EL_CHAIN_ID} --heimdall-chain-id ${CL_CHAIN_ID} \
+  && rm genesis.json
