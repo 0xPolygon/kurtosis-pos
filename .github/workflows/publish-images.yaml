@@ -52,7 +52,6 @@ env:
   GENESIS_CONTRACTS_BRANCH: master
   GENESIS_CONTRACTS_COMMIT_SHA: 5c006e2
   # Image revision, bumped when rebuilding with the same sources (e.g. a toolchain update)
-  EL_GENESIS_BUILDER_REVISION: 1
 
   # pos-validator-config-generator settings
   VALIDATOR_CONFIG_IMAGE_NAME: 0xPolygon/pos-validator-config-generator
@@ -166,14 +165,13 @@ jobs:
 
       # Tag images with the specific genesis-contracts commit SHA for version control.
       # This ensures reproducible builds tied to a specific contracts version.
-      # The `-r<n>` suffix (EL_GENESIS_BUILDER_REVISION) lets us republish a rebuild of the same SHA under a new tag.
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.EL_GENESIS_BUILDER_IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ env.GENESIS_CONTRACTS_COMMIT_SHA }}-r${{ env.EL_GENESIS_BUILDER_REVISION }}
+            type=raw,value=${{ env.GENESIS_CONTRACTS_COMMIT_SHA }}
 
       - name: Build and push docker image
         id: push
