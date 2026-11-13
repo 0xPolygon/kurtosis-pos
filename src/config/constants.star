@@ -58,7 +58,7 @@ IMAGES = {
     "l2_cl_queue_image": "rabbitmq:4.4.0",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.8",
-    "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:96a19dd-r1",
+    "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:5c006e2",
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.13.2",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14",
     # additional services

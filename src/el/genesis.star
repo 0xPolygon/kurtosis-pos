@@ -10,6 +10,11 @@ EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 # (proxy, implementation and ProxyAdmin, same addresses as mainnet and Amoy). builder.sh
 # replaces the mainnet owners and root setter with the admin address.
 EL_UBURU_DIR_PATH = "../../static_files/el/genesis/uburu"
+# StateReceiver code that mainnet runs before Uburu (bor's genesis-mainnet-v1.json blockAlloc),
+# used at genesis until the Uburu fork block swaps it for the new one.
+EL_LEGACY_STATE_RECEIVER_FILE_PATH = (
+    "../../static_files/el/genesis/legacy-state-receiver.hex"
+)
 
 
 def generate(
@@ -80,6 +85,10 @@ def generate(
         name="l2-el-genesis-builder-config",
         src=EL_GENESIS_BUILDER_SCRIPT_FILE_PATH,
     )
+    legacy_state_receiver_artifact = plan.upload_files(
+        name="l2-el-legacy-state-receiver",
+        src=EL_LEGACY_STATE_RECEIVER_FILE_PATH,
+    )
     uburu_artifact = plan.upload_files(
         name="l2-el-uburu",
         src=EL_UBURU_DIR_PATH,
@@ -107,6 +116,7 @@ def generate(
             "/opt/data/genesis": el_genesis_temporary_artifact,
             "/opt/data/genesis-builder": el_genesis_builder_script_artifact,
             "/opt/data/validator": validator_config_artifact,
+            "/opt/data/legacy-state-receiver": legacy_state_receiver_artifact,
             "/opt/data/uburu": uburu_artifact,
         },
         store=[
