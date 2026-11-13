@@ -360,7 +360,7 @@ def format_with_rumdl(path: Path) -> None:
     width (✅ is 2 columns, ⚡️ is 1 plus a zero-width variation selector).
     Rather than reimplement that padding and risk drifting from the linter, let
     the linter itself be the source of truth: without this, every generated page
-    would fail `rumdl check` and the nightly diff would never be empty.
+    would fail `rumdl check` and the weekly diff would never be empty.
     """
     if not shutil.which("rumdl"):
         print("Warning: rumdl not found, leaving tables unaligned. "

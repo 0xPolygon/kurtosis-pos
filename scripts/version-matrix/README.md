@@ -58,13 +58,14 @@ python3 scripts/version-matrix/verify-package-pins.py
 ## CI
 
 - `checks.yaml` runs `verify-package-pins.py` on every push.
-- `deploy.yaml` runs the full matrix nightly in the `check-version-matrix` job.
-  It regenerates the matrix and fails if the committed version is out of date,
-  which is the signal that a dependency has moved. The job is
-  `continue-on-error`, so an upstream release never fails the nightly.
+- `version-matrix.yml` runs the full matrix weekly in the `check-version-matrix` job.
+  It regenerates the matrix and flags drift from the committed version, which is
+  the signal that a dependency has moved. Drift hands over to
+  `bump-version-matrix` instead of failing the workflow, so only a broken check
+  turns the run red.
 
 Regenerate and commit both `matrix.json` and the docs page when bumping a
-dependency, so the nightly diff stays empty.
+dependency, so the weekly diff stays empty.
 
 ## Status system
 
@@ -89,7 +90,7 @@ support, for three domains:
 Upstream files are read at the refs this repo pins (image tags, the `kurtosis.yml`
 ethereum-package commit), never at upstream HEAD. The tables therefore only
 change when a pin or the package config changes: a fork that is merely announced
-or scheduled upstream never makes the nightly diff non-empty. A failed fetch
+or scheduled upstream never makes the weekly diff non-empty. A failed fetch
 fails the script instead of rendering a fork as unsupported.
 
 | Status                  | Icon | Description                                                       |
@@ -186,6 +187,6 @@ What "latest" means follows from how a package is pinned in `kurtosis.yml`:
   it tags, so the latest tag would report `⚡️ ahead` forever.
 
 A head-tracked pin reports `🚨 behind` with its commit distance as soon as
-HEAD moves past it, so the nightly bump PR follows the branch tip: one refreshed
+HEAD moves past it, so the weekly bump PR follows the branch tip: one refreshed
 PR per upstream change rather than a pin drifting unnoticed. A pin ahead of HEAD
 (an unmerged or rewritten commit) reports `⚡️ ahead`.

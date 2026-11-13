@@ -504,7 +504,7 @@ class VersionMatrixExtractor:
     def _determine_head_tracked_status(self, repo: str, pin: str,
                                        head_version: Optional[str]) -> tuple:
         """Judge a pin that tracks HEAD rather than releases: any pin short of
-        the branch tip is behind, so the nightly bump follows HEAD."""
+        the branch tip is behind, so the weekly bump follows HEAD."""
         if not head_version:
             return None, None
 
@@ -632,7 +632,7 @@ class VersionMatrixExtractor:
         if output_path is None:
             output_path = self.repo_root / "scripts" / "version-matrix" / "matrix.json"
 
-        # The nightly job diffs this file, so keep the output stable: sorted
+        # The weekly job diffs this file, so keep the output stable: sorted
         # keys, and no volatile timestamp.
         stable = {key: value for key, value in matrix.items()
                   if key != "generated_at"}
