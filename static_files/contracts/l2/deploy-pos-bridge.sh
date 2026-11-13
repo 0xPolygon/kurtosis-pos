@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+source /opt/data/l2/forge-script-l2.sh
+
 # Deploy pos-bridge L2 (child) contracts, then do the final cross-chain wiring on L1
 # (RootChainManager.setChildChainManagerAddress + mapToken per token pair).
 
@@ -21,7 +23,7 @@ cp /opt/data/addresses/contractAddresses.json /opt/pos-portal/contractAddresses.
 
 echo "Deploying pos-bridge L2 (child) contracts..."
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
-forge script -vvvv --rpc-url "${L2_RPC_URL}" --broadcast --legacy \
+forge_script_l2 -vvvv --rpc-url "${L2_RPC_URL}" --broadcast --legacy \
   scripts/deployment-scripts/deployPosBridgeChild.s.sol:DeployPosBridgeChildScript
 
 # The L1 wiring below issues `RootChainManager.mapToken` × 7, each of which calls
