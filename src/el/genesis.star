@@ -12,8 +12,8 @@ EL_GENESIS_TEMPLATE_FILE_PATH = "../../static_files/el/genesis/genesis.json"
 EL_UBURU_DIR_PATH = "../../static_files/el/genesis/uburu"
 # StateReceiver code that mainnet runs before Uburu (bor's genesis-mainnet-v1.json blockAlloc),
 # used at genesis until the Uburu fork block swaps it for the new one.
-EL_LEGACY_STATE_RECEIVER_DIR_PATH = (
-    "../../static_files/el/genesis/legacy-state-receiver"
+EL_LEGACY_STATE_RECEIVER_FILE_PATH = (
+    "../../static_files/el/genesis/legacy-state-receiver.hex"
 )
 
 
@@ -87,7 +87,7 @@ def generate(
     )
     legacy_state_receiver_artifact = plan.upload_files(
         name="l2-el-legacy-state-receiver",
-        src=EL_LEGACY_STATE_RECEIVER_DIR_PATH,
+        src=EL_LEGACY_STATE_RECEIVER_FILE_PATH,
     )
     uburu_artifact = plan.upload_files(
         name="l2-el-uburu",

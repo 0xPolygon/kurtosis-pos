@@ -57,7 +57,7 @@ state_receiver_code() {
 # immutables (root setter, gas oracle) left to zero. Mainnet runs the legacy
 # StateReceiver before Uburu, so start from that code instead. The Uburu code is
 # swapped in at the fork block below.
-legacy_state_receiver_code=$(state_receiver_code /opt/data/legacy-state-receiver/state-receiver.hex)
+legacy_state_receiver_code=$(state_receiver_code /opt/data/legacy-state-receiver/legacy-state-receiver.hex)
 jq --arg a "${state_receiver_address}" --arg c "${legacy_state_receiver_code}" \
   '.alloc[$a].code = $c' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
