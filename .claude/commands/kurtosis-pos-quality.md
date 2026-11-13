@@ -21,6 +21,7 @@ compatibility: Requires kurtosis CLI 1.22.2+, cargo (typos-cli, rumdl), and gh C
 | `snapshot.yaml`       | `workflow_dispatch`         | Deploys a devnet, takes a snapshot, publishes it as a Docker image                                                                                             |
 | `publish-images.yaml` | `workflow_dispatch`         | Builds and pushes the three setup Docker images                                                                                                                |
 | `docs.yaml`           | PR / push to main           | Builds the Docusaurus site; fails on broken links                                                                                                              |
+| `version-matrix.yml`  | weekly / `workflow_dispatch`| Checks the version matrix is up to date, opens or refreshes the bump PR and posts the status to Slack.                                                         |
 
 ---
 
