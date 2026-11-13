@@ -3,8 +3,6 @@ name: version-matrix
 on:
   schedule:
     - cron: 0 4 * * 1 # Monday 04:00 UTC, i.e. 6 AM Paris in summer (5 AM in winter), so the bump PR lands before the workday.
-  push: # TEMP: test run, to revert
-    branches: [ci/weekly-version-matrix]
   workflow_dispatch:
 
 permissions:
@@ -20,10 +18,7 @@ jobs:
   check-version-matrix:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    continue-on-error: true
     outputs:
-      # `continue-on-error` reports the job as successful, so the drift verdict
-      # has to travel to the summary as an output rather than a job result.
       # Empty when an earlier step (pip install, extract-versions.py,
       # generate-markdown.py) failed and `check` never ran — the summary treats
       # that as "did not complete" rather than as "up to date".
@@ -57,7 +52,7 @@ jobs:
             echo "❌ Version matrix is out of date:"
             git diff --stat
             git diff
-            exit 1
+            exit 0
           fi
           echo "outdated=false" >> "$GITHUB_OUTPUT"
           echo "✅ Version matrix is up to date"
@@ -74,7 +69,7 @@ jobs:
 
   workflow-summary:
     runs-on: ubuntu-latest
-    if: always() && github.event_name != 'push' # TEMP: no Slack during the test run
+    if: always()
     needs:
       - check-version-matrix
       - bump-version-matrix

@@ -59,9 +59,10 @@ python3 scripts/version-matrix/verify-package-pins.py
 
 - `checks.yaml` runs `verify-package-pins.py` on every push.
 - `version-matrix.yml` runs the full matrix weekly in the `check-version-matrix` job.
-  It regenerates the matrix and fails if the committed version is out of date,
-  which is the signal that a dependency has moved. The job is
-  `continue-on-error`, so an upstream release never fails the workflow.
+  It regenerates the matrix and flags drift from the committed version, which is
+  the signal that a dependency has moved. Drift hands over to
+  `bump-version-matrix` instead of failing the workflow, so only a broken check
+  turns the run red.
 
 Regenerate and commit both `matrix.json` and the docs page when bumping a
 dependency, so the weekly diff stays empty.
