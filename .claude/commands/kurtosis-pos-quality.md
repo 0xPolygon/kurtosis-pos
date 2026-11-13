@@ -133,6 +133,7 @@ Three images are maintained in this repo and hosted on `ghcr.io/0xPolygon/`:
 | Image                                                    | Dockerfile                                         | Purpose                             |
 | -------------------------------------------------------- | -------------------------------------------------- | ----------------------------------- |
 | `ghcr.io/0xpolygon/pos-contract-deployer:<sha>`          | `docker/pos-contract-deployer.Dockerfile`          | Deploy MATIC contracts to L1 and L2 |
+| `ghcr.io/0xpolygon/pos-solc:<version>`                   | `docker/pos-solc.Dockerfile`                       | Old solc builds (amd64 + arm64)     |
 | `ghcr.io/0xpolygon/pos-el-genesis-builder:<sha>`         | `docker/pos-el-genesis-builder.Dockerfile`         | Generate EL genesis                 |
 | `ghcr.io/0xpolygon/pos-validator-config-generator:<ver>` | `docker/pos-validator-config-generator.Dockerfile` | Generate CL validator config        |
 
