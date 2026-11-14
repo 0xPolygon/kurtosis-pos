@@ -102,7 +102,7 @@ kurtosis run \
 
 ### Snapshot the enclave
 
-The script waits for L2 to reach a certain block height (128, Rio HF activation block), stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
+The script stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
 
 To make sure the snapshot never captures a half-finished exchange between L1 and heimdall (a checkpoint buffered but not yet submitted, an ack not yet voted, a state sync not yet recorded), the script stops the enclave in two steps:
 
