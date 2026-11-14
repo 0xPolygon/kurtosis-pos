@@ -36,9 +36,9 @@ Everything else: utility images, observability, the status checker and the seque
 | --------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------- |
 | envoy           | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ up to date |
 | ethstats-server | 9da2124                                                                     | 9da2124                                                                    | ✅ up to date |
-| grafana         | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)           | [13.3.0](https://github.com/grafana/grafana/releases/tag/v13.3.0)          | ✅ up to date |
+| grafana         | [13.3.1](https://github.com/grafana/grafana/releases/tag/v13.3.1)           | [13.3.1](https://github.com/grafana/grafana/releases/tag/v13.3.1)          | ✅ up to date |
 | nginx           | [1.31.8-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.8) | [1.31.8](https://github.com/nginx/nginx/releases/tag/release-1.31.8)       | ✅ up to date |
-| panoptichain    | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)      | [8.1.4](https://github.com/0xPolygon/panoptichain/releases/tag/v8.1.4)     | ✅ up to date |
+| panoptichain    | [8.2.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.2.0)      | [8.2.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.2.0)     | ✅ up to date |
 | prometheus      | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ up to date |
 | redpanda        | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ up to date |
 | status-checker  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10)  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10) | ✅ up to date |
@@ -52,7 +52,7 @@ External Kurtosis packages the package depends on. Versions are pinned in the [`
 
 | Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status        |
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [5795b77e6523](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc) | [HEAD (5795b77e6523)](https://github.com/ethpandaops/ethereum-package/tree/5795b77e65235ad223d4d3b413b2739190bf60cc) | ✅ up to date |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [6886eac7b858](https://github.com/ethpandaops/ethereum-package/tree/6886eac7b858d8f28dc2f3cf4e7985cbdb926e56) | [HEAD (6886eac7b858)](https://github.com/ethpandaops/ethereum-package/tree/6886eac7b858d8f28dc2f3cf4e7985cbdb926e56) | ✅ up to date |
 
 ### Additional
 
