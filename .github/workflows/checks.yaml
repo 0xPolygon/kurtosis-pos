@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      KURTOSIS_TEST_VERSION: v0.0.10
+      KURTOSIS_TEST_VERSION: v0.0.11
 
     steps:
       - uses: actions/checkout@v7
