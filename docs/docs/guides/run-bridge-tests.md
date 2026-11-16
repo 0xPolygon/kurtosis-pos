@@ -35,6 +35,10 @@ Then run the L1-to-L2 bridge test to validate that Heimdall and Bor can process 
 bats --filter-tags pos,bridge --recursive tests/
 ```
 
+:::note
+Before the Uburu fork block, the genesis starts from mainnet's legacy `StateReceiver`. A state sync that fails on L2 is recorded in its `failedStateSyncs` and can be replayed, which the previous block-0 code did not allow. After the fork block, the Uburu `StateReceiver` takes over.
+:::
+
 After the tests complete, you should see output similar to:
 
 ```bash

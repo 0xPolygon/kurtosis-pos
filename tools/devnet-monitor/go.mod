@@ -4,7 +4,7 @@ go 1.27.3
 
 require (
 	github.com/ethereum/go-ethereum v1.17.9
-	github.com/kurtosis-tech/kurtosis/api/golang v1.22.2
+	github.com/kurtosis-tech/kurtosis/api/golang v1.23.0
 	github.com/spf13/cobra v1.10.2
 	gopkg.in/yaml.v3 v3.0.1
 )
