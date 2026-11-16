@@ -14,39 +14,24 @@ concurrency:
 
 jobs:
   lint:
+    uses: 0xPolygon/kurtosis-workflows/.github/workflows/lint.yml@1d7acffacfb81187c58553013051b05304838b81
+    with:
+      kurtosis_version: 1.23.0
+      markdown_paths: .
+      typos: true
+      shfmt_version: 3.13.1
+
+  package-pins:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    env:
-      KURTOSIS_VERSION: 1.23.0
-
     steps:
       - uses: actions/checkout@v7
-
-      - name: Install kurtosis
-        run: |
-          echo "deb [trusted=yes] https://sdk.kurtosis.com/kurtosis-cli-release-artifacts/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
-          sudo apt update
-          sudo apt install -y kurtosis-cli=${{ env.KURTOSIS_VERSION }}
-          kurtosis analytics disable
-
-      - name: Run kurtosis linter
-        run: kurtosis lint .
-
-      - name: Run markdown linter
-        uses: rvben/rumdl@a7a8434abe60f64239ea05624885f9bad66a1026 # v0.2.79
 
       - name: Install pyyaml
         run: pip install pyyaml
 
       - name: Verify external package pins
         run: python3 scripts/version-matrix/verify-package-pins.py
-
-  typos:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7
-      - uses: crate-ci/typos@7f9d0819ca1c008ade73f4b41fa9d258d48f605b # v1.51.1
 
   unit:
     runs-on: ubuntu-latest
@@ -83,16 +68,3 @@ jobs:
       - name: go test
         working-directory: tools/devnet-monitor
         run: go test ./...
-
-  shfmt:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d # v4.0.1
-        with:
-          shfmt-version: 3.13.1
-
-      - name: Run shfmt
-        run: shfmt -d .
