@@ -10,7 +10,7 @@ Versions of every component the package deploys, compared against the latest ups
 
 ## Images
 
-Container images deployed by the package, pinned in [`src/config/constants.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/constants.star). For `pos-*` (built in this repo, GHCR), `toolbox` and `ethstats-server` (Artifact Registry), the latest version is the latest tag in their registry.
+Container images deployed by the package, pinned in [`src/config/constants.star`](https://github.com/0xPolygon/kurtosis-pos/blob/main/src/config/constants.star). For `pos-*` (built in this repo, GHCR), `toolbox` and `ethstats-server` (Artifact Registry), the latest version is the latest tag in their registry, except for `pos-el-genesis-builder`: it is tagged with a [genesis-contracts](https://github.com/0xPolygon/genesis-contracts) commit sha, so its latest version is the HEAD of that repository.
 
 ### Core
 
@@ -24,7 +24,7 @@ The L1, the L2 clients and the images that deploy them: the devnet does not star
 | heimdall-v2                    | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)                                        | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)                           | ✅ up to date |
 | lighthouse                     | [8.3.3](https://github.com/sigp/lighthouse/releases/tag/v8.3.3)                                                | [8.3.3](https://github.com/sigp/lighthouse/releases/tag/v8.3.3)                                   | ✅ up to date |
 | pos-contract-deployer          | [0.0.8](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-contract-deployer.Dockerfile)           | [0.0.8](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-contract-deployer)           | ✅ up to date |
-| pos-el-genesis-builder         | [5c006e2](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-el-genesis-builder.Dockerfile)        | N/A                                                                                               | N/A           |
+| pos-el-genesis-builder         | [5c006e2](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-el-genesis-builder.Dockerfile)        | [5c006e2](https://github.com/0xPolygon/genesis-contracts/commit/5c006e2)                          | ✅ up to date |
 | pos-validator-config-generator | [0.13.2](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-validator-config-generator.Dockerfile) | [0.13.2](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-validator-config-generator) | ✅ up to date |
 | rabbitmq                       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)                                       | [4.4.0](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.0)                          | ✅ up to date |
 
