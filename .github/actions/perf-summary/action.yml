@@ -15,14 +15,9 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Job durations
-      shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.github_token }}
-        RUN_ID: ${{ github.run_id }}
-      run: |
-        # The recap is a bonus: an API error must not fail the workflow.
-        ./scripts/perf/job-durations.sh "$RUN_ID" >> "$GITHUB_STEP_SUMMARY" || echo "::warning::Could not list the job durations"
+    - uses: 0xPolygon/kurtosis-workflows/.github/actions/job-durations@v0.1.4
+      with:
+        github_token: ${{ inputs.github_token }}
 
     - name: Perf report
       shell: bash

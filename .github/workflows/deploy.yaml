@@ -23,7 +23,6 @@ concurrency:
 
 env:
   ENCLAVE_NAME: pos
-  DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
 
 jobs:
   run-without-args:
@@ -376,7 +375,6 @@ jobs:
           github_token: ${{ github.token }}
 
   workflow-summary:
-    runs-on: ubuntu-latest
     if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     needs:
       - run-without-args
@@ -384,44 +382,11 @@ jobs:
       - test-e2e
       - run-with-external-l1
       - run-with-cl-el-genesis
-    steps:
-      - name: Build the Slack message
-        id: message
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NEEDS: ${{ toJSON(needs) }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          JOBS_API: repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs
-        run: |
-          # Links are a bonus: an API error must not cost the Slack message.
-          jobs=$(gh api --paginate "$JOBS_API" --jq '.jobs[]') || jobs=""
-
-          tests=$(jq -r '[.[].result]
-            | if index("failure") then "some tests failed ❌"
-              elif index("cancelled") or index("skipped") then "some tests were skipped ⚠️"
-              else "all tests passed ✅" end' <<< "$NEEDS")
-          # Per matrix leg, so the link lands on the leg that broke.
-          broken=$(jq -rs '[.[] | select(.conclusion == "failure" or .conclusion == "cancelled")
-            | "<\(.html_url)|\(.name)>"] | join(", ")' <<< "$jobs")
-          [[ -n "$broken" ]] && tests+=" ($broken)"
-
-          echo "text=<$RUN_URL|Kurtosis POS Nightly>: $tests" >> "$GITHUB_OUTPUT"
-
-      - uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
-        with:
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          method: chat.postMessage
-          payload: |
-            {
-              "channel": ${{ env.DEVTOOLS_SLACK_ALERTS_CHANNEL_ID }},
-              "text": "Kurtosis POS Nightly - Test Summary",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ${{ toJSON(steps.message.outputs.text) }}
-                  }
-                }
-              ]
-            }
+    permissions:
+      actions: read
+    uses: 0xPolygon/kurtosis-workflows/.github/workflows/workflow-summary.yml@v0.1.4
+    with:
+      name: Kurtosis POS Nightly
+      needs: ${{ toJSON(needs) }}
+    secrets:
+      slack_bot_token: ${{ secrets.SLACK_BOT_TOKEN }}
