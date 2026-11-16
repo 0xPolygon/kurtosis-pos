@@ -22,9 +22,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: 0xPolygon/kurtosis-workflows/.github/actions/verify-package-pins@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
+      - uses: 0xPolygon/kurtosis-workflows/.github/actions/verify-package-pins@v0.1.5
 
-      - uses: 0xPolygon/kurtosis-workflows/.github/actions/verify-images@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
+      - uses: 0xPolygon/kurtosis-workflows/.github/actions/verify-images@v0.1.5
 
   unit:
     permissions:
