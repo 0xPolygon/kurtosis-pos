@@ -133,6 +133,7 @@ Three images are maintained in this repo and hosted on `ghcr.io/0xPolygon/`:
 | Image                                                    | Dockerfile                                         | Purpose                             |
 | -------------------------------------------------------- | -------------------------------------------------- | ----------------------------------- |
 | `ghcr.io/0xpolygon/pos-contract-deployer:<sha>`          | `docker/pos-contract-deployer.Dockerfile`          | Deploy MATIC contracts to L1 and L2 |
+| `ghcr.io/0xpolygon/pos-solc:<version>`                   | `docker/pos-solc.Dockerfile`                       | Old solc builds (amd64 + arm64)     |
 | `ghcr.io/0xpolygon/pos-el-genesis-builder:<sha>`         | `docker/pos-el-genesis-builder.Dockerfile`         | Generate EL genesis                 |
 | `ghcr.io/0xpolygon/pos-validator-config-generator:<ver>` | `docker/pos-validator-config-generator.Dockerfile` | Generate CL validator config        |
 
@@ -154,7 +155,7 @@ Images are tagged with upstream commit SHA or version string — never `latest`.
 
 1. Update the tag in `constants.star` (`IMAGES` dict)
 2. Update the corresponding env var in `publish-images.yaml` (`POS_CONTRACTS_COMMIT_SHA`, `GENESIS_CONTRACTS_COMMIT_SHA`, or `HEIMDALL_V2_VERSION`)
-   - `pos-el-genesis-builder` is tagged `<GENESIS_CONTRACTS_COMMIT_SHA>-r<EL_GENESIS_BUILDER_REVISION>`: bump `EL_GENESIS_BUILDER_REVISION` when rebuilding with the same SHA, and reset it to `1` when the SHA changes
+   - `pos-el-genesis-builder` is tagged `<GENESIS_CONTRACTS_COMMIT_SHA>`
 3. Trigger `publish-images.yaml` to build and push the new image
 
 ### Excluding configs from the CI matrix

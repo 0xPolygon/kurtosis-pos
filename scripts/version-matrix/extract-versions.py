@@ -96,9 +96,8 @@ REPO_URL = "https://github.com/0xPolygon/kurtosis-pos"
 # is the highest tag in the registry among the tags matching the pattern.
 BUILT_IMAGES = {
     "pos_contract_deployer_image": ("pos-contract-deployer", r"\d+\.\d+\.\d+"),
-    # `<genesis-contracts sha>-r<revision>`: a revision bumps when the image is
-    # rebuilt for the same sha.
-    "pos_el_genesis_builder_image": ("pos-el-genesis-builder", r"[0-9a-f]+-r\d+"),
+    # Tagged with the genesis-contracts commit sha.
+    "pos_el_genesis_builder_image": ("pos-el-genesis-builder", r"[0-9a-f]{7,40}"),
     "pos_validator_config_generator_image": ("pos-validator-config-generator", r"\d+\.\d+\.\d+"),
     "toolbox_image": ("toolbox", r"\d+\.\d+\.\d+"),
     # Commit sha tags cannot be ordered: the latest is the last one uploaded.
