@@ -123,6 +123,10 @@ deliberate: a new image should not be able to slip in untracked.
   `publish-images.yaml`) and `toolbox` and `ethstats-server` (Artifact Registry). Maps the `IMAGES` key
   to `(display name, tag pattern)`; the latest version is the highest tag of the
   registry matching the pattern, read anonymously.
+- `UPSTREAM_TAGGED_IMAGES` — built images tagged with the commit sha of an upstream
+  repo (`pos-el-genesis-builder`, tagged with a genesis-contracts sha). Shas cannot be
+  ordered from a registry, so the latest version is the HEAD of that repo's default
+  branch, and the image is behind when upstream has moved on.
 - `SKIPPED_IMAGES` — images deliberately left out, with the reason. Empty today.
 
 ## Pinned versions

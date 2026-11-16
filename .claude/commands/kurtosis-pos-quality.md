@@ -2,7 +2,7 @@
 name: kurtosis-pos-quality
 description: Quality and CI for kurtosis-pos. Covers CI workflows (checks, deploy, snapshot, publish-images), Starlark formatting, typos, markdown linting, documentation sync, and Docker image publishing.
 allowed-tools: Bash, Read, Glob, Grep
-compatibility: Requires kurtosis CLI 1.22.2+, cargo (typos-cli, rumdl), and gh CLI for workflow dispatch.
+compatibility: Requires kurtosis CLI 1.23.0+, cargo (typos-cli, rumdl), and gh CLI for workflow dispatch.
 ---
 
 ## Related skills
@@ -16,7 +16,7 @@ compatibility: Requires kurtosis CLI 1.22.2+, cargo (typos-cli, rumdl), and gh C
 
 | Workflow              | Trigger                     | What it does                                                                                                                                                   |
 | --------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `checks.yaml`         | PR / push to main           | Lint (kurtosis + rumdl), typos, unit tests. Pins `KURTOSIS_VERSION: 1.22.2`.                                                                                   |
+| `checks.yaml`         | PR / push to main           | Lint (kurtosis + rumdl), typos, unit tests. Pins `KURTOSIS_VERSION: 1.23.0`.                                                                                   |
 | `deploy.yaml`         | PR / push / daily           | Deploys configs in `.github/configs/` (excludes `.norun`). On schedule/`workflow_dispatch` only, also runs `nightly/` configs. PR merges skip nightly configs. |
 | `snapshot.yaml`       | `workflow_dispatch`         | Deploys a devnet, takes a snapshot, publishes it as a Docker image                                                                                             |
 | `publish-images.yaml` | `workflow_dispatch`         | Builds and pushes the three setup Docker images                                                                                                                |
@@ -156,6 +156,7 @@ Images are tagged with upstream commit SHA or version string — never `latest`.
 1. Update the tag in `constants.star` (`IMAGES` dict)
 2. Update the corresponding env var in `publish-images.yaml` (`POS_CONTRACTS_COMMIT_SHA`, `GENESIS_CONTRACTS_COMMIT_SHA`, or `HEIMDALL_V2_VERSION`)
    - `pos-el-genesis-builder` is tagged `<GENESIS_CONTRACTS_COMMIT_SHA>`
+   - `pos-solc` is tagged `POS_SOLC_VERSION`: when you bump it, also bump `POS_SOLC_IMAGE` in `docker/pos-el-genesis-builder.Dockerfile`, then publish `pos-solc` before `pos-el-genesis-builder` (`image=all` does it in that order)
 3. Trigger `publish-images.yaml` to build and push the new image
 
 ### Excluding configs from the CI matrix
