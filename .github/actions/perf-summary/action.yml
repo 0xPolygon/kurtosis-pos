@@ -15,7 +15,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: 0xPolygon/kurtosis-workflows/.github/actions/job-durations@v0.1.5
+    - uses: 0xPolygon/kurtosis-workflows/.github/actions/job-durations@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
       with:
         github_token: ${{ inputs.github_token }}
 

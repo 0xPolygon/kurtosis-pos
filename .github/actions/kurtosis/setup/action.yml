@@ -73,7 +73,7 @@ runs:
     # Install dependencies
     - name: Install kurtosis
       id: kurtosis
-      uses: 0xPolygon/kurtosis-workflows/.github/actions/setup-kurtosis@v0.1.5
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/setup-kurtosis@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
 
     - name: Install yq
       shell: bash
@@ -142,14 +142,14 @@ runs:
 
     # Pull images from GAR if cache miss
     - name: Authenticate to GCP
-      uses: google-github-actions/auth@v3
+      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       with:
         workload_identity_provider: ${{ inputs.gcp_wip }}
         service_account: ${{ inputs.gcp_sa }}
 
     - name: Setup gcloud cli
-      uses: google-github-actions/setup-gcloud@v3.0.1
+      uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
 
     - name: Configure docker
@@ -173,7 +173,7 @@ runs:
     # Images of kurtosis-pos, already prefixed with the registry
     - name: Pull kurtosis-pos images from GAR
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
-      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-images@v0.1.5
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-images@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
       with:
         images_file: modified-images.txt
         skip_present: true
@@ -181,7 +181,7 @@ runs:
     # Kurtosis core and ethereum-package images, tagged back to their original names
     - name: Pull kurtosis core and ethereum-package images from GAR
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
-      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-kurtosis-images@v0.1.5
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-kurtosis-images@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
       with:
         kurtosis_version: ${{ steps.kurtosis.outputs.version }}
         registry_prefix: ${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
