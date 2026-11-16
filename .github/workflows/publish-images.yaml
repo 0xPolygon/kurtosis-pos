@@ -147,7 +147,6 @@ jobs:
           push-to-registry: true
 
   publish-pos-solc:
-    # Run on PR/push (inputs.image doesn't exist), OR on manual trigger if selected
     if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-solc'
     environment: publish-images
     runs-on: ubuntu-latest
@@ -200,8 +199,10 @@ jobs:
           push-to-registry: true
 
   publish-pos-el-genesis-builder:
-    # Run on PR/push (inputs.image doesn't exist), OR on manual trigger if selected
-    if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-el-genesis-builder'
+    # The builder copies the compilers from the pos-solc tag, so it waits for that job when
+    # both run. !failure() lets it still run when pos-solc is skipped.
+    needs: publish-pos-solc
+    if: ${{ !cancelled() && !failure() && (github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-el-genesis-builder') }}
     environment: publish-images
     runs-on: ubuntu-latest
 
