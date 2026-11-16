@@ -30,12 +30,37 @@ if [[ -s "${EL_GENESIS_ALLOC_FILE}" ]]; then
   echo "EL genesis alloc field generated."
 else
   echo "Error: ${EL_GENESIS_ALLOC_FILE} does not exist or is empty."
+  exit 1
 fi
 
 # Append the admin address to the alloc field.
 admin_address=$(echo "${ADMIN_ADDRESS}" | sed 's/^0x//')
 jq --arg a "${admin_address}" --arg b "${ADMIN_BALANCE_WEI}" \
   '.alloc[$a] = {"balance": $b}' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
+mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
+
+# Print a mainnet StateReceiver code with its root setter replaced by the admin address.
+# The root setter is an immutable in the bytecode; the admin needs it to call
+# setRootAndLeafCount and replayFailedStateSync.
+state_receiver_address="0000000000000000000000000000000000001001"
+mainnet_root_setter="eb1cd9e44ab6bfe5a55ee96c468086e51b1b873a"
+state_receiver_code() {
+  local hex
+  hex=$(tr -d '\n' < "$1")
+  grep -qi "${mainnet_root_setter}" <<< "${hex}" || {
+    echo "Mainnet root setter not found in $1" >&2
+    return 1
+  }
+  sed "s/${mainnet_root_setter}/${admin_address,,}/Ig" <<< "${hex}"
+}
+
+# generate-genesis.js compiles the latest StateReceiver, the Uburu one, with its
+# immutables (root setter, gas oracle) left to zero. Mainnet runs the legacy
+# StateReceiver before Uburu, so start from that code instead. The Uburu code is
+# swapped in at the fork block below.
+legacy_state_receiver_code=$(state_receiver_code /opt/data/legacy-state-receiver/legacy-state-receiver.hex)
+jq --arg a "${state_receiver_address}" --arg c "${legacy_state_receiver_code}" \
+  '.alloc[$a].code = $c' "${EL_GENESIS_ALLOC_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_ALLOC_FILE}"
 
 # Add the EIP-2935 block hash history contract to the alloc field.
@@ -82,21 +107,12 @@ jq --arg key 'alloc' '. + {($key): input | .[$key]}' \
 mv tmp.json "${EL_GENESIS_FILE}"
 
 # Swap the StateReceiver code at the Uburu fork block, as bor's mainnet genesis does.
-state_receiver_address="0000000000000000000000000000000000001001"
-# The mainnet root setter is an immutable in its bytecode; replace it with the admin
-# address so the admin can call setRootAndLeafCount and replayFailedStateSync.
-mainnet_root_setter="eb1cd9e44ab6bfe5a55ee96c468086e51b1b873a"
-state_receiver_hex=$(tr -d '\n' < /opt/data/uburu/state-receiver.hex)
-grep -qi "${mainnet_root_setter}" <<< "${state_receiver_hex}" || {
-  echo "Mainnet root setter not found in state-receiver.hex" >&2
-  exit 1
-}
-state_receiver_code=$(sed "s/${mainnet_root_setter}/${admin_address,,}/Ig" <<< "${state_receiver_hex}")
+uburu_state_receiver_code=$(state_receiver_code /opt/data/uburu/state-receiver.hex)
 # bor applies blockAlloc while finalizing a block, which never happens for
 # genesis, so Uburu at block 0 swaps the code in the genesis alloc instead,
 # keeping the StateReceiver's storage.
 jq --arg b "${UBURU_FORK_BLOCK}" --arg a "${state_receiver_address}" \
-  --arg c "${state_receiver_code}" \
+  --arg c "${uburu_state_receiver_code}" \
   'if ($b | tonumber) == 0 then
      if .alloc | has($a) then .alloc[$a].code = $c
      else error("StateReceiver \($a) not found in the genesis alloc") end

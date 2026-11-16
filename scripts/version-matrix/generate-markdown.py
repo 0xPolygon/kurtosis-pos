@@ -111,7 +111,9 @@ class MarkdownMatrixGenerator:
         md += "Container images deployed by the package, pinned in "
         md += f"[`src/config/constants.star`]({REPO_URL}/blob/main/src/config/constants.star). "
         md += "For `pos-*` (built in this repo, GHCR), `toolbox` and `ethstats-server` (Artifact Registry), "
-        md += "the latest version is the latest tag in their registry.\n\n"
+        md += "the latest version is the latest tag in their registry, except for `pos-el-genesis-builder`: "
+        md += "it is tagged with a [genesis-contracts](https://github.com/0xPolygon/genesis-contracts) "
+        md += "commit sha, so its latest version is the HEAD of that repository.\n\n"
         images = data.get("images", {})
         md += "### Core\n\n"
         md += "The L1, the L2 clients and the images that deploy them: the devnet does not start without them.\n\n"

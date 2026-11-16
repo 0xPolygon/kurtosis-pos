@@ -96,13 +96,19 @@ REPO_URL = "https://github.com/0xPolygon/kurtosis-pos"
 # is the highest tag in the registry among the tags matching the pattern.
 BUILT_IMAGES = {
     "pos_contract_deployer_image": ("pos-contract-deployer", r"\d+\.\d+\.\d+"),
-    # `<genesis-contracts sha>-r<revision>`: a revision bumps when the image is
-    # rebuilt for the same sha.
-    "pos_el_genesis_builder_image": ("pos-el-genesis-builder", r"[0-9a-f]+-r\d+"),
+    # Tagged with the genesis-contracts commit sha.
+    "pos_el_genesis_builder_image": ("pos-el-genesis-builder", r"[0-9a-f]{7,40}"),
     "pos_validator_config_generator_image": ("pos-validator-config-generator", r"\d+\.\d+\.\d+"),
     "toolbox_image": ("toolbox", r"\d+\.\d+\.\d+"),
     # Commit sha tags cannot be ordered: the latest is the last one uploaded.
     "ethstats_server_image": ("ethstats-server", r"[0-9a-f]{7,40}"),
+}
+
+# Built images tagged with the commit sha of an upstream repo. Shas cannot be
+# ordered from a registry, so "latest" is the HEAD of that repo's default branch:
+# the image is behind when upstream has moved on.
+UPSTREAM_TAGGED_IMAGES = {
+    "pos_el_genesis_builder_image": "0xPolygon/genesis-contracts",
 }
 
 # Images intentionally left out of the matrix, with the reason. Keeping this
@@ -181,7 +187,12 @@ class VersionMatrixExtractor:
             if key in BUILT_IMAGES:
                 name, tag_pattern = BUILT_IMAGES[key]
                 version = self._version_from_image(image)
-                latest_version = self._get_latest_registry_tag(image, tag_pattern, version)
+                upstream = UPSTREAM_TAGGED_IMAGES.get(key)
+                if upstream:
+                    head_sha, _ = self._get_head_version(upstream)
+                    latest_version = head_sha[:len(version)] if head_sha else None
+                else:
+                    latest_version = self._get_latest_registry_tag(image, tag_pattern, version)
                 on_ghcr = image.split("/", 1)[0] == "ghcr.io"
                 dockerfile = self.repo_root / "docker" / f"{name}.Dockerfile"
                 components[name] = ComponentVersion(
@@ -190,7 +201,9 @@ class VersionMatrixExtractor:
                     latest_version=latest_version,
                     version_source_url=(f"{REPO_URL}/blob/main/docker/{name}.Dockerfile"
                                         if dockerfile.exists() else None),
-                    latest_version_source_url=(f"{REPO_URL}/pkgs/container/{name}"
+                    latest_version_source_url=(f"https://github.com/{upstream}/commit/{latest_version}"
+                                               if upstream and latest_version else
+                                               f"{REPO_URL}/pkgs/container/{name}"
                                                if on_ghcr and latest_version else None),
                     status=self._determine_built_status(version, latest_version),
                     core=key in CORE_IMAGES,
