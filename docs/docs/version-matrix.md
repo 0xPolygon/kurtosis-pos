@@ -18,7 +18,7 @@ The L1, the L2 clients and the images that deploy them: the devnet does not star
 
 | Component                      | Deployed version                                                                                               | Latest stable version                                                                             | Status        |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------- |
-| bor                            | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)                                                | [2.11.0](https://github.com/0xPolygon/bor/releases/tag/v2.11.0)                                   | ✅ up to date |
+| bor                            | [2.11.1](https://github.com/0xPolygon/bor/releases/tag/v2.11.1)                                                | [2.11.1](https://github.com/0xPolygon/bor/releases/tag/v2.11.1)                                   | ✅ up to date |
 | foundry                        | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)                                             | [1.9.0](https://github.com/foundry-rs/foundry/releases/tag/v1.9.0)                                | ✅ up to date |
 | geth                           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                                       | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                          | ✅ up to date |
 | heimdall-v2                    | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)                                        | [0.13.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.13.2)                           | ✅ up to date |
@@ -50,9 +50,9 @@ External Kurtosis packages the package depends on. Versions are pinned in the [`
 
 ### Core
 
-| Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status        |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [6886eac7b858](https://github.com/ethpandaops/ethereum-package/tree/6886eac7b858d8f28dc2f3cf4e7985cbdb926e56) | [HEAD (6886eac7b858)](https://github.com/ethpandaops/ethereum-package/tree/6886eac7b858d8f28dc2f3cf4e7985cbdb926e56) | ✅ up to date |
+| Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status                            |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [6886eac7b858](https://github.com/ethpandaops/ethereum-package/tree/6886eac7b858d8f28dc2f3cf4e7985cbdb926e56) | [HEAD (74cdb681a14a)](https://github.com/ethpandaops/ethereum-package/tree/74cdb681a14a46c7177df17c0ea186f0aa184015) | 🚨 behind — 1 commits behind HEAD |
 
 ### Additional
 

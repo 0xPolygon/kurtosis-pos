@@ -63,7 +63,7 @@ Bor (EL) and Heimdall-v2 (CL) are different chains, so their forks are listed ap
 | [delhi](https://forum.polygon.technology/t/pip-7-delhi-hardfork/10904)                                                          | ✅ enabled    | 0            | [73100](https://amoy.polygonscan.com/block/73100)       | [38189056](https://polygonscan.com/block/38189056) |
 | jaipur                                                                                                                          | ✅ enabled    | 0            | [73100](https://amoy.polygonscan.com/block/73100)       | [23850000](https://polygonscan.com/block/23850000) |
 
-Checked against: [bor v2.11.0](https://github.com/0xPolygon/bor/blob/v2.11.0/params/config.go)
+Checked against: [bor v2.11.1](https://github.com/0xPolygon/bor/blob/v2.11.1/params/config.go)
 
 ### CL (Heimdall-v2)
 
