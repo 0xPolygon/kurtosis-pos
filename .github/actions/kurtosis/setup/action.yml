@@ -77,7 +77,7 @@ runs:
     # Install dependencies
     - name: Install kurtosis
       id: kurtosis
-      uses: 0xPolygon/kurtosis-workflows/.github/actions/setup-kurtosis@v0.1.4
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/setup-kurtosis@f09a1aa74beca7ce49980e9a67291f97bdd4eb5d # v0.1.4
       with:
         kurtosis_version: ${{ inputs.kurtosis_version }}
 
@@ -179,7 +179,7 @@ runs:
     # Images of kurtosis-pos, already prefixed with the registry
     - name: Pull kurtosis-pos images from GAR
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
-      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-images@v0.1.4
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-images@f09a1aa74beca7ce49980e9a67291f97bdd4eb5d # v0.1.4
       with:
         images_file: modified-images.txt
         skip_present: true
@@ -187,7 +187,7 @@ runs:
     # Kurtosis core and ethereum-package images, tagged back to their original names
     - name: Pull kurtosis core and ethereum-package images from GAR
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
-      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-images@v0.1.4
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-images@f09a1aa74beca7ce49980e9a67291f97bdd4eb5d # v0.1.4
       with:
         registry_prefix: ${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
         images_file: .github/actions/kurtosis/setup/images.txt
