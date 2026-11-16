@@ -3,10 +3,6 @@ description: Set up Docker authentication and Kurtosis environment
 
 inputs:
   # Dependency versions
-  kurtosis_version:
-    description: The version of Kurtosis to install, empty for the one kurtosis-workflows is tested with
-    required: false
-    default: ""
   foundry_version:
     description: The version of Foundry to install
     required: false
