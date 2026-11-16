@@ -14,12 +14,7 @@ concurrency:
 
 jobs:
   lint:
-    uses: 0xPolygon/kurtosis-workflows/.github/workflows/lint.yml@v0.1.1
-    with:
-      kurtosis_version: 1.23.0
-      markdown_paths: .
-      typos: true
-      shfmt_version: 3.13.1
+    uses: 0xPolygon/kurtosis-workflows/.github/workflows/lint.yml@v0.1.2
 
   package-pins:
     runs-on: ubuntu-latest

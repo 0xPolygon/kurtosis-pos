@@ -1,6 +1,3 @@
-kurtosistech/engine:1.23.0
-kurtosistech/core:1.23.0
-kurtosistech/files-artifacts-expander:1.23.0
 timberio/vector:0.45.0-debian
 traefik:v2.11.62
 alpine:3.17
