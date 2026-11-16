@@ -30,6 +30,7 @@ if [[ -s "${EL_GENESIS_ALLOC_FILE}" ]]; then
   echo "EL genesis alloc field generated."
 else
   echo "Error: ${EL_GENESIS_ALLOC_FILE} does not exist or is empty."
+  exit 1
 fi
 
 # Append the admin address to the alloc field.
