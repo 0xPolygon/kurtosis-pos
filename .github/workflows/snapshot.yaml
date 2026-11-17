@@ -13,6 +13,11 @@ on:
   pull_request:
     paths:
       - .github/actions/compose/**
+      - .github/actions/kurtosis/**
+      - .github/actions/monitor/**
+      - .github/actions/perf/**
+      - .github/actions/perf-summary/**
+      - .github/actions/test/**
       - .github/workflows/snapshot.yaml
       - scripts/snapshot/**
 
