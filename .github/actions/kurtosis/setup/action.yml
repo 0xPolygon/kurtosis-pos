@@ -117,7 +117,7 @@ runs:
           ${{ inputs.cache_key }}-${{ inputs.main_branch }}-
 
     - name: Load cached docker images
-      if: steps.cache.outputs.cache-matched-key != 'true'
+      if: steps.cache.outputs.cache-matched-key != ''
       shell: bash
       env:
         CACHE_FOLDER: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
@@ -136,35 +136,35 @@ runs:
         fi
 
     - name: List images
-      if: steps.cache.outputs.cache-matched-key != 'true'
+      if: steps.cache.outputs.cache-matched-key != ''
       shell: bash
       run: docker images
 
-    # Pull images from GAR if cache miss
+    # Pull images from GAR unless the cache key matched exactly: such an entry was saved by a run of
+    # this very commit, after it had pulled all the images below.
     - name: Authenticate to GCP
       uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       with:
         workload_identity_provider: ${{ inputs.gcp_wip }}
         service_account: ${{ inputs.gcp_sa }}
 
     - name: Setup gcloud cli
       uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
 
     - name: Configure docker
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       shell: bash
       run: gcloud auth configure-docker ${{ inputs.gcp_registry }}
 
     - name: Install python
       uses: actions/setup-python@v6
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       with:
         python-version: ${{ inputs.python_version }}
 
+    # Also on an exact cache hit: the cached images carry the prefixed names.
     - name: Add registry prefix to image names
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       shell: bash
       run: |
         registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
@@ -172,7 +172,7 @@ runs:
 
     # Images of kurtosis-pos, already prefixed with the registry
     - name: Pull kurtosis-pos images from GAR
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-images@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
       with:
         images_file: modified-images.txt
@@ -180,7 +180,7 @@ runs:
 
     # Kurtosis core and ethereum-package images, tagged back to their original names
     - name: Pull kurtosis core and ethereum-package images from GAR
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-kurtosis-images@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
       with:
         kurtosis_version: ${{ steps.kurtosis.outputs.version }}
