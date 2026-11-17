@@ -21,6 +21,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: 0xPolygon/kurtosis-workflows/.github/actions/verify-package-pins@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
 
@@ -36,6 +38,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-go@v7
         with:
