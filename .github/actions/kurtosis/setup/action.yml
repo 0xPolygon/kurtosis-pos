@@ -82,7 +82,7 @@ runs:
         yq --version
 
     - name: Install foundry
-      uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
       with:
         version: ${{ inputs.foundry_version }}
         cache: true
@@ -95,13 +95,13 @@ runs:
     # Login to registries
     - name: Login to docker hub registry
       if: ${{ inputs.docker_username && inputs.docker_token }}
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
       with:
         username: ${{ inputs.docker_username }}
         password: ${{ inputs.docker_token }}
 
     - name: Login to github container registry
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -162,7 +162,7 @@ runs:
         printf 'use=%s\npull=%s\n' "${use}" "${pull}" >> "${GITHUB_OUTPUT}"
 
     - name: Authenticate to GCP
-      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
       if: steps.gar.outputs.pull == 'true'
       with:
         workload_identity_provider: ${{ inputs.gcp_wip }}
@@ -178,7 +178,7 @@ runs:
       run: gcloud auth configure-docker ${{ inputs.gcp_registry }}
 
     - name: Install python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       if: steps.gar.outputs.use == 'true'
       with:
         python-version: ${{ inputs.python_version }}

@@ -12,13 +12,13 @@ inputs:
   polygon_cli_version:
     description: The release version of polygon-cli
     required: false
-    default: v0.1.111
+    default: v0.1.123
 
 runs:
   using: composite
   steps:
     - name: Clone 0xPolygon/pos-e2e
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: 0xPolygon/pos-e2e
         path: pos-e2e
@@ -27,7 +27,7 @@ runs:
         persist-credentials: false
 
     - name: Install bats
-      uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
+      uses: bats-core/bats-action@3566550e0f594451ac0f58fcbfdeca93aa29a45e # 4.1.0
       with:
         support-path: ${{ github.workspace }}/lib/bats-support
         assert-path: ${{ github.workspace }}/lib/bats-assert
