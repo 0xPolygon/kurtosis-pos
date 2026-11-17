@@ -70,6 +70,7 @@ jobs:
     if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-contract-deployer'
     environment: publish-images
     runs-on: ubuntu-latest
+    timeout-minutes: 90
 
     permissions:
       contents: read
@@ -150,6 +151,7 @@ jobs:
     if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-solc'
     environment: publish-images
     runs-on: ubuntu-latest
+    timeout-minutes: 180
 
     permissions:
       contents: read
@@ -205,6 +207,7 @@ jobs:
     if: ${{ !cancelled() && !failure() && (github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-el-genesis-builder') }}
     environment: publish-images
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     permissions:
       contents: read
@@ -261,6 +264,7 @@ jobs:
     if: github.event_name != 'workflow_dispatch' || inputs.image == 'all' || inputs.image == 'pos-validator-config-generator'
     environment: publish-images
     runs-on: ubuntu-latest
+    timeout-minutes: 90
 
     permissions:
       contents: read
