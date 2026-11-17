@@ -116,8 +116,9 @@ runs:
         restore-keys: |
           ${{ inputs.cache_key }}-${{ inputs.main_branch }}-
 
+    # Unconditional: actions/cache only outputs cache-hit, which is 'false' on a restore-key match, and
+    # the step is a no-op when nothing was restored.
     - name: Load cached docker images
-      if: steps.cache.outputs.cache-matched-key != ''
       shell: bash
       env:
         CACHE_FOLDER: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
@@ -136,7 +137,6 @@ runs:
         fi
 
     - name: List images
-      if: steps.cache.outputs.cache-matched-key != ''
       shell: bash
       run: docker images
 
