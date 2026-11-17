@@ -14,62 +14,32 @@ concurrency:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      KURTOSIS_VERSION: 1.23.0
+    uses: 0xPolygon/kurtosis-workflows/.github/workflows/lint.yml@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
 
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Install kurtosis
-        run: |
-          echo "deb [trusted=yes] https://sdk.kurtosis.com/kurtosis-cli-release-artifacts/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
-          sudo apt update
-          sudo apt install -y kurtosis-cli=${{ env.KURTOSIS_VERSION }}
-          kurtosis analytics disable
-
-      - name: Run kurtosis linter
-        run: kurtosis lint .
-
-      - name: Run markdown linter
-        uses: rvben/rumdl@a7a8434abe60f64239ea05624885f9bad66a1026 # v0.2.79
-
-      - name: Install pyyaml
-        run: pip install pyyaml
-
-      - name: Verify external package pins
-        run: python3 scripts/version-matrix/verify-package-pins.py
-
-  typos:
+  package-pins:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
-      - uses: crate-ci/typos@7f9d0819ca1c008ade73f4b41fa9d258d48f605b # v1.51.1
+        with:
+          persist-credentials: false
+
+      - uses: 0xPolygon/kurtosis-workflows/.github/actions/verify-package-pins@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
+
+      - uses: 0xPolygon/kurtosis-workflows/.github/actions/verify-images@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
 
   unit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      KURTOSIS_TEST_VERSION: v0.0.11
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Install kurtosis-test
-        run: |
-          curl -sSfL "https://github.com/leovct/kurtosis-test/releases/download/${KURTOSIS_TEST_VERSION}/kurtosis-test_Linux_x86_64.tar.gz" \
-            | sudo tar xz -C /usr/local/bin kurtosis-test
-
-      - name: Run unit tests
-        run: kurtosis-test .
+    permissions:
+      contents: read
+    uses: 0xPolygon/kurtosis-workflows/.github/workflows/unit.yml@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
 
   devnet-monitor:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-go@v7
         with:
@@ -83,16 +53,3 @@ jobs:
       - name: go test
         working-directory: tools/devnet-monitor
         run: go test ./...
-
-  shfmt:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d # v4.0.1
-        with:
-          shfmt-version: 3.13.1
-
-      - name: Run shfmt
-        run: shfmt -d .

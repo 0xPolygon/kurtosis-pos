@@ -23,7 +23,6 @@ concurrency:
 
 env:
   ENCLAVE_NAME: pos
-  DEVTOOLS_SLACK_ALERTS_CHANNEL_ID: C04DS0SG599
 
 jobs:
   run-without-args:
@@ -31,6 +30,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/kurtosis/setup
         with:
@@ -62,10 +63,14 @@ jobs:
   list-ymls:
     runs-on: ubuntu-latest
     timeout-minutes: 1
+    permissions:
+      contents: read
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - id: set-matrix
         run: |
           if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -108,6 +113,8 @@ jobs:
       PERF_CONFIGS: heimdall-v2-bor l1-backends-anvil
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/kurtosis/setup
         with:
@@ -162,6 +169,8 @@ jobs:
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/kurtosis/setup
         with:
@@ -190,6 +199,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/kurtosis/setup
         with:
@@ -197,7 +208,9 @@ jobs:
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Deploy L1 devnet
-        run: kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml --verbosity=DETAILED github.com/ethpandaops/ethereum-package@d68f73fd042570476e248fe5adb1e92d24c01d19 # 2026-10-19, keep in sync with kurtosis.yml
+        run: |
+          ethereum_package=$(yq -r '.replace["github.com/ethpandaops/ethereum-package"]' kurtosis.yml)
+          kurtosis run --enclave=${{ env.ENCLAVE_NAME }} --verbosity detailed --args-file ./.github/configs/nightly/external-l1/ethereum.yml "${ethereum_package}"
 
       - name: Wait for L1 to be ready
         run: |
@@ -234,6 +247,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/kurtosis/setup
         with:
@@ -355,6 +370,7 @@ jobs:
   # included; workflow-summary below only pings Slack for scheduled runs.
   run-summary:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: always()
     needs:
       - run-without-args
@@ -376,7 +392,6 @@ jobs:
           github_token: ${{ github.token }}
 
   workflow-summary:
-    runs-on: ubuntu-latest
     if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     needs:
       - run-without-args
@@ -384,44 +399,11 @@ jobs:
       - test-e2e
       - run-with-external-l1
       - run-with-cl-el-genesis
-    steps:
-      - name: Build the Slack message
-        id: message
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NEEDS: ${{ toJSON(needs) }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          JOBS_API: repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs
-        run: |
-          # Links are a bonus: an API error must not cost the Slack message.
-          jobs=$(gh api --paginate "$JOBS_API" --jq '.jobs[]') || jobs=""
-
-          tests=$(jq -r '[.[].result]
-            | if index("failure") then "some tests failed ❌"
-              elif index("cancelled") or index("skipped") then "some tests were skipped ⚠️"
-              else "all tests passed ✅" end' <<< "$NEEDS")
-          # Per matrix leg, so the link lands on the leg that broke.
-          broken=$(jq -rs '[.[] | select(.conclusion == "failure" or .conclusion == "cancelled")
-            | "<\(.html_url)|\(.name)>"] | join(", ")' <<< "$jobs")
-          [[ -n "$broken" ]] && tests+=" ($broken)"
-
-          echo "text=<$RUN_URL|Kurtosis POS Nightly>: $tests" >> "$GITHUB_OUTPUT"
-
-      - uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
-        with:
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          method: chat.postMessage
-          payload: |
-            {
-              "channel": ${{ env.DEVTOOLS_SLACK_ALERTS_CHANNEL_ID }},
-              "text": "Kurtosis POS Nightly - Test Summary",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ${{ toJSON(steps.message.outputs.text) }}
-                  }
-                }
-              ]
-            }
+    permissions:
+      actions: read
+    uses: 0xPolygon/kurtosis-workflows/.github/workflows/workflow-summary.yml@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
+    with:
+      name: Kurtosis POS Nightly
+      needs: ${{ toJSON(needs) }}
+    secrets:
+      slack_bot_token: ${{ secrets.SLACK_BOT_TOKEN }}

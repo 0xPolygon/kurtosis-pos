@@ -3,10 +3,6 @@ description: Set up Docker authentication and Kurtosis environment
 
 inputs:
   # Dependency versions
-  kurtosis_version:
-    description: The version of Kurtosis to install
-    required: false
-    default: 1.23.0
   foundry_version:
     description: The version of Foundry to install
     required: false
@@ -76,27 +72,17 @@ runs:
 
     # Install dependencies
     - name: Install kurtosis
-      shell: bash
-      run: |
-        echo "deb [trusted=yes] https://sdk.kurtosis.com/kurtosis-cli-release-artifacts/ /" | sudo tee /etc/apt/sources.list.d/kurtosis.list
-        sudo apt update
-        sudo apt install -y kurtosis-cli=${{ inputs.kurtosis_version }}
-        kurtosis analytics disable
-        # Since 1.21 the engine starts otel + ClickHouse side containers on Docker, and every kurtosis
-        # command re-checks them. CI checks logs with `docker logs` and vector still serves
-        # `kurtosis service logs`, so opt out of the otel collector.
-        printf '%s\n' 'config-version: 9' 'should-send-metrics: false' 'kurtosis-clusters:' \
-          '  docker:' '    type: docker' '    backend-log-collector: vector' > "$(kurtosis config path)"
-        kurtosis version
+      id: kurtosis
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/setup-kurtosis@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
 
     - name: Install yq
       shell: bash
       run: |
-        pip3 install yq
+        pip3 install yq==4.4.5
         yq --version
 
     - name: Install foundry
-      uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
       with:
         version: ${{ inputs.foundry_version }}
         cache: true
@@ -109,13 +95,13 @@ runs:
     # Login to registries
     - name: Login to docker hub registry
       if: ${{ inputs.docker_username && inputs.docker_token }}
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
       with:
         username: ${{ inputs.docker_username }}
         password: ${{ inputs.docker_token }}
 
     - name: Login to github container registry
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -130,8 +116,9 @@ runs:
         restore-keys: |
           ${{ inputs.cache_key }}-${{ inputs.main_branch }}-
 
+    # Unconditional: actions/cache only outputs cache-hit, which is 'false' on a restore-key match, and
+    # the step is a no-op when nothing was restored.
     - name: Load cached docker images
-      if: steps.cache.outputs.cache-matched-key != 'true'
       shell: bash
       env:
         CACHE_FOLDER: ${{ inputs.cache_folder || format('{0}/docker-images', runner.temp) }}
@@ -150,66 +137,76 @@ runs:
         fi
 
     - name: List images
-      if: steps.cache.outputs.cache-matched-key != 'true'
       shell: bash
       run: docker images
 
-    # Pull images from GAR if cache miss
+    # Fork PRs get neither secrets nor an OIDC token, so they cannot reach GAR: Kurtosis then pulls the
+    # images from their original registries. Pull from GAR unless the cache key matched exactly: such
+    # an entry was saved by a run of this very commit, after it had pulled all the images below.
+    - name: Check access to the GAR mirror
+      id: gar
+      shell: bash
+      env:
+        FORK: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+        CACHE_HIT: ${{ steps.cache.outputs.cache-hit }}
+      run: |
+        if [[ "${FORK}" == "true" ]]; then
+          echo "::notice title=setup::Pull request from a fork: images are pulled from their original registries, not from GAR."
+          use=false pull=false
+        elif [[ "${CACHE_HIT}" == "true" ]]; then
+          use=true pull=false
+        else
+          use=true pull=true
+        fi
+        echo "use=${use} pull=${pull}"
+        printf 'use=%s\npull=%s\n' "${use}" "${pull}" >> "${GITHUB_OUTPUT}"
+
     - name: Authenticate to GCP
-      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+      if: steps.gar.outputs.pull == 'true'
       with:
         workload_identity_provider: ${{ inputs.gcp_wip }}
         service_account: ${{ inputs.gcp_sa }}
 
     - name: Setup gcloud cli
       uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      if: steps.gar.outputs.pull == 'true'
 
     - name: Configure docker
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      if: steps.gar.outputs.pull == 'true'
       shell: bash
       run: gcloud auth configure-docker ${{ inputs.gcp_registry }}
 
     - name: Install python
-      uses: actions/setup-python@v6
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      uses: actions/setup-python@v7
+      if: steps.gar.outputs.use == 'true'
       with:
         python-version: ${{ inputs.python_version }}
 
+    # Also on an exact cache hit: the cached images carry the prefixed names.
     - name: Add registry prefix to image names
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
+      if: steps.gar.outputs.use == 'true'
       shell: bash
       run: |
         registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
         python3 .github/actions/kurtosis/setup/add-registry-prefix.py --registry-prefix $registry_prefix
 
-    - name: Pull images from GAR
-      if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
-      shell: bash
-      run: |
-        # Pull kurtosis-pos images (already have registry prefix added)
-        while IFS= read -r image; do
-          if docker inspect "$image" > /dev/null 2>&1; then
-            echo "Image already exists, skipping pull: $image"
-          else
-            echo "Pulling image: $image"
-            docker pull "$image"
-          fi
-        done < modified-images.txt
+    # Images of kurtosis-pos, already prefixed with the registry
+    - name: Pull kurtosis-pos images from GAR
+      if: steps.gar.outputs.pull == 'true'
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-images@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
+      with:
+        images_file: modified-images.txt
+        skip_present: true
 
-        # Pull kurtosis core and ethereum-package images
-        registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
-        while IFS= read -r image; do
-          prefixed_image="${registry_prefix}/${image}"
-          if docker inspect "$prefixed_image" > /dev/null 2>&1; then
-            echo "Image already exists, skipping pull: $prefixed_image"
-          else
-            echo "Pulling image: $prefixed_image"
-            docker pull "$prefixed_image"
-            docker tag "$prefixed_image" "$image"
-          fi
-        done < .github/actions/kurtosis/setup/images.txt
+    # Kurtosis core and ethereum-package images, tagged back to their original names
+    - name: Pull kurtosis core and ethereum-package images from GAR
+      if: steps.gar.outputs.pull == 'true'
+      uses: 0xPolygon/kurtosis-workflows/.github/actions/pull-kurtosis-images@d9bb850e47a456b6519c1ba12ee9fbd32f21fe34 # v0.1.5
+      with:
+        kurtosis_version: ${{ steps.kurtosis.outputs.version }}
+        registry_prefix: ${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
+        skip_present: true
 
     # Debug
     - name: List images

@@ -93,7 +93,7 @@ def main() -> int:
         inline_pins = references[locator]
 
         for pin, locations in sorted(
-                (p, l) for p, l in inline_pins.items() if p is not None):
+                (p, locs) for p, locs in inline_pins.items() if p is not None):
             errors.append(
                 f"{locator}: pinned inline as '@{pin}' at {', '.join(locations)}\n"
                 f"    Versions belong in the `replace` block of kurtosis.yml. "

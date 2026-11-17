@@ -12,7 +12,6 @@ Usage:
 
 import argparse
 import re
-import shutil
 import sys
 from pathlib import Path
 from typing import List, Tuple
@@ -83,7 +82,6 @@ class RegistryPrefixAdder:
         modified_images = []
 
         for line in dict_content.split('\n'):
-            original_line = line
             stripped_line = line.strip()
 
             # Skip empty lines and comments
@@ -220,7 +218,7 @@ def main():
 
             # Validate the modified file
             if prefix_adder.validate_file():
-                print(f"File validation passed")
+                print("File validation passed")
             else:
                 print(
                     f"File validation failed - please check {constants_path}")
