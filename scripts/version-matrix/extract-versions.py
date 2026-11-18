@@ -114,7 +114,9 @@ UPSTREAM_TAGGED_IMAGES = {
 # Images intentionally left out of the matrix, with the reason. Keeping this
 # explicit means a newly added image that lands in neither table is a visible
 # gap rather than a silent omission — main() prints a warning for those.
-SKIPPED_IMAGES: Dict[str, str] = {}
+SKIPPED_IMAGES: Dict[str, str] = {
+    "pos_gateway_image": "internal Artifact Registry image with no public release feed",
+}
 
 # Images the devnet cannot run without: the L1 (geth and lighthouse, or anvil),
 # the L2 clients and what deploys them. Everything else (observability, spammers, status checker, the sequence

@@ -41,6 +41,7 @@ ADDITIONAL_SERVICES = struct(
     blockscout="blockscout",
     bridge_spammer="bridge_spammer",
     nginx="nginx",
+    pos_gateway="pos_gateway",
     observability="observability",
     tx_spammer="tx_spammer",
     status_checker="status_checker",
@@ -63,6 +64,8 @@ IMAGES = {
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14",
     # additional services
     "nginx_image": "nginx:1.31.8-alpine",
+    # Internal image (Artifact Registry): pulling it requires access to it.
+    "pos_gateway_image": "europe-west3-docker.pkg.dev/prj-polygonlabs-shared-prod/pos-gateway/pos-gateway:v0.2.0",
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.10",
     # observability
     "prometheus_image": "prom/prometheus:v3.16.0",
