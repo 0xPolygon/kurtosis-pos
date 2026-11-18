@@ -77,6 +77,7 @@ COMPONENT_REPOS = {
     "grafana_image": ("grafana", "grafana/grafana"),
     "panoptichain_image": ("panoptichain", "0xPolygon/panoptichain"),
     # sequence store (preconfirmation experiment)
+    "seqstore_image": ("sequence-store", "0xPolygon/sequence-store"),
     "seqstore_redpanda_image": ("redpanda", "redpanda-data/redpanda"),
     "seqstore_envoy_image": ("envoy", "envoyproxy/envoy"),
 }
@@ -114,9 +115,7 @@ UPSTREAM_TAGGED_IMAGES = {
 # Images intentionally left out of the matrix, with the reason. Keeping this
 # explicit means a newly added image that lands in neither table is a visible
 # gap rather than a silent omission — main() prints a warning for those.
-SKIPPED_IMAGES: Dict[str, str] = {
-    "seqstore_image": "internal GHCR package of a private repo: neither its releases nor its tags are readable without a token",
-}
+SKIPPED_IMAGES: Dict[str, str] = {}
 
 # Images the devnet cannot run without: the L1 (geth and lighthouse, or anvil),
 # the L2 clients and what deploys them. Everything else (observability, spammers, status checker, the sequence
