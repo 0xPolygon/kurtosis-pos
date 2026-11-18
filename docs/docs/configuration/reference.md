@@ -256,7 +256,7 @@ Deployed if and only if at least one participant sets `el_bor_use_sequence_store
 
 | Field          | Type   | Default                                 | Description                                                                                            |
 | -------------- | ------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| image          | string | ghcr.io/0xpolygon/sequence-store:v0.1.0 | Sequence-store image (ingress/gateway/auditor), internal GHCR package; set a local build to override   |
+| image          | string | ghcr.io/0xpolygon/sequence-store:v0.1.0 | Sequence-store image (ingress/gateway/auditor), internal package for preconfirmations                  |
 | redpanda_image | string | redpandadata/redpanda:v26.2.2           | Redpanda broker image                                                                                  |
 | redpanda_count | int    | 1                                       | Broker count. With more than one, the topic is created at RF=count with majority `min.insync.replicas` |
 | gateway_count  | int    | 1                                       | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name  |
