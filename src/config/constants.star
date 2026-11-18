@@ -70,14 +70,14 @@ IMAGES = {
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.2.0",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
+    "seqstore_image": "ghcr.io/0xpolygon/sequence-store:v0.1.0",
     "seqstore_redpanda_image": "redpandadata/redpanda:v26.2.2",
     "seqstore_envoy_image": "envoyproxy/envoy:v1.40.2",
 }
 
-# The sequence-store image is built locally from the sequence-store repo.
-# Deliberately not in IMAGES: CI mirrors that dict through the GAR remote
-# registry, and a local-only tag is not pullable from anywhere.
-SEQSTORE_DEFAULT_IMAGE = "seqstore:local"
+# Internal GHCR package: pulling it requires read access to it. To use a local
+# build instead, set `sequence_store_params.image`.
+SEQSTORE_DEFAULT_IMAGE = IMAGES.get("seqstore_image")
 
 # Sequence-store service names and gRPC port, shared between the store
 # launcher and the bor config template (the [sequencer] endpoints).

@@ -17,6 +17,5 @@ polygon_pos_package:
     - status_checker
     - tx_spammer
   sequence_store_params:
-    # The GHCR package is internal: CI can pull it only if the package grants
-    # this repository read access.
+    # Internal image: the package grants this repository read access.
     image: ghcr.io/0xpolygon/sequence-store:v0.1.0

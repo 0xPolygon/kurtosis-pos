@@ -41,6 +41,7 @@ Everything else: utility images, observability, the status checker and the seque
 | panoptichain    | [8.2.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.2.0)      | [8.2.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.2.0)     | ✅ up to date |
 | prometheus      | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ up to date |
 | redpanda        | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ up to date |
+| sequence-store  | [0.1.0](https://github.com/0xPolygon/sequence-store/releases/tag/v0.1.0)    | [0.1.0](https://github.com/0xPolygon/sequence-store/releases/tag/v0.1.0)   | ✅ up to date |
 | status-checker  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10)  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10) | ✅ up to date |
 | toolbox         | 0.0.14                                                                      | 0.0.14                                                                     | ✅ up to date |
 
