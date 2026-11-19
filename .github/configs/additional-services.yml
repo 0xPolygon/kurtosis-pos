@@ -16,8 +16,3 @@ polygon_pos_package:
     - observability
     - status_checker
     - tx_spammer
-  sequence_store_params:
-    # No release tags exist yet on 0xPolygon/sequence-store, so pin to the
-    # develop-branch tag. The GHCR package is internal: CI can pull it only
-    # if the package grants this repository read access.
-    image: ghcr.io/0xpolygon/sequence-store:dev

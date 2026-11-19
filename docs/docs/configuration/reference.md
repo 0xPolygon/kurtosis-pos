@@ -269,13 +269,13 @@ Only allowed when `observability` is listed in `additional_services`.
 
 Deployed if and only if at least one participant sets `el_bor_use_sequence_store: true`. One store is shared by the whole devnet: validators publish to the ingress, RPC nodes consume the gateway stream.
 
-| Field          | Type   | Default                       | Description                                                                                            |
-| -------------- | ------ | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
-| image          | string | seqstore:local                | Sequence-store image (ingress/gateway/auditor), built locally from the sequence-store repo             |
-| redpanda_image | string | redpandadata/redpanda:v26.2.2 | Redpanda broker image                                                                                  |
-| redpanda_count | int    | 1                             | Broker count. With more than one, the topic is created at RF=count with majority `min.insync.replicas` |
-| gateway_count  | int    | 1                             | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name  |
-| envoy_image    | string | envoyproxy/envoy:v1.40.2      | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                         |
+| Field          | Type   | Default                                 | Description                                                                                                                            |
+| -------------- | ------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| image          | string | ghcr.io/0xpolygon/sequence-store:v0.1.0 | Sequence-store image (ingress/gateway/auditor), internal package, requires GHCR access (override with a locally built image otherwise) |
+| redpanda_image | string | redpandadata/redpanda:v26.2.2           | Redpanda broker image                                                                                                                  |
+| redpanda_count | int    | 1                                       | Broker count. With more than one, the topic is created at RF=count with majority `min.insync.replicas`                                 |
+| gateway_count  | int    | 1                                       | Gateway count. With more than one, an envoy load balancer takes the canonical `seqstore-gateway` name                                  |
+| envoy_image    | string | envoyproxy/envoy:v1.40.2                | Envoy image for the gateway load balancer (only used when `gateway_count > 1`)                                                         |
 
 ### `status_checker_params`
 

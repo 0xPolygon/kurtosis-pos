@@ -77,6 +77,7 @@ COMPONENT_REPOS = {
     "grafana_image": ("grafana", "grafana/grafana"),
     "panoptichain_image": ("panoptichain", "0xPolygon/panoptichain"),
     # sequence store (preconfirmation experiment)
+    "seqstore_image": ("sequence-store", "0xPolygon/sequence-store"),
     "seqstore_redpanda_image": ("redpanda", "redpanda-data/redpanda"),
     "seqstore_envoy_image": ("envoy", "envoyproxy/envoy"),
 }
