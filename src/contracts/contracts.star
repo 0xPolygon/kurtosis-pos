@@ -2,6 +2,7 @@ plasma_bridge_deployer = import_module("./plasma_bridge_deployer.star")
 matic_to_pol_migrator = import_module("./matic_to_pol_migrator.star")
 pos_bridge_deployer = import_module("./pos_bridge_deployer.star")
 fx_portal_deployer = import_module("./fx_portal_deployer.star")
+el_contract_deployer = import_module("./el_contract_deployer.star")
 upgrade_validator_share = import_module("./upgrade_validator_share.star")
 lst_deployer = import_module("./lst_deployer.star")
 
@@ -54,6 +55,10 @@ def deploy_l2_contracts(
     validator_accounts,
     l1_addresses,
 ):
+    # Deployed first, so they land as early as possible: a hard fork under test may
+    # call them from its fork block.
+    el_contract_deployer.deploy(plan, polygon_pos_args, l2_rpc_url, private_key)
+
     plasma_bridge_addresses = plasma_bridge_deployer.deploy_l2(
         plan,
         polygon_pos_args,

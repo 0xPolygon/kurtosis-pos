@@ -137,6 +137,9 @@ POLYGON_POS_PACKAGE_ARGS = {
         #   amoy BP:    pos-ops/roles/deploy-amoy-config/amoy/pos-amoy-london-bp-nvme-01/bor/config.toml#L83
         #   mainnet BP: pos-ops/roles/deploy-mainnet-config/mainnet/anonymous-91/bor/config.toml#L65
         "el_gas_limit": 200000000,
+        # Extra contracts deployed on L2 by transaction once the chain is up. Each entry
+        # takes the creation `bytecode` and, optionally, the `private_key` to deploy from.
+        "el_contract_deployments": [],
         # Polygon PoS hard fork configurations
         "jaipur_fork_block": constants.EL_HARD_FORK_BLOCKS.get("jaipur"),
         "delhi_fork_block": constants.EL_HARD_FORK_BLOCKS.get("delhi"),

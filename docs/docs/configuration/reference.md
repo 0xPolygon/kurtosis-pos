@@ -188,6 +188,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | el_sprint_duration                    | int    | 16                 | Duration of an EL sprint (blocks)                                                                            |
 | el_span_duration                      | int    | 128                | Duration of an EL span (blocks).                                                                             |
 | el_gas_limit                          | int    | 200_000_000        | EL gas limit. Mirrors amoy BP (mainnet BP: 120M)                                                             |
+| el_contract_deployments               | list   | []                 | Extra contracts deployed on L2 by transaction. See [below](#el_contract_deployments)                         |
 | jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                                                                 |
 | delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                                                                  |
 | indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                                                                 |
@@ -205,6 +206,25 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | austin_fork_block                     | int    | 128                | Block number for Austin hard fork activation (bor >= 2.10.0)                                                 |
 | hampi_fork_block                      | int    | 128                | Block number for Hampi hard fork activation (bor >= 2.10.1)                                                  |
 | uburu_fork_block                      | int    | 128                | Block number for Uburu hard fork activation (bor >= 2.11.0)                                                  |
+
+#### `el_contract_deployments`
+
+Deploys extra contracts on L2 by transaction as soon as the chain is up, before the package's own L2 contracts. Use it for contracts that must be in place early, such as ones a hard fork under test calls from its fork block.
+
+Each entry takes the contract's creation `bytecode`, with any constructor arguments appended, and optionally the `private_key` to deploy from. Without a key, the admin deploys. Entries are deployed in order, one transaction each, so a contract's address follows from its deployer and that deployer's nonce. A deployer with no balance is first sent 10 ether by the admin.
+
+The addresses are logged and stored in the `el-contract-deployments` files artifact.
+
+Each transaction the admin sends here moves the addresses of the package's own L2 contracts, because those follow from the admin's nonce too.
+
+```yml title="params.yml"
+polygon_pos_package:
+  network_params:
+    el_contract_deployments:
+      - bytecode: "0x6080604052..."
+      - bytecode: "0x6080604052..."
+        private_key: "0x..."
+```
 
 ### `additional_services`
 
