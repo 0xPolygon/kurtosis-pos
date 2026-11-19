@@ -29,6 +29,10 @@ inputs:
     description: Container registry url
     required: false
     default: europe-west2-docker.pkg.dev
+  gcp_shared_registry:
+    description: Registry of the shared images pulled by kurtosis (pos-gateway)
+    required: false
+    default: europe-west3-docker.pkg.dev
   gcp_project_id:
     description: Project id
     required: false
@@ -155,7 +159,7 @@ runs:
       run: docker images
 
     # Authenticate on every run, not only on a cache miss: `kurtosis run` itself
-    # pulls the pos-gateway image from the shared GAR in europe-west3.
+    # pulls the pos-gateway image from the shared registry.
     - name: Authenticate to GCP
       uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
       with:
@@ -167,7 +171,7 @@ runs:
 
     - name: Configure docker
       shell: bash
-      run: gcloud auth configure-docker ${{ inputs.gcp_registry }},europe-west3-docker.pkg.dev
+      run: gcloud auth configure-docker ${{ inputs.gcp_registry }},${{ inputs.gcp_shared_registry }}
 
     # Pull images from GAR if cache miss
 
