@@ -210,16 +210,16 @@ You can check the admin private key and mnemonic default values at `src/config/i
 
 The `additional_services` array lets you enable optional tools and utilities alongside your devnet. These are not configuration options themselves, but rather extra services you can include by listing their names in the array.
 
-| Service           | Description                                                                                                                                                                                                                               |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                                                                                                                                                          |
-| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                                                                                                                                                       |
-| `ethstats_server` | Visual interface for tracking network status                                                                                                                                                                                              |
-| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`)                                                                                                               |
-| `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`)                                                                                                 |
-| `pos_gateway`     | Internal [pos-gateway](https://github.com/0xPolygon/pos-gateway) JSON-RPC reverse proxy and load balancer in front of the L2 RPC nodes, with access keys and a per-method policy. Requires access to its image (see `pos_gateway_params`) |
-| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                                                                                                                              |
-| `tx_spammer`      | Send transactions to the network to simulate load                                                                                                                                                                                         |
+| Service           | Description                                                                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                                                                       |
+| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                                                                    |
+| `ethstats_server` | Visual interface for tracking network status                                                                                                           |
+| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`)                            |
+| `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`)              |
+| `pos_gateway`     | [pos-gateway](https://github.com/0xPolygon/pos-gateway), an internal JSON-RPC reverse proxy and load balancer with access keys and a per-method policy |
+| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                                           |
+| `tx_spammer`      | Send transactions to the network to simulate load                                                                                                      |
 
 ### `nginx_params`
 
