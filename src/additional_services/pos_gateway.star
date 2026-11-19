@@ -52,7 +52,7 @@ def launch(plan, pos_gateway_params, l2_context):
             ready_conditions=ReadyCondition(
                 recipe=PostHttpRequestRecipe(
                     port_id=RPC_PORT_ID,
-                    endpoint="/{}".format(NETWORK_NAME),
+                    endpoint="/{}?key=devnet-admin".format(NETWORK_NAME),
                     content_type="application/json",
                     body='{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}',
                 ),
