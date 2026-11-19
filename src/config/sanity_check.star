@@ -49,7 +49,7 @@ POLYGON_POS_PARAMS = {
         "el_sprint_duration",
         "el_span_duration",
         "el_gas_limit",
-        "el_contract_deployments",
+        "el_setup_transactions",
         # hardforks
         "jaipur_fork_block",
         "delhi_fork_block",
@@ -127,7 +127,7 @@ VALID_LOG_LEVELS = [
     constants.LOG_LEVEL.trace,
 ]
 
-VALID_EL_CONTRACT_DEPLOYMENT_FIELDS = ["bytecode", "private_key"]
+VALID_EL_SETUP_TRANSACTION_FIELDS = ["to", "data", "private_key"]
 
 VALID_LOG_FORMATS = [
     constants.LOG_FORMAT.text,
@@ -183,7 +183,7 @@ def sanity_check_polygon_args(plan, input_args):
     cl_environment = network_params.get("cl_environment")
     _validate_cl_environment(cl_environment)
 
-    _validate_el_contract_deployments(network_params.get("el_contract_deployments"))
+    _validate_el_setup_transactions(network_params.get("el_setup_transactions"))
 
     # The parser already rejects store params without an opted-in participant;
     # here we validate the counts themselves.
@@ -430,39 +430,46 @@ def _validate_cl_environment(cl_environment):
             )
 
 
-def _validate_el_contract_deployments(deployments):
-    if not deployments:
+def _validate_el_setup_transactions(transactions):
+    if not transactions:
         return
 
-    if type(deployments) != "list":
-        fail('"el_contract_deployments" must be a list of deployments.')
+    if type(transactions) != "list":
+        fail('"el_setup_transactions" must be a list of transactions.')
 
-    for i, deployment in enumerate(deployments):
-        if type(deployment) != "dict":
+    for i, transaction in enumerate(transactions):
+        if type(transaction) != "dict":
             fail(
-                'Invalid deployment {} in "el_contract_deployments": expected a dict.'.format(
+                'Invalid transaction {} in "el_setup_transactions": expected a dict.'.format(
                     i
                 )
             )
-        for field in deployment.keys():
-            if field not in VALID_EL_CONTRACT_DEPLOYMENT_FIELDS:
+        for field in transaction.keys():
+            if field not in VALID_EL_SETUP_TRANSACTION_FIELDS:
                 fail(
-                    'Invalid field: "{}" in deployment {} of "el_contract_deployments". Allowed fields: {}.'.format(
-                        field, i, VALID_EL_CONTRACT_DEPLOYMENT_FIELDS
+                    'Invalid field: "{}" in transaction {} of "el_setup_transactions". Allowed fields: {}.'.format(
+                        field, i, VALID_EL_SETUP_TRANSACTION_FIELDS
                     )
                 )
-        if not _is_hex(deployment.get("bytecode")):
+        if not _is_hex(transaction.get("data")):
             fail(
-                'Invalid "bytecode" in deployment {} of "el_contract_deployments": expected a quoted 0x-prefixed hex string.'.format(
+                'Invalid "data" in transaction {} of "el_setup_transactions": expected a quoted 0x-prefixed hex string.'.format(
                     i
                 )
             )
-        private_key = deployment.get("private_key")
+        to = transaction.get("to")
+        if to != None and not (_is_hex(to) and len(to) == 42):
+            fail(
+                'Invalid "to" in transaction {} of "el_setup_transactions": expected a quoted 0x-prefixed address.'.format(
+                    i
+                )
+            )
+        private_key = transaction.get("private_key")
         if private_key != None and not (
             _is_hex(private_key) and len(private_key) == 66
         ):
             fail(
-                'Invalid "private_key" in deployment {} of "el_contract_deployments": expected a quoted 0x-prefixed 32-byte hex string.'.format(
+                'Invalid "private_key" in transaction {} of "el_setup_transactions": expected a quoted 0x-prefixed 32-byte hex string.'.format(
                     i
                 )
             )

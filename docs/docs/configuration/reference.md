@@ -188,7 +188,7 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | el_sprint_duration                    | int    | 16                 | Duration of an EL sprint (blocks)                                                                            |
 | el_span_duration                      | int    | 128                | Duration of an EL span (blocks).                                                                             |
 | el_gas_limit                          | int    | 200_000_000        | EL gas limit. Mirrors amoy BP (mainnet BP: 120M)                                                             |
-| el_contract_deployments               | list   | []                 | Extra contracts deployed on L2 by transaction. See [below](#el_contract_deployments)                         |
+| el_setup_transactions                 | list   | []                 | Transactions sent on L2 once the chain is up. See [below](#el_setup_transactions)                            |
 | jaipur_fork_block                     | int    | 0                  | Block number for Jaipur hard fork activation                                                                 |
 | delhi_fork_block                      | int    | 0                  | Block number for Delhi hard fork activation                                                                  |
 | indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                                                                 |
@@ -207,22 +207,27 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | hampi_fork_block                      | int    | 128                | Block number for Hampi hard fork activation (bor >= 2.10.1)                                                  |
 | uburu_fork_block                      | int    | 128                | Block number for Uburu hard fork activation (bor >= 2.11.0)                                                  |
 
-#### `el_contract_deployments`
+#### `el_setup_transactions`
 
-Deploys extra contracts on L2 by transaction as soon as the chain is up, before the package's own L2 contracts. Use it for contracts that must be in place early, such as ones a hard fork under test calls from its fork block.
+Sends transactions on L2 as soon as the chain is up, before the package's own L2 contracts are deployed. Use it to set up contracts that must be in place early, such as ones a hard fork under test calls from its fork block.
 
-Each entry takes the contract's creation `bytecode`, with any constructor arguments appended, and optionally the `private_key` to deploy from. Without a key, the admin deploys. Entries are deployed in order, one transaction each, so a contract's address follows from its deployer and that deployer's nonce. A deployer with no balance is first sent 10 ether by the admin.
+Each entry takes the call `data`, and optionally the address it goes `to` and the `private_key` to send from. An entry without `to` creates a contract from `data`. Without a key, the admin sends. The transactions are sent in order, and the run stops at the first one that fails. A sender with no balance is first sent 10 ether by the admin.
 
-The addresses are logged and stored in the `el-contract-deployments` files artifact.
+The L2 genesis holds the CREATE2 factory at `0x4e59b44847b379578588920cA78FbF26c0B4956C`. A transaction to it with a 32-byte salt followed by creation code deploys a contract at an address that does not depend on the sender.
 
-Each transaction the admin sends here moves the addresses of the package's own L2 contracts, because those follow from the admin's nonce too.
+The receipts are logged and stored in the `el-setup-transactions` files artifact.
+
+Each transaction the admin sends here moves the addresses of the package's own L2 contracts, because those follow from the admin's nonce.
 
 ```yml title="params.yml"
 polygon_pos_package:
   network_params:
-    el_contract_deployments:
-      - bytecode: "0x6080604052..."
-      - bytecode: "0x6080604052..."
+    el_setup_transactions:
+      - data: "0x6080604052..."
+      - to: "0x4e59b44847b379578588920cA78FbF26c0B4956C"
+        data: "0x0000...6080604052..."
+      - to: "0x..."
+        data: "0x3659cfe6..."
         private_key: "0x..."
 ```
 

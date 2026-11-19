@@ -142,12 +142,13 @@ def test_sanity_check_with_nginx_params_but_nginx_not_deployed(plan):
     )
 
 
-def test_sanity_check_with_el_contract_deployments(plan):
+def test_sanity_check_with_el_setup_transactions(plan):
     network_params = input_parser.POLYGON_POS_PACKAGE_ARGS.get("network_params") | {
-        "el_contract_deployments": [
-            {"bytecode": "0x6080"},
+        "el_setup_transactions": [
+            {"data": "0x6080"},
             {
-                "bytecode": "0x6080",
+                "to": "0x" + "cd" * 20,
+                "data": "0x3659cfe6",
                 "private_key": "0x" + "ab" * 32,
             },
         ],
@@ -156,34 +157,45 @@ def test_sanity_check_with_el_contract_deployments(plan):
     sanity_check.sanity_check_polygon_args(plan, args)
 
 
-def test_sanity_check_with_el_contract_deployments_invalid_bytecode(plan):
+def test_sanity_check_with_el_setup_transactions_invalid_data(plan):
     network_params = input_parser.POLYGON_POS_PACKAGE_ARGS.get("network_params") | {
-        "el_contract_deployments": [{"bytecode": "6080"}],
+        "el_setup_transactions": [{"data": "6080"}],
     }
     args = input_parser.POLYGON_POS_PACKAGE_ARGS | {"network_params": network_params}
     expect.fails(
         lambda: sanity_check.sanity_check_polygon_args(plan, args),
-        'Invalid "bytecode" in deployment 0',
+        'Invalid "data" in transaction 0',
     )
 
 
-def test_sanity_check_with_el_contract_deployments_invalid_private_key(plan):
+def test_sanity_check_with_el_setup_transactions_invalid_to(plan):
     network_params = input_parser.POLYGON_POS_PACKAGE_ARGS.get("network_params") | {
-        "el_contract_deployments": [{"bytecode": "0x6080", "private_key": "0x1234"}],
+        "el_setup_transactions": [{"to": "0x1234", "data": "0x6080"}],
     }
     args = input_parser.POLYGON_POS_PACKAGE_ARGS | {"network_params": network_params}
     expect.fails(
         lambda: sanity_check.sanity_check_polygon_args(plan, args),
-        'Invalid "private_key" in deployment 0',
+        'Invalid "to" in transaction 0',
     )
 
 
-def test_sanity_check_with_el_contract_deployments_invalid_field(plan):
+def test_sanity_check_with_el_setup_transactions_invalid_private_key(plan):
     network_params = input_parser.POLYGON_POS_PACKAGE_ARGS.get("network_params") | {
-        "el_contract_deployments": [{"bytecode": "0x6080", "salt": "0x00"}],
+        "el_setup_transactions": [{"data": "0x6080", "private_key": "0x1234"}],
     }
     args = input_parser.POLYGON_POS_PACKAGE_ARGS | {"network_params": network_params}
     expect.fails(
         lambda: sanity_check.sanity_check_polygon_args(plan, args),
-        'Invalid field: "salt"',
+        'Invalid "private_key" in transaction 0',
+    )
+
+
+def test_sanity_check_with_el_setup_transactions_invalid_field(plan):
+    network_params = input_parser.POLYGON_POS_PACKAGE_ARGS.get("network_params") | {
+        "el_setup_transactions": [{"data": "0x6080", "value": "1ether"}],
+    }
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {"network_params": network_params}
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        'Invalid field: "value"',
     )
