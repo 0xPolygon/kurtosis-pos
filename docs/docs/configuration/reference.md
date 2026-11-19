@@ -217,7 +217,7 @@ The `additional_services` array lets you enable optional tools and utilities alo
 | `ethstats_server` | Visual interface for tracking network status                                                                                                                                              |
 | `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`)                                                               |
 | `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`)                                                 |
-| `pos_gateway`     | Internal [pos-gateway](https://github.com/0xPolygon/pos-gateway) authenticated JSON-RPC gateway in front of the bor nodes, for people with access to its image (see `pos_gateway_params`) |
+| `pos_gateway`     | Internal [pos-gateway](https://github.com/0xPolygon/pos-gateway) JSON-RPC reverse proxy and load balancer in front of the L2 RPC nodes, with access keys and a per-method policy. Requires access to its image (see `pos_gateway_params`) |
 | `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                                                                              |
 | `tx_spammer`      | Send transactions to the network to simulate load                                                                                                                                         |
 
