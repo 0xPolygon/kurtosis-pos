@@ -240,11 +240,20 @@ cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 
 Only allowed when `pos_gateway` is listed in `additional_services`.
 
-The `pos_gateway` service deploys the internal pos-gateway with every non-stateless bor node as an upstream. The image is pulled from a private Artifact Registry, so you need access to it (`gcloud auth configure-docker europe-west3-docker.pkg.dev`). The config is minimal: one `devnet` network (chain ID `4927`), no billing database and no access-key enforcement.
+The `pos_gateway` service deploys the internal pos-gateway with every non-stateless bor node as an upstream. The image is pulled from a private Artifact Registry, so you need access to it (`gcloud auth configure-docker europe-west3-docker.pkg.dev`). The config is minimal: one `devnet` network (chain ID `4927`), no billing database. Every request needs an access key, sent as `?key=<key>`, `X-Access-Key` or `X-Api-Key`.
 
 ```bash
-cast block-number --rpc-url "$(kurtosis port print pos pos-gateway rpc)/devnet"
+cast block-number --rpc-url "$(kurtosis port print pos pos-gateway rpc)/devnet?key=admin"
 ```
+
+Keys:
+
+| Key      | Products                   | Unlocks                                                      |
+| -------- | -------------------------- | ------------------------------------------------------------ |
+| `admin`  | `pm`, `lls_tx`, `lls_idx`  | Every product                                                |
+| `limited`| `lls_idx`                  | Low latency sequencing, index side (preconfirmed logs)       |
+| `pm`     | `pm`                       | Private mempool                                              |
+| `lls_tx` | `lls_tx`                   | Low latency sequencing, send side (preconfirmations)         |
 
 | Field | Type   | Default                                                                                | Description                          |
 | ----- | ------ | -------------------------------------------------------------------------------------- | ------------------------------------ |
