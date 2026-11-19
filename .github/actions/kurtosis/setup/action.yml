@@ -26,13 +26,11 @@ inputs:
 
   # GCP settings
   gcp_registry:
-    description: Container registry url
+    description: |
+      Comma-separated container registry urls to authenticate to. The first one
+      hosts the virtual repository that image names are prefixed with.
     required: false
-    default: europe-west2-docker.pkg.dev
-  gcp_shared_registry:
-    description: Registry of the shared images pulled by kurtosis (pos-gateway)
-    required: false
-    default: europe-west3-docker.pkg.dev
+    default: europe-west2-docker.pkg.dev,europe-west3-docker.pkg.dev
   gcp_project_id:
     description: Project id
     required: false
@@ -171,7 +169,7 @@ runs:
 
     - name: Configure docker
       shell: bash
-      run: gcloud auth configure-docker ${{ inputs.gcp_registry }},${{ inputs.gcp_shared_registry }}
+      run: gcloud auth configure-docker ${{ inputs.gcp_registry }}
 
     # Pull images from GAR if cache miss
 
@@ -185,7 +183,7 @@ runs:
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
       shell: bash
       run: |
-        registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
+        registry_prefix=$(echo '${{ inputs.gcp_registry }}' | cut -d, -f1)/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
         python3 .github/actions/kurtosis/setup/add-registry-prefix.py --registry-prefix $registry_prefix
 
     - name: Pull images from GAR
@@ -203,7 +201,7 @@ runs:
         done < modified-images.txt
 
         # Pull kurtosis core and ethereum-package images
-        registry_prefix=${{ inputs.gcp_registry }}/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
+        registry_prefix=$(echo '${{ inputs.gcp_registry }}' | cut -d, -f1)/${{ inputs.gcp_project_id }}/${{ inputs.gcp_repository }}
         while IFS= read -r image; do
           prefixed_image="${registry_prefix}/${image}"
           if docker inspect "$prefixed_image" > /dev/null 2>&1; then
