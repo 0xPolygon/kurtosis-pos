@@ -248,12 +248,12 @@ cast block-number --rpc-url "$(kurtosis port print pos pos-gateway rpc)/devnet?k
 
 Keys:
 
-| Key      | Products                   | Unlocks                                                      |
-| -------- | -------------------------- | ------------------------------------------------------------ |
-| `admin`  | `pm`, `lls_tx`, `lls_idx`  | Every product                                                |
-| `limited`| `lls_idx`                  | Low latency sequencing, index side (preconfirmed logs)       |
-| `pm`     | `pm`                       | Private mempool                                              |
-| `lls_tx` | `lls_tx`                   | Low latency sequencing, send side (preconfirmations)         |
+| Key       | Products                  | Unlocks                                                |
+| --------- | ------------------------- | ------------------------------------------------------ |
+| `admin`   | `pm`, `lls_tx`, `lls_idx` | Every product                                          |
+| `limited` | `lls_idx`                 | Low latency sequencing, index side (preconfirmed logs) |
+| `pm`      | `pm`                      | Private mempool                                        |
+| `lls_tx`  | `lls_tx`                  | Low latency sequencing, send side (preconfirmations)   |
 
 | Field | Type   | Default                                                                                | Description                          |
 | ----- | ------ | -------------------------------------------------------------------------------------- | ------------------------------------ |

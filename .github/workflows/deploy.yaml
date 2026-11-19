@@ -114,6 +114,16 @@ jobs:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
 
+      # Forks get neither OIDC (private GAR) nor a GITHUB_TOKEN that can read the
+      # internal GHCR packages, so leave out the services that need them.
+      - name: Drop private images on forks
+        if: ${{ github.event.pull_request.head.repo.fork == true && matrix.file.name == 'additional-services' }}
+        run: |
+          yq -i '
+            del(.polygon_pos_package.additional_services[] | select(. == "pos_gateway"))
+            | del(.polygon_pos_package.participants[].el_bor_use_sequence_store)
+          ' ${{ matrix.file.path }}
+
       - name: Resolve perf gate
         id: perf
         run: |
