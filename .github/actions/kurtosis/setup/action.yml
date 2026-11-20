@@ -32,7 +32,7 @@ inputs:
   gcp_extra_registries:
     description: Comma-separated registries to also authenticate to
     required: false
-    default: europe-west3-docker.pkg.dev
+    default: ''
   gcp_project_id:
     description: Project id
     required: false

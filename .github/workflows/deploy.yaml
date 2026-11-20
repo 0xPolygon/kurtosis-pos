@@ -113,6 +113,8 @@ jobs:
         with:
           docker_username: ${{ secrets.DOCKER_USERNAME }}
           docker_token: ${{ secrets.DOCKER_TOKEN }}
+          # Only this devnet deploys pos-gateway, hosted on this registry.
+          gcp_extra_registries: ${{ matrix.file.name == 'additional-services' && 'europe-west3-docker.pkg.dev' || '' }}
 
       # Forks get neither OIDC (private GAR) nor a GITHUB_TOKEN that can read the
       # internal GHCR packages, so leave out the services that need them.
