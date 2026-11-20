@@ -92,6 +92,9 @@ POLYGON_POS_PARAMS = {
     "nginx_params": [
         "image",
     ],
+    "pos_gateway_params": [
+        "image",
+    ],
 }
 
 VALID_L1_BACKENDS = [
@@ -230,6 +233,19 @@ def sanity_check_polygon_args(plan, input_args):
         nginx_params = input_args.get("nginx_params", {})
         if nginx_params:
             fail("`nginx_params` must be empty when nginx is not deployed.")
+
+    # Make sure pos_gateway params are defined only if pos_gateway is deployed.
+    if constants.ADDITIONAL_SERVICES.pos_gateway in additional_services:
+        _validate_dict(input_args, "pos_gateway_params")
+        pos_gateway_params = input_args.get("pos_gateway_params")
+        if not "image" in pos_gateway_params:
+            fail(
+                '`pos_gateway_params` must include the "image" field when pos_gateway is deployed.'
+            )
+    else:
+        pos_gateway_params = input_args.get("pos_gateway_params", {})
+        if pos_gateway_params:
+            fail("`pos_gateway_params` must be empty when pos_gateway is not deployed.")
 
     # Make sure observability params are defined only if the observability stack is deployed.
     if constants.ADDITIONAL_SERVICES.observability in additional_services:
