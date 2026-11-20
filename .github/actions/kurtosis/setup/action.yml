@@ -181,6 +181,20 @@ runs:
         fi
         gcloud auth configure-docker "$registries"
 
+    # `kurtosis run` can't pull from the extra registries (anonymous pull,
+    # "Unauthenticated request"), so pull their images with the host docker.
+    - name: Pull images from extra registries
+      if: ${{ github.event.pull_request.head.repo.fork != true && inputs.gcp_extra_registries != '' }}
+      shell: bash
+      run: |
+        IFS=',' read -ra registries <<< "${{ inputs.gcp_extra_registries }}"
+        for registry in "${registries[@]}"; do
+          grep -oE "\"${registry}/[^\"]+\"" src/config/constants.star | tr -d '"' | sort -u | while IFS= read -r image; do
+            echo "Pulling image: $image"
+            docker pull "$image"
+          done
+        done
+
     - name: Install python
       uses: actions/setup-python@v6
       if: ${{ steps.cache.outputs.cache-matched-key != 'true' }}
