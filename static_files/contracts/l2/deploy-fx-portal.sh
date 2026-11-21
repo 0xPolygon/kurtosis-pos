@@ -70,8 +70,12 @@ wire() {
 confirm() {
   local chain="$1" hash status
   for hash in ${pending[${chain}]}; do
-    # A dropped tx would make cast receipt poll forever.
-    if ! status=$(timeout 120 cast receipt --rpc-url "${rpc[${chain}]}" --json "${hash}" | jq -r '.status'); then
+    # A dropped tx would make cast receipt poll forever. A bor node fed by a
+    # sequence store answers with a preconfirmation receipt (null blockHash)
+    # before the block is imported, so wait for the canonical one.
+    if ! status=$(timeout 120 bash -c 'until r=$(cast receipt --rpc-url "$1" --json "$2") &&
+      jq -e .blockHash <<< "${r}" > /dev/null; do sleep 1; done; jq -r .status <<< "${r}"' \
+      _ "${rpc[${chain}]}" "${hash}"); then
       echo "ERROR: no receipt for ${chain} transaction ${hash} after 120s" >&2
       exit 1
     fi

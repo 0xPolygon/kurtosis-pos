@@ -156,6 +156,7 @@ Default: a single validator.
 | el_bor_stateless_parallel_import | bool   | false                                 | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)                                                                                                                                                             |
 | el_bor_archive_mode              | bool   | false                                 | Run bor with `gcmode=archive` and full history retention. Orthogonal to `kind` — set on a validator or rpc node. Required for `debug_traceTransaction` on past blocks. The default single-node config sets this to `true` on the validator.           |
 | el_bor_use_sequence_store        | bool   | false                                 | Render bor's `[sequencer]` config section against the enclave sequence store (preconfirmation experiment). Requires an `el_image` built from the bor sequencer branch; setting it on any participant deploys the store (see `sequence_store_params`). |
+| el_bor_enable_import_src         | bool   | false                                 | Enable bor's pipelined state root computation during block import (`[pipeline] enable-import-src`). Off by default, as in bor. Leave it unset on a node that should cross-check the pipelined ones.                                                   |
 | count                            | int    | 1                                     | Number of nodes to spin up for this participant                                                                                                                                                                                                       |
 
 ### `setup_images`
@@ -193,18 +194,18 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                                                                 |
 | ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                                                              |
 | bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                                                                 |
-| rio_fork_block                        | int    | 128                | Block number for Rio hard fork activation                                                                    |
-| madhugiri_fork_block                  | int    | 128                | Block number for Madhugiri hard fork activation                                                              |
-| madhugiri_pro_fork_block              | int    | 128                | Block number for Madhugiri Pro hard fork activation                                                          |
-| dandeli_fork_block                    | int    | 128                | Block number for Dandeli hard fork activation                                                                |
-| lisovo_fork_block                     | int    | 128                | Block number for Lisovo hard fork activation                                                                 |
-| lisovo_pro_fork_block                 | int    | 128                | Block number for Lisovo Pro hard fork activation                                                             |
-| giugliano_fork_block                  | int    | 128                | Block number for Giugliano hard fork activation                                                              |
-| chicago_fork_block                    | int    | 128                | Block number for Chicago hard fork activation                                                                |
-| valencia_fork_block                   | int    | 128                | Block number for Valencia hard fork activation (bor >= 2.10.0)                                               |
-| austin_fork_block                     | int    | 128                | Block number for Austin hard fork activation (bor >= 2.10.0)                                                 |
-| hampi_fork_block                      | int    | 128                | Block number for Hampi hard fork activation (bor >= 2.10.1)                                                  |
-| uburu_fork_block                      | int    | 128                | Block number for Uburu hard fork activation (bor >= 2.11.0)                                                  |
+| rio_fork_block                        | int    | 0                  | Block number for Rio hard fork activation                                                                    |
+| madhugiri_fork_block                  | int    | 0                  | Block number for Madhugiri hard fork activation                                                              |
+| madhugiri_pro_fork_block              | int    | 0                  | Block number for Madhugiri Pro hard fork activation                                                          |
+| dandeli_fork_block                    | int    | 0                  | Block number for Dandeli hard fork activation                                                                |
+| lisovo_fork_block                     | int    | 0                  | Block number for Lisovo hard fork activation                                                                 |
+| lisovo_pro_fork_block                 | int    | 0                  | Block number for Lisovo Pro hard fork activation                                                             |
+| giugliano_fork_block                  | int    | 0                  | Block number for Giugliano hard fork activation                                                              |
+| chicago_fork_block                    | int    | 0                  | Block number for Chicago hard fork activation                                                                |
+| valencia_fork_block                   | int    | 0                  | Block number for Valencia hard fork activation (bor >= 2.10.0)                                               |
+| austin_fork_block                     | int    | 0                  | Block number for Austin hard fork activation (bor >= 2.10.0)                                                 |
+| hampi_fork_block                      | int    | 0                  | Block number for Hampi hard fork activation (bor >= 2.10.1)                                                  |
+| uburu_fork_block                      | int    | 0                  | Block number for Uburu hard fork activation (bor >= 2.11.0)                                                  |
 
 ### `additional_services`
 

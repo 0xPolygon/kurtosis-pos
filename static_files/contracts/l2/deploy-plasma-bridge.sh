@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+source /opt/data/l2/forge-script-l2.sh
+
 # Deploy MATIC contracts to L2 and synchronize state on L1.
 # For reference: https://github.com/0xPolygon/pos-contracts/tree/arya/matic-cli/pos-1869
 
@@ -30,7 +32,7 @@ echo "L2_RPC_URL: ${L2_RPC_URL}"
 echo "Deploying Polygon PoS contracts to L2..."
 export DEPLOYER_PRIVATE_KEY="${PRIVATE_KEY}"
 
-forge script -vvvv --rpc-url "${L2_RPC_URL}" --broadcast --legacy \
+forge_script_l2 -vvvv --rpc-url "${L2_RPC_URL}" --broadcast --legacy \
   scripts/deployment-scripts/childContractDeployment.s.sol:ChildContractDeploymentScript
 
 echo "Mapping L2 contracts to the registry on L1..."
