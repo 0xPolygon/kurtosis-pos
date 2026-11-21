@@ -27,7 +27,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_stateless_parallel_import",  # Enable bor to use parallel import in stateless mode.
         "el_bor_archive_mode",  # Run bor with gcmode=archive for full historical state retention.
         "el_bor_use_sequence_store",  # Render bor's [sequencer] section against the enclave sequence store.
-        "el_bor_disable_import_src",  # Force bor's pipelined import off, even if the shared config template enables it.
+        "el_bor_enable_import_src",  # Enable bor's pipelined state root computation during block import.
         "count",
     ],
     "setup_images": [

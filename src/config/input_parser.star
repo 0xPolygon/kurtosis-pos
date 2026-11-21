@@ -101,7 +101,7 @@ POLYGON_POS_EL_BOR_PARTICIPANT = {
     "el_bor_stateless_parallel_import": False,
     "el_bor_archive_mode": False,
     "el_bor_use_sequence_store": False,
-    "el_bor_disable_import_src": False,
+    "el_bor_enable_import_src": False,
 }
 
 POLYGON_POS_PACKAGE_ARGS = {

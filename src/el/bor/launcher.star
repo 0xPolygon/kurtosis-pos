@@ -37,15 +37,11 @@ def launch(
     cl_api_url = ",".join(cl_api_urls) if cl_api_urls else ""
     cl_ws_rpc_url = ",".join(cl_ws_rpc_urls) if cl_ws_rpc_urls else ""
 
-    bor_config_template = read_file(BOR_TEMPLATE_CONFIG_FILE_PATH)
-    if participant.get("el_bor_disable_import_src"):
-        bor_config_template = remove_pipeline_section(bor_config_template)
-
     bor_node_config_artifact = plan.render_templates(
         name="{}-config".format(el_node_name),
         config={
             "config.toml": struct(
-                template=bor_config_template,
+                template=read_file(BOR_TEMPLATE_CONFIG_FILE_PATH),
                 data={
                     # node params
                     "node_name": el_node_name,
@@ -67,6 +63,7 @@ def launch(
                         "el_bor_stateless_parallel_import"
                     ),
                     "archive_mode": participant.get("el_bor_archive_mode"),
+                    "enable_import_src": participant.get("el_bor_enable_import_src"),
                     # network params
                     "static_nodes": str(el_static_nodes),
                     "el_gas_limit": network_params.get("el_gas_limit"),
@@ -177,19 +174,3 @@ def log_level_to_int(log_level):
     if log_level not in map_log_level_to_int:
         fail("Invalid log level: " + log_level)
     return map_log_level_to_int.get(log_level)
-
-
-# Drop the [pipeline] table from the bor config template so the node imports
-# blocks the regular, non-pipelined way. CI appends `[pipeline]` to the shared
-# template to enable pipelined import on every node; a node that sets
-# `el_bor_disable_import_src` stays the control that cross-checks those nodes.
-def remove_pipeline_section(template):
-    kept = []
-    skipping = False
-    for line in template.split("\n"):
-        header = line.strip()
-        if header.startswith("["):
-            skipping = header == "[pipeline]" or header.startswith("[pipeline.")
-        if not skipping:
-            kept.append(line)
-    return "\n".join(kept)
