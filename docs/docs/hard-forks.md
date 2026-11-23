@@ -69,7 +69,7 @@ Checked against: [bor v2.11.2](https://github.com/0xPolygon/bor/blob/v2.11.2/par
 
 | Fork                                                                                                                           | Devnet status | Devnet height | Amoy height | Mainnet height |
 | ------------------------------------------------------------------------------------------------------------------------------ | ------------- | ------------- | ----------- | -------------- |
-| purley                                                                                                                         | ✅ enabled    | 1             | 52108000    | 58280000       |
+| [purley](https://forum.polygon.technology/t/heimdall-v0-14-0-released-for-mainnet-and-amoy/22597)                              | ✅ enabled    | 1             | 52108000    | 58280000       |
 | [karwar](https://forum.polygon.technology/t/heimdall-v0-13-2-released-for-mainnet-and-amoy/22491)                              | ✅ enabled    | 1             | 50020000    | 57006000       |
 | [lugano](https://forum.polygon.technology/t/security-release-review-heimdall-v0-12-1-lugano-hf/22389)                          | ✅ enabled    | 1             | 47105000    | 54627000       |
 | [kyoto](https://forum.polygon.technology/t/security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138) | ✅ enabled    | 1             | 42252000    | 51533000       |
