@@ -92,12 +92,12 @@ anvil:
   slots_in_epoch: 2
 ```
 
-| Field          | Type   | Default                           | Description                                                                                           |
-| -------------- | ------ | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.9.0 | Anvil container image                                                                                 |
-| network_id     | string | 3151908                           | L1 network/chain ID                                                                                   |
-| block_time     | int    | 1                                 | Block time in seconds                                                                                 |
-| slots_in_epoch | int    | 2                                 | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
+| Field          | Type   | Default                            | Description                                                                                           |
+| -------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.10.0 | Anvil container image                                                                                 |
+| network_id     | string | 3151908                            | L1 network/chain ID                                                                                   |
+| block_time     | int    | 1                                  | Block time in seconds                                                                                 |
+| slots_in_epoch | int    | 2                                  | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
 
 ## L2 Configuration
 
@@ -138,8 +138,8 @@ Default: a single validator.
 | -------------------------------- | ------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | kind                             | string | validator                             | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                               |
 | cl_type                          | string | heimdall-v2                           | Consensus Layer (CL) client type                                                                                                                                                                                                                      |
-| cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.13.2 | Image for the CL client                                                                                                                                                                                                                               |
-| cl_queue_image                   | string | rabbitmq:4.4.0                        | Image for the CL queue                                                                                                                                                                                                                                |
+| cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.14.0 | Image for the CL client                                                                                                                                                                                                                               |
+| cl_queue_image                   | string | rabbitmq:4.4.1                        | Image for the CL queue                                                                                                                                                                                                                                |
 | cl_log_level                     | string | info                                  | Log level for the CL client                                                                                                                                                                                                                           |
 | cl_log_format                    | string | text                                  | Log format for the CL client                                                                                                                                                                                                                          |
 | cl_min_retain_blocks             | int    | 0                                     | Minimal distance from current height to retain height                                                                                                                                                                                                 |
@@ -148,7 +148,7 @@ Default: a single validator.
 | cl_storage_pruning_interval      | string | 10m0s                                 | Interval between prune routines.                                                                                                                                                                                                                      |
 | cl_indexer_pruning_enabled       | bool   | false                                 | Pruning enabling.                                                                                                                                                                                                                                     |
 | el_type                          | string | bor                                   | Execution Layer (EL) client type: `bor`                                                                                                                                                                                                               |
-| el_image                         | string | ghcr.io/0xpolygon/bor:v2.11.1         | Image for the EL client (bor: `ghcr.io/0xpolygon/bor:v2.11.1`)                                                                                                                                                                                        |
+| el_image                         | string | ghcr.io/0xpolygon/bor:v2.11.2         | Image for the EL client (bor: `ghcr.io/0xpolygon/bor:v2.11.2`)                                                                                                                                                                                        |
 | el_log_level                     | string | info                                  | Log level for the EL client                                                                                                                                                                                                                           |
 | el_log_format                    | string | text                                  | Log format for the EL client                                                                                                                                                                                                                          |
 | el_bor_produce_witness           | bool   | false                                 | Allow bor to start producing witnesses                                                                                                                                                                                                                |
@@ -234,7 +234,7 @@ cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 
 | Field | Type   | Default             | Description                |
 | ----- | ------ | ------------------- | -------------------------- |
-| image | string | nginx:1.31.8-alpine | Image used to deploy nginx |
+| image | string | nginx:1.31.9-alpine | Image used to deploy nginx |
 
 ### `pos_gateway_params`
 
