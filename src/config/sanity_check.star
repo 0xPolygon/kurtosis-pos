@@ -419,8 +419,9 @@ def _validate_participant(p):
 
 
 def _validate_validator_config_generator_image(plan, image, heimdall_v2_image):
-    validator_config_generator_tag = image.split(":")[1]
-    heimdall_v2_tag = heimdall_v2_image.split(":")[1]
+    # The generator image is tagged without the "v" prefix used by heimdall-v2 (0.14.0 vs v0.14.0).
+    validator_config_generator_tag = image.split(":")[1].lstrip("v")
+    heimdall_v2_tag = heimdall_v2_image.split(":")[1].lstrip("v")
     if validator_config_generator_tag != heimdall_v2_tag:
         plan.print(
             'WARN: The validator_config_generator image tag "{}" does not match the heimdall-v2 image tag "{}".'.format(
