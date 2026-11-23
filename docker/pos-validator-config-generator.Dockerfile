@@ -6,7 +6,7 @@ FROM golang:1.27.3-alpine AS polycli-builder
 LABEL description="Polycli builder image"
 LABEL author="devtools@polygon.technology"
 
-ARG POLYGON_CLI_VERSION="v0.1.102"
+ARG POLYGON_CLI_VERSION="v0.1.124"
 WORKDIR /opt/polygon-cli
 RUN apk add --no-cache git build-base \
   && git clone --branch "${POLYGON_CLI_VERSION}" https://github.com/0xPolygon/polygon-cli.git . \
