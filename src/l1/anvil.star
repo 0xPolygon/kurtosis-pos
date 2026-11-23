@@ -56,7 +56,7 @@ def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
             image=anvil_args.get("image"),
             ports={
                 ANVIL_PORT_ID: PortSpec(
-                    number=ANVIL_PORT_NUMBER, application_protocol="http", wait="5s"
+                    number=ANVIL_PORT_NUMBER, application_protocol="http", wait="30s"
                 ),
             },
             files={
