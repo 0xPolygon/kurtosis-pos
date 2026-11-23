@@ -1,4 +1,4 @@
-ARG HEIMDALL_V2_VERSION="0.13.2"
+ARG HEIMDALL_V2_VERSION="0.14.0"
 FROM ghcr.io/0xpolygon/heimdall-v2:v${HEIMDALL_V2_VERSION} AS heimdall-v2
 
 

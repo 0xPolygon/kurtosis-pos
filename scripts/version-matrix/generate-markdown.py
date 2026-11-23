@@ -34,7 +34,7 @@ AMOY_BLOCK_URL = "https://amoy.polygonscan.com/block/{}"
 # Mainnet activation order, newest first. Bor blocks and Heimdall heights cannot be compared, so
 # the order of forks across the two layers is kept by hand; a fork missing here is listed first.
 POS_FORK_ORDER = [
-    "hampi", "uburu", "karwar", "lugano", "kyoto", "austin", "ithaca", "valencia", "zurich",
+    "purley", "hampi", "uburu", "karwar", "lugano", "kyoto", "austin", "ithaca", "valencia", "zurich",
     "chicago", "phuket", "giugliano", "lisovoPro", "lisovo", "dandeli", "madhugiriPro",
     "madhugiri", "rio", "bhilai", "ahmedabad", "indore", "delhi", "jaipur",
 ]

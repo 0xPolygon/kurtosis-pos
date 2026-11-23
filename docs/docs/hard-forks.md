@@ -63,12 +63,13 @@ Bor (EL) and Heimdall-v2 (CL) are different chains, so their forks are listed ap
 | [delhi](https://forum.polygon.technology/t/pip-7-delhi-hardfork/10904)                                                          | ✅ enabled    | 0            | [73100](https://amoy.polygonscan.com/block/73100)       | [38189056](https://polygonscan.com/block/38189056) |
 | jaipur                                                                                                                          | ✅ enabled    | 0            | [73100](https://amoy.polygonscan.com/block/73100)       | [23850000](https://polygonscan.com/block/23850000) |
 
-Checked against: [bor v2.11.1](https://github.com/0xPolygon/bor/blob/v2.11.1/params/config.go)
+Checked against: [bor v2.11.2](https://github.com/0xPolygon/bor/blob/v2.11.2/params/config.go)
 
 ### CL (Heimdall-v2)
 
 | Fork                                                                                                                           | Devnet status | Devnet height | Amoy height | Mainnet height |
 | ------------------------------------------------------------------------------------------------------------------------------ | ------------- | ------------- | ----------- | -------------- |
+| purley                                                                                                                         | ✅ enabled    | 1             | 52108000    | 58280000       |
 | [karwar](https://forum.polygon.technology/t/heimdall-v0-13-2-released-for-mainnet-and-amoy/22491)                              | ✅ enabled    | 1             | 50020000    | 57006000       |
 | [lugano](https://forum.polygon.technology/t/security-release-review-heimdall-v0-12-1-lugano-hf/22389)                          | ✅ enabled    | 1             | 47105000    | 54627000       |
 | [kyoto](https://forum.polygon.technology/t/security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138) | ✅ enabled    | 1             | 42252000    | 51533000       |
@@ -76,4 +77,4 @@ Checked against: [bor v2.11.1](https://github.com/0xPolygon/bor/blob/v2.11.1/par
 | [zurich](https://forum.polygon.technology/t/heimdall-v0-9-0-mainnet/21950)                                                     | ✅ enabled    | 1             | 37750000    | 47880000       |
 | [phuket](https://forum.polygon.technology/t/heimdall-v2-v0-7-1-for-polygon-amoy-and-mainnet/21863)                             | ✅ enabled    | 1             | 32276400    | 44070000       |
 
-Checked against: [heimdall-v2 v0.13.2](https://github.com/0xPolygon/heimdall-v2/blob/v0.13.2/helper/config.go)
+Checked against: [heimdall-v2 v0.14.0](https://github.com/0xPolygon/heimdall-v2/blob/v0.14.0/helper/config.go)
