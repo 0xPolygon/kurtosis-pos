@@ -87,6 +87,9 @@ SEQSTORE_GRPC_PORT_NUMBER = 9550
 L1_CHAIN_ID = "3151908"  # 0x301824
 # L1 hardfork: anvil runs it and forge simulates L1 scripts with it. Keep in sync with the last L1 fork.
 L1_HARDFORK = "amsterdam"
+# Anvil block gas limit. Anvil's --load-state replaces the block env, so an empty "block" in the
+# genesis gives u64::MAX and gas estimation then fails ("greater than the block gas limit").
+L1_ANVIL_BLOCK_GAS_LIMIT = 100000000
 
 # Do NOT change EL_CHAIN_ID / CL_CHAIN_ID — both are baked into pre-built
 # artifacts at image-build time:

@@ -44,6 +44,7 @@ def run(plan, anvil_args, preregistered_validator_keys_mnemonic, admin_address):
                 template=read_file(ANVIL_GENESIS_FILE_PATH),
                 data={
                     "accounts": json.encode(_build_accounts_alloc(admin_address)),
+                    "gas_limit": constants.L1_ANVIL_BLOCK_GAS_LIMIT,
                 },
             )
         },
