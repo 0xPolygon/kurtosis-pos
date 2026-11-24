@@ -19,6 +19,13 @@ done
 mkdir -p /opt/contracts
 echo "[]" > "${OUTPUT_FILE}"
 
+# Bor takes about a minute after it starts to produce its first block, and it takes no
+# transactions until then.
+echo "Waiting for the L2 chain to produce its first block..."
+until [[ "$(cast block-number --rpc-url "${L2_RPC_URL}" 2> /dev/null || echo 0)" -gt 0 ]]; do
+  sleep 2
+done
+
 admin=$(cast wallet address --private-key "${PRIVATE_KEY}")
 count=$(jq 'length' "${TRANSACTIONS_FILE}")
 for ((i = 0; i < count; i++)); do
