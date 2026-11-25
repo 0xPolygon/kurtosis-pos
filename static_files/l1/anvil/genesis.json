@@ -1,5 +1,5 @@
 {
-  "block": {},
+  "block": {"gas_limit": {{.gas_limit}}},
   "best_block_number": 0,
   "accounts": {{.accounts}}
 }

@@ -140,3 +140,28 @@ def test_sanity_check_with_nginx_params_but_nginx_not_deployed(plan):
         lambda: sanity_check.sanity_check_polygon_args(plan, args),
         "`nginx_params` must be empty when nginx is not deployed.",
     )
+
+
+def test_sanity_check_with_pos_gateway_missing_image(plan):
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "additional_services": [
+            constants.ADDITIONAL_SERVICES.pos_gateway,
+        ],
+        "pos_gateway_params": {},
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        '`pos_gateway_params` must include the "image" field when pos_gateway is deployed.',
+    )
+
+
+def test_sanity_check_with_pos_gateway_params_but_pos_gateway_not_deployed(plan):
+    args = input_parser.POLYGON_POS_PACKAGE_ARGS | {
+        "pos_gateway_params": {
+            "image": constants.IMAGES.get("pos_gateway_image"),
+        },
+    }
+    expect.fails(
+        lambda: sanity_check.sanity_check_polygon_args(plan, args),
+        "`pos_gateway_params` must be empty when pos_gateway is not deployed.",
+    )

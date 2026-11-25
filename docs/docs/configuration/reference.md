@@ -92,12 +92,12 @@ anvil:
   slots_in_epoch: 2
 ```
 
-| Field          | Type   | Default                           | Description                                                                                           |
-| -------------- | ------ | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.9.0 | Anvil container image                                                                                 |
-| network_id     | string | 3151908                           | L1 network/chain ID                                                                                   |
-| block_time     | int    | 1                                 | Block time in seconds                                                                                 |
-| slots_in_epoch | int    | 2                                 | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
+| Field          | Type   | Default                            | Description                                                                                           |
+| -------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.10.0 | Anvil container image                                                                                 |
+| network_id     | string | 3151908                            | L1 network/chain ID                                                                                   |
+| block_time     | int    | 1                                  | Block time in seconds                                                                                 |
+| slots_in_epoch | int    | 2                                  | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
 
 ## L2 Configuration
 
@@ -138,8 +138,8 @@ Default: a single validator.
 | -------------------------------- | ------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | kind                             | string | validator                             | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                               |
 | cl_type                          | string | heimdall-v2                           | Consensus Layer (CL) client type                                                                                                                                                                                                                      |
-| cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.13.2 | Image for the CL client                                                                                                                                                                                                                               |
-| cl_queue_image                   | string | rabbitmq:4.4.0                        | Image for the CL queue                                                                                                                                                                                                                                |
+| cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.14.0 | Image for the CL client                                                                                                                                                                                                                               |
+| cl_queue_image                   | string | rabbitmq:4.4.1                        | Image for the CL queue                                                                                                                                                                                                                                |
 | cl_log_level                     | string | info                                  | Log level for the CL client                                                                                                                                                                                                                           |
 | cl_log_format                    | string | text                                  | Log format for the CL client                                                                                                                                                                                                                          |
 | cl_min_retain_blocks             | int    | 0                                     | Minimal distance from current height to retain height                                                                                                                                                                                                 |
@@ -148,7 +148,7 @@ Default: a single validator.
 | cl_storage_pruning_interval      | string | 10m0s                                 | Interval between prune routines.                                                                                                                                                                                                                      |
 | cl_indexer_pruning_enabled       | bool   | false                                 | Pruning enabling.                                                                                                                                                                                                                                     |
 | el_type                          | string | bor                                   | Execution Layer (EL) client type: `bor`                                                                                                                                                                                                               |
-| el_image                         | string | ghcr.io/0xpolygon/bor:v2.11.1         | Image for the EL client (bor: `ghcr.io/0xpolygon/bor:v2.11.1`)                                                                                                                                                                                        |
+| el_image                         | string | ghcr.io/0xpolygon/bor:v2.11.2         | Image for the EL client (bor: `ghcr.io/0xpolygon/bor:v2.11.2`)                                                                                                                                                                                        |
 | el_log_level                     | string | info                                  | Log level for the EL client                                                                                                                                                                                                                           |
 | el_log_format                    | string | text                                  | Log format for the EL client                                                                                                                                                                                                                          |
 | el_bor_produce_witness           | bool   | false                                 | Allow bor to start producing witnesses                                                                                                                                                                                                                |
@@ -165,7 +165,7 @@ Default: a single validator.
 | -------------------------- | ------ | ------------------------------------------------------- | ------------------------------------------- |
 | contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.8           | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:5c006e2        | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.13.2 | Image used to generate validator configs    |
+| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.14.0 | Image used to generate validator configs    |
 
 ### `network_params`
 
@@ -211,15 +211,16 @@ You can check the admin private key and mnemonic default values at `src/config/i
 
 The `additional_services` array lets you enable optional tools and utilities alongside your devnet. These are not configuration options themselves, but rather extra services you can include by listing their names in the array.
 
-| Service           | Description                                                                                                                               |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                                                          |
-| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                                                       |
-| `ethstats_server` | Visual interface for tracking network status                                                                                              |
-| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`)               |
-| `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`) |
-| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                              |
-| `tx_spammer`      | Send transactions to the network to simulate load                                                                                         |
+| Service           | Description                                                                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `blockscout`      | Blockchain explorer for viewing blocks, transactions, and accounts - Coming soon                                                                       |
+| `bridge_spammer`  | Bridge funds from L1 to L2 to simulate network load                                                                                                    |
+| `ethstats_server` | Visual interface for tracking network status                                                                                                           |
+| `nginx`           | [nginx](https://nginx.org) least-connections RPC load balancer in front of all non-stateless bor nodes (see `nginx_params`)                            |
+| `observability`   | Monitoring stack: deploys Prometheus, Grafana, and [Panoptichain](https://github.com/0xPolygon/panoptichain) (see `observability_params`)              |
+| `pos_gateway`     | [pos-gateway](https://github.com/0xPolygon/pos-gateway), an internal JSON-RPC reverse proxy and load balancer with access keys and a per-method policy |
+| `status_checker`  | Perform regular status checks to track and monitor the health of the network                                                                           |
+| `tx_spammer`      | Send transactions to the network to simulate load                                                                                                      |
 
 ### `nginx_params`
 
@@ -234,7 +235,30 @@ cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 
 | Field | Type   | Default             | Description                |
 | ----- | ------ | ------------------- | -------------------------- |
-| image | string | nginx:1.31.8-alpine | Image used to deploy nginx |
+| image | string | nginx:1.31.9-alpine | Image used to deploy nginx |
+
+### `pos_gateway_params`
+
+Only allowed when `pos_gateway` is listed in `additional_services`.
+
+The `pos_gateway` service deploys the internal pos-gateway with every non-stateless bor node as an upstream. The image is pulled from a private Artifact Registry, so you need access to it (`gcloud auth configure-docker europe-west3-docker.pkg.dev`). The config is minimal: one `devnet` network (chain ID `4927`), no billing database. Every request needs an access key, sent as `?key=<key>`, `X-Access-Key` or `X-Api-Key`.
+
+```bash
+cast block-number --rpc-url "$(kurtosis port print pos pos-gateway rpc)/devnet?key=admin"
+```
+
+Keys:
+
+| Key       | Products                  | Unlocks                                                |
+| --------- | ------------------------- | ------------------------------------------------------ |
+| `admin`   | `pm`, `lls_tx`, `lls_idx` | Every product                                          |
+| `limited` | `lls_idx`                 | Low latency sequencing, index side (preconfirmed logs) |
+| `pm`      | `pm`                      | Private mempool                                        |
+| `lls_tx`  | `lls_tx`                  | Low latency sequencing, send side (preconfirmations)   |
+
+| Field | Type   | Default                                                                                | Description                          |
+| ----- | ------ | -------------------------------------------------------------------------------------- | ------------------------------------ |
+| image | string | europe-west3-docker.pkg.dev/prj-polygonlabs-shared-prod/pos-gateway/pos-gateway:v0.2.0 | Image used to deploy the pos-gateway |
 
 ### `ethstats_server_params`
 

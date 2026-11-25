@@ -14,5 +14,6 @@ polygon_pos_package:
     - bridge_spammer
     - ethstats_server
     - observability
+    - pos_gateway
     - status_checker
     - tx_spammer

@@ -34,7 +34,7 @@ AMOY_BLOCK_URL = "https://amoy.polygonscan.com/block/{}"
 # Mainnet activation order, newest first. Bor blocks and Heimdall heights cannot be compared, so
 # the order of forks across the two layers is kept by hand; a fork missing here is listed first.
 POS_FORK_ORDER = [
-    "hampi", "uburu", "karwar", "lugano", "kyoto", "austin", "ithaca", "valencia", "zurich",
+    "purley", "hampi", "uburu", "karwar", "lugano", "kyoto", "austin", "ithaca", "valencia", "zurich",
     "chicago", "phuket", "giugliano", "lisovoPro", "lisovo", "dandeli", "madhugiriPro",
     "madhugiri", "rio", "bhilai", "ahmedabad", "indore", "delhi", "jaipur",
 ]
@@ -62,6 +62,7 @@ FORUM_POSTS = {
     "ithaca": "heimdall-v0-10-0-ithaca-hf-mainnet/22038",
     "kyoto": "security-releases-review-bor-v2-10-0-austin-hf-and-heimdall-v0-11-0-kyoto-hf/22138",
     "lugano": "security-release-review-heimdall-v0-12-1-lugano-hf/22389",
+    "purley": "heimdall-v0-14-0-released-for-mainnet-and-amoy/22597",
     "karwar": "heimdall-v0-13-2-released-for-mainnet-and-amoy/22491",
 }
 

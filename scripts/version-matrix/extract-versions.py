@@ -71,6 +71,7 @@ COMPONENT_REPOS = {
     "l2_cl_queue_image": ("rabbitmq", "rabbitmq/rabbitmq-server"),
     # additional services
     "nginx_image": ("nginx", "nginx/nginx"),
+    "pos_gateway_image": ("pos-gateway", "0xPolygon/pos-gateway"),
     "status_checker_image": ("status-checker", "0xPolygon/status-checker"),
     # observability
     "prometheus_image": ("prometheus", "prometheus/prometheus"),

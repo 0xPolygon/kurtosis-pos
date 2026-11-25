@@ -14,6 +14,7 @@ def test_parse_additional_services(plan):
             constants.ADDITIONAL_SERVICES.ethstats_server,
             constants.ADDITIONAL_SERVICES.nginx,
             constants.ADDITIONAL_SERVICES.observability,
+            constants.ADDITIONAL_SERVICES.pos_gateway,
             constants.ADDITIONAL_SERVICES.status_checker,
             constants.ADDITIONAL_SERVICES.tx_spammer,
         ]
