@@ -341,13 +341,12 @@ add_network_aliases() {
 configure_service_dependencies() {
   local docker_compose_file="$1"
 
-  # L2: CL (validator) does NOT depend on its paired RabbitMQ.
-  # Heimdall's bridge connector panics with a SIGSEGV if the AMQP endpoint is
-  # not yet reachable (bridge/queue.NewQueueConnector nil-deref). With
-  # `restart: unless-stopped` (set by add_restart_policy below), heimdall
-  # crashes once at startup, restarts ~2s later, and rabbit is up by then.
-  # This race-start saves ~6s that the old `depends_on: service_healthy`
-  # chain spent waiting on rabbit's start_period.
+  # L2: CL (validator) depends on its paired RabbitMQ being healthy.
+  # Since heimdall-v2 v0.14.2 the bridge connector returns the AMQP dial error
+  # instead of panicking: the REST and gRPC servers shut down but the process
+  # stays up, so `restart: unless-stopped` never fires and heimdall stays
+  # unhealthy forever. Rabbit's healthcheck is fast, so waiting for it only
+  # costs a few seconds.
   #
   # L2: CL (rpc/archive) DOES depend on a validator CL — forces RPCs to start
   # AFTER the validator's container is up, so Docker's embedded DNS has
@@ -376,9 +375,9 @@ configure_service_dependencies() {
                 (.key | capture("^" + $enclave_name + "-l2-cl-(?<idx>[0-9]+)-")) as $match |
                 ($enclave_name + "-l2-cl-" + $match.idx + "-rabbitmq") as $rmq |
                 if ($all_services | index($rmq)) then
-                    # Has its own rabbitmq → this is a validator. No depends_on,
-                    # rely on restart: unless-stopped to recover from the race.
-                    del(.value.depends_on)
+                    # Has its own rabbitmq → this is a validator. Wait for it, the
+                    # bridge no longer recovers from an early AMQP failure.
+                    .value.depends_on = {($rmq): {"condition": "service_healthy"}}
                 elif $ref_validator_cl != null and .key != $ref_validator_cl then
                     # No rabbitmq sibling → this is rpc/archive. Keep the
                     # dependency on a validator-CL for DNS warm-up.
@@ -570,11 +569,8 @@ make_heimdall_commands_idempotent() {
     ' "$docker_compose_file"
 }
 
-# Add restart: unless-stopped to all services. Heimdall validator panics with a
-# nil-deref when it can't reach rabbitmq AMQP at startup, and container-proc-manager
-# swallows the panic to exit code 0 — so `on-failure` (which only restarts on
-# non-zero exits) wouldn't fire. `unless-stopped` restarts on any exit and lets
-# the validator self-heal once rabbit is up.
+# Add restart: unless-stopped to all services, so a container that exits (e.g. a
+# heimdall panic at startup) comes back on its own.
 add_restart_policy() {
   local docker_compose_file="$1"
   yq --in-place --yaml-output '.services[] |= (.restart = "unless-stopped")' "$docker_compose_file"
