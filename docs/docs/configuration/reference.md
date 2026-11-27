@@ -94,7 +94,7 @@ anvil:
 
 | Field          | Type   | Default                            | Description                                                                                           |
 | -------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.10.0 | Anvil container image                                                                                 |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.10.1 | Anvil container image                                                                                 |
 | network_id     | string | 3151908                            | L1 network/chain ID                                                                                   |
 | block_time     | int    | 1                                  | Block time in seconds                                                                                 |
 | slots_in_epoch | int    | 2                                  | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
@@ -235,7 +235,7 @@ cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 
 | Field | Type   | Default             | Description                |
 | ----- | ------ | ------------------- | -------------------------- |
-| image | string | nginx:1.31.9-alpine | Image used to deploy nginx |
+| image | string | nginx:1.31.10-alpine | Image used to deploy nginx |
 
 ### `pos_gateway_params`
 

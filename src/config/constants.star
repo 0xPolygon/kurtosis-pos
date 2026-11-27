@@ -52,7 +52,7 @@ IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.17.10",
     "l1_cl_image": "sigp/lighthouse:v8.3.3",
-    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.10.0",
+    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.10.1",
     # layer 2
     "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.14.2",
     "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.11.2",
@@ -63,12 +63,12 @@ IMAGES = {
     "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.14.2",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14",
     # additional services
-    "nginx_image": "nginx:1.31.9-alpine",
+    "nginx_image": "nginx:1.31.10-alpine",
     "pos_gateway_image": "europe-west3-docker.pkg.dev/prj-polygonlabs-shared-prod/pos-gateway/pos-gateway:v0.2.0",
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.10",
     # observability
     "prometheus_image": "prom/prometheus:v3.16.0",
-    "grafana_image": "grafana/grafana:13.3.1",
+    "grafana_image": "grafana/grafana:13.3.2",
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.3.0",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)

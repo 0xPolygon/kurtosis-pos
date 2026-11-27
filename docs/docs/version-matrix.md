@@ -19,7 +19,7 @@ The L1, the L2 clients and the images that deploy them: the devnet does not star
 | Component                      | Deployed version                                                                                               | Latest stable version                                                                             | Status        |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------- |
 | bor                            | [2.11.2](https://github.com/0xPolygon/bor/releases/tag/v2.11.2)                                                | [2.11.2](https://github.com/0xPolygon/bor/releases/tag/v2.11.2)                                   | ✅ up to date |
-| foundry                        | [1.10.0](https://github.com/foundry-rs/foundry/releases/tag/v1.10.0)                                           | [1.10.1](https://github.com/foundry-rs/foundry/releases/tag/v1.10.1)                              | 🚨 behind     |
+| foundry                        | [1.10.1](https://github.com/foundry-rs/foundry/releases/tag/v1.10.1)                                           | [1.10.1](https://github.com/foundry-rs/foundry/releases/tag/v1.10.1)                              | ✅ up to date |
 | geth                           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                                       | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                          | ✅ up to date |
 | heimdall-v2                    | [0.14.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.14.2)                                        | [0.14.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.14.2)                           | ✅ up to date |
 | lighthouse                     | [8.3.3](https://github.com/sigp/lighthouse/releases/tag/v8.3.3)                                                | [8.3.3](https://github.com/sigp/lighthouse/releases/tag/v8.3.3)                                   | ✅ up to date |
@@ -32,19 +32,19 @@ The L1, the L2 clients and the images that deploy them: the devnet does not star
 
 Everything else: utility images, observability, the status checker and the sequence store experiment.
 
-| Component       | Deployed version                                                            | Latest stable version                                                      | Status        |
-| --------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------- |
-| envoy           | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ up to date |
-| ethstats-server | 9da2124                                                                     | 9da2124                                                                    | ✅ up to date |
-| grafana         | [13.3.1](https://github.com/grafana/grafana/releases/tag/v13.3.1)           | [13.3.2](https://github.com/grafana/grafana/releases/tag/v13.3.2)          | 🚨 behind     |
-| nginx           | [1.31.9-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.9) | [1.31.10](https://github.com/nginx/nginx/releases/tag/release-1.31.10)     | 🚨 behind     |
-| panoptichain    | [8.3.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.3.0)      | [8.3.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.3.0)     | ✅ up to date |
-| pos-gateway     | [0.2.0](https://github.com/0xPolygon/pos-gateway/releases/tag/v0.2.0)       | [0.2.0](https://github.com/0xPolygon/pos-gateway/releases/tag/v0.2.0)      | ✅ up to date |
-| prometheus      | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ up to date |
-| redpanda        | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)    | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ up to date |
-| sequence-store  | [0.1.0](https://github.com/0xPolygon/sequence-store/releases/tag/v0.1.0)    | [0.1.0](https://github.com/0xPolygon/sequence-store/releases/tag/v0.1.0)   | ✅ up to date |
-| status-checker  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10)  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10) | ✅ up to date |
-| toolbox         | 0.0.14                                                                      | 0.0.14                                                                     | ✅ up to date |
+| Component       | Deployed version                                                              | Latest stable version                                                      | Status        |
+| --------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------- |
+| envoy           | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)            | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ up to date |
+| ethstats-server | 9da2124                                                                       | 9da2124                                                                    | ✅ up to date |
+| grafana         | [13.3.2](https://github.com/grafana/grafana/releases/tag/v13.3.2)             | [13.3.2](https://github.com/grafana/grafana/releases/tag/v13.3.2)          | ✅ up to date |
+| nginx           | [1.31.10-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.10) | [1.31.10](https://github.com/nginx/nginx/releases/tag/release-1.31.10)     | ✅ up to date |
+| panoptichain    | [8.3.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.3.0)        | [8.3.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.3.0)     | ✅ up to date |
+| pos-gateway     | [0.2.0](https://github.com/0xPolygon/pos-gateway/releases/tag/v0.2.0)         | [0.2.0](https://github.com/0xPolygon/pos-gateway/releases/tag/v0.2.0)      | ✅ up to date |
+| prometheus      | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)       | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ up to date |
+| redpanda        | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)      | [26.2.2](https://github.com/redpanda-data/redpanda/releases/tag/v26.2.2)   | ✅ up to date |
+| sequence-store  | [0.1.0](https://github.com/0xPolygon/sequence-store/releases/tag/v0.1.0)      | [0.1.0](https://github.com/0xPolygon/sequence-store/releases/tag/v0.1.0)   | ✅ up to date |
+| status-checker  | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10)    | [0.2.10](https://github.com/0xPolygon/status-checker/releases/tag/v0.2.10) | ✅ up to date |
+| toolbox         | 0.0.14                                                                        | 0.0.14                                                                     | ✅ up to date |
 
 ## Kurtosis packages
 
