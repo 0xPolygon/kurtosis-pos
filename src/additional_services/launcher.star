@@ -4,6 +4,7 @@ constants = import_module("../config/constants.star")
 ethstats_server = import_module("./ethstats_server.star")
 nginx = import_module("./nginx.star")
 observability = import_module("./observability.star")
+pos_gateway = import_module("./pos_gateway.star")
 status_checker = import_module("./status_checker.star")
 tx_spammer = import_module("./tx_spammer.star")
 
@@ -41,6 +42,9 @@ def launch(
                 l2_el_genesis_artifact,
                 contract_addresses_artifact,
             )
+        elif svc == constants.ADDITIONAL_SERVICES.pos_gateway:
+            pos_gateway_params = polygon_pos_args.get("pos_gateway_params")
+            pos_gateway.launch(plan, pos_gateway_params, l2_context)
         elif svc == constants.ADDITIONAL_SERVICES.status_checker:
             status_checker_params = polygon_pos_args.get("status_checker_params")
             status_checker.launch(plan, status_checker_params, l1_context, l2_context)
