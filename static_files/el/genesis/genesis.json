@@ -44,15 +44,16 @@
         "0": 1
       },
       "producerDelay": {
+        {{- if .rio_fork_block}}
         "0": 2,
+        {{- end}}
         "{{.rio_fork_block}}": 1
       },
       "sprint": {
         "0": {{.el_sprint_duration}}
       },
       "backupMultiplier": {
-        "0": 2,
-        "{{.rio_fork_block}}": 2
+        "0": 2
       },
       "validatorContract": "0x0000000000000000000000000000000000001000",
       "stateReceiverContract": "0x0000000000000000000000000000000000001001",
@@ -60,7 +61,9 @@
         "0": "0x000000000000000000000000000000000000dead"
       },
       "coinbase": {
+        {{- if .rio_fork_block}}
         "0": "0x0000000000000000000000000000000000000000",
+        {{- end}}
         "{{.rio_fork_block}}": "0x000000000000000000000000000000000000ba5e"
       }
     },

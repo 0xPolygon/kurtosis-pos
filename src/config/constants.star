@@ -52,23 +52,23 @@ IMAGES = {
     # layer 1
     "l1_el_image": "ethereum/client-go:v1.17.10",
     "l1_cl_image": "sigp/lighthouse:v8.3.3",
-    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.10.0",
+    "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.10.1",
     # layer 2
-    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.14.0",
+    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.14.2",
     "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.11.2",
     "l2_cl_queue_image": "rabbitmq:4.4.1",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.8",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:5c006e2",
-    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.14.0",
+    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.14.2",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14",
     # additional services
-    "nginx_image": "nginx:1.31.9-alpine",
+    "nginx_image": "nginx:1.31.10-alpine",
     "pos_gateway_image": "europe-west3-docker.pkg.dev/prj-polygonlabs-shared-prod/pos-gateway/pos-gateway:v0.2.0",
     "status_checker_image": "ghcr.io/0xpolygon/status-checker:v0.2.10",
     # observability
     "prometheus_image": "prom/prometheus:v3.16.0",
-    "grafana_image": "grafana/grafana:13.3.1",
+    "grafana_image": "grafana/grafana:13.3.2",
     "panoptichain_image": "ghcr.io/0xpolygon/panoptichain:v8.3.0",
     "ethstats_server_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/ethstats-server:9da2124",
     # sequence store (preconfirmation experiment)
@@ -131,19 +131,19 @@ EL_HARD_FORK_BLOCKS = {
     "indore": 0,
     "ahmedabad": 0,
     "bhilai": 0,
-    # rio must be enabled at block 128 because it's hardcoded in heimdall-v2 codebase
-    # https://github.com/0xPolygon/heimdall-v2/blob/4ff4059d7d83bcadc81e88d513f178ca3ba15fd8/helper/config.go#L488
-    "rio": 128,
-    # hardforks happening after rio should also be enabled at block 128 or later
-    "madhugiri": 128,
-    "madhugiriPro": 128,
-    "dandeli": 128,
-    "lisovo": 128,
-    "lisovoPro": 128,
-    "giugliano": 128,
-    "chicago": 128,
-    "valencia": 128,
-    "austin": 128,
-    "hampi": 128,
-    "uburu": 128,
+    # rio must match heimdall-v2's local rioHeight (helper/config.go).
+    "rio": 0,
+    "madhugiri": 0,
+    "madhugiriPro": 0,
+    "dandeli": 0,
+    "lisovo": 0,
+    "lisovoPro": 0,
+    "giugliano": 0,
+    "chicago": 0,
+    "valencia": 0,
+    # Requires bor >= 2.10.0 (older public bor images ignore the unknown
+    # austinBlock genesis field).
+    "austin": 0,
+    "hampi": 0,
+    "uburu": 0,
 }

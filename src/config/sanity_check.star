@@ -27,6 +27,7 @@ POLYGON_POS_PARAMS = {
         "el_bor_stateless_parallel_import",  # Enable bor to use parallel import in stateless mode.
         "el_bor_archive_mode",  # Run bor with gcmode=archive for full historical state retention.
         "el_bor_use_sequence_store",  # Render bor's [sequencer] section against the enclave sequence store.
+        "el_bor_enable_import_src",  # Enable bor's pipelined state root computation during block import.
         "count",
     ],
     "setup_images": [
@@ -419,7 +420,7 @@ def _validate_participant(p):
 
 
 def _validate_validator_config_generator_image(plan, image, heimdall_v2_image):
-    # The generator image is tagged without the "v" prefix used by heimdall-v2 (0.14.0 vs v0.14.0).
+    # The generator image is tagged without the "v" prefix used by heimdall-v2 (0.14.2 vs v0.14.2).
     validator_config_generator_tag = image.split(":")[1].lstrip("v")
     heimdall_v2_tag = heimdall_v2_image.split(":")[1].lstrip("v")
     if validator_config_generator_tag != heimdall_v2_tag:

@@ -196,6 +196,10 @@ def l1_forks(overrides: str, ethereum_package: Tuple[str, str],
 
 STATUS_OUT_OF_SYNC = "out of sync"
 
+# Forks whose heimdall check is `height >= fork height`, so 0 means active from
+# genesis. For every other fork 0 disables it (`height > 0 && ...`).
+HEIMDALL_ZERO_ACTIVE = {"rio"}
+
 BOR_REPO = "0xPolygon/bor"
 HEIMDALL_REPO = "0xPolygon/heimdall-v2"
 
@@ -267,10 +271,11 @@ def heimdall_forks(heimdall_tag: str, bor: Dict) -> Dict:
         if not match or match.group(1) == "initial":
             continue
         name = match.group(1)
-        # Zero disables a fork.
-        devnet = int(value) or None
-        mainnet = int(heights["case MainChain"].get(variable, 0)) or None
-        testnet = int(heights["case AmoyChain"].get(variable, 0)) or None
+        def height(raw):
+            return int(raw) if name in HEIMDALL_ZERO_ACTIVE else int(raw) or None
+        devnet = height(value)
+        mainnet = height(heights["case MainChain"].get(variable, 0))
+        testnet = height(heights["case AmoyChain"].get(variable, 0))
         status = fork_status(devnet is not None, {})
         note = None
         if name in bor_blocks and bor_blocks[name] != devnet:

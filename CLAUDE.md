@@ -46,9 +46,9 @@ Nodes with `el_bor_archive_mode: true` get a `-archive` suffix (e.g. `l2-el-1-bo
 | L2 EL chain ID                | `4927`                                                               |
 | L2 CL chain ID                | `heimdall-4927`                                                      |
 | Bor image                     | `ghcr.io/0xpolygon/bor:v2.11.2`                                      |
-| Heimdall-v2 image             | `ghcr.io/0xpolygon/heimdall-v2:v0.14.0`                              |
+| Heimdall-v2 image             | `ghcr.io/0xpolygon/heimdall-v2:v0.14.2`                              |
 | Sprint duration               | 16 blocks                                                            |
-| Rio hard fork                 | block 128 (required by Heimdall-v2)                                  |
+| Rio hard fork                 | block 0 (must match Heimdall-v2 local `rioHeight`)                   |
 | Admin address                 | `0x74Ed6F462Ef4638dc10FFb05af285e8976Fb8DC9`                         |
 | Admin private key (L1 and L2) | `0xd40311b5a5ca5eaeb48dfba5403bde4993ece8eccf4190e98e19fcd4754260ea` |
 

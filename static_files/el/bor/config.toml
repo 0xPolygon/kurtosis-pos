@@ -257,3 +257,11 @@ ethstats = "{{.node_name}}:{{.ethstats_server_secret}}@ethstats-server:{{.ethsta
   consumer-endpoint = "{{ .sequence_store_consumer_endpoint }}"
   poll = "100ms"
 {{- end }}
+{{- if .enable_import_src }}
+
+[pipeline]
+  # Pipelined state root computation during block import (default: false)
+  enable-import-src = true
+  # Log the pipelined import (default: false)
+  import-src-logs = true
+{{- end }}

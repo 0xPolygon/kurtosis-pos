@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+source /opt/data/l2/forge-script-l2.sh
+
 # Deploy sPOL/LST contracts to L1 and L2 using the kurtosis PoS devnet addresses.
 # Runs inside the pos-contract-deployer image, which bundles the spol-contracts
 # source, soldeer deps, and a warm forge cache at /opt/spol-contracts
@@ -106,7 +108,7 @@ forge script --hardfork "${L1_HARDFORK}" script/deployPerChain.s.sol:DeployPerCh
   --rpc-url "${L1_RPC_URL}" --broadcast --legacy
 mv script/deployment.json script/deployment-l1.json
 SPOL_MESSENGER_PROXY=$(jq -re '.sPOL_L1.sPOLMessengerProxy' script/deployment-l1.json)
-forge script script/deployPerChain.s.sol:DeployPerChain \
+forge_script_l2 script/deployPerChain.s.sol:DeployPerChain \
   --sig 'runL2(string,address)' 'ethereum-polygon' "${SPOL_MESSENGER_PROXY}" \
   --rpc-url "${L2_RPC_URL}" --broadcast --legacy
 jq -s '{sPOL_L1: .[0].sPOL_L1, sPOL_L2: .[1].sPOL_L2}' \

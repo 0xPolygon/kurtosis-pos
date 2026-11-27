@@ -94,7 +94,7 @@ anvil:
 
 | Field          | Type   | Default                            | Description                                                                                           |
 | -------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| image          | string | ghcr.io/foundry-rs/foundry:v1.10.0 | Anvil container image                                                                                 |
+| image          | string | ghcr.io/foundry-rs/foundry:v1.10.1 | Anvil container image                                                                                 |
 | network_id     | string | 3151908                            | L1 network/chain ID                                                                                   |
 | block_time     | int    | 1                                  | Block time in seconds                                                                                 |
 | slots_in_epoch | int    | 2                                  | Number of slots per epoch (block_time × slots_in_epoch = seconds to transition from latest to safest) |
@@ -138,7 +138,7 @@ Default: a single validator.
 | -------------------------------- | ------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | kind                             | string | validator                             | Role of the node in the network: `validator` or `rpc`. Use `el_bor_archive_mode` for archive retention.                                                                                                                                               |
 | cl_type                          | string | heimdall-v2                           | Consensus Layer (CL) client type                                                                                                                                                                                                                      |
-| cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.14.0 | Image for the CL client                                                                                                                                                                                                                               |
+| cl_image                         | string | ghcr.io/0xpolygon/heimdall-v2:v0.14.2 | Image for the CL client                                                                                                                                                                                                                               |
 | cl_queue_image                   | string | rabbitmq:4.4.1                        | Image for the CL queue                                                                                                                                                                                                                                |
 | cl_log_level                     | string | info                                  | Log level for the CL client                                                                                                                                                                                                                           |
 | cl_log_format                    | string | text                                  | Log format for the CL client                                                                                                                                                                                                                          |
@@ -156,6 +156,7 @@ Default: a single validator.
 | el_bor_stateless_parallel_import | bool   | false                                 | Enable bor to use parallel import in stateless mode (requires `el_bor_sync_with_witness`)                                                                                                                                                             |
 | el_bor_archive_mode              | bool   | false                                 | Run bor with `gcmode=archive` and full history retention. Orthogonal to `kind` — set on a validator or rpc node. Required for `debug_traceTransaction` on past blocks. The default single-node config sets this to `true` on the validator.           |
 | el_bor_use_sequence_store        | bool   | false                                 | Render bor's `[sequencer]` config section against the enclave sequence store (preconfirmation experiment). Requires an `el_image` built from the bor sequencer branch; setting it on any participant deploys the store (see `sequence_store_params`). |
+| el_bor_enable_import_src         | bool   | false                                 | Enable bor's pipelined state root computation during block import (`[pipeline] enable-import-src`). Off by default, as in bor. Leave it unset on a node that should cross-check the pipelined ones.                                                   |
 | count                            | int    | 1                                     | Number of nodes to spin up for this participant                                                                                                                                                                                                       |
 
 ### `setup_images`
@@ -164,7 +165,7 @@ Default: a single validator.
 | -------------------------- | ------ | ------------------------------------------------------- | ------------------------------------------- |
 | contract_deployer          | string | ghcr.io/0xpolygon/pos-contract-deployer:0.0.8           | Image used to deploy MATIC contracts to L1  |
 | el_genesis_builder         | string | ghcr.io/0xpolygon/pos-el-genesis-builder:5c006e2        | Image used to create the L2 EL genesis file |
-| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.14.0 | Image used to generate validator configs    |
+| validator_config_generator | string | ghcr.io/0xpolygon/pos-validator-config-generator:0.14.2 | Image used to generate validator configs    |
 
 ### `network_params`
 
@@ -193,18 +194,18 @@ You can check the admin private key and mnemonic default values at `src/config/i
 | indore_fork_block                     | int    | 0                  | Block number for Indore hard fork activation                                                                 |
 | ahmedabad_fork_block                  | int    | 0                  | Block number for Ahmedabad hard fork activation                                                              |
 | bhilai_fork_block                     | int    | 0                  | Block number for Bhilai hard fork activation                                                                 |
-| rio_fork_block                        | int    | 128                | Block number for Rio hard fork activation                                                                    |
-| madhugiri_fork_block                  | int    | 128                | Block number for Madhugiri hard fork activation                                                              |
-| madhugiri_pro_fork_block              | int    | 128                | Block number for Madhugiri Pro hard fork activation                                                          |
-| dandeli_fork_block                    | int    | 128                | Block number for Dandeli hard fork activation                                                                |
-| lisovo_fork_block                     | int    | 128                | Block number for Lisovo hard fork activation                                                                 |
-| lisovo_pro_fork_block                 | int    | 128                | Block number for Lisovo Pro hard fork activation                                                             |
-| giugliano_fork_block                  | int    | 128                | Block number for Giugliano hard fork activation                                                              |
-| chicago_fork_block                    | int    | 128                | Block number for Chicago hard fork activation                                                                |
-| valencia_fork_block                   | int    | 128                | Block number for Valencia hard fork activation (bor >= 2.10.0)                                               |
-| austin_fork_block                     | int    | 128                | Block number for Austin hard fork activation (bor >= 2.10.0)                                                 |
-| hampi_fork_block                      | int    | 128                | Block number for Hampi hard fork activation (bor >= 2.10.1)                                                  |
-| uburu_fork_block                      | int    | 128                | Block number for Uburu hard fork activation (bor >= 2.11.0)                                                  |
+| rio_fork_block                        | int    | 0                  | Block number for Rio hard fork activation                                                                    |
+| madhugiri_fork_block                  | int    | 0                  | Block number for Madhugiri hard fork activation                                                              |
+| madhugiri_pro_fork_block              | int    | 0                  | Block number for Madhugiri Pro hard fork activation                                                          |
+| dandeli_fork_block                    | int    | 0                  | Block number for Dandeli hard fork activation                                                                |
+| lisovo_fork_block                     | int    | 0                  | Block number for Lisovo hard fork activation                                                                 |
+| lisovo_pro_fork_block                 | int    | 0                  | Block number for Lisovo Pro hard fork activation                                                             |
+| giugliano_fork_block                  | int    | 0                  | Block number for Giugliano hard fork activation                                                              |
+| chicago_fork_block                    | int    | 0                  | Block number for Chicago hard fork activation                                                                |
+| valencia_fork_block                   | int    | 0                  | Block number for Valencia hard fork activation (bor >= 2.10.0)                                               |
+| austin_fork_block                     | int    | 0                  | Block number for Austin hard fork activation (bor >= 2.10.0)                                                 |
+| hampi_fork_block                      | int    | 0                  | Block number for Hampi hard fork activation (bor >= 2.10.1)                                                  |
+| uburu_fork_block                      | int    | 0                  | Block number for Uburu hard fork activation (bor >= 2.11.0)                                                  |
 
 ### `additional_services`
 
@@ -232,9 +233,9 @@ The `nginx` service deploys [nginx](https://nginx.org) with every bor node (vali
 cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 ```
 
-| Field | Type   | Default             | Description                |
-| ----- | ------ | ------------------- | -------------------------- |
-| image | string | nginx:1.31.9-alpine | Image used to deploy nginx |
+| Field | Type   | Default              | Description                |
+| ----- | ------ | -------------------- | -------------------------- |
+| image | string | nginx:1.31.10-alpine | Image used to deploy nginx |
 
 ### `pos_gateway_params`
 

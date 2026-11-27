@@ -108,14 +108,20 @@ mv tmp.json "${EL_GENESIS_FILE}"
 
 # Swap the StateReceiver code at the Uburu fork block, as bor's mainnet genesis does.
 uburu_state_receiver_code=$(state_receiver_code /opt/data/uburu/state-receiver.hex)
+# bor applies blockAlloc while finalizing a block, which never happens for
+# genesis, so Uburu at block 0 swaps the code in the genesis alloc instead,
+# keeping the StateReceiver's storage.
 jq --arg b "${UBURU_FORK_BLOCK}" --arg a "${state_receiver_address}" \
   --arg c "${uburu_state_receiver_code}" \
-  '.config.bor.blockAlloc[$b][$a] = {"balance": "0x0", "code": $c}' \
+  'if ($b | tonumber) == 0 then
+     if .alloc | has($a) then .alloc[$a].code = $c
+     else error("StateReceiver \($a) not found in the genesis alloc") end
+   else .config.bor.blockAlloc[$b][$a] = {"balance": "0x0", "code": $c} end' \
   "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
 # Add the genesis timestamp to the EL genesis.
-timestamp=$(printf "0x%x" "${EL_GENESIS_TIMESTAMP}")
+timestamp=$(printf "0x%x" "$(date +%s)")
 jq --arg t "${timestamp}" '.timestamp = $t' "${EL_GENESIS_FILE}" > tmp.json
 mv tmp.json "${EL_GENESIS_FILE}"
 
