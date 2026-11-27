@@ -233,8 +233,8 @@ The `nginx` service deploys [nginx](https://nginx.org) with every bor node (vali
 cast block-number --rpc-url "$(kurtosis port print pos nginx rpc)"
 ```
 
-| Field | Type   | Default             | Description                |
-| ----- | ------ | ------------------- | -------------------------- |
+| Field | Type   | Default              | Description                |
+| ----- | ------ | -------------------- | -------------------------- |
 | image | string | nginx:1.31.10-alpine | Image used to deploy nginx |
 
 ### `pos_gateway_params`
