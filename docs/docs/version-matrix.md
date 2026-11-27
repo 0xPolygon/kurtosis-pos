@@ -19,13 +19,13 @@ The L1, the L2 clients and the images that deploy them: the devnet does not star
 | Component                      | Deployed version                                                                                               | Latest stable version                                                                             | Status        |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------- |
 | bor                            | [2.11.2](https://github.com/0xPolygon/bor/releases/tag/v2.11.2)                                                | [2.11.2](https://github.com/0xPolygon/bor/releases/tag/v2.11.2)                                   | ✅ up to date |
-| foundry                        | [1.10.0](https://github.com/foundry-rs/foundry/releases/tag/v1.10.0)                                           | [1.10.0](https://github.com/foundry-rs/foundry/releases/tag/v1.10.0)                              | ✅ up to date |
+| foundry                        | [1.10.0](https://github.com/foundry-rs/foundry/releases/tag/v1.10.0)                                           | [1.10.1](https://github.com/foundry-rs/foundry/releases/tag/v1.10.1)                              | 🚨 behind     |
 | geth                           | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                                       | [1.17.10](https://github.com/ethereum/go-ethereum/releases/tag/v1.17.10)                          | ✅ up to date |
 | heimdall-v2                    | [0.14.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.14.2)                                        | [0.14.2](https://github.com/0xPolygon/heimdall-v2/releases/tag/v0.14.2)                           | ✅ up to date |
 | lighthouse                     | [8.3.3](https://github.com/sigp/lighthouse/releases/tag/v8.3.3)                                                | [8.3.3](https://github.com/sigp/lighthouse/releases/tag/v8.3.3)                                   | ✅ up to date |
 | pos-contract-deployer          | [0.0.8](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-contract-deployer.Dockerfile)           | [0.0.8](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-contract-deployer)           | ✅ up to date |
 | pos-el-genesis-builder         | [5c006e2](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-el-genesis-builder.Dockerfile)        | [5c006e2](https://github.com/0xPolygon/genesis-contracts/commit/5c006e2)                          | ✅ up to date |
-| pos-validator-config-generator | [0.14.2](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-validator-config-generator.Dockerfile) | [0.13.2](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-validator-config-generator) | ⚡️ ahead      |
+| pos-validator-config-generator | [0.14.2](https://github.com/0xPolygon/kurtosis-pos/blob/main/docker/pos-validator-config-generator.Dockerfile) | [0.14.2](https://github.com/0xPolygon/kurtosis-pos/pkgs/container/pos-validator-config-generator) | ✅ up to date |
 | rabbitmq                       | [4.4.1](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.1)                                       | [4.4.1](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.4.1)                          | ✅ up to date |
 
 ### Additional
@@ -36,8 +36,8 @@ Everything else: utility images, observability, the status checker and the seque
 | --------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------- |
 | envoy           | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)          | [1.40.2](https://github.com/envoyproxy/envoy/releases/tag/v1.40.2)         | ✅ up to date |
 | ethstats-server | 9da2124                                                                     | 9da2124                                                                    | ✅ up to date |
-| grafana         | [13.3.1](https://github.com/grafana/grafana/releases/tag/v13.3.1)           | [13.3.1](https://github.com/grafana/grafana/releases/tag/v13.3.1)          | ✅ up to date |
-| nginx           | [1.31.9-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.9) | [1.31.9](https://github.com/nginx/nginx/releases/tag/release-1.31.9)       | ✅ up to date |
+| grafana         | [13.3.1](https://github.com/grafana/grafana/releases/tag/v13.3.1)           | [13.3.2](https://github.com/grafana/grafana/releases/tag/v13.3.2)          | 🚨 behind     |
+| nginx           | [1.31.9-alpine](https://github.com/nginx/nginx/releases/tag/release-1.31.9) | [1.31.10](https://github.com/nginx/nginx/releases/tag/release-1.31.10)     | 🚨 behind     |
 | panoptichain    | [8.3.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.3.0)      | [8.3.0](https://github.com/0xPolygon/panoptichain/releases/tag/v8.3.0)     | ✅ up to date |
 | pos-gateway     | [0.2.0](https://github.com/0xPolygon/pos-gateway/releases/tag/v0.2.0)       | [0.2.0](https://github.com/0xPolygon/pos-gateway/releases/tag/v0.2.0)      | ✅ up to date |
 | prometheus      | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)     | [3.16.0](https://github.com/prometheus/prometheus/releases/tag/v3.16.0)    | ✅ up to date |
@@ -52,9 +52,9 @@ External Kurtosis packages the package depends on. Versions are pinned in the [`
 
 ### Core
 
-| Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status        |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [bb1f2991b400](https://github.com/ethpandaops/ethereum-package/tree/bb1f2991b400b28e86e4ed8f7b64f3db59030d43) | [HEAD (bb1f2991b400)](https://github.com/ethpandaops/ethereum-package/tree/bb1f2991b400b28e86e4ed8f7b64f3db59030d43) | ✅ up to date |
+| Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status                            |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [bb1f2991b400](https://github.com/ethpandaops/ethereum-package/tree/bb1f2991b400b28e86e4ed8f7b64f3db59030d43) | [HEAD (a438d292270f)](https://github.com/ethpandaops/ethereum-package/tree/a438d292270f4086ae9720adf2d287a1e58caa6a) | 🚨 behind — 5 commits behind HEAD |
 
 ### Additional
 
