@@ -52,9 +52,9 @@ External Kurtosis packages the package depends on. Versions are pinned in the [`
 
 ### Core
 
-| Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status                            |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [bb1f2991b400](https://github.com/ethpandaops/ethereum-package/tree/bb1f2991b400b28e86e4ed8f7b64f3db59030d43) | [HEAD (a438d292270f)](https://github.com/ethpandaops/ethereum-package/tree/a438d292270f4086ae9720adf2d287a1e58caa6a) | 🚨 behind — 5 commits behind HEAD |
+| Package                                                                                    | Pinned version                                                                                                | Latest stable version                                                                                                | Status        |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- |
+| [github.com/ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package) | [a438d292270f](https://github.com/ethpandaops/ethereum-package/tree/a438d292270f4086ae9720adf2d287a1e58caa6a) | [HEAD (a438d292270f)](https://github.com/ethpandaops/ethereum-package/tree/a438d292270f4086ae9720adf2d287a1e58caa6a) | ✅ up to date |
 
 ### Additional
 
