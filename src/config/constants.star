@@ -54,13 +54,13 @@ IMAGES = {
     "l1_cl_image": "sigp/lighthouse:v8.3.3",
     "l1_anvil_image": "ghcr.io/foundry-rs/foundry:v1.10.0",
     # layer 2
-    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.14.0",
+    "l2_cl_heimdall_v2_image": "ghcr.io/0xpolygon/heimdall-v2:v0.14.2",
     "l2_el_bor_image": "ghcr.io/0xpolygon/bor:v2.11.2",
     "l2_cl_queue_image": "rabbitmq:4.4.1",
     # utilities
     "pos_contract_deployer_image": "ghcr.io/0xpolygon/pos-contract-deployer:0.0.8",
     "pos_el_genesis_builder_image": "ghcr.io/0xpolygon/pos-el-genesis-builder:5c006e2",
-    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.14.0",
+    "pos_validator_config_generator_image": "ghcr.io/0xpolygon/pos-validator-config-generator:0.14.2",
     "toolbox_image": "europe-west2-docker.pkg.dev/prj-polygonlabs-devtools-dev/public/toolbox:0.0.14",
     # additional services
     "nginx_image": "nginx:1.31.9-alpine",

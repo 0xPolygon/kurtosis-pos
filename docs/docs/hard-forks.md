@@ -77,4 +77,4 @@ Checked against: [bor v2.11.2](https://github.com/0xPolygon/bor/blob/v2.11.2/par
 | [zurich](https://forum.polygon.technology/t/heimdall-v0-9-0-mainnet/21950)                                                     | ✅ enabled    | 1             | 37750000    | 47880000       |
 | [phuket](https://forum.polygon.technology/t/heimdall-v2-v0-7-1-for-polygon-amoy-and-mainnet/21863)                             | ✅ enabled    | 1             | 32276400    | 44070000       |
 
-Checked against: [heimdall-v2 v0.14.0](https://github.com/0xPolygon/heimdall-v2/blob/v0.14.0/helper/config.go)
+Checked against: [heimdall-v2 v0.14.2](https://github.com/0xPolygon/heimdall-v2/blob/v0.14.2/helper/config.go)

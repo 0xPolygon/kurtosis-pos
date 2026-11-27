@@ -18,7 +18,7 @@ Images are hosted on GHCR. The tags correspond to the kurtosis-pos package versi
 - **`pos-devnet-<size>:<tag>`**: geth + lighthouse L1. The most realistic L1, but it only restores within minutes of being built, which is what the snapshot workflow does. The beacon chain keeps the genesis time it was built with, and a lone lighthouse with no peers never counts itself synced once the wall clock is far ahead of its head slot, so it never proposes another L1 block.
 - **`pos-devnet-<size>:<tag>-anvil`**: anvil L1. Anvil has no slot clock, so this image restores at any age. Use it whenever the restore is not right after the build, for example when pinning a snapshot in CI.
 
-Environments are snapshotted at block 128 on the L2 chain (Rio hard fork activation), which should be enough for most testing purposes.
+Environments are snapshotted at block 32 on the L2 chain (two sprints after genesis, where Rio is already active), which should be enough for most testing purposes.
 
 Snapshot archives are compressed with zstd; `extract.sh` decompresses them inside a container, so the host needs no `zstd` CLI. On the host, `restore.sh` needs `jq`, and `curl` for its L1 check.
 
@@ -102,7 +102,7 @@ kurtosis run \
 
 ### Snapshot the enclave
 
-The script stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
+The script waits for L2 to reach block 32 (two sprints, since Rio is active from genesis), stops the enclave, generates a docker compose file and packages everything (data and configuration files) into a docker image.
 
 To make sure the snapshot never captures a half-finished exchange between L1 and heimdall (a checkpoint buffered but not yet submitted, an ack not yet voted, a state sync not yet recorded), the script stops the enclave in two steps:
 
